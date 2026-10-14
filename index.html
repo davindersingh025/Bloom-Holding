@@ -239,6 +239,8 @@ html,body{height:100%;margin:0;background:#e9e3d8;overflow:hidden;overscroll-beh
 [data-name^="Label - "] > [data-name="Margin"], [data-name^="Label - "] > [data-name="Container"]{flex:none!important;margin:0!important}
 [data-name^="Label - "]:not([data-name$=":shadow"]){padding-top:15px!important;padding-bottom:15px!important;gap:0!important}
 :has(> [data-name^="Label - "]:not([data-name$=":shadow"])){align-items:stretch!important}
+/* Full-width "Others / General Maintenance" card: icon drawn at 16px in Figma — match the other cards' 20px icons */
+[data-name="Label - Others"] [data-name="Icon badge"] > [data-name="SVG"], [data-name="Label - Others"] [data-name="Icon badge"] > [data-name="SVG"] > div{width:20px!important;height:20px!important}
 /* Instrument Serif ships in one weight (400): stop the bold heading around it from faking a bold */
 [class*="Instrument_Serif"]{font-weight:400!important;font-synthesis:none} /* move-out card: 28px gap below the request cards */
 svg.ico,svg.pulse{overflow:visible}
