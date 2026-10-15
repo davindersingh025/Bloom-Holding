@@ -1,23 +1,21 @@
-# Brand fonts
+# Fonts
 
-Per the Bloom Brand Identity Guidelines 2026:
+The approved Figma prototype uses two typefaces:
 
-- **Orpheus Pro** — headlines (Regular / Medium, Italic for accents)
-- **Matter** — subtitles and body copy (Regular / Medium / SemiBold / Bold)
+- **Matter** — all text (Regular, Medium, SemiBold, Bold)
+- **Orpheus Pro Italic** — only the italic accent words ("Place", "requests", "help?" …)
 
-Both are licensed commercial typefaces, so they are not committed here. Add your
-licensed **web-font** files to this folder with exactly these names and the
-prototype switches to them automatically (no code change needed):
+Both are licensed fonts, so they are not committed here. Add your licensed
+**web-font** files to this folder with exactly these names and every visitor
+gets the real fonts automatically (no code change needed):
 
 ```
-OrpheusPro-Regular.woff2
-OrpheusPro-Medium.woff2
-OrpheusPro-Italic.woff2
 Matter-Regular.woff2
 Matter-Medium.woff2
 Matter-SemiBold.woff2
 Matter-Bold.woff2
+OrpheusPro-Italic.woff2
 ```
 
-Until then the prototype uses the closest free stand-ins — Cormorant Garamond
-(for Orpheus) and Figtree (for Matter) — and Arial as the guidelines' digital fallback.
+Until then: Matter/Orpheus load from the viewer's computer if installed;
+otherwise Figtree (≈ Matter) and Cormorant Garamond Italic (≈ Orpheus Pro Italic) stand in.
