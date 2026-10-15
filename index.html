@@ -425,6 +425,7 @@ html,body{height:100%;margin:0;background:#e9e3d8;overflow:hidden;overscroll-beh
 .mox-v{font-size:14px;line-height:20px;font-weight:500;text-align:right;color:#1c1c19}
 /* status pill */
 .mox-pill{flex:none;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;line-height:16px;white-space:nowrap;background:rgba(77,94,190,.14);color:#4d5ebe;transition:background-color 220ms,color 220ms}
+.mox-pill[hidden],.mox-raise[hidden]{display:none!important}
 .mox-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .mox-pill[data-tone="amber"]{background:rgba(183,134,63,.14);color:#8f5a1c}
 .mox-pill[data-tone="red"]{background:rgba(179,38,30,.11);color:#b3261e}
