@@ -250,6 +250,11 @@ html,body{height:100%;margin:0;background:#e9e3d8;overflow:hidden;overscroll-beh
 .dchip:active{transform:scale(.95)}
 .dchip p{transition:color 200ms ease}
 .dchip:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+/* Bloom GPT tab: the animated Siri orb, always moving */
+.siri--tab{--s:24px}
+.is-bounce .siri--tab{animation:tabBounce 420ms cubic-bezier(.34,1.56,.64,1)}
+/* Register button no longer carries an icon */
+.btn-ghost[data-orb] p{text-align:center}
 /* Instrument Serif ships in one weight (400): stop the bold heading around it from faking a bold */
 [class*="Instrument_Serif"]{font-weight:400!important;font-synthesis:none} /* move-out card: 28px gap below the request cards */
 svg.ico,svg.pulse{overflow:visible}
@@ -532,7 +537,6 @@ body, body *{font-family:var(--font-matter)!important;font-variation-settings:no
       <div class="ctas">
         <div class="btn btn-light tap" data-tap="btn" data-accent="#5c1a15" data-node-id="home:signin"><p class="sans w6">Sign in</p></div>
         <a class="btn btn-ghost tap" data-tap="btn" data-accent="#f8f5eb" data-orb="1" data-node-id="252:13129">
-          <div class="orb"><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span></div>
           <p class="sans w6">Register</p>
         </a>
       </div>
@@ -1134,7 +1138,8 @@ function initReg(sec){
 function decorate(sec){
   $$('[data-name="Bloom GPT Orb"]', sec).forEach(function(o){
     var host = o.parentElement; if(!host || host.__gpt) return; host.__gpt = true;
-    var ball = document.createElement('span'); ball.className='gpt-ball'; ball.setAttribute('aria-hidden','true');
+    var ball = document.createElement('span'); ball.className='siri siri--tab'; ball.setAttribute('aria-hidden','true');
+    ball.innerHTML = '<i></i><i></i><i></i><i></i><em></em><u></u><b></b>';
     o.replaceWith(ball); host.classList.add('gpt-host');
   });
   $$('[data-name="#tabbar"] > *', sec).forEach(function(tab){
