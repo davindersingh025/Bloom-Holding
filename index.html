@@ -530,6 +530,18 @@ html,body{height:100%;margin:0;background:#e9e3d8;overflow:hidden;overscroll-beh
 .moc .moc-check input:focus-visible + .moc-box{box-shadow:0 0 0 4px rgba(146,42,34,.16)}
 .moc .moc-submit{width:100%}
 .moc .moc-submit:disabled{opacity:.38;box-shadow:none;cursor:not-allowed}
+.moc .moc-units{display:grid;gap:8px}
+.moc .moc-uopt{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px 10px 10px;border-radius:18px;border:1px solid #ddd2cc;background:#fff;font:inherit;text-align:left;color:#1c1c19;cursor:pointer;transition:border-color 180ms,background-color 180ms,scale 220ms cubic-bezier(.34,1.56,.64,1)}
+.moc .moc-uopt:active{scale:.98}
+.moc .moc-uopt > .icon{flex:none;color:#8a847a}
+.moc .moc-uopt.is-on{border-color:#922a22;background:rgba(146,42,34,.05)}
+.moc .moc-uopt-t{flex:1;min-width:0;display:grid;gap:1px}
+.moc .moc-uopt-t b{font-size:14px;font-weight:600;line-height:20px}
+.moc .moc-uopt-t span{font-size:12.5px;line-height:17px;color:#6b665c}
+.moc .moc-proto-t{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:3px 3px 3px 10px;border-radius:999px;border:1px dashed #ddd2cc;background:rgba(255,255,255,.6)}
+.moc .moc-proto-t span{font-size:9.5px;font-weight:600;letter-spacing:1px;color:#8a847a;margin-right:4px}
+.moc .moc-proto-t button{height:24px;padding:0 10px;border-radius:999px;border:0;background:transparent;font:inherit;font-size:11.5px;font-weight:500;color:#54504a;cursor:pointer}
+.moc .moc-proto-t button[aria-pressed="true"]{background:#1c1c19;color:#f8f5eb}
 
 /* Instrument Serif ships in one weight (400): stop the bold heading around it from faking a bold */
 [class*="Instrument_Serif"]{font-weight:400!important;font-synthesis:none} /* move-out card: 28px gap below the request cards */
@@ -1839,8 +1851,13 @@ var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)'
 var DASHES = ['252:23836','195:7859'];
 var RAISE_SR = '295:25495';
 var NOTICE_DAYS = 10, CHIPS = 14;
-var UNIT = 'Villa 138 · Bloom Gardens';
-var MO = window.__mo = { req:null, origin:'252:23836' };
+var UNITS = [
+  { id:'v138', type:'4-Bedroom Villa', name:'Villa 138', community:'Bloom Gardens', code:'BG-P2-T-138', icon:'home' },
+  { id:'a1204', type:'2-Bedroom Apartment', name:'Apt 1204', community:'Bloom Towers', code:'BT-A-1204', icon:'building' },
+  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building' }
+];
+function unitLabel(u){ return u.name+' · '+u.community; }
+var MO = window.__mo = { req:null, origin:'252:23836', multi:true };
 var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmt(d){ return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); }
 function fmtS(d){ return DOW[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]; }
@@ -1895,7 +1912,7 @@ var ST = {
     note:{tone:'green', t:'Move-out confirmed', p:'Access cards and keys received. Thanks for living at Bloom Gardens.'} },
   closed:{ pill:'Closed', tone:'grey', s:'ddddd',
     sub:['{sub}','Approved · dues cleared','NOC received from owner','Approved by BCM'],
-    note:{tone:'grey', t:'Unit association closed', p:'Your association with '+UNIT+' has been closed. Your request history stays available in the app.'} }
+    note:{tone:'grey', t:'Unit association closed', p:'Your association with {unit} has been closed. Your request history stays available in the app.'} }
 };
 var ORDER = ['submitted','review','action','rejected','noc','awaiting','nocrej','final','approved','confirmed','closed'];
 var DEMO = {submitted:'Submitted',review:'Under review',action:'Action required',rejected:'Rejected',noc:'Pending NOC',awaiting:'Awaiting owner',nocrej:'NOC rejected',final:'Final review',approved:'Approved',confirmed:'Move-out day',closed:'Closed'};
@@ -1910,7 +1927,7 @@ var NOTE_IC = {
   grey:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#54504a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
 };
 var LOCK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a847a" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
-function fill(s, r){ return s.replace('{date}', fmt(r.date)).replace('{id}', r.id).replace('{sub}', 'Submitted on '+fmt(r.submitted)); }
+function fill(s, r){ return s.replace('{unit}', unitLabel(r.unit)).replace('{date}', fmt(r.date)).replace('{id}', r.id).replace('{sub}', 'Submitted on '+fmt(r.submitted)); }
 function setPill(el, st){ el.textContent = st.pill; el.setAttribute('data-tone', st.tone); }
 
 /* ---------------- Bloom GPT move-out chat (like Register) ----------------
@@ -1930,15 +1947,22 @@ function initMoChat(sec){
     check:'<path d="m5 12 5 5 9-10"/>', arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>', clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>', truck:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
     x:'<path d="M6 6l12 12M18 6 6 18"/>', edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>', doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+    building:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>', chev:'<path d="m9 6 6 6-6 6"/>',
     track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>', skip:'<path d="m6 6 6 6-6 6M13 6l6 6-6 6"/>'
   };
   function icon(n, s){ s=s||18; return '<svg class="icon" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>'; }
   function words(t){ return t.split(/(\s+)/).map(function(w,i){ return /^\s+$/.test(w) ? w : '<span class="w" style="--wi:'+i+'">'+esc(w)+'</span>'; }).join(''); }
 
+  var hero = $('.reg__hero');
+  if(hero){
+    hero.insertAdjacentHTML('beforeend','<div class="moc-proto-t" role="group" aria-label="Prototype: units on this account"><span>PROTOTYPE · UNITS</span><button type="button" data-multi="1">Multiple</button><button type="button" data-multi="0">Single</button></div>');
+    hero.addEventListener('click', function(e){ var b=e.target.closest('[data-multi]'); if(!b) return; var v=b.dataset.multi==='1'; if(v===MO.multi) return; MO.multi=v; paintToggle(); start(); });
+  }
+  function paintToggle(){ $$('[data-multi]').forEach(function(b){ b.setAttribute('aria-pressed', (b.dataset.multi==='1')===MO.multi ? 'true':'false'); }); }
   $('[data-rclose]').addEventListener('click', function(){ run++; dock.innerHTML=''; setTimeout(function(){ goBackTo(MO.origin); }, 90); });
 
   function start(){
-    var me_run = ++run;
+    var me_run = ++run; paintToggle();
     log.innerHTML = ''; dock.innerHTML = ''; dock.onclick = null; scroller.scrollTop = 0;
     var heroOrb = $('.reg__hero .siri'); if(heroOrb){ heroOrb.style.animation='none'; void heroOrb.offsetWidth; heroOrb.style.animation=''; }
     function alive(){ if(me_run !== run) throw new Stale(); }
@@ -2002,7 +2026,12 @@ function initMoChat(sec){
       return p.then(function(){ row.firstElementChild.classList.remove('is-thinking'); });
     }
     function card(rows, head){ return '<div class="idcard moc-card">'+(head||'')+'<dl>'+rows.map(function(r){ return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]))+'</dd>'; }).join('')+'</dl></div>'; }
-    var UNIT_HEAD = '<div class="moc-unit"><span class="moc-tile">'+icon('home',20)+'</span><div><p>4-Bedroom Villa · Villa 138</p><span>Bloom Gardens · BG-P2-T-138</span></div></div>';
+    function unitHead(u){ return '<div class="moc-unit"><span class="moc-tile">'+icon(u.icon,20)+'</span><div><p>'+esc(u.type+' · '+u.name)+'</p><span>'+esc(u.community+' · '+u.code)+'</span></div></div>'; }
+    function pickUnit(){ alive(); return new Promise(function(res){
+      dock.innerHTML = '<p class="t-caption moc-cap">Select the unit you’re moving out of</p><div class="moc-units" role="listbox" aria-label="Your units">'+UNITS.map(function(u,i){ return '<button type="button" class="moc-uopt" role="option" data-u="'+i+'"><span class="moc-tile">'+icon(u.icon,20)+'</span><span class="moc-uopt-t"><b>'+esc(u.type+' · '+u.name)+'</b><span>'+esc(u.community+' · '+u.code)+'</span></span>'+icon('chev',18)+'</button>'; }).join('')+'</div>';
+      dock.onclick = function(e){ var b=e.target.closest('[data-u]'); if(!b) return; b.classList.add('is-on'); var u=UNITS[+b.dataset.u];
+        setTimeout(function(){ dock.innerHTML=''; dock.onclick=null; me(u.type+' · '+u.name); res(u); }, REDUCED?0:240); };
+    }); }
     var TERMS = ['Clear all dues — service charges, gas clearance and chilled-water bills.','Owner NOC — tenants and holiday home agents need the owner’s No Objection Certificate. We request it for you.','Return access cards, keys and parking stickers on move-out day.','Moving hours are 8 am – 6 pm; we’ll confirm your service lift slot.','The unit may be inspected; damage beyond normal wear can be deducted from your deposit.','Your move-out date can’t be changed after you submit.'];
     function finish(){
       alive();
@@ -2011,15 +2040,22 @@ function initMoChat(sec){
       $('[data-track]',dock).onclick = function(){ var n=nav(); if(n) n.navigate('mo:details','SLIDE_IN/350/EASE_OUT/LEFT'); };
     }
 
-    var date, movers=false, company='', notes='';
+    var unit = UNITS[0], date, movers=false, company='', notes='';
     step(0);
     var flow = wait(REDUCED?0:450).then(function(){
       var r = MO.req;
       if(r && ['closed','rejected','nocrej'].indexOf(r.status) < 0){
-        return say('You already have an active move-out request. Here’s where it stands:', card([['Request ID', r.id],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="'+ST[r.status].tone+'">'+esc(ST[r.status].pill)+'</span>', true]]))
+        return say('You already have an active move-out request. Here’s where it stands:', card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="'+ST[r.status].tone+'">'+esc(ST[r.status].pill)+'</span>', true]]))
           .then(function(){ alive(); finish(); throw new Stale(); });
       }
-      return say('Hi there 👋 I’m Bloom GPT. I’ll help you raise your move-out request in a few quick steps. I found one unit linked to your account — is this the one you’re moving out of?', card([['Unit type','4-Bedroom Villa'],['Unit','Villa 138'],['Community','Bloom Gardens']], UNIT_HEAD))
+      if(MO.multi){
+        return say('Hi there 👋 I’m Bloom GPT. I’ll help you raise your move-out request in a few quick steps. I found '+UNITS.length+' units linked to your account — which one are you moving out of?')
+          .then(pickUnit)
+          .then(function(u){ unit = u; return say('Here are the unit details. Shall we continue with this unit?', card([['Unit type',u.type],['Unit',u.name],['Community',u.community]], unitHead(u))); })
+          .then(function(){ return choose([['change','Change unit','edit'],['yes','Continue','check','primary']], '1fr 1fr'); })
+          .then(function(c){ if(c==='change'){ setTimeout(start, REDUCED?0:250); throw new Stale(); } });
+      }
+      return say('Hi there 👋 I’m Bloom GPT. I’ll help you raise your move-out request in a few quick steps. I found one unit linked to your account — is this the one you’re moving out of?', card([['Unit type',unit.type],['Unit',unit.name],['Community',unit.community]], unitHead(unit)))
         .then(function(){ return choose([['yes','Yes, this unit','check','primary']]); });
     }).then(function(){
       step(1);
@@ -2040,7 +2076,7 @@ function initMoChat(sec){
     }).then(function(){ return askText({ ph:'Type your special needs', skip:'No special needs', max:300 }); })
     .then(function(v){
       notes = v;
-      var rows = [['Unit', UNIT],['Move-out date', fmt(date)],['Movers & packers', movers?'Yes':'No']];
+      var rows = [['Unit', unitLabel(unit)],['Move-out date', fmt(date)],['Movers & packers', movers?'Yes':'No']];
       if(movers) rows.push(['Company', company]);
       rows.push(['Special needs', notes || '—']);
       return say('Here’s a summary of your move-out request. Does everything look right?', card(rows));
@@ -2052,11 +2088,11 @@ function initMoChat(sec){
     }).then(terms).then(function(){
       return progress(['Creating your request','Generating request ID','Sending to BCM for review']);
     }).then(function(){
-      MO.req = { id:'MO-'+(24800+Math.floor(Math.random()*190)), date:date, movers:movers, company:company, notes:notes, submitted:new Date(), status:'submitted' };
+      MO.req = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, submitted:new Date(), status:'submitted' };
       refreshCards(); step(5);
       var r = MO.req;
       return say('Your move-out request has been submitted. The BCM team will review it and check for outstanding dues — you’ll get updates in the app and by email.',
-        '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', r.id],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
+        '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
     }).then(finish);
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
   }
@@ -2092,7 +2128,7 @@ function initDetails(sec){
     note.innerHTML = h; note.setAttribute('data-tone', n.tone);
     if(animate && last!==r.status) A(note,[{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:320,easing:'cubic-bezier(.16,1,.3,1)'});
     rows.innerHTML = [
-      ['Unit', UNIT],
+      ['Unit', unitLabel(r.unit)],
       ['Move-out date', '<span class="mox-lock">'+LOCK+esc(fmt(r.date))+'</span>', true],
       ['Movers & packers', r.movers ? 'Yes' : 'No'],
       r.movers ? ['Movers company', r.company] : null,
@@ -2154,7 +2190,7 @@ function paintCard(c){
   }
   var st = ST[r.status];
   c.t1.textContent = 'Move-out request · '+r.id;
-  c.t2.textContent = 'Move-out on '+fmtS(r.date);
+  c.t2.textContent = r.unit.name+' · Move-out on '+fmtS(r.date);
   setPill(c.pill, st); c.pill.hidden = false;
   c.bt.textContent = 'Track request'; c.raise.hidden = true; c.acts.style.gridTemplateColumns = '1fr';
 }
