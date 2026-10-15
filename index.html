@@ -2098,7 +2098,7 @@ function paintCard(c){
   c.t1.textContent = 'Move-out request · '+r.id;
   c.t2.textContent = 'Move-out on '+fmtS(r.date);
   setPill(c.pill, st); c.pill.hidden = false;
-  c.bt.textContent = 'Track request'; c.raise.hidden = false; c.acts.style.gridTemplateColumns = '1fr auto';
+  c.bt.textContent = 'Track request'; c.raise.hidden = true; c.acts.style.gridTemplateColumns = '1fr';
 }
 function refreshCards(){ cards.forEach(paintCard); }
 
