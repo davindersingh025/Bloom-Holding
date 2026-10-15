@@ -1429,6 +1429,22 @@ window.__decorate = function(sec){ if(prev) prev(sec); wireDates(sec); solidStat
 
 <script>(function(){
 'use strict';
+/* Bottom tab bar stays pinned to the bottom of the screen while the page
+   scrolls (as in the Figma prototype), instead of sitting at the end of a
+   long page. Moved into the screen's fixed layer; its tap handlers move with it. */
+function pinTabbar(sec){
+  var tb = sec.querySelector('.scroll [data-name="#tabbar"]'); if(!tb || tb.__pinned) return;
+  var layer = sec.querySelector(':scope > .fix') || sec.querySelector('.fix');
+  if(!layer){ layer = document.createElement('div'); layer.className = 'fix'; sec.appendChild(layer); }
+  tb.__pinned = true;
+  layer.appendChild(tb);
+}
+var prev = window.__decorate;
+window.__decorate = function(sec){ if(prev) prev(sec); pinTabbar(sec); };
+})();</script>
+
+<script>(function(){
+'use strict';
 /* ============================================================
    Bloom prototype runtime
    - one device, many screens, Figma prototype links + transitions
