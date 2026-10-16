@@ -1899,45 +1899,30 @@ function goBackTo(origin){
 }
 
 /* ---------------- statuses (flowchart) ---------------- */
-// steps: 1 submitted · 2 BCM review · 3 owner NOC · 4 final approval · 5 move-out day
+// steps: 1 request submitted · 2 owner NOC · 3 BCM approval
 var ST = {
-  submitted:{ pill:'Submitted', tone:'blue', s:'dcppp',
-    sub:['{sub}','Waiting for BCM','',''],
-    note:{tone:'blue', t:'Request received', p:'The BCM team will start reviewing your request shortly.'} },
-  review:{ pill:'Under Review', tone:'amber', s:'dcppp',
-    sub:['{sub}','Checking dues · gas clearance, chilled water','',''],
-    note:{tone:'amber', t:'BCM is reviewing your request', p:'We’re checking for outstanding dues: gas clearance and chilled-water bills.'} },
-  action:{ pill:'Action Required', tone:'red', s:'dxppp',
-    sub:['{sub}','Information missing','',''],
-    note:{tone:'red', t:'Information missing', p:'Please upload your gas clearance certificate so BCM can continue the review.', acts:[['upload','Provide information','primary']]} },
-  rejected:{ pill:'Rejected', tone:'red', s:'dxppp',
-    sub:['{sub}','Rejected by BCM','',''],
-    note:{tone:'red', t:'Request rejected', p:'Reason: outstanding chilled-water dues of AED 1,240. Clear the dues and submit a new request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} },
-  noc:{ pill:'Pending Owner NOC', tone:'amber', s:'ddcpp',
-    sub:['{sub}','Approved · dues cleared','Waiting for the owner’s NOC',''],
-    note:{tone:'amber', t:'Waiting for the owner’s NOC', p:'BCM approved your request. We’ve asked the unit owner for a No Objection Certificate.'} },
-  awaiting:{ pill:'Awaiting Owner Response', tone:'amber', s:'ddcpp',
-    sub:['{sub}','Approved · dues cleared','Reminders sent on day 3 and day 5',''],
-    note:{tone:'amber', t:'Owner hasn’t responded yet', p:'We send the owner reminders after 3 and 5 days. You’ll be notified as soon as they respond.'} },
-  nocrej:{ pill:'NOC Rejected', tone:'red', s:'ddxpp',
-    sub:['{sub}','Approved · dues cleared','Owner declined the NOC',''],
-    note:{tone:'red', t:'The owner declined the NOC', p:'You can contact support, raise a service request or submit a new move-out request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} },
-  final:{ pill:'Under Review', tone:'amber', s:'dddcp',
-    sub:['{sub}','Approved · dues cleared','NOC received from owner','BCM final review'],
-    note:{tone:'amber', t:'Final review', p:'The owner approved the NOC. BCM is completing the final review.'} },
-  approved:{ pill:'Move Out Approved', tone:'green', s:'ddddc',
-    sub:['{sub}','Approved · dues cleared','NOC received from owner','Approved by BCM'],
+  submitted:{ pill:'Submitted', tone:'blue', s:'dcp',
+    sub:['{sub}','Waiting for the owner’s NOC',''],
+    note:{tone:'blue', t:'Move-out request submitted', p:'We’ve asked the unit owner for a No Objection Certificate (NOC). Once the owner responds, BCM will review your request.'} },
+  nocApproved:{ pill:'NOC Approved', tone:'green', s:'ddc',
+    sub:['{sub}','Approved by the owner','Waiting for BCM approval'],
+    note:{tone:'amber', t:'Owner approved the NOC', p:'BCM is now reviewing your request and checking for outstanding dues (gas clearance, chilled water).'} },
+  nocRejected:{ pill:'NOC Rejected', tone:'red', s:'dxp',
+    sub:['{sub}','Rejected by the owner',''],
+    note:{tone:'red', t:'The owner rejected the NOC', p:'Your request can’t continue without the owner’s NOC. You can contact support or submit a new move-out request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} },
+  needInfo:{ pill:'Need Info', tone:'amber', s:'ddx',
+    sub:['{sub}','Approved by the owner','BCM needs more information'],
+    note:{tone:'amber', t:'BCM needs more information', p:'Please upload your gas clearance certificate so BCM can complete the review.', acts:[['upload','Provide information','primary']]} },
+  bcmApproved:{ pill:'BCM Approved', tone:'green', s:'ddd',
+    sub:['{sub}','Approved by the owner','Approved by BCM'],
     note:{tone:'green', t:'Your move-out is approved', list:['Moving hours are 8 am – 6 pm on {date}.','The community team will confirm your service lift slot.','Hand over access cards, keys and parking stickers.','Your movers must show this request ID at the gate: {id}.']} },
-  confirmed:{ pill:'Move-out Confirmed', tone:'green', s:'ddddd',
-    sub:['{sub}','Approved · dues cleared','NOC received from owner','Approved by BCM'],
-    note:{tone:'green', t:'Move-out confirmed', p:'Access cards and keys received. Thanks for living at Bloom Gardens.'} },
-  closed:{ pill:'Closed', tone:'grey', s:'ddddd',
-    sub:['{sub}','Approved · dues cleared','NOC received from owner','Approved by BCM'],
-    note:{tone:'grey', t:'Unit association closed', p:'Your association with {unit} has been closed. Your request history stays available in the app.'} }
+  bcmRejected:{ pill:'BCM Rejected', tone:'red', s:'ddx',
+    sub:['{sub}','Approved by the owner','Rejected by BCM'],
+    note:{tone:'red', t:'BCM rejected your request', p:'Reason: outstanding chilled-water dues of AED 1,240. Clear the dues and submit a new move-out request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} }
 };
-var ORDER = ['submitted','review','action','rejected','noc','awaiting','nocrej','final','approved','confirmed','closed'];
-var DEMO = {submitted:'Submitted',review:'Under review',action:'Action required',rejected:'Rejected',noc:'Pending NOC',awaiting:'Awaiting owner',nocrej:'NOC rejected',final:'Final review',approved:'Approved',confirmed:'Move-out day',closed:'Closed'};
-var STEPS = ['Request submitted','BCM review','Owner NOC','Final approval','Move-out day'];
+var ORDER = ['submitted','nocApproved','nocRejected','needInfo','bcmApproved','bcmRejected'];
+var DEMO = {submitted:'Submitted',nocApproved:'NOC approved',nocRejected:'NOC rejected',needInfo:'BCM · need info',bcmApproved:'BCM approved',bcmRejected:'BCM rejected'};
+var STEPS = ['Request submitted','Owner NOC','BCM approval'];
 var ICON_OK = '<svg class="i-ok" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
 var ICON_X = '<svg class="i-x" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 6v7M12 17.5v.5"/></svg>';
 var NOTE_IC = {
@@ -2065,7 +2050,7 @@ function initMoChat(sec){
     step(0);
     var flow = wait(REDUCED?0:450).then(function(){
       var r = MO.req;
-      if(r && ['closed','rejected','nocrej'].indexOf(r.status) < 0){
+      if(r && ['nocRejected','bcmRejected'].indexOf(r.status) < 0){
         return say('You already have an active move-out request. Here’s where it stands:', card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="'+ST[r.status].tone+'">'+esc(ST[r.status].pill)+'</span>', true]]))
           .then(function(){ alive(); finish(); throw new Stale(); });
       }
@@ -2107,12 +2092,12 @@ function initMoChat(sec){
       step(4);
       return say('Before I submit, please read the Terms & Conditions:', '<ol class="moc-terms">'+TERMS.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('')+'</ol><p class="moc-proto">Prototype: final wording to be provided by Bloom.</p>');
     }).then(terms).then(function(){
-      return progress(['Creating your request','Generating request ID','Sending to BCM for review']);
+      return progress(['Creating your request','Generating request ID','Requesting the owner’s NOC']);
     }).then(function(){
       MO.req = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, submitted:new Date(), status:'submitted' };
       refreshCards(); step(5);
       var r = MO.req;
-      return say('Your move-out request has been submitted. The BCM team will review it and check for outstanding dues — you’ll get updates in the app and by email.',
+      return say('Your move-out request has been submitted. We’ve asked the owner for the NOC; after that, BCM will review it. You’ll get updates in the app and by email.',
         '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
     }).then(finish);
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
@@ -2137,7 +2122,7 @@ function initDetails(sec){
     Array.prototype.forEach.call(tl.children, function(li, i){
       var s = st.s.charAt(i), prev = li.getAttribute('data-s');
       li.setAttribute('data-s', s);
-      var sub = i===4 ? (s==='d' ? 'Moved out on '+fmt(r.date) : fmt(r.date)) : fill(st.sub[i]||'', r);
+      var sub = fill(st.sub[i]||'', r);
       li.querySelector('.mox-st-s').textContent = sub;
       li.querySelector('.mox-st-s').hidden = !sub;
       li.classList.remove('is-new');
@@ -2166,7 +2151,7 @@ function initDetails(sec){
   note.addEventListener('click', function(e){
     var b = e.target.closest('[data-act]'); if(!b) return;
     var a = b.getAttribute('data-act'), n = nav();
-    if(a==='upload'){ b.classList.add('is-loading'); setTimeout(function(){ MO.req.status='review'; render(true); refreshCards(); toast('Thanks — your document was shared with BCM for review.'); }, 700); }
+    if(a==='upload'){ b.classList.add('is-loading'); setTimeout(function(){ MO.req.status='nocApproved'; render(true); refreshCards(); toast('Thanks — your document was shared with BCM for review.'); }, 700); }
     else if(a==='support') toast('Our community team will call you back within 24 hours.');
     else if(a==='raise'){ if(n) n.navigate(RAISE_SR,'SLIDE_IN/350/EASE_OUT/LEFT'); }
     else if(a==='new'){ MO.req = null; refreshCards(); if(n) n.navigate('mo:chat','SLIDE_IN/350/EASE_OUT/LEFT'); }
