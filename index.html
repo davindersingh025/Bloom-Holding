@@ -774,6 +774,46 @@ body, body *{font-family:var(--font-matter)!important;font-variation-settings:no
 .sr-xrow--col{flex-direction:column!important;align-items:flex-start!important;gap:4px!important}
 .sr-xrow--col p:last-child{text-align:left!important;font-weight:500!important;line-height:19px!important}
 </style>
+<style id="pd-css">
+/* ==========================================================================
+   Property details (tenant dashboard property card → details, tenancy
+   contract, move-out for this property). Built on the .mox screen styles.
+   ========================================================================== */
+.pdx .mox-body>*{flex:none}
+.pdx .pd-units{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px}
+.pdx .pd-units::-webkit-scrollbar{display:none}
+.pdx .pd-unit{flex:none;display:flex;align-items:center;gap:8px;height:40px;padding:0 14px 0 6px;border-radius:999px;border:1px solid #ddd2cc;background:#fff;font-size:13px;font-weight:600;color:#54504a;transition:background-color 180ms,color 180ms,border-color 180ms,scale 220ms cubic-bezier(.34,1.56,.64,1)}
+.pdx .pd-unit:active{scale:.96}
+.pdx .pd-unit i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(146,42,34,.08);color:#922a22}
+.pdx .pd-unit[aria-pressed="true"]{background:#1c1c19;border-color:#1c1c19;color:#f8f5eb}
+.pdx .pd-unit[aria-pressed="true"] i{background:rgba(248,245,235,.14);color:#f8f5eb}
+.pdx .pd-res{width:100%!important;filter:none!important;border:1px solid #efe7e3;box-shadow:0 10px 24px -20px rgba(28,28,25,.35)}
+.pdx .pd-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px}
+.pdx .pd-hd .mox-pill{margin-top:0}
+.pdx .pd-sec{padding:16px 16px 6px}
+.pdx .pd-sec .mox-row:first-of-type{border-top:0}
+.pdx .pd-sec .mox-v{min-width:0}
+.pdx .pd-doc{display:flex;gap:10px;padding:6px 0 10px}
+.pdx .pd-doc .mox-btn{height:44px;font-size:14px}
+.pdx .pd-mo{display:grid;gap:14px}
+.pdx .pd-mo-h{display:flex;gap:12px;align-items:flex-start}
+.pdx .pd-mo-h .mox-tile{width:44px;height:44px}
+.pdx .pd-mo-t{flex:1;min-width:0;display:grid;gap:3px}
+.pdx .pd-mo-t .mox-pill{justify-self:start;margin-top:4px}
+.pdx .pd-mo .mox-btn{height:50px;font-size:15px}
+.pdx .pd-mo-acts{display:flex;gap:10px}
+.pdx .pd-mo-acts .mox-btn{flex:1 1 0}
+.pdx .pd-hint{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:18px;color:#6b665c;padding:10px 12px;border-radius:14px;background:#faf7f4}
+.pdx .pd-hint svg{flex:none;margin-top:1px}
+.pdx .pd-sw{opacity:1;transition:opacity 160ms ease}
+.pdx .pd-sw.is-out{opacity:0}
+/* dashboard: the property card opens its details */
+.pd-tap{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 260ms cubic-bezier(.34,1.56,.64,1)}
+.pd-tap:active{transform:scale(.985)}
+.pd-go{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#54504a;margin-left:auto;box-shadow:0 1px 0 rgba(28,28,25,.04)}
+.pd-more{font-family:'Instrument Sans',system-ui,sans-serif;font-size:11.5px;font-weight:600;line-height:16px;color:#6b665c}
+</style>
+
 
 
 <div id="wrap"><div id="shell"><div id="device"></div></div></div>
@@ -1885,11 +1925,12 @@ window.__decorate = function(sec){ if(prev) prev(sec); pinTabbar(sec); };
 <script>(function(){
 'use strict';
 /* ==========================================================================
-   Move-out flow (tenant, single unit):
-   Dashboard "Initiate move-out request" → Bloom GPT chat (unit, date ≥ 10
+   Move-out flow — one request per property:
+   Dashboard property card → Property details (property, tenancy contract,
+   move-out) → "Request move-out" → Bloom GPT chat for that unit (date ≥ 10
    days, movers, special needs, review, accept T&C) → Request ID
    → Track request → Request details with status timeline.
-   An active request turns the dashboard card into Track request / Raise SR.
+   The property's move-out section then shows the request and its status.
    No <form>: sandboxed previews block submit.
    ========================================================================== */
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1897,12 +1938,20 @@ var DASHES = ['252:23836','195:7859'];
 var RAISE_SR = '295:25495';
 var NOTICE_DAYS = 10, CHIPS = 14;
 var UNITS = [
-  { id:'v138', type:'4-Bedroom Villa', name:'Villa 138', community:'Bloom Gardens', code:'BG-P2-T-138', icon:'home' },
-  { id:'a1204', type:'2-Bedroom Apartment', name:'Apt 1204', community:'Bloom Towers', code:'BT-A-1204', icon:'building' },
-  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building' }
+  { id:'v138', type:'4-Bedroom Villa', name:'Villa 138', community:'Bloom Gardens', code:'BG-P2-T-138', icon:'home', address:'Villa 138, Royal Palm Avenue',
+    contract:{ no:'TC-2025-01138', ejari:'0012025-048120', start:new Date(2025,9,11), end:new Date(2026,9,10), rent:'AED 285,000 / year', pay:'4 cheques', deposit:'AED 14,250', status:'Expiring soon', tone:'amber' } },
+  { id:'a1204', type:'2-Bedroom Apartment', name:'Apt 1204', community:'Bloom Towers', code:'BT-A-1204', icon:'building', address:'Apt 1204, Tower A, Bloom Towers',
+    contract:{ no:'TC-2026-02204', ejari:'0012026-031877', start:new Date(2026,2,1), end:new Date(2027,1,28), rent:'AED 118,000 / year', pay:'2 cheques', deposit:'AED 5,900', status:'Active', tone:'green' } },
+  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building', address:'Apt 305, Building C, Bloom Living',
+    contract:{ no:'TC-2026-00305', ejari:'0012026-052463', start:new Date(2026,5,15), end:new Date(2027,5,14), rent:'AED 62,000 / year', pay:'1 cheque', deposit:'AED 3,100', status:'Active', tone:'green' } }
 ];
 function unitLabel(u){ return u.name+' · '+u.community; }
-var MO = window.__mo = { req:null, origin:'252:23836', multi:true };
+var MO = window.__mo = { reqs:{}, cur:'v138', origin:'pd:details', multi:true };
+MO.units = function(){ return MO.multi ? UNITS : UNITS.slice(0,1); };
+MO.unit = function(){ var us = MO.units(); for(var i=0;i<us.length;i++) if(us[i].id===MO.cur) return us[i]; return us[0]; };
+Object.defineProperty(MO, 'req', { get:function(){ return MO.reqs[MO.unit().id] || null; }, set:function(v){ var id = MO.unit().id; if(v) MO.reqs[id] = v; else delete MO.reqs[id]; } });
+MO.ST = null; // filled below
+MO.fmt = function(d){ return fmt(d); }; MO.fmtS = function(d){ return fmtS(d); };
 var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmt(d){ return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); }
 function fmtS(d){ return DOW[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]; }
@@ -1944,6 +1993,7 @@ var ST = {
     sub:['{sub}','Approved by the owner','Rejected by BCM'],
     note:{tone:'red', t:'BCM rejected your request', p:'Reason: outstanding chilled-water dues of AED 1,240. Clear the dues and submit a new move-out request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} }
 };
+MO.ST = ST;
 var ORDER = ['submitted','nocApproved','nocRejected','needInfo','bcmApproved','bcmRejected'];
 var DEMO = {submitted:'Submitted',nocApproved:'NOC approved',nocRejected:'NOC rejected',needInfo:'BCM · need info',bcmApproved:'BCM approved',bcmRejected:'BCM rejected'};
 var STEPS = ['Request submitted','Owner NOC','BCM approval'];
@@ -1983,16 +2033,10 @@ function initMoChat(sec){
   function icon(n, s){ s=s||18; return '<svg class="icon" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>'; }
   function words(t){ return t.split(/(\s+)/).map(function(w,i){ return /^\s+$/.test(w) ? w : '<span class="w" style="--wi:'+i+'">'+esc(w)+'</span>'; }).join(''); }
 
-  var hero = $('.reg__hero');
-  if(hero){
-    hero.insertAdjacentHTML('beforeend','<div class="moc-proto-t" role="group" aria-label="Prototype: units on this account"><span>PROTOTYPE · UNITS</span><button type="button" data-multi="1">Multiple</button><button type="button" data-multi="0">Single</button></div>');
-    hero.addEventListener('click', function(e){ var b=e.target.closest('[data-multi]'); if(!b) return; var v=b.dataset.multi==='1'; if(v===MO.multi) return; MO.multi=v; paintToggle(); start(); });
-  }
-  function paintToggle(){ $$('[data-multi]').forEach(function(b){ b.setAttribute('aria-pressed', (b.dataset.multi==='1')===MO.multi ? 'true':'false'); }); }
   $('[data-rclose]').addEventListener('click', function(){ run++; dock.innerHTML=''; setTimeout(function(){ goBackTo(MO.origin); }, 90); });
 
   function start(){
-    var me_run = ++run; paintToggle();
+    var me_run = ++run;
     log.innerHTML = ''; dock.innerHTML = ''; dock.onclick = null; scroller.scrollTop = 0;
     var heroOrb = $('.reg__hero .siri'); if(heroOrb){ heroOrb.style.animation='none'; void heroOrb.offsetWidth; heroOrb.style.animation=''; }
     function alive(){ if(me_run !== run) throw new Stale(); }
@@ -2057,20 +2101,15 @@ function initMoChat(sec){
     }
     function card(rows, head){ return '<div class="idcard moc-card">'+(head||'')+'<dl>'+rows.map(function(r){ return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]))+'</dd>'; }).join('')+'</dl></div>'; }
     function unitHead(u){ return '<div class="moc-unit"><span class="moc-tile">'+icon(u.icon,20)+'</span><div><p>'+esc(u.type+' · '+u.name)+'</p><span>'+esc(u.community+' · '+u.code)+'</span></div></div>'; }
-    function pickUnit(){ alive(); return new Promise(function(res){
-      dock.innerHTML = '<p class="t-caption moc-cap">Select the unit you’re moving out of</p><div class="moc-units" role="listbox" aria-label="Your units">'+UNITS.map(function(u,i){ return '<button type="button" class="moc-uopt" role="option" data-u="'+i+'"><span class="moc-tile">'+icon(u.icon,20)+'</span><span class="moc-uopt-t"><b>'+esc(u.type+' · '+u.name)+'</b><span>'+esc(u.community+' · '+u.code)+'</span></span>'+icon('chev',18)+'</button>'; }).join('')+'</div>';
-      dock.onclick = function(e){ var b=e.target.closest('[data-u]'); if(!b) return; b.classList.add('is-on'); var u=UNITS[+b.dataset.u];
-        setTimeout(function(){ dock.innerHTML=''; dock.onclick=null; me(u.type+' · '+u.name); res(u); }, REDUCED?0:240); };
-    }); }
     var TERMS = ['Clear all dues — service charges, gas clearance and chilled-water bills.','Owner NOC — tenants and holiday home agents need the owner’s No Objection Certificate. We request it for you.','Return access cards, keys and parking stickers on move-out day.','Moving hours are 8 am – 6 pm; we’ll confirm your service lift slot.','The unit may be inspected; damage beyond normal wear can be deducted from your deposit.','Your move-out date can’t be changed after you submit.'];
     function finish(){
       alive();
-      dock.innerHTML = '<div class="dock__choices" style="grid-template-columns:1fr 1fr"><button class="rbtn rbtn--ghost" type="button" data-home style="justify-content:center">Back to dashboard</button><button class="rbtn rbtn--primary" type="button" data-track style="justify-content:center">Track request</button></div>';
+      dock.innerHTML = '<div class="dock__choices" style="grid-template-columns:1fr 1fr"><button class="rbtn rbtn--ghost" type="button" data-home style="justify-content:center">Back to property</button><button class="rbtn rbtn--primary" type="button" data-track style="justify-content:center">Track request</button></div>';
       $('[data-home]',dock).onclick = function(){ goBackTo(MO.origin); };
       $('[data-track]',dock).onclick = function(){ var n=nav(); if(n) n.navigate('mo:details','SLIDE_IN/350/EASE_OUT/LEFT'); };
     }
 
-    var unit = UNITS[0], date, movers=false, company='', notes='';
+    var unit = MO.unit(), date, movers=false, company='', notes='';
     step(0);
     var flow = wait(REDUCED?0:450).then(function(){
       var r = MO.req;
@@ -2078,15 +2117,8 @@ function initMoChat(sec){
         return say('You already have an active move-out request. Here’s where it stands:', card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="'+ST[r.status].tone+'">'+esc(ST[r.status].pill)+'</span>', true]]))
           .then(function(){ alive(); finish(); throw new Stale(); });
       }
-      if(MO.multi){
-        return say('Hi there 👋 I’m Bloom GPT. I’ll help you raise your move-out request in a few quick steps. I found '+UNITS.length+' units linked to your account — which one are you moving out of?')
-          .then(pickUnit)
-          .then(function(u){ unit = u; return say('Here are the unit details. Shall we continue with this unit?', card([['Unit type',u.type],['Unit',u.name],['Community',u.community]], unitHead(u))); })
-          .then(function(){ return choose([['change','Change unit','edit'],['yes','Continue','check','primary']], '1fr 1fr'); })
-          .then(function(c){ if(c==='change'){ setTimeout(start, REDUCED?0:250); throw new Stale(); } });
-      }
-      return say('Hi there 👋 I’m Bloom GPT. I’ll help you raise your move-out request in a few quick steps. I found one unit linked to your account — is this the one you’re moving out of?', card([['Unit type',unit.type],['Unit',unit.name],['Community',unit.community]], unitHead(unit)))
-        .then(function(){ return choose([['yes','Yes, this unit','check','primary']]); });
+      return say('Hi there 👋 I’m Bloom GPT. I’ll help you raise a move-out request for this property in a few quick steps.', card([['Unit type',unit.type],['Unit',unit.name],['Community',unit.community],['Contract ends',fmt(unit.contract.end)]], unitHead(unit)))
+        .then(function(){ return choose([['yes','Continue','check','primary']]); });
     }).then(function(){
       step(1);
       return say('When would you like to move out? Pick a date at least 10 days from today. Please note the date can’t be changed once you submit.');
@@ -2118,9 +2150,9 @@ function initMoChat(sec){
     }).then(terms).then(function(){
       return progress(['Creating your request','Generating request ID','Requesting the owner’s NOC']);
     }).then(function(){
-      MO.req = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, submitted:new Date(), status:'submitted' };
+      MO.reqs[unit.id] = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, submitted:new Date(), status:'submitted' };
       refreshCards(); step(5);
-      var r = MO.req;
+      var r = MO.reqs[unit.id];
       return say('Your move-out request has been submitted. We’ve asked the owner for the NOC; after that, BCM will review it. You’ll get updates in the app and by email.',
         '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
     }).then(finish);
@@ -2179,58 +2211,189 @@ function initDetails(sec){
     else if(a==='support') toast('Our community team will call you back within 24 hours.');
     else if(a==='raise'){ if(n) n.navigate(RAISE_SR,'SLIDE_IN/350/EASE_OUT/LEFT'); }
     else if(a==='new'){ MO.req = null; refreshCards(); if(n) n.navigate('mo:chat','SLIDE_IN/350/EASE_OUT/LEFT'); }
+    else if(a==='prop'){ goBackTo('pd:details'); }
   });
   $('[data-mback]').addEventListener('click', function(){ setTimeout(function(){ goBackTo(MO.origin); }, 90); });
   sec.__onEnter = function(){ last = null; render(false); $('[data-mscroll]').scrollTop = 0; rerise(root); };
 }
 
-/* ---------------- dashboard Move-out card ---------------- */
-var cards = [];
-function wireCard(sec){
-  var sid = sec.dataset.sid; if(DASHES.indexOf(sid) < 0) return;
-  var card = sec.querySelector('[data-name="Card / Move-Out Notice"]'); if(!card || card.__mo) return;
-  card.__mo = true; card.setAttribute('data-mocard','');
-  var txt = card.querySelector('[data-name="Text"]'), ps = txt ? txt.querySelectorAll('p') : [], btn = card.querySelector('[data-name="Button"]');
-  if(!btn || ps.length < 2) return;
-  var bt = btn.querySelector('p');
-  var acts = document.createElement('div'); acts.className = 'mox-cardacts';
-  btn.parentNode.insertBefore(acts, btn); acts.appendChild(btn);
-  var raise = document.createElement('button'); raise.type='button'; raise.className='mox-raise'; raise.textContent='Raise SR'; raise.hidden = true;
-  acts.appendChild(raise);
-  acts.style.gridTemplateColumns = '1fr';
-  var pill = document.createElement('span'); pill.className = 'mox-pill mox-dpill'; pill.hidden = true; txt.appendChild(pill);
-  var c = { sec:sec, t1:ps[0], t2:ps[1], bt:bt, raise:raise, acts:acts, pill:pill, orig:[ps[0].textContent, ps[1].textContent, bt.textContent] };
-  cards.push(c);
-  btn.setAttribute('role','button'); btn.tabIndex = 0;
-  function open(e){
-    if(e){ e.preventDefault(); e.stopPropagation(); }
-    MO.origin = sid; var n = nav(); if(!n) return;
-    n.navigate(MO.req ? 'mo:details' : 'mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT');
-  }
-  btn.addEventListener('click', open);
-  btn.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') open(e); });
-  raise.addEventListener('click', function(e){ e.stopPropagation(); MO.origin = sid; var n=nav(); if(n) n.navigate(RAISE_SR,'SLIDE_IN/350/EASE_OUT/LEFT'); });
-  paintCard(c);
-}
-function paintCard(c){
-  var r = MO.req;
-  if(!r){
-    c.t1.textContent = c.orig[0]; c.t2.textContent = c.orig[1]; c.bt.textContent = c.orig[2];
-    c.pill.hidden = true; c.raise.hidden = true; c.acts.style.gridTemplateColumns = '1fr'; return;
-  }
-  var st = ST[r.status];
-  c.t1.textContent = 'Move-out request · '+r.id;
-  c.t2.textContent = r.unit.name+' · Move-out on '+fmtS(r.date);
-  setPill(c.pill, st); c.pill.hidden = false;
-  c.bt.textContent = 'Track request'; c.raise.hidden = true; c.acts.style.gridTemplateColumns = '1fr';
-}
-function refreshCards(){ cards.forEach(paintCard); }
+/* ---------------- property details owns the move-out entry point ---------------- */
+function refreshCards(){ if(window.__pd && window.__pd.refresh) window.__pd.refresh(); }
+MO.refresh = refreshCards;
 
 var prev = window.__decorate;
-window.__decorate = function(sec){ if(prev) prev(sec); wireCard(sec); };
+window.__decorate = function(sec){ if(prev) prev(sec); };
 window.__initScreen = window.__initScreen || {};
 window.__initScreen['mo:chat'] = initMoChat;
 window.__initScreen['mo:details'] = initDetails;
+})();</script>
+
+<script>(function(){
+'use strict';
+/* ==========================================================================
+   Property details — opened from the property card at the top of the tenant
+   dashboard. Shows the property, its tenancy contract and the move-out
+   option for that property (one move-out request per property).
+   With several properties a switcher at the top changes the property; each
+   one keeps its own move-out request and status.
+   The dashboard "Move-out notice" card is removed: move-out now lives here.
+   ========================================================================== */
+var DATA = window.__BLOOM, MO = window.__mo; if(!DATA || !MO) return;
+var D = document, SID = 'pd:details', DASHES = ['252:23836','195:7859'];
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function $(s,r){ return (r||D).querySelector(s); }
+function $$(s,r){ return Array.prototype.slice.call((r||D).querySelectorAll(s)); }
+function A(el,kf,o){ if(!el||REDUCED||!el.animate) return null; try{ return el.animate(kf,o); }catch(e){ return null; } }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function nav(){ return window.__bloomNav; }
+function txt(el){ return el ? (el.textContent||'').replace(/\s+/g,' ').trim() : ''; }
+function strip(el){ [el].concat($$('[data-node-id],[data-motion]',el)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-motion'); }); return el; }
+var I = {
+  home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  building:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>',
+  exit:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
+  doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  chev:'<path d="m9 6 6 6-6 6"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
+  track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>'
+};
+function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||'')+'</svg>'; }
+
+/* ---------- screen template (same chrome as the move-out request details) ---------- */
+(function(){
+  var src = D.getElementById('tpl-mo-details'); if(!src || D.getElementById('tpl-pd-details')) return;
+  var c = src.content, sb = c.querySelector('.mox-sb'), bar = c.querySelector('.mox-bar');
+  var barH = bar.outerHTML.replace(/data-mback/, 'data-pback').replace(/<p class="mox-bar-t" data-dtitle>[^<]*<\/p>/, '<p class="mox-bar-t">Property details</p>');
+  var t = D.createElement('template'); t.id = 'tpl-pd-details';
+  t.innerHTML = '<div class="mox mox--det pdx">'+sb.outerHTML+barH+
+    '<div class="mox-body" data-pscroll>'+
+      '<div class="pd-units" data-punits role="group" aria-label="Your properties"></div>'+
+      '<div class="pd-sw" data-psw>'+
+        '<div data-pres></div>'+
+      '</div>'+
+      '<div class="mox-card pd-sec pd-sw" data-pprop></div>'+
+      '<div class="mox-card pd-sec pd-sw" data-pcon></div>'+
+      '<div class="mox-card pd-mo pd-sw" data-pmo></div>'+
+      '<div class="mox-demo"><p class="mox-eyebrow">PROTOTYPE · PROPERTIES ON THIS ACCOUNT</p><div class="mox-demo-c" data-pdemo>'+
+        '<button type="button" class="mox-chip" data-multi="1">Multiple properties</button><button type="button" class="mox-chip" data-multi="0">Single property</button></div></div>'+
+    '</div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
+  src.parentNode.insertBefore(t, src.nextSibling);
+  if(DATA.screens.indexOf(SID) < 0) DATA.screens.push(SID);
+})();
+
+/* the dashboard's property card, reused as the header of the details screen */
+var RES = null;
+(function(){
+  var t = D.getElementById('tpl-252-23836'); if(!t) return;
+  var card = $('[data-name="Card / Residence"]', t.content); if(card) RES = card;
+})();
+function resFields(card){
+  var f = {};
+  $$('p', card).forEach(function(p){
+    var v = txt(p);
+    if(v==='BLOOM GARDENS') f.comm = p; else if(v==='BG-P2-T-138') f.code = p;
+    else if(v==='4-Bedroom Villa') f.type = p; else if(v==='Villa 138, Royal Palm Avenue') f.addr = p;
+  });
+  return f;
+}
+
+var D8 = function(d){ return MO.fmt(d); };
+function daysTo(d){ var n = new Date(); n = new Date(n.getFullYear(), n.getMonth(), n.getDate()); return Math.round((d - n) / 864e5); }
+function rows(list){ return list.map(function(x){ return '<div class="mox-row"><span class="mox-k">'+esc(x[0])+'</span><span class="mox-v">'+(x[2] ? x[1] : esc(x[1]))+'</span></div>'; }).join(''); }
+
+var built = null;
+function initPD(sec){
+  var root = $('.pdx', sec); if(!root) return;
+  var units = $('[data-punits]', root), resHost = $('[data-pres]', root), prop = $('[data-pprop]', root), con = $('[data-pcon]', root), mo = $('[data-pmo]', root), demo = $('[data-pdemo]', root);
+  var toastEl = $('[data-mtoast]', root), tt = null;
+  function toast(m){ if(!toastEl) return; toastEl.textContent = m; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2400); }
+  var bt = $('.mox-bar-t', root); if(bt) bt.textContent = 'Property details';
+  var res = RES ? strip(RES.cloneNode(true)) : null, rf = {};
+  if(res){ res.classList.add('pd-res'); res.style.width = '100%'; resHost.appendChild(res); rf = resFields(res); }
+
+  function render(fade){
+    var list = MO.units(), u = MO.unit(); MO.cur = u.id;
+    // property switcher
+    units.hidden = list.length < 2;
+    units.innerHTML = list.map(function(x){ return '<button type="button" class="pd-unit" data-u="'+x.id+'" aria-pressed="'+(x.id===u.id)+'"><i>'+icon(x.icon,15)+'</i>'+esc(x.name)+'</button>'; }).join('');
+    // header card
+    if(rf.comm) rf.comm.textContent = u.community.toUpperCase();
+    if(rf.code) rf.code.textContent = u.code;
+    if(rf.type) rf.type.textContent = u.type;
+    if(rf.addr) rf.addr.textContent = u.address;
+    // property
+    prop.innerHTML = '<p class="mox-eyebrow">PROPERTY</p>' + rows([['Property type', u.type], ['Unit', u.name], ['Community', u.community], ['Address', u.address], ['Unit code', u.code]]);
+    // tenancy contract
+    var c = u.contract, left = daysTo(c.end);
+    var ends = D8(c.end) + (left >= 0 && left <= 60 ? ' <span style="color:#8f5a1c;font-weight:600">· '+left+' days left</span>' : '');
+    con.innerHTML = '<div class="pd-hd"><p class="mox-eyebrow">TENANCY CONTRACT</p><span class="mox-pill" data-tone="'+c.tone+'">'+esc(c.status)+'</span></div>' +
+      rows([['Contract no.', c.no], ['Ejari no.', c.ejari], ['Start date', D8(c.start)], ['End date', ends, true], ['Annual rent', c.rent], ['Payment', c.pay], ['Security deposit', c.deposit]]) +
+      '<div class="pd-doc"><button type="button" class="mox-btn mox-btn--ghost" data-pact="contract"><span class="mox-btn-t">'+icon('doc',17)+'View contract</span></button></div>';
+    // move-out for this property
+    var r = MO.reqs[u.id], ST = MO.ST, h = '<p class="mox-eyebrow">MOVE-OUT</p>';
+    if(!r){
+      h += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
+           '<p class="mox-muted">Submit a move-out request with Bloom GPT. We’ll ask the owner for the NOC, then BCM reviews it.</p></div></div>'+
+           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 10 days from today. It can’t be changed after you submit.</span></div>'+
+           '<button type="button" class="mox-btn mox-btn--primary" data-pact="start"><span class="mox-btn-t">Request move-out</span></button>';
+    } else {
+      var st = ST[r.status], closed = ['nocRejected','bcmRejected'].indexOf(r.status) >= 0;
+      h += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out request · '+esc(r.id)+'</p>'+
+           '<p class="mox-muted">Move-out on '+esc(MO.fmtS(r.date))+'</p><span class="mox-pill" data-tone="'+st.tone+'">'+esc(st.pill)+'</span></div></div>';
+      h += closed
+        ? '<div class="pd-mo-acts"><button type="button" class="mox-btn mox-btn--ghost" data-pact="track"><span class="mox-btn-t">Track request</span></button><button type="button" class="mox-btn mox-btn--primary" data-pact="new"><span class="mox-btn-t">New request</span></button></div>'
+        : '<button type="button" class="mox-btn mox-btn--primary" data-pact="track"><span class="mox-btn-t">Track request</span></button>';
+    }
+    mo.innerHTML = h;
+    $$('[data-multi]', demo).forEach(function(b){ b.setAttribute('aria-pressed', (b.dataset.multi==='1')===MO.multi ? 'true' : 'false'); });
+    if(fade) $$('.pd-sw', root).forEach(function(el, i){ A(el, [{opacity:0, translate:'0 8px'}, {opacity:1, translate:'0 0'}], {duration:340, delay:i*40, easing:'cubic-bezier(.16,1,.3,1)', fill:'backwards'}); });
+  }
+  units.addEventListener('click', function(e){
+    var b = e.target.closest('[data-u]'); if(!b || b.dataset.u===MO.cur) return;
+    MO.cur = b.dataset.u; render(true);
+    try{ b = $('[data-u="'+MO.cur+'"]', units); if(b) b.scrollIntoView({ inline:'nearest', block:'nearest', behavior: REDUCED ? 'auto' : 'smooth' }); }catch(x){}
+  });
+  demo.addEventListener('click', function(e){ var b = e.target.closest('[data-multi]'); if(!b) return; MO.multi = b.dataset.multi==='1'; if(!MO.multi) MO.cur = MO.units()[0].id; render(true); });
+  mo.addEventListener('click', function(e){
+    var b = e.target.closest('[data-pact]'); if(!b) return;
+    var a = b.dataset.pact, n = nav(); MO.origin = SID; if(!n) return;
+    if(a==='start') n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT');
+    else if(a==='track') n.navigate('mo:details', 'SLIDE_IN/350/EASE_OUT/LEFT');
+    else if(a==='new'){ MO.req = null; render(false); n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+  });
+  con.addEventListener('click', function(e){ if(e.target.closest('[data-pact="contract"]')) toast('Prototype: the signed tenancy contract (PDF) opens here.'); });
+  $('[data-pback]', root).addEventListener('click', function(){ setTimeout(function(){ var n = nav(); if(!n) return; var s = n.stack(); if(s.length > 1) n.back(); else n.navigate('252:23836', 'SMART_ANIMATE/300/EASE_OUT'); }, 90); });
+  sec.__onEnter = function(){ render(false); var sc = $('[data-pscroll]', root); if(sc) sc.scrollTop = 0; };
+  built = render;
+  render(false);
+}
+window.__pd = { refresh: function(){ if(built) built(false); } };
+
+/* ---------- dashboard: property card opens details; move-out card removed ---------- */
+function wireDash(sec){
+  var sid = sec.dataset.sid; if(DASHES.indexOf(sid) < 0 || sec.__pd) return; sec.__pd = true;
+  var res = $('[data-name="Card / Residence"]', sec);
+  if(res){
+    res.classList.add('pd-tap'); res.setAttribute('role','button'); res.tabIndex = 0; res.setAttribute('aria-label','View property details');
+    var tile = $('[data-name="Unit tile"]', res);
+    if(tile && !$('.pd-go', tile)) tile.insertAdjacentHTML('beforeend', '<span class="pd-go" aria-hidden="true">'+icon('chev',16)+'</span>');
+    function open(e){ if(e){ e.preventDefault(); e.stopPropagation(); } MO.cur = MO.units()[0].id; var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+    res.addEventListener('click', open);
+    res.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') open(e); });
+  }
+  var mc = $('[data-name="Card / Move-Out Notice"]', sec), canvas = $('.canvas', sec);
+  if(mc){
+    var wasHidden = sec.hidden; sec.style.visibility = 'hidden'; sec.hidden = false;
+    var pcs = getComputedStyle(mc.parentNode), gap = parseFloat(pcs.rowGap || pcs.gap) || 0, h = mc.offsetHeight;
+    var abs = getComputedStyle(mc).position === 'absolute';
+    mc.style.display = 'none';
+    if(canvas && h && !abs){ var ch = parseFloat(canvas.style.height || 0); if(ch) canvas.style.height = Math.max(844, ch - h - gap) + 'px'; }
+    sec.hidden = wasHidden; sec.style.visibility = '';
+  }
+}
+var prev = window.__decorate;
+window.__decorate = function(sec){ if(prev) prev(sec); wireDash(sec); };
+window.__initScreen = window.__initScreen || {};
+window.__initScreen[SID] = initPD;
 })();</script>
 
 <script>(function(){
@@ -2287,7 +2450,7 @@ var TONE = { red:['rgba(139,37,34,0.1)','#8B2522'], sky:['#f0f9ff','#0284C7'], a
 var CATS = [
   { id:'access', name:'Visitor Access', lines:['Visitor','Access'], tag:'Cards & visitor passes', was:'Access Related', sid:'295:26001', subs:[
       { n:'Access Card', d:'New, lost or faulty cards' },
-      { n:'Visitor Access', d:'Guest and visitor passes' } ]},
+      { n:'Gate Pass', was:'Visitor Access', d:'Guest and visitor passes' } ]},
   { id:'maintenance', name:'Maintenance Services', lines:['Maintenance','Services'], tag:'Repairs & fixes', was:'Maintenance Issues', sid:'295:26646', subs:[
       { n:'Plumbing', loc:1 },
       { n:'Electrical', loc:1 },
