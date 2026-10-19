@@ -759,6 +759,30 @@ button[class*="bg-[#8b2522]"],a[class*="bg-[#8b2522]"]{background:#1A1A1A!import
 .lgx-btn--primary:active,.mox-btn--primary:active,.rbtn--primary:active,
 button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{background:#000!important}
 </style>
+<style id="sr-css">
+/* ==========================================================================
+   Service requests — categories, conditional location, validation
+   (uses the existing Figma inputs; only adds states that did not exist)
+   ========================================================================== */
+.sr-ta{display:block;width:100%;height:63px;border:0;outline:0;background:transparent;resize:none;padding:0;margin:0;font-family:'Instrument Sans',system-ui,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1c1c19;letter-spacing:inherit;white-space:pre-wrap}
+.sr-ta::placeholder{color:#757575;opacity:1}
+[data-name="Textarea"].sr-box{transition:border-color .2s ease,box-shadow .2s ease;cursor:text}
+[data-name="Textarea"].sr-box:focus-within{border-color:#54504a!important}
+[data-name="Textarea"].sr-bad,[data-name="Textarea"].sr-bad:focus-within{border-color:#b3261e!important;box-shadow:0 0 0 3px rgba(179,38,30,.07)}
+.sr-tile-bad{border-color:rgba(179,38,30,.6)!important}
+.sr-err{font-family:'Instrument Sans',system-ui,sans-serif;font-size:12px;line-height:16px;font-weight:500;color:#b3261e;margin:2px 0 0;display:flex;gap:6px;align-items:center;width:100%}
+.sr-err::before{content:"";flex:none;width:14px;height:14px;background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23b3261e' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.25'/%3E%3Cpath d='M8 4.9v3.6M8 11h.01'/%3E%3C/svg%3E") center/14px no-repeat}
+.sr-err[hidden],.sr-hide{display:none!important}
+.sr-row{width:100%!important}
+.sr-up{cursor:pointer}
+.sr-up input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.sr-xrow p{white-space:normal!important}
+.sr-xrow:not(.sr-xrow--col) p:first-child{flex:none!important;margin-right:16px}
+.sr-xrow:not(.sr-xrow--col) p:last-child{flex:1 1 auto!important;min-width:0;text-align:right!important}
+.sr-xrow--col{flex-direction:column!important;align-items:flex-start!important;gap:4px!important}
+.sr-xrow--col p:last-child{text-align:left!important;font-weight:500!important;line-height:19px!important}
+</style>
+
 
 
 <div id="wrap"><div id="shell"><div id="device"></div></div></div>
@@ -2216,6 +2240,539 @@ window.__decorate = function(sec){ if(prev) prev(sec); wireCard(sec); };
 window.__initScreen = window.__initScreen || {};
 window.__initScreen['mo:chat'] = initMoChat;
 window.__initScreen['mo:details'] = initDetails;
+})();</script>
+
+<script>(function(){
+'use strict';
+/* ==========================================================================
+   Service requests — categories & subcategories (tenant dashboard, View all
+   and every "New request" screen).
+   - 10 categories in the agreed order; each opens its own "New request"
+     screen with only its subcategories (Amenities and Parking reuse the
+     existing screen layout).
+   - Subcategory starts unselected each time a category is opened and must
+     be chosen before submitting.
+   - Maintenance (all) and Cleaning & Waste → Pest Control ask "Is this in a
+     common area or inside your unit?" (required). Common Area routes to the
+     Common Area Maintenance / Facilities Management team, Inside My Unit to
+     the Unit Maintenance team. Switching to a subcategory/category that
+     does not need it clears the value.
+   - Other Request: description is mandatory.
+   - The submitted request (category, subcategory, description, location
+     type, routing group, date, attachments) is kept in window.__sr.requests
+     and shown in My requests and on the request details screen.
+   PROTOTYPE: no backend. Routing uses window.__BLOOM_ROUTING when present,
+   otherwise only the team names from the brief (no IDs are invented).
+   ========================================================================== */
+var DATA = window.__BLOOM; if(!DATA) return;
+var D = document;
+function $(s,r){ return (r||D).querySelector(s); }
+function $$(s,r){ return Array.prototype.slice.call((r||D).querySelectorAll(s)); }
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function A(el,kf,o){ if(!el||REDUCED||!el.animate) return null; try{ return el.animate(kf,o); }catch(e){ return null; } }
+function txt(el){ return el ? (el.textContent||'').replace(/\s+/g,' ').trim() : ''; }
+function strip(el){ [el].concat($$('[data-node-id],[data-motion]',el)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-motion'); }); return el; }
+function nav(){ return window.__bloomNav; }
+
+/* ---------- icons (20×20 line icons in the Figma style) ---------- */
+var CAL = '<rect x="3" y="4.2" width="14" height="12.8" rx="2"/><path d="M3 8.3h14M7 2.8v2.8M13 2.8v2.8"/>';
+var P = {
+  warn:'<path d="M8.6 3.6 2.4 14.4A1.6 1.6 0 0 0 3.8 16.8h12.4a1.6 1.6 0 0 0 1.4-2.4L11.4 3.6a1.6 1.6 0 0 0-2.8 0Z"/><path d="M10 8v3.6M10 14.2h.01"/>',
+  calPlus: CAL+'<path d="M10 10.6v4M8 12.6h4"/>',
+  calX: CAL+'<path d="M8.4 11l3.2 3.2M11.6 11l-3.2 3.2"/>',
+  calSwap: CAL+'<path d="M7.4 11.4h5.2l-1.4-1.3M12.6 14.4H7.4l1.4 1.3"/>',
+  pcard:'<rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="M8.3 13V7.5h2.1a1.6 1.6 0 0 1 0 3.2H8.3"/>',
+  psign:'<rect x="3" y="3" width="14" height="14" rx="3.5"/><path d="M8 14V6.5h2.6a2.2 2.2 0 0 1 0 4.4H8"/>',
+  car:'<path d="M4.2 11.5 5.4 7.9a1.6 1.6 0 0 1 1.5-1.1h6.2a1.6 1.6 0 0 1 1.5 1.1l1.2 3.6"/><rect x="3" y="11.5" width="14" height="3.6" rx="1.2"/><path d="M5.5 15.1v1.4M14.5 15.1v1.4M6 13.3h.01M14 13.3h.01"/>',
+  building:'<path d="M4 17V4.6A1.6 1.6 0 0 1 5.6 3h5.8A1.6 1.6 0 0 1 13 4.6V17M13 8.2h2.4A1.6 1.6 0 0 1 17 9.8V17M2.5 17h15M7 6.4h3M7 9.4h3M7 12.4h3"/>',
+  home:'<path d="M3.2 8.6 10 3.3l6.8 5.3v7.6a1 1 0 0 1-1 1H4.2a1 1 0 0 1-1-1Z"/><path d="M8 17.2v-4.8h4v4.8"/>',
+  pool:'<path d="M7 3.5v9M13 3.5v9M7 6.2h6M7 9.4h6"/><path d="M2.5 14.6c1.25 0 1.25.9 2.5.9s1.25-.9 2.5-.9 1.25.9 2.5.9 1.25-.9 2.5-.9 1.25.9 2.5.9 1.25-.9 2.5-.9"/>'
+};
+function svgStr(name,c,w,cls){ return '<svg'+(cls?' class="'+cls+'"':'')+' viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="'+c+'" stroke-width="'+(w||1.6)+'" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">'+P[name]+'</svg>'; }
+function uri(name,c){ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgStr(name,c,1.67)); }
+var TONE = { red:['rgba(139,37,34,0.1)','#8B2522'], sky:['#f0f9ff','#0284C7'], amber:['#fffbeb','#D97706'], green:['#ecfdf5','#059669'], slate:['#f4f4f5','#52525b'] };
+
+/* ---------- the catalogue (names and order exactly as agreed) ---------- */
+var CATS = [
+  { id:'access', name:'Access', lines:['Access',''], tag:'Cards & visitor passes', was:'Access Related', sid:'295:26001', subs:[
+      { n:'Access Card', d:'New, lost or faulty cards' },
+      { n:'Visitor Access', d:'Guest and visitor passes' } ]},
+  { id:'maintenance', name:'Maintenance', lines:['Maintenance',''], tag:'Repairs & fixes', was:'Maintenance Issues', sid:'295:26646', subs:[
+      { n:'Plumbing', loc:1 },
+      { n:'Electrical', loc:1 },
+      { n:'AC / HVAC', was:'AC/HVAC', d:'Cooling, thermostat, airflow', loc:1 },
+      { n:'Others', was:'General Maintenance', loc:1 } ]},
+  { id:'cleaning', name:'Cleaning & Waste', lines:['Cleaning &','Waste'], tag:'Clean spaces, less waste', was:'Cleaning & Waste', sid:'252:22731', subs:[
+      { n:'Cleaning' }, { n:'Waste Management' }, { n:'Pest Control', loc:1 } ]},
+  { id:'amenities', name:'Amenities', lines:['Amenities',''], tag:'Book, change or report', sid:'sr:amenities', from:'252:22731',
+    icon:'pool', color:'#b7863f', tint:'#fbf7f0', border:'#e6d8c2', subs:[
+      { n:'Amenity Issue', d:'Faults at pool, gym, courts', i:'warn', t:'red' },
+      { n:'Amenity Booking', d:'Reserve a facility slot', i:'calPlus', t:'green' },
+      { n:'Amenity Cancellation', d:'Cancel an existing booking', i:'calX', t:'amber' },
+      { n:'Amenity Reschedule', d:'Move a booking to a new time', i:'calSwap', t:'sky' } ]},
+  { id:'parking', name:'Parking', lines:['Parking',''], tag:'Cards, bays & vehicles', sid:'sr:parking', from:'252:23039',
+    icon:'psign', color:'#7a4f6d', tint:'#f8f3f6', border:'#e2d3dc', subs:[
+      { n:'Parking Card', d:'New or replacement cards', i:'pcard', t:'sky' },
+      { n:'Parking Issue', d:'Bay, gate or barrier problems', i:'psign', t:'amber' },
+      { n:'Vehicle Registration', d:'Add or update a vehicle', i:'car', t:'green' } ]},
+  { id:'payments', name:'Payments & Finance', lines:['Payments &','Finance'], tag:'Report a concern', was:'Payment & Finance', sid:'252:22827', subs:[
+      { n:'Payment Issue' }, { n:'Service Charge' }, { n:'Community Fines', was:'Community Fines,' },
+      { n:'Payment Receipt' }, { n:'Statement of Account', was:'Account Statement' } ]},
+  { id:'documents', name:'Documents', lines:['Documents',''], tag:'Contracts & permits', was:'Property & Documents', sid:'252:22950', subs:[
+      { n:'Tenancy Contract' }, { n:'Licences' }, { n:'Permits' }, { n:'Documents Update' } ]},
+  { id:'tenancy', name:'Tenancy', lines:['Tenancy',''], tag:'Rental & lease queries', was:'Tenancy Related', sid:'252:23039', subs:[
+      { n:'Tenancy Renewal' }, { n:'Tenant / Occupant Update', was:'Tenant Update', d:'Tenant or occupant details' },
+      { n:'NOC/Clearance Related', was:'NOC/Clearance' } ]},
+  { id:'tech', name:'Technical Support', lines:['Technical','Support'], tag:'App troubleshooting', was:'Technical Support', sid:'252:23143', subs:[
+      { n:'Login / OTP' }, { n:'App Error' }, { n:'App Performance' }, { n:'Other Technical Issue' } ]},
+  { id:'other', name:'Other Request', lines:['Other','Request'], tag:'Tell us what you need', was:'Other Requests', sid:'295:26261', subs:[], descRequired:true }
+];
+var BY_ID = {}, BY_SID = {}, BY_WAS = {};
+CATS.forEach(function(c){ BY_ID[c.id]=c; BY_SID[c.sid]=c; BY_WAS[c.was||c.name]=c; BY_WAS[c.name]=c; });
+var DASH_IDS = ['access','maintenance','cleaning','amenities','parking','payments'];   // first six on the dashboard; View all shows all ten
+
+var LOCS = [
+  { key:'common_area', n:'Common Area', d:'Lobby, corridors, pool, gym', i:'building', t:'slate', team:'Common Area Maintenance / Facilities Management' },
+  { key:'inside_unit', n:'Inside My Unit', d:'Your apartment or villa', i:'home', t:'red', team:'Unit Maintenance' }
+];
+function routeFor(loc){
+  if(!loc) return null;
+  var cfg = window.__BLOOM_ROUTING || {};          // existing routing configuration, if the host app provides one
+  return cfg[loc.key] || loc.team;
+}
+
+var SR = window.__sr = window.__sr || { requests:[], last:null, viewing:null };
+SR.categories = CATS;
+
+/* ---------- Amenities & Parking: same "New request" layout as existing screens ---------- */
+function cloneScreen(sid, src){
+  var t = D.getElementById('tpl-'+src.replace(':','-')); if(!t || D.getElementById('tpl-'+sid.replace(':','-'))) return;
+  var n = D.createElement('template'); n.id = 'tpl-'+sid.replace(':','-'); n.innerHTML = t.innerHTML;
+  t.parentNode.insertBefore(n, t.nextSibling);
+  if(DATA.screens.indexOf(sid) < 0) DATA.screens.push(sid);
+  DATA.edges.filter(function(e){ return e.from===src; }).forEach(function(e){ var c={}; for(var k in e) c[k]=e[k]; c.from=sid; DATA.edges.push(c); });
+  if(DATA.motion && DATA.motion[src]) DATA.motion[sid] = DATA.motion[src];
+  if(DATA.sameFrame && DATA.sameFrame[src]) DATA.sameFrame[sid] = DATA.sameFrame[src];
+  ['noLoop','changeTo','regFlow'].forEach(function(k){ if(Array.isArray(DATA[k]) && DATA[k].indexOf(src)>=0) DATA[k].push(sid); });
+}
+CATS.forEach(function(c){ if(c.from) cloneScreen(c.sid, c.from); });
+
+/* Category icons as drawn on the View all cards (white glyphs) */
+var ICONS = {}, GRIDCARD = {};
+(function(){
+  var t = D.getElementById('tpl-295-25495'); if(!t) return;
+  $$('a[data-name="Quick Start"]', t.content).forEach(function(card){
+    var c = BY_WAS[cardTitle(card)]; var s = card.querySelector('[data-name="Qs icon"] svg');
+    if(c && s) ICONS[c.id] = s.outerHTML;
+    if(c) GRIDCARD[c.id] = card;
+  });
+})();
+function catSvg(c, color, cls){
+  var s = ICONS[c.id];
+  if(!s) return svgStr(c.icon||'warn', color, 1.6, cls);
+  s = s.replace(/(stroke|fill)="(white|#fff|#ffffff)"/gi, '$1="'+color+'"');
+  if(cls) s = s.replace(/class="[^"]*"/, 'class="'+cls+'"');
+  return s;
+}
+
+/* ---------- category cards (dashboard + View all) ---------- */
+function tagP(card){ return $$('p', card).filter(function(p){ return /text-\[11\.5px\]/.test(p.className); })[0]; }
+function titlePs(card){ var t = tagP(card); return $$('p', card).filter(function(p){ return p!==t; }); }
+function cardTitle(card){ return titlePs(card).map(txt).join(' ').replace(/\s+/g,' ').trim(); }
+function paintCard(card, c, restyle){
+  var ps = titlePs(card);
+  if(ps.length===1){ var p2 = ps[0].cloneNode(false); ps[0].classList.add('mb-0'); ps[0].parentNode.appendChild(p2); ps.push(p2); }
+  ps[0].textContent = c.lines[0]; ps[1].textContent = c.lines[1] || ' ';
+  var tg = tagP(card); if(tg) tg.textContent = c.tag;
+  card.setAttribute('data-cat', c.id); card.setAttribute('aria-label', c.name);
+  if(!restyle) return;
+  card.style.background = c.tint; card.style.borderColor = c.border;
+  var ic = card.querySelector('[data-name="Qs icon"]');
+  if(ic){ ic.style.background = c.color; ic.style.boxShadow = '0 8px 18px -10px '+c.color;
+    var host = ic.querySelector('svg'); host = host ? host.parentNode : ic.firstElementChild;
+    if(host) host.innerHTML = catSvg(c, 'white', 'ico absolute block inset-0 max-w-none size-full').replace('stroke-width="1.6"','stroke-width="1.33"');
+  }
+  if(tg) tg.style.color = c.color;
+}
+function layoutGrid(grid, ids){
+  var cards = $$('a[data-name="Quick Start"]', grid);
+  if(!cards.length) return;
+  var rows = Array.prototype.slice.call(grid.children).filter(function(r){ return r.querySelector('a[data-name="Quick Start"]'); });
+  var have = {}; cards.forEach(function(card){ var c = BY_WAS[cardTitle(card)]; if(c && !have[c.id]) have[c.id] = card; });
+  var base = cards[0], rowTpl = rows[rows.length-1].cloneNode(false); strip(rowTpl);
+  var list = ids.map(function(id){
+    var c = BY_ID[id], card = have[id];
+    if(card){ paintCard(card, c, false); return card; }
+    var styled = !!GRIDCARD[id] && !c.from;
+    card = strip((styled ? D.importNode(GRIDCARD[id], true) : base.cloneNode(true))); card.classList.remove('hot');
+    paintCard(card, c, !styled);
+    card.addEventListener('pointerdown', function(){ A(card,[{scale:'1'},{scale:'.97'}],{duration:120,fill:'forwards'}); });
+    card.addEventListener('pointerup', function(){ A(card,[{scale:'.97'},{scale:'1'}],{duration:420,easing:'cubic-bezier(.34,1.56,.64,1)'}); });
+    return card;
+  });
+  cards.forEach(function(card){ if(list.indexOf(card)<0) card.remove(); });
+  var need = Math.ceil(list.length/2);
+  while(rows.length < need){ var r = rowTpl.cloneNode(false); rows[rows.length-1].parentNode.insertBefore(r, rows[rows.length-1].nextSibling); rows.push(r); }
+  rows.forEach(function(r, i){
+    var two = list.slice(i*2, i*2+2);
+    if(!two.length){ r.remove(); return; }
+    two.forEach(function(card){ r.appendChild(card); });
+  });
+}
+function wireCategoryClicks(sec){
+  if(sec.__srCats) return; sec.__srCats = true;
+  sec.addEventListener('click', function(ev){
+    var card = ev.target.closest && ev.target.closest('a[data-name="Quick Start"][data-cat]');
+    if(!card || !sec.contains(card)) return;
+    ev.preventDefault(); ev.stopPropagation();
+    var c = BY_ID[card.getAttribute('data-cat')]; if(!c) return;
+    SR.pending = c.id;
+    setTimeout(function(){ var n = nav(); if(n) n.navigate(c.sid, 'SMART_ANIMATE/300/EASE_OUT'); }, REDUCED ? 0 : 300);
+  }, true);
+}
+
+/* ---------- canvas height follows the content (fields appear / disappear) ---------- */
+function measurePad(sec){
+  var canvas = $('.canvas', sec), content = $('[data-name="Content"]', sec);
+  if(!canvas || !content) return;
+  var wasHidden = sec.hidden; sec.style.visibility = 'hidden'; sec.hidden = false;
+  sec.__srPad = Math.max(24, parseFloat(canvas.style.height||0) - (content.offsetTop + content.offsetHeight));
+  sec.__srMin = 844;
+  sec.hidden = wasHidden; sec.style.visibility = '';
+}
+function fitCanvas(sec){
+  var canvas = $('.canvas', sec), content = $('[data-name="Content"]', sec);
+  if(!canvas || !content || sec.__srPad == null || sec.hidden) return;
+  var h = Math.max(sec.__srMin||844, Math.ceil(content.offsetTop + content.offsetHeight + sec.__srPad));
+  canvas.style.height = h + 'px';
+}
+
+/* ---------- "New request" screens ---------- */
+var TPL = { pill:null, radio:null };
+function tilesIn(box){ return $$('[data-name^="Label - "]', box).filter(function(c){ return !/:shadow$/.test(c.getAttribute('data-name')); }); }
+function tileTitle(t){ var e = t.querySelector('[class*="text-[14px]"] p') || t.querySelector('[class*="text-[14px]"]'); return e; }
+function tileSub(t){ var e = t.querySelector('[class*="text-[11px]"] p') || t.querySelector('[class*="text-[11px]"]'); return e; }
+var ON  = { border:'#8b2522', sub:'#737373' }, OFF = { border:'rgba(229,229,229,0.5)', sub:'#a3a3a3' };
+function paintTile(t, on){
+  var st = on ? ON : OFF;
+  t.style.backgroundColor = '#ffffff'; t.style.borderColor = st.border;
+  t.style.boxShadow = on ? '0 0 0 3px rgba(139,37,34,0.07)' : '';
+  var s = tileSub(t); if(s) s.style.color = st.sub;
+  t.setAttribute('aria-checked', on ? 'true' : 'false');
+  var ind = t.querySelector('[data-name="Selected Pill Indicator"], [data-name="Background+Border"]');
+  if(on && ind && ind.getAttribute('data-name')!=='Selected Pill Indicator' && TPL.pill){ var p = TPL.pill.cloneNode(true); ind.replaceWith(p); A(p,[{opacity:0,scale:'.5'},{opacity:1,scale:'1.08',offset:.6},{opacity:1,scale:'1'}],{duration:380,easing:'cubic-bezier(.2,.8,.2,1)'}); }
+  if(!on && ind && ind.getAttribute('data-name')==='Selected Pill Indicator' && TPL.radio){ ind.replaceWith(TPL.radio.cloneNode(true)); }
+}
+function setTile(t, o){
+  var ti = tileTitle(t), su = tileSub(t);
+  if(ti) ti.textContent = o.n;
+  if(su && o.d) su.textContent = o.d;
+  t.setAttribute('data-name', o.n==='Others' ? 'Label - Others' : 'Label - '+o.n);
+  if(o.i){
+    var tone = TONE[o.t||'red'], badge = t.querySelector('[data-name="Icon badge"]');
+    if(badge){ badge.style.background = tone[0]; var img = badge.querySelector('img'); if(img){ img.src = uri(o.i, tone[1]); img.removeAttribute('srcset'); } }
+  }
+}
+function layoutTiles(box, tiles, rowTpl){
+  var rows = Array.prototype.slice.call(box.children);
+  var need = Math.ceil(tiles.length/2);
+  while(rows.length < need){ var r = rowTpl.cloneNode(false); box.appendChild(r); rows.push(r); }
+  rows.forEach(function(r, i){
+    var two = tiles.slice(i*2, i*2+2);
+    if(!two.length){ r.remove(); return; }
+    r.classList.add('sr-row'); r.style.width = '100%'; r.style.alignSelf = 'stretch'; r.style.display = 'flex'; r.style.flexDirection = 'row'; r.style.gap = '12px'; r.style.alignItems = 'stretch';
+    two.forEach(function(t){ r.appendChild(t); t.style.flex = two.length===1 ? '0 0 calc(50% - 6px)' : '1 0 0'; t.style.width = 'auto'; t.style.minWidth = '0'; t.style.maxWidth = two.length===1 ? 'calc(50% - 6px)' : ''; });
+  });
+}
+function radioGroup(tiles, items, onPick){
+  tiles.forEach(function(t, i){
+    t.setAttribute('role','radio'); t.classList.add('isel'); t.tabIndex = 0; t.style.cursor = 'pointer';
+    function pick(){
+      A(t,[{scale:'1'},{scale:'.97',offset:.35},{scale:'1'}],{duration:360,easing:'cubic-bezier(.34,1.56,.64,1)'});
+      onPick(i);
+    }
+    t.addEventListener('click', pick);
+    t.addEventListener('keydown', function(e){
+      if(e.key===' '||e.key==='Enter'){ e.preventDefault(); pick(); return; }
+      var n = null;
+      if(e.key==='ArrowRight'||e.key==='ArrowDown') n = tiles[(i+1)%tiles.length];
+      if(e.key==='ArrowLeft'||e.key==='ArrowUp') n = tiles[(i-1+tiles.length)%tiles.length];
+      if(n){ e.preventDefault(); n.focus(); n.click(); }
+    });
+  });
+}
+function errP(after, msg){
+  var p = D.createElement('p'); p.className = 'sr-err'; p.setAttribute('role','alert'); p.hidden = true; p.textContent = msg;
+  after.parentNode.insertBefore(p, after.nextSibling); return p;
+}
+function fieldByLabel(sec, re){
+  var lab = $$('[data-name="Form Field"] > p', sec).filter(function(p){ return re.test(txt(p)); })[0];
+  return lab ? { field: lab.parentNode, label: lab } : null;
+}
+
+function initForm(sec, c){
+  if(sec.__sr) return;
+  measurePad(sec);
+  var F = sec.__sr = { cat:c, st:{ sub:null, loc:null } };
+
+  // header: CATEGORY / name (+ icon for the two new categories)
+  var capP = $$('p', sec).filter(function(p){ return txt(p)==='CATEGORY'; })[0];
+  if(capP){ var nameBox = capP.parentNode.nextElementSibling; var np = nameBox && (nameBox.querySelector('p')||nameBox); if(np) np.textContent = c.name; }
+  if(c.from){
+    var glow = $('[data-name="Icon Container with Soft Glow"]', sec);
+    if(glow){
+      var under = glow.querySelector('[aria-hidden="true"]'); if(under) under.style.background = c.tint;
+      var ico = glow.querySelector('[data-name^="Icon / "]'); if(ico) ico.innerHTML = '<div style="position:absolute;inset:0;display:grid;place-items:center">'+catSvg(c, c.color, '').replace('width="20" height="20"','width="24" height="24"')+'</div>';
+      var card = glow.closest('[data-name="Section - Category Selection Card"]'); if(card) card.style.borderColor = c.border;
+    }
+  }
+
+  // issue type → this category's subcategories only
+  var it = fieldByLabel(sec, /^Issue type$/);
+  if(it){
+    var box = it.label.nextElementSibling, tiles = tilesIn(box);
+    var pillEl = $('[data-name="Selected Pill Indicator"]', box), radioEl = $('[data-name="Background+Border"]', box);
+    if(pillEl && !TPL.pill){ TPL.pill = strip(pillEl.cloneNode(true)); }
+    if(radioEl && !TPL.radio){ TPL.radio = strip(radioEl.cloneNode(true)); }
+    var tpl = tiles.filter(function(t){ return t.querySelector('[data-name="Background+Border"]'); })[0] || tiles[0];
+    var rowTpl = strip(box.firstElementChild.cloneNode(false));
+    var byName = {}; tiles.forEach(function(t){ byName[txt(tileTitle(t))] = t; });
+    var used = [];
+    F.tiles = c.subs.map(function(s){
+      var t = byName[s.was||s.n] || byName[s.n];
+      if(!t || used.indexOf(t)>=0){ t = strip(tpl.cloneNode(true)); $$('[data-name$=":shadow"]', t).forEach(function(x){ x.remove(); }); }
+      used.push(t); setTile(t, s); paintTile(t, false); return t;
+    });
+    tiles.forEach(function(t){ if(used.indexOf(t)<0) t.remove(); });
+    layoutTiles(box, F.tiles, rowTpl);
+    box.setAttribute('role','radiogroup'); box.setAttribute('aria-label','Issue type');
+    F.subErr = errP(box, 'Please select an issue type.');
+    radioGroup(F.tiles, c.subs, function(i){ pickSub(sec, i); });
+
+    // conditional: Is this in a common area or inside your unit?
+    if(c.subs.some(function(s){ return s.loc; })){
+      var lf = strip(it.field.cloneNode(false)); lf.setAttribute('data-name','Form Field'); lf.setAttribute('data-sr','location');
+      var ll = strip(it.label.cloneNode(true)); ll.textContent = 'Is this in a common area or inside your unit?';
+      var lbox = strip(box.cloneNode(false)); lbox.setAttribute('role','radiogroup'); lbox.setAttribute('aria-label', ll.textContent);
+      lf.appendChild(ll); lf.appendChild(lbox);
+      F.locTiles = LOCS.map(function(l){ var t = strip(tpl.cloneNode(true)); $$('[data-name$=":shadow"]', t).forEach(function(x){ x.remove(); }); setTile(t, l); paintTile(t, false); return t; });
+      layoutTiles(lbox, F.locTiles, rowTpl);
+      it.field.parentNode.insertBefore(lf, it.field.nextSibling);
+      F.locField = lf; F.locErr = errP(lbox, 'Please choose where the issue is.');
+      radioGroup(F.locTiles, LOCS, function(i){ pickLoc(sec, i); });
+      lf.classList.add('sr-hide');
+    }
+  }
+
+  // description → a real text box (same Figma textarea)
+  var df = fieldByLabel(sec, /^Describe/);
+  if(df){
+    var tb = $('[data-name="Textarea"]', df.field), inner = tb && tb.firstElementChild;
+    if(tb && inner){
+      var ph = $$('p', inner).map(txt).join(' ');
+      if(c.descRequired){ df.label.textContent = 'Describe your request'; ph = 'Tell us what you need help with, e.g. a letter for my bank'; }
+      var ta = D.createElement('textarea'); ta.className = 'sr-ta'; ta.maxLength = 500; ta.rows = 3; ta.placeholder = ph;
+      ta.setAttribute('aria-label', txt(df.label)); if(c.descRequired) ta.required = true;
+      inner.innerHTML = ''; inner.appendChild(ta); inner.style.width = '100%';
+      tb.classList.add('sr-box'); tb.style.paddingBottom = '12px'; tb.style.alignItems = 'stretch';
+      tb.addEventListener('click', function(){ ta.focus(); });
+      var counter = $$('p', df.field).filter(function(p){ return /\/500$/.test(txt(p)); })[0];
+      ta.addEventListener('input', function(){ if(counter) counter.textContent = ta.value.length + '/500'; if(ta.value.trim()) setErr(F.descErr, tb, false); });
+      F.ta = ta; F.counter = counter; F.descBox = tb;
+      F.descErr = errP(counter || tb, 'Please describe your request.');
+    }
+  }
+
+  // attachments: tap opens the photo picker (prototype keeps file names only)
+  var up = $('[data-name="Media Upload Drag/Tap Area"]', sec);
+  if(up){
+    var ups = $$('p', up), upT = ups[0], upS = ups[1];
+    F.up = { t:upT, s:upS, t0:txt(upT), s0:txt(upS), files:[] };
+    var fi = D.createElement('input'); fi.type = 'file'; fi.accept = 'image/*'; fi.multiple = true; fi.setAttribute('aria-label','Upload photos');
+    up.classList.add('sr-up'); up.appendChild(fi); up.setAttribute('role','button'); up.tabIndex = 0;
+    up.addEventListener('click', function(e){ if(e.target!==fi) fi.click(); });
+    up.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fi.click(); } });
+    fi.addEventListener('change', function(){
+      var names = Array.prototype.map.call(fi.files||[], function(f){ return f.name; });
+      F.up.files = names;
+      if(upT) upT.textContent = names.length ? names.length + (names.length===1 ? ' photo attached' : ' photos attached') : F.up.t0;
+      if(upS) upS.textContent = names.length ? (names.slice(0,2).join(', ') + (names.length>2 ? ' +' + (names.length-2) : '')) : F.up.s0;
+    });
+    F.fi = fi;
+  }
+
+  // submit: validate first, then let the existing "Request submitted" sheet open
+  F.submit = $$('a,button', sec).filter(function(b){ return txt(b)==='Submit request'; })[0];
+  sec.addEventListener('click', function(ev){
+    if(!F.submit || !ev.target.closest || ev.target.closest('a,button')!==F.submit) return;
+    if(!validate(sec)){ ev.preventDefault(); ev.stopPropagation(); A(F.submit,[{translate:'0 0'},{translate:'-6px 0',offset:.2},{translate:'5px 0',offset:.4},{translate:'-3px 0',offset:.6},{translate:'0 0'}],{duration:360,easing:'ease-out'}); return; }
+    submit(sec);
+  }, true);
+
+  var prevEnter = sec.__onEnter;
+  sec.__onEnter = function(){ if(prevEnter) prevEnter(); reset(sec); requestAnimationFrame(function(){ fitCanvas(sec); }); };
+}
+function setErr(p, host, on){
+  if(p) p.hidden = !on;
+  if(host){ if(host.getAttribute && host.getAttribute('data-name')==='Textarea') host.classList.toggle('sr-bad', on); }
+}
+function pickSub(sec, i){
+  var F = sec.__sr, s = F.cat.subs[i];
+  F.tiles.forEach(function(t, k){ paintTile(t, k===i); t.classList.remove('sr-tile-bad'); });
+  if(F.st.sub !== s) try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+  F.st.sub = s; setErr(F.subErr, null, false);
+  if(F.locField){
+    var show = !!s.loc, was = !F.locField.classList.contains('sr-hide');
+    if(!show){ clearLoc(F); }
+    F.locField.classList.toggle('sr-hide', !show);
+    if(show && !was) A(F.locField,[{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:320,easing:'cubic-bezier(.16,1,.3,1)'});
+    fitCanvas(sec);
+  }
+}
+function clearLoc(F){
+  F.st.loc = null;
+  (F.locTiles||[]).forEach(function(t){ paintTile(t, false); t.classList.remove('sr-tile-bad'); });
+  setErr(F.locErr, null, false);
+}
+function pickLoc(sec, i){
+  var F = sec.__sr;
+  F.locTiles.forEach(function(t, k){ paintTile(t, k===i); t.classList.remove('sr-tile-bad'); });
+  F.st.loc = LOCS[i]; setErr(F.locErr, null, false);
+}
+function reset(sec){
+  var F = sec.__sr; if(!F) return;
+  F.st.sub = null;
+  (F.tiles||[]).forEach(function(t){ paintTile(t, false); t.classList.remove('sr-tile-bad'); });
+  setErr(F.subErr, null, false);
+  if(F.locField){ clearLoc(F); F.locField.classList.add('sr-hide'); }
+  if(F.ta){ F.ta.value = ''; if(F.counter) F.counter.textContent = '0/500'; setErr(F.descErr, F.descBox, false); }
+  if(F.up){ F.up.files = []; if(F.fi) F.fi.value = ''; if(F.up.t) F.up.t.textContent = F.up.t0; if(F.up.s) F.up.s.textContent = F.up.s0; }
+}
+function validate(sec){
+  var F = sec.__sr, first = null;
+  if(F.tiles && F.tiles.length && !F.st.sub){ setErr(F.subErr, null, true); F.tiles.forEach(function(t){ t.classList.add('sr-tile-bad'); }); first = first || F.subErr; }
+  if(F.st.sub && F.st.sub.loc && !F.st.loc){ setErr(F.locErr, null, true); F.locTiles.forEach(function(t){ t.classList.add('sr-tile-bad'); }); first = first || F.locErr; }
+  if(F.cat.descRequired && F.ta && !F.ta.value.trim()){ setErr(F.descErr, F.descBox, true); first = first || F.descErr; }
+  fitCanvas(sec);
+  if(first){
+    var sc = $('.scroll', sec);
+    if(sc){ var y = 0, el = first; var S = window.__S || 1; y = (first.getBoundingClientRect().top - sc.getBoundingClientRect().top)/S + sc.scrollTop - 220; sc.scrollTo({ top: Math.max(0, y), behavior: REDUCED ? 'auto' : 'smooth' }); }
+    if(first===F.descErr && F.ta) setTimeout(function(){ F.ta.focus({ preventScroll:true }); }, 300);
+    return false;
+  }
+  return true;
+}
+function submit(sec){
+  var F = sec.__sr, c = F.cat;
+  var dateEl = $('[data-name="Preferred time"] [aria-checked="true"] p', sec);
+  var rec = {
+    id: 'SR-' + (9043 + SR.requests.length),
+    categoryId: c.id, category: c.name,
+    subcategory: F.st.sub ? F.st.sub.n : null,
+    description: F.ta ? F.ta.value.trim() : '',
+    locationType: F.st.loc ? F.st.loc.key : null,          // 'common_area' | 'inside_unit' | null
+    location: F.st.loc ? F.st.loc.n : null,
+    routedTo: routeFor(F.st.loc),                            // team that receives it (location-based requests only)
+    preferredDate: dateEl ? txt(dateEl) : null,
+    attachments: F.up ? F.up.files.slice() : [],
+    status: 'Submitted', submittedAt: new Date().toISOString()
+  };
+  SR.requests.unshift(rec); SR.last = rec; SR.viewing = rec;
+  try{ D.dispatchEvent(new CustomEvent('bloom:sr-submitted', { detail: rec })); }catch(e){}
+  setTimeout(function(){ reset(sec); }, 700);   // ready for the next request once the sheet is up
+}
+
+/* ---------- My requests: newly submitted requests appear at the top ---------- */
+function initList(sec){
+  var list = $('[data-node-id="244:12201"]', sec); if(!list) return;
+  var src = $$('a[data-name^="Request ·"]', list)[1] || $('a[data-name^="Request ·"]', list);
+  if(!src) return;
+  var tpl = strip(src.cloneNode(true)); tpl.classList.remove('hot');
+  var count = $('[data-node-id="I244:12199;126:1112"]', sec), base = count ? parseInt(txt(count),10) || 3 : 3;
+  sec.addEventListener('click', function(ev){ var a = ev.target.closest && ev.target.closest('a[data-name^="Request ·"]'); if(a && !a.__rec) SR.viewing = null; }, true);
+  function render(){
+    SR.requests.slice().reverse().forEach(function(r){
+      if($('[data-sr-id="'+r.id+'"]', list)) return;
+      var a = tpl.cloneNode(true); a.__rec = r; a.setAttribute('data-sr-id', r.id); a.setAttribute('data-name', 'Request · ' + (r.subcategory||r.category));
+      var ps = $$('[data-name="Text"] p', a);
+      if(ps[0]) ps[0].textContent = r.subcategory || r.category;
+      if(ps[1]) ps[1].textContent = 'Ref #' + r.id + ' · ' + r.category;
+      var tile = $('[data-name="Count"]', a), ic = tile && tile.querySelector('svg');
+      if(ic){ var h = ic.parentNode; h.innerHTML = catSvg(BY_ID[r.categoryId], '#922a22', 'absolute block inset-0 max-w-none size-full'); }
+      a.style.cursor = 'pointer';
+      a.addEventListener('click', function(e){ e.preventDefault(); SR.viewing = r; var n = nav(); if(n) n.navigate('244:12287', 'SLIDE_IN/300/EASE_OUT/LEFT'); });
+      list.insertBefore(a, list.firstChild);
+    });
+    if(count) count.textContent = String(base + SR.requests.length);
+  }
+  measurePad(sec);
+  var prevEnter = sec.__onEnter;
+  sec.__onEnter = function(){ if(prevEnter) prevEnter(); render(); requestAnimationFrame(function(){ fitCanvas(sec); }); };
+}
+
+/* ---------- Request details: show what was submitted ---------- */
+function initDetails(sec){
+  var N = function(id){ return $('[data-node-id="'+id+'"]', sec); };
+  var head = N('244:12291'), title = N('244:12298'), ref = N('295:25926'), issue = N('244:12348'), date = N('244:12351'), dateRow = N('244:12349'),
+      unitRow = N('244:12352'), issueRow = N('244:12346'), att = N('252:22429'), iconHost = N('244:12296');
+  if(issue && txt(issue)==='AC / Cooling') issue.textContent = 'AC / HVAC';
+  var snap = { head:txt(head), title:txt(title), ref:txt(ref), issue:txt(issue), date:txt(date), icon: iconHost ? iconHost.innerHTML : '' };
+  var extra = [];
+  function row(label, value, col){
+    var r = strip(issueRow.cloneNode(true)); r.classList.add('sr-xrow'); if(col) r.classList.add('sr-xrow--col');
+    r.setAttribute('data-name', 'Row · ' + label);
+    var ps = $$('p', r); ps[0].textContent = label; ps[1].textContent = value;
+    (unitRow||issueRow).parentNode.insertBefore(r, null); extra.push(r); return r;
+  }
+  measurePad(sec);
+  var prevEnter = sec.__onEnter;
+  sec.__onEnter = function(){
+    if(prevEnter) prevEnter();
+    extra.forEach(function(r){ r.remove(); }); extra = [];
+    var r = SR.viewing;
+    if(!r){
+      if(head) head.textContent = snap.head; if(title) title.textContent = snap.title; if(ref) ref.textContent = snap.ref;
+      if(issue) issue.textContent = snap.issue; if(date) date.textContent = snap.date;
+      if(dateRow) dateRow.style.display = ''; if(att) att.style.display = ''; if(iconHost) iconHost.innerHTML = snap.icon;
+    } else {
+      if(head) head.textContent = 'Request #' + r.id;
+      if(title) title.textContent = r.subcategory || r.category;
+      if(ref) ref.textContent = 'Ref #' + r.id + ' · ' + r.category;
+      if(issue) issue.textContent = r.subcategory || '—';
+      if(issueRow) $$('p', issueRow)[0].textContent = r.subcategory ? 'Issue type' : 'Category';
+      if(!r.subcategory && issue) issue.textContent = r.category;
+      if(date) date.textContent = r.preferredDate || '';
+      if(dateRow) dateRow.style.display = r.preferredDate ? '' : 'none';
+      if(iconHost) iconHost.innerHTML = '<div style="position:absolute;inset:0;display:grid;place-items:center">' + catSvg(BY_ID[r.categoryId], '#922a22', '').replace('width="20" height="20"','width="27" height="27"') + '</div>';
+      if(r.location) row('Location', r.location);
+      if(r.routedTo) row('Assigned to', r.routedTo);
+      if(r.description) row('Description', r.description, true);
+      if(att){ att.style.display = r.attachments.length ? '' : 'none'; var cnt = $$('p', att)[1]; if(cnt && r.attachments.length) cnt.textContent = r.attachments.length + (r.attachments.length===1 ? ' Photo' : ' Photos'); }
+    }
+    requestAnimationFrame(function(){ fitCanvas(sec); });
+  };
+}
+
+/* ---------- hook into the prototype runtime ---------- */
+var prevDecorate = window.__decorate;
+window.__decorate = function(sec){
+  var sid = sec && sec.dataset ? sec.dataset.sid : null;
+  if(sid && BY_SID[sid]){ var p = $('[data-name="Selected Pill Indicator"]', sec); if(p) p.__wired = true; }   // selection handled here
+  if(prevDecorate) prevDecorate(sec);
+};
+window.__initScreen = window.__initScreen || {};
+function hook(sid, fn){ var prev = window.__initScreen[sid]; window.__initScreen[sid] = function(sec){ if(prev) prev(sec); fn(sec); }; }
+CATS.forEach(function(c){ hook(c.sid, function(sec){ initForm(sec, c); }); });
+hook('295:25495', function(sec){
+  var g = $('[data-name="Qs grid"]', sec); if(g) layoutGrid(g, CATS.map(function(c){ return c.id; }));
+  wireCategoryClicks(sec); measurePad(sec);
+  var prev = sec.__onEnter; sec.__onEnter = function(){ if(prev) prev(); requestAnimationFrame(function(){ fitCanvas(sec); }); };
+});
+['252:23836','195:7859'].forEach(function(sid){
+  hook(sid, function(sec){ var g = $('[data-name="Qs grid"]', sec); if(g) layoutGrid(g, DASH_IDS); wireCategoryClicks(sec); });
+});
+hook('244:12190', initList);
+hook('244:12287', initDetails);
 })();</script>
 
 <script>(function(){
