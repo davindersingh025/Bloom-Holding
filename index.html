@@ -834,6 +834,7 @@ body, body *{font-family:var(--font-matter)!important;font-variation-settings:no
 .pfx .pf-v{font-size:13.5px;color:#6b665c;text-align:right;display:flex;align-items:center;gap:6px}
 .pfx .pf-v .mox-pill{margin:0}
 .pfx .pf-out .mox-btn-t{color:#b3261e}
+.pf-badge{position:absolute;right:-3px;bottom:-3px;width:18px;height:18px;border-radius:50%;background:#fff;border:1.5px solid #922a22;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.18);pointer-events:none;z-index:2}
 </style>
 
 
@@ -2467,7 +2468,9 @@ function fixTabbar(sec){
 function wireAvatar(sec){
   var av = $('[data-name="Header"] [data-name="Avatar"]', sec) || $('[data-name="Avatar"]', sec);
   if(!av || av.__pf) return; av.__pf = true;
-  av.classList.add('pf-tap'); av.setAttribute('role','button'); av.tabIndex = 0; av.setAttribute('aria-label','Open profile');
+  av.classList.add('pf-tap');
+  if(getComputedStyle(av).position==='static') av.style.position='relative';
+  av.insertAdjacentHTML('beforeend','<span class="pf-badge" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#922a22" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></span>'); av.style.overflow='visible'; av.setAttribute('role','button'); av.tabIndex = 0; av.setAttribute('aria-label','Open profile');
   function open(e){ if(e){ e.preventDefault(); e.stopPropagation(); } var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
   av.addEventListener('click', open);
   av.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') open(e); });
