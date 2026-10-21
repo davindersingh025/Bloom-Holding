@@ -816,6 +816,26 @@ body, body *{font-family:var(--font-matter)!important;font-variation-settings:no
 .pdx .pd-mo--off{background:#faf7f4!important}
 </style>
 
+<style id="pf-css">
+/* Tab bar with 3 tabs (Home · Requests · Bloom GPT) + Profile screen */
+.tabs3 > *{flex:1 1 0!important}
+.pf-tap{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 260ms cubic-bezier(.34,1.56,.64,1)}
+.pf-tap:active{transform:scale(.92)}
+.pfx .mox-body>*{flex:none}
+.pfx .pf-head{display:flex;align-items:center;gap:14px}
+.pfx .pf-av{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#922a22;color:#f8f5eb;font-size:22px;font-weight:600;box-shadow:0 10px 22px -12px #922a22}
+.pfx .pf-ht{display:grid;gap:2px}
+.pfx .pf-sec{padding:16px 16px 6px}
+.pfx .pf-row{width:100%;display:flex;align-items:center;gap:12px;min-height:54px;padding:10px 0;border-top:1px solid #f3ede9;background:none;text-align:left;color:#1c1c19;cursor:pointer}
+.pfx .pf-sec .mox-eyebrow + .pf-row{border-top:0}
+.pfx .pf-ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(146,42,34,.08)}
+.pfx .pf-k{flex:1;min-width:0;font-size:14.5px;font-weight:500;display:grid;gap:1px}
+.pfx .pf-k small{font-size:12.5px;font-weight:400;color:#6b665c}
+.pfx .pf-v{font-size:13.5px;color:#6b665c;text-align:right;display:flex;align-items:center;gap:6px}
+.pfx .pf-v .mox-pill{margin:0}
+.pfx .pf-out .mox-btn-t{color:#b3261e}
+</style>
+
 
 
 <div id="wrap"><div id="shell"><div id="device"></div></div></div>
@@ -2404,6 +2424,100 @@ var prev = window.__decorate;
 window.__decorate = function(sec){ if(prev) prev(sec); wireDash(sec); };
 window.__initScreen = window.__initScreen || {};
 window.__initScreen[SID] = initPD;
+})();</script>
+
+<script>(function(){
+'use strict';
+/* ==========================================================================
+   Tab bar: Home · Requests · Bloom GPT (Bloom GPT moved to 3rd/last,
+   Profile removed). Profile now opens from the initials avatar at the top
+   left of the dashboard.
+   ========================================================================== */
+var DATA = window.__BLOOM, MO = window.__mo; if(!DATA) return;
+var D = document, SID = 'pf:profile';
+function $(s,r){ return (r||D).querySelector(s); }
+function $$(s,r){ return Array.prototype.slice.call((r||D).querySelectorAll(s)); }
+function txt(el){ return el ? (el.textContent||'').replace(/\s+/g,' ').trim() : ''; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function nav(){ return window.__bloomNav; }
+var I = {
+  chev:'<path d="m9 6 6 6-6 6"/>', mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>', phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  id:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16a3 3 0 0 1 5 0M14 10h4M14 13h4"/>', home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  building:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>', globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>', doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  logout:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>'
+};
+function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||'')+'</svg>'; }
+
+/* ---------- tab bar: reorder + remove Profile ---------- */
+function fixTabbar(sec){
+  $$('[data-name="#tabbar"]', sec).forEach(function(bar){
+    if(bar.__tabs3) return; bar.__tabs3 = true;
+    var tabs = Array.prototype.slice.call(bar.children);
+    var gpt = tabs.filter(function(t){ return /Bloom GPT/.test(txt(t)); })[0];
+    var req = tabs.filter(function(t){ return /Requests/.test(txt(t)); })[0];
+    var prof = tabs.filter(function(t){ return /Profile/.test(txt(t)); })[0];
+    if(prof) prof.remove();
+    if(gpt && req) bar.insertBefore(gpt, req.nextSibling);
+    bar.classList.add('tabs3');
+  });
+}
+
+/* ---------- avatar opens Profile ---------- */
+function wireAvatar(sec){
+  var av = $('[data-name="Header"] [data-name="Avatar"]', sec) || $('[data-name="Avatar"]', sec);
+  if(!av || av.__pf) return; av.__pf = true;
+  av.classList.add('pf-tap'); av.setAttribute('role','button'); av.tabIndex = 0; av.setAttribute('aria-label','Open profile');
+  function open(e){ if(e){ e.preventDefault(); e.stopPropagation(); } var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+  av.addEventListener('click', open);
+  av.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') open(e); });
+}
+
+/* ---------- Profile screen (same chrome as the move-out details) ---------- */
+(function(){
+  var src = D.getElementById('tpl-mo-details'); if(!src || D.getElementById('tpl-pf-profile')) return;
+  var c = src.content, sb = c.querySelector('.mox-sb'), bar = c.querySelector('.mox-bar');
+  var t = D.createElement('template'); t.id = 'tpl-pf-profile';
+  t.innerHTML = '<div class="mox mox--det pfx">'+sb.outerHTML+bar.outerHTML.replace(/data-mback/, 'data-fback')+
+    '<div class="mox-body" data-fscroll></div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
+  src.parentNode.insertBefore(t, src.nextSibling);
+  if(DATA.screens.indexOf(SID) < 0) DATA.screens.push(SID);
+})();
+function row(ic, k, v, act, extra){ return '<button type="button" class="pf-row"'+(act?' data-fact="'+act+'"':'')+'><span class="pf-ic">'+icon(ic,18,'#922a22')+'</span><span class="pf-k">'+esc(k)+'</span><span class="pf-v">'+(v?esc(v):'')+(extra||'')+'</span>'+icon('chev',16,'#8a847a')+'</button>'; }
+function initProfile(sec){
+  var root = $('.pfx', sec); if(!root) return;
+  var bt = $('.mox-bar-t', root); if(bt) bt.textContent = 'Profile';
+  var body = $('[data-fscroll]', root), toastEl = $('[data-mtoast]', root), tt = null;
+  function toast(m){ if(!toastEl) return; toastEl.textContent = m; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2400); }
+  function render(){
+    var units = (MO && MO.units) ? MO.units() : [];
+    body.innerHTML =
+      '<div class="mox-card pf-head"><span class="pf-av">ST</span><div class="pf-ht"><p class="mox-h3" style="font-size:20px;line-height:26px">Sarah Tan</p><p class="mox-muted">Tenant · '+units.length+(units.length===1?' property':' properties')+'</p></div></div>'+
+      '<div class="mox-card pf-sec"><p class="mox-eyebrow">ACCOUNT</p>'+
+        row('mail','Email','sarah.tan@example.com','soon')+row('phone','Phone','+971 50 123 4567','soon')+row('id','Emirates ID','','soon','<span class="mox-pill" data-tone="green">Verified</span>')+'</div>'+
+      '<div class="mox-card pf-sec"><p class="mox-eyebrow">MY PROPERTIES</p>'+
+        units.map(function(u){ return '<button type="button" class="pf-row" data-unit="'+u.id+'"><span class="pf-ic">'+icon(u.icon,18,'#922a22')+'</span><span class="pf-k">'+esc(u.name)+'<small>'+esc(u.community+' · '+u.code)+'</small></span><span class="pf-v"></span>'+icon('chev',16,'#8a847a')+'</button>'; }).join('')+'</div>'+
+      '<div class="mox-card pf-sec"><p class="mox-eyebrow">SETTINGS</p>'+
+        row('globe','Language','English','soon')+row('bell','Notifications','On','soon')+row('help','Help & support','','soon')+row('doc','Terms & privacy','','soon')+'</div>'+
+      '<button type="button" class="mox-btn mox-btn--ghost pf-out" data-fact="logout"><span class="mox-btn-t">'+icon('logout',18,'#b3261e')+'Log out</span></button>'+
+      '<p class="mox-proto" style="text-align:center">Prototype · Bloom app v1.0</p>';
+  }
+  body.addEventListener('click', function(e){
+    var u = e.target.closest('[data-unit]'), a = e.target.closest('[data-fact]'), n = nav();
+    if(u && MO){ MO.cur = u.getAttribute('data-unit'); if(n) n.navigate('pd:details','SLIDE_IN/350/EASE_OUT/LEFT'); return; }
+    if(!a) return;
+    if(a.dataset.fact==='logout'){ if(n) n.navigate('212:8793','SMART_ANIMATE/300/EASE_OUT'); return; }
+    toast('Prototype: this setting opens here.');
+  });
+  $('[data-fback]', root).addEventListener('click', function(){ setTimeout(function(){ var n = nav(); if(n && n.stack().length > 1) n.back(); else if(n) n.navigate('252:23836','SMART_ANIMATE/300/EASE_OUT'); }, 90); });
+  sec.__onEnter = function(){ render(); var sc = $('[data-fscroll]', root); if(sc) sc.scrollTop = 0; };
+  render();
+}
+
+var prev = window.__decorate;
+window.__decorate = function(sec){ if(prev) prev(sec); fixTabbar(sec); wireAvatar(sec); };
+window.__initScreen = window.__initScreen || {};
+window.__initScreen[SID] = initProfile;
 })();</script>
 
 <script>(function(){
