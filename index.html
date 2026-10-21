@@ -812,6 +812,8 @@ body, body *{font-family:var(--font-matter)!important;font-variation-settings:no
 .pd-tap:active{transform:scale(.985)}
 .pd-go{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#54504a;margin-left:auto;box-shadow:0 1px 0 rgba(28,28,25,.04)}
 .pd-more{font-family:'Instrument Sans',system-ui,sans-serif;font-size:11.5px;font-weight:600;line-height:16px;color:#6b665c}
+.pdx .pd-tile-off{background:rgba(28,28,25,.06)!important}
+.pdx .pd-mo--off{background:#faf7f4!important}
 </style>
 
 
@@ -1942,7 +1944,7 @@ var UNITS = [
     contract:{ no:'TC-2025-01138', ejari:'0012025-048120', start:new Date(2025,9,11), end:new Date(2026,9,10), rent:'AED 285,000 / year', pay:'4 cheques', deposit:'AED 14,250', status:'Expiring soon', tone:'amber' } },
   { id:'a1204', type:'2-Bedroom Apartment', name:'Apt 1204', community:'Bloom Towers', code:'BT-A-1204', icon:'building', address:'Apt 1204, Tower A, Bloom Towers',
     contract:{ no:'TC-2026-02204', ejari:'0012026-031877', start:new Date(2026,2,1), end:new Date(2027,1,28), rent:'AED 118,000 / year', pay:'2 cheques', deposit:'AED 5,900', status:'Active', tone:'green' } },
-  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building', address:'Apt 305, Building C, Bloom Living',
+  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building', address:'Apt 305, Building C, Bloom Living', moveOut:false,
     contract:{ no:'TC-2026-00305', ejari:'0012026-052463', start:new Date(2026,5,15), end:new Date(2027,5,14), rent:'AED 62,000 / year', pay:'1 cheque', deposit:'AED 3,100', status:'Active', tone:'green' } }
 ];
 function unitLabel(u){ return u.name+' · '+u.community; }
@@ -2254,6 +2256,7 @@ var I = {
   exit:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
   doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
   chev:'<path d="m9 6 6 6-6 6"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>'
 };
 function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||'')+'</svg>'; }
@@ -2330,7 +2333,13 @@ function initPD(sec){
       '<div class="pd-doc"><button type="button" class="mox-btn mox-btn--ghost" data-pact="contract"><span class="mox-btn-t">'+icon('doc',17)+'View contract</span></button></div>';
     // move-out for this property
     var r = MO.reqs[u.id], ST = MO.ST, h = '<p class="mox-eyebrow">MOVE-OUT</p>';
-    if(!r){
+    mo.classList.toggle('pd-mo--off', u.moveOut === false);
+    if(u.moveOut === false){
+      // some properties on the account don't offer move-out
+      h += '<div class="pd-mo-h"><span class="mox-tile pd-tile-off">'+icon('lock',22,'#8a847a')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out isn’t available for this property</p>'+
+           '<p class="mox-muted">You can’t raise a move-out request for '+esc(u.name)+' in the app. Contact the community team if you need help.</p></div></div>'+
+           '<button type="button" class="mox-btn mox-btn--ghost" data-pact="contact"><span class="mox-btn-t">Contact community team</span></button>';
+    } else if(!r){
       h += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
            '<p class="mox-muted">Submit a move-out request with Bloom GPT. We’ll ask the owner for the NOC, then BCM reviews it.</p></div></div>'+
            '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 10 days from today. It can’t be changed after you submit.</span></div>'+
@@ -2358,6 +2367,7 @@ function initPD(sec){
     var a = b.dataset.pact, n = nav(); MO.origin = SID; if(!n) return;
     if(a==='start') n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT');
     else if(a==='track') n.navigate('mo:details', 'SLIDE_IN/350/EASE_OUT/LEFT');
+    else if(a==='contact'){ toast('Our community team will call you back within 24 hours.'); return; }
     else if(a==='new'){ MO.req = null; render(false); n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
   });
   con.addEventListener('click', function(e){ if(e.target.closest('[data-pact="contract"]')) toast('Prototype: the signed tenancy contract (PDF) opens here.'); });
