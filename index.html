@@ -1990,7 +1990,7 @@ window.__decorate = function(sec){ if(prev) prev(sec); pinTabbar(sec); };
 /* ==========================================================================
    Move-out flow — one request per property:
    Dashboard property card → Property details (property, tenancy contract,
-   move-out) → "Request move-out" → Bloom GPT chat for that unit (date ≥ 10
+   move-out) → "Request move-out" → Bloom GPT chat for that unit (date ≥ 3
    days, movers, special needs, review, accept T&C) → Request ID
    → Track request → Request details with status timeline.
    The property's move-out section then shows the request and its status.
@@ -1999,7 +1999,7 @@ window.__decorate = function(sec){ if(prev) prev(sec); pinTabbar(sec); };
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 var DASHES = ['252:23836','195:7859'];
 var RAISE_SR = '295:25495';
-var NOTICE_DAYS = 10, CHIPS = 14;
+var NOTICE_DAYS = 3, CHIPS = 14;
 var UNITS = [
   { id:'v138', type:'4-Bedroom Villa', name:'Villa 138', community:'Bloom Gardens', code:'BG-P2-T-138', icon:'home', address:'Villa 138, Royal Palm Avenue',
     contract:{ no:'TC-2025-01138', ejari:'0012025-048120', start:new Date(2025,9,11), end:new Date(2026,9,10), rent:'AED 285,000 / year', pay:'4 cheques', deposit:'AED 14,250', status:'Expiring soon', tone:'amber' } },
@@ -2075,7 +2075,7 @@ function setPill(el, st){ el.textContent = st.pill; el.setAttribute('data-tone',
 
 /* ---------------- Bloom GPT move-out chat (like Register) ----------------
    active request? → Track / Raise SR
-   unit → move-out date (≥ 10 days) → movers & packers (→ company) →
+   unit → move-out date (≥ 3 days) → movers & packers (→ company) →
    special needs (optional) → review → accept T&C → submit → Request ID   */
 function initMoChat(sec){
   var root = sec.querySelector('.rgx'); if(!root) return;
@@ -2141,7 +2141,7 @@ function initMoChat(sec){
     function pickDate(){ alive(); return new Promise(function(res){
       var first = addDays(new Date(), NOTICE_DAYS), h='';
       for(var k=0;k<CHIPS;k++){ var d=addDays(first,k); h+='<button type="button" class="moc-date" data-k="'+k+'" aria-label="'+fmtS(d)+'"><span>'+DOW[d.getDay()]+'</span><b>'+d.getDate()+'</b><span>'+MON[d.getMonth()]+'</span></button>'; }
-      dock.innerHTML = '<p class="t-caption moc-cap">'+icon('clock',14)+'Earliest date: '+fmtS(first)+' · 10 days’ notice</p><div class="moc-dates" role="listbox" aria-label="Move-out date">'+h+'</div>';
+      dock.innerHTML = '<p class="t-caption moc-cap">'+icon('clock',14)+'Earliest date: '+fmtS(first)+' · ' + NOTICE_DAYS + ' days’ notice</p><div class="moc-dates" role="listbox" aria-label="Move-out date">'+h+'</div>';
       dock.onclick = function(e){ var b=e.target.closest('.moc-date'); if(!b) return;
         b.classList.add('is-on'); A(b,[{scale:'.9'},{scale:'1.06',offset:.6},{scale:'1'}],{duration:320,easing:'cubic-bezier(.2,.8,.2,1)'});
         var d = addDays(first, +b.dataset.k);
@@ -2184,7 +2184,7 @@ function initMoChat(sec){
         .then(function(){ return choose([['yes','Continue','check','primary']]); });
     }).then(function(){
       step(1);
-      return say('When would you like to move out? Pick a date at least 10 days from today. Please note the date can’t be changed once you submit.');
+      return say('When would you like to move out? Pick a date at least 3 days from today. Please note the date can’t be changed once you submit.');
     }).then(pickDate).then(function(d){
       date = d; step(2);
       return say('Got it — '+fmtS(d)+'. Will you be using movers & packers?');
@@ -2403,7 +2403,7 @@ function initPD(sec){
     } else if(!r){
       h += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
            '<p class="mox-muted">Submit a move-out request with Bloom GPT. We’ll ask the owner for the NOC, then BCM reviews it.</p></div></div>'+
-           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 10 days from today. It can’t be changed after you submit.</span></div>'+
+           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today. It can’t be changed after you submit.</span></div>'+
            '<button type="button" class="mox-btn mox-btn--primary" data-pact="start"><span class="mox-btn-t">Request move-out</span></button>';
     } else {
       var st = ST[r.status], closed = ['nocRejected','bcmRejected'].indexOf(r.status) >= 0;
