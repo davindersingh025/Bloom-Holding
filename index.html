@@ -878,6 +878,23 @@ body, body *{font-family:var(--font-matter)!important;font-variation-settings:no
 <style id="stat-sup-css">
 .stat-num .stat-sup{color:inherit;font-size:.58em;line-height:0;vertical-align:.62em;margin-left:1px;letter-spacing:0}
 </style>
+<style id="hero-rect-css">
+/* Hero banner: simple rounded rectangle (was an arch with outline) */
+.arch .arch-outline{display:none}
+.arch .arch-frame{left:0;right:0;top:0;height:100%;border-radius:24px}
+.arch .arch-frame img{left:0;top:0;width:100%;height:100%;object-fit:cover}
+.arch .arch-chip{top:auto;bottom:12px;width:calc(100% - 24px);max-width:none;border-radius:18px}
+</style>
+<style id="hh-orpheus-css">
+@font-face{font-family:"Orpheus Pro";font-weight:500;font-style:normal;font-display:swap;src:local("Orpheus Pro Medium"),local("OrpheusPro-Medium"),url("fonts/OrpheusPro-Medium.woff2") format("woff2")}
+/* Home headline "More Than a … to Live." in Orpheus Pro Medium */
+.hh-title .hh-l1,.hh-title .hh-l1 .wd,.hh-title .hh-l2{font-family:"Orpheus Pro","Instrument Serif",Georgia,serif!important;font-weight:500!important;font-style:normal!important;letter-spacing:-0.8px!important}
+</style>
+<style id="teaser-red-css">
+/* "Your Property, Simplified" card: brand red #922a22, flat */
+.teaser{background:#922a22!important}
+.teaser .teaser-deco{display:none!important}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
