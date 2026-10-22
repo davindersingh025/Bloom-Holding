@@ -4344,7 +4344,12 @@ function fixHome(sec){
   var box = D.createElement('div'); box.className = 'sr-home'; box.innerHTML = scopeCards();
   grid.parentNode.insertBefore(box, grid.nextSibling);
   box.addEventListener('click', function(e){ var b = e.target.closest('[data-scope]'); if(!b) return; e.preventDefault(); e.stopPropagation(); A(b,[{scale:'1'},{scale:'.97',offset:.4},{scale:'1'}],{duration:320}); setTimeout(function(){ openScope(b.dataset.scope); }, REDUCED?0:140); }, true);
-  var prev = sec.__onEnter; sec.__onEnter = function(){ if(prev) prev(); box.innerHTML = scopeCards(); };
+  // the old 6-card grid set the page height — shrink it to end just below the two cards
+  function fit(){ var canvas = $('.canvas', sec); if(!canvas || sec.hidden) return;
+    var S = window.__S || 1, cr = canvas.getBoundingClientRect(), br = box.getBoundingClientRect(); if(!br.height) return;
+    var bottom = (br.bottom - cr.top)/S; canvas.style.height = Math.max(844, Math.ceil(bottom + 132)) + 'px'; }
+  requestAnimationFrame(fit); setTimeout(fit, 400);
+  var prev = sec.__onEnter; sec.__onEnter = function(){ if(prev) prev(); box.innerHTML = scopeCards(); requestAnimationFrame(fit); setTimeout(fit, 400); };
 }
 /* My requests "New request" → the same two-option start */
 function fixList(sec){
