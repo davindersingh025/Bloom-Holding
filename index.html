@@ -960,6 +960,10 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 .srx .sr-gc b{font:600 17px/22px 'Matter','Figtree',sans-serif;letter-spacing:-.2px;min-height:44px}
 .srx .sr-gc small{margin-top:auto;padding-top:12px;font-size:12.5px;font-weight:600;color:var(--c)}
 </style>
+<style id="login-gate-css">
+.lgx-btn--primary:disabled{background:#c9c4bd!important;color:#f3f1ea!important;cursor:not-allowed;box-shadow:none!important}
+.lgx-btn--primary:disabled:active{transform:none}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -2126,6 +2130,10 @@ function initLogin(sec){
   var $ = function(s){ return root.querySelector(s); };
   var email = $('#lg-email'), pw = $('#lg-pw'), submit = $('[data-lsubmit]'), uae = $('[data-luae]'), eye = $('[data-leye]'), toastEl = $('[data-ltoast]');
   var fEmail = $('[data-f="email"]'), fPw = $('[data-f="pw"]'), busy = false, tt = null;
+  // Login stays disabled until both email and password are filled
+  function gate(){ var ok = !!(email.value.trim() && pw.value); submit.disabled = !ok; submit.setAttribute('aria-disabled', String(!ok)); }
+  email.addEventListener('input', gate); pw.addEventListener('input', gate); email.addEventListener('change', gate); pw.addEventListener('change', gate);
+  gate(); var gPrev = sec.__onEnter; sec.__onEnter = function(){ if(gPrev) gPrev(); setTimeout(gate, 0); };
   function nav(){ return window.__bloomNav; }
   function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2400); }
   function setErr(f, msg){
