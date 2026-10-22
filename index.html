@@ -1062,6 +1062,21 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 .lgx-btn.lgx-btn--uae svg.uae-logo{display:inline-block!important;flex:none}
 .lgx-btn.lgx-btn--uae:active{background:#000!important}
 </style>
+<style id="sr3-css">
+/* New request: property chips + category card grid (as on the earlier dashboard) */
+.srx .sr-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px}
+.srx .sr-chips::-webkit-scrollbar{display:none}
+.srx .sr-chip{flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 6px;border-radius:999px;border:1px solid #ddd2cc;background:#fff;font-size:14px;font-weight:600;color:#54504a;cursor:pointer;transition:background-color 180ms,color 180ms,border-color 180ms}
+.srx .sr-chip i{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(146,42,34,.08);color:#922a22}
+.srx .sr-chip[aria-checked="true"]{background:#1c1c19;border-color:#1c1c19;color:#f3f1ea}
+.srx .sr-chip[aria-checked="true"] i{background:rgba(243,241,234,.14);color:#f3f1ea}
+.srx .sr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.srx .sr-gc{position:relative;display:grid;align-content:start;min-height:168px;padding:16px;border-radius:20px;background:#fff;border:1px solid;text-align:left;color:#1c1c19;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.srx .sr-gi{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--c);box-shadow:0 8px 18px -10px var(--c);margin-bottom:18px}
+.srx .sr-ga{position:absolute;top:16px;right:16px}
+.srx .sr-gc b{font:600 17px/22px 'Matter','Figtree',sans-serif;letter-spacing:-.2px;min-height:44px}
+.srx .sr-gc small{margin-top:auto;padding-top:12px;font-size:12.5px;font-weight:600;color:var(--c)}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -4179,16 +4194,16 @@ function hexA(h,a){ var n=parseInt(h.slice(1),16); return 'rgba('+(n>>16)+','+((
 var MAINT = [{n:'Plumbing',i:'drop'},{n:'Electrical',i:'bolt'},{n:'AC / HVAC',i:'snow'},{n:'Others',i:'dots'}];
 var SCOPES = {
   unit:{ key:'unit', title:'My unit', sub:'Repairs, payments & documents for your home', icon:'home', color:'#922A22', team:'CRM Team', cats:[
-    { id:'maintenance', name:'Maintenance', icon:'wrench', color:'#922A22', subs:MAINT },
-    { id:'cleaning', name:'Cleaning & Waste', icon:'spray', color:'#34506B', subs:[{n:'Pest Control',i:'bug'}] },
-    { id:'payments', name:'Payments & Finance', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn'},{n:'Service Charge',i:'coins'},{n:'Payment Receipt',i:'receipt'}] },
-    { id:'documents', name:'Property & Documents', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc'},{n:'Update Property Documents',i:'refresh'}] },
-    { id:'tenancy', name:'Tenancy', icon:'contract', color:'#7A4F6D', tenant:true, subs:[{n:'Tenancy Renewal',i:'refresh'},{n:'Tenant / Occupant Update',i:'people'},{n:'NOC / Clearance',i:'stamp'}] } ]},
+    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:MAINT },
+    { id:'cleaning', name:'Cleaning & Waste', tag:'Pest control', icon:'spray', color:'#34506B', subs:[{n:'Pest Control',i:'bug'}] },
+    { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn'},{n:'Service Charge',i:'coins'},{n:'Payment Receipt',i:'receipt'}] },
+    { id:'documents', name:'Property & Documents', tag:'Contracts & documents', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc'},{n:'Update Property Documents',i:'refresh'}] },
+    { id:'tenancy', name:'Tenancy', tag:'Rental & lease queries', icon:'key', color:'#5B6B3A', tenant:true, subs:[{n:'Tenancy Renewal',i:'refresh'},{n:'Tenant / Occupant Update',i:'people'},{n:'NOC / Clearance',i:'stamp'}] } ]},
   common:{ key:'common', title:'Common areas', sub:'Access, shared spaces & community payments', icon:'community', color:'#2F6F73', team:'Community Team', cats:[
-    { id:'access', name:'Access & Visitors', icon:'key', color:'#2F6F73', subs:[{n:'Access Card',i:'card'},{n:'Visitor Access',i:'pass'}] },
-    { id:'maintenance', name:'Maintenance', icon:'wrench', color:'#922A22', subs:MAINT },
-    { id:'cleaning', name:'Cleaning & Waste', icon:'spray', color:'#34506B', subs:[{n:'Cleaning',i:'broom'},{n:'Waste Management',i:'trash'},{n:'Pest Control',i:'bug'}] },
-    { id:'payments', name:'Payments & Finance', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn'},{n:'Service Charge',i:'coins'},{n:'Community Fines',i:'fine'},{n:'Payment Receipt',i:'receipt'},{n:'Statement of Account',i:'statement'}] } ]}
+    { id:'access', name:'Access & Visitors', tag:'Cards & visitor passes', icon:'pass', color:'#64748B', subs:[{n:'Access Card',i:'card'},{n:'Visitor Access',i:'pass'}] },
+    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:MAINT },
+    { id:'cleaning', name:'Cleaning & Waste', tag:'Clean spaces, less waste', icon:'spray', color:'#34506B', subs:[{n:'Cleaning',i:'broom'},{n:'Waste Management',i:'trash'},{n:'Pest Control',i:'bug'}] },
+    { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn'},{n:'Service Charge',i:'coins'},{n:'Community Fines',i:'fine'},{n:'Payment Receipt',i:'receipt'},{n:'Statement of Account',i:'statement'}] } ]}
 };
 SR.scopes = SCOPES;
 var ROLE = 'tenant';   // signed-in user (Sarah Tan) is a tenant → Tenancy is shown
@@ -4239,17 +4254,17 @@ function initNew(sec){
     var lab = k==='unit' ? (list.length>1 ? 'Select unit' : 'Unit') : (list.length>1 ? 'Select community' : 'Community');
     var h = '<div class="sr-sw" role="tablist" aria-label="Request for">'+['unit','common'].map(function(x){ return '<button type="button" role="tab" data-swap="'+x+'" aria-selected="'+(x===k)+'">'+esc(SCOPES[x].title)+'</button>'; }).join('')+'</div>';
     h += '<p class="mox-eyebrow sr-lab">'+esc(lab.toUpperCase())+'</p>';
-    h += '<div class="mox-card sr-places'+(list.length>1?'':' is-one')+'" role="radiogroup" aria-label="'+esc(lab)+'">'+list.map(function(p){ var on = p.id===SR.place;
-      return '<button type="button" class="sr-place" role="radio" aria-checked="'+on+'" data-place="'+esc(p.id)+'"><span class="sr-tile" style="background:'+hexA(s.color,.1)+'">'+icon(p.icon,20,s.color)+'</span><span class="sr-pt"><b>'+esc(p.name)+'</b><small>'+esc(p.meta)+'</small></span>'+(list.length>1?'<span class="sr-radio" aria-hidden="true">'+icon('check',12,'#fff',2.6)+'</span>':'<span class="sr-sel">Selected</span>')+'</button>'; }).join('')+'</div>';
-    h += '<p class="mox-eyebrow sr-lab">WHAT DO YOU NEED HELP WITH?</p><div class="mox-card sr-cats">'+catsFor(k).map(function(c){
-      return '<button type="button" class="sr-cat" data-cat="'+c.id+'"><span class="sr-tile" style="background:'+hexA(c.color,.1)+'">'+icon(c.icon,20,c.color)+'</span><span class="sr-pt"><b>'+esc(c.name)+'</b><small>'+esc(c.subs.map(function(x){ return x.n; }).join(' · '))+'</small></span>'+icon('chev',16,'#8a847a')+'</button>'; }).join('')+'</div>';
+    h += '<div class="sr-chips'+(list.length>1?'':' is-one')+'" role="radiogroup" aria-label="'+esc(lab)+'">'+list.map(function(p){ var on = p.id===SR.place;
+      return '<button type="button" class="sr-chip" role="radio" aria-checked="'+on+'" data-place="'+esc(p.id)+'" title="'+esc(p.meta)+'"><i>'+icon(p.icon,15)+'</i>'+esc(p.name)+'</button>'; }).join('')+'</div>';
+    h += '<p class="mox-eyebrow sr-lab">WHAT DO YOU NEED HELP WITH?</p><div class="sr-grid">'+catsFor(k).map(function(c){
+      return '<button type="button" class="sr-gc" data-cat="'+c.id+'" style="--c:'+c.color+';border-color:'+hexA(c.color,.22)+'"><span class="sr-gi">'+icon(c.icon,20,'#fff')+'</span><span class="sr-ga">'+icon('arrow',16,hexA(c.color,.7))+'</span><b>'+esc(c.name)+'</b><small>'+esc(c.tag)+'</small></button>'; }).join('')+'</div>';
     h += '<p class="sr-team">Handled by the '+esc(s.team)+'.</p>';
     body.innerHTML = h;
   }
   body.addEventListener('click', function(e){
     var sc = e.target.closest('[data-scope]'); if(sc){ SR.scope = sc.dataset.scope; SR.place = (current(SR.scope)||{}).id; render(); body.scrollTop = 0; return; }
     var sw = e.target.closest('[data-swap]'); if(sw){ if(SR.scope!==sw.dataset.swap){ SR.scope = sw.dataset.swap; SR.place = (current(SR.scope)||{}).id; render(); } return; }
-    var pl = e.target.closest('[data-place]'); if(pl){ SR.place = pl.dataset.place; $$('.sr-place', body).forEach(function(b){ b.setAttribute('aria-checked', b===pl); }); A(pl,[{scale:'1'},{scale:'.98',offset:.4},{scale:'1'}],{duration:300}); return; }
+    var pl = e.target.closest('[data-place]'); if(pl){ SR.place = pl.dataset.place; $$('.sr-chip', body).forEach(function(b){ b.setAttribute('aria-checked', b===pl); }); A(pl,[{scale:'1'},{scale:'.98',offset:.4},{scale:'1'}],{duration:300}); return; }
     var ct = e.target.closest('[data-cat]'); if(ct){
       if(SR.scope==='unit') SR.lastUnit = SR.place; else SR.lastCommunity = SR.place;
       SR.catId = ct.dataset.cat; A(ct,[{scale:'1'},{scale:'.98',offset:.4},{scale:'1'}],{duration:300});
