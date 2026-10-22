@@ -2105,22 +2105,22 @@ function goBackTo(origin){
 // steps: 1 request submitted · 2 owner NOC · 3 BCM approval
 var ST = {
   submitted:{ pill:'Submitted', tone:'blue', s:'dcp',
-    sub:['{sub}','Waiting for the owner’s NOC',''],
-    note:{tone:'blue', t:'Move-out request submitted', p:'We’ve asked the unit owner for a No Objection Certificate (NOC). Once the owner responds, BCM will review your request.'} },
+    sub:['{sub}','NOC uploaded · being verified',''],
+    note:{tone:'blue', t:'Move-out request submitted', p:'You uploaded the owner’s No Objection Certificate (NOC). BCM will verify it and then review your request.'} },
   nocApproved:{ pill:'NOC Approved', tone:'green', s:'ddc',
-    sub:['{sub}','Approved by the owner','Waiting for BCM approval'],
-    note:{tone:'amber', t:'Owner approved the NOC', p:'BCM is now reviewing your request and checking for outstanding dues (gas clearance, chilled water).'} },
+    sub:['{sub}','NOC verified','Waiting for BCM approval'],
+    note:{tone:'amber', t:'NOC verified', p:'BCM verified the owner’s NOC and is now reviewing your request and checking for outstanding dues (gas clearance, chilled water).'} },
   nocRejected:{ pill:'NOC Rejected', tone:'red', s:'dxp',
-    sub:['{sub}','Rejected by the owner',''],
-    note:{tone:'red', t:'The owner rejected the NOC', p:'Your request can’t continue without the owner’s NOC. You can contact support or submit a new move-out request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} },
+    sub:['{sub}','NOC not accepted',''],
+    note:{tone:'red', t:'The NOC couldn’t be verified', p:'The NOC you uploaded couldn’t be verified. Submit a new move-out request with a valid NOC from the owner, or contact support.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} },
   needInfo:{ pill:'Need Info', tone:'amber', s:'ddx',
-    sub:['{sub}','Approved by the owner','BCM needs more information'],
+    sub:['{sub}','NOC verified','BCM needs more information'],
     note:{tone:'amber', t:'BCM needs more information', p:'Please upload your gas clearance certificate so BCM can complete the review.', acts:[['upload','Provide information','primary']]} },
   bcmApproved:{ pill:'BCM Approved', tone:'green', s:'ddd',
-    sub:['{sub}','Approved by the owner','Approved by BCM'],
-    note:{tone:'green', t:'Your move-out is approved', list:['Moving hours are 8 am – 6 pm on {date}.','The community team will confirm your service lift slot.','Hand over access cards, keys and parking stickers.','Your movers must show this request ID at the gate: {id}.']} },
+    sub:['{sub}','NOC verified','Approved by BCM'],
+    note:{tone:'green', t:'Your move-out is approved', list:['Move-out timing is 09:00 am – 07:00 pm on {date}.','The community team will confirm your service lift slot.','Hand over access cards, keys and parking stickers.','Your movers must show this request ID at the gate: {id}.']} },
   bcmRejected:{ pill:'BCM Rejected', tone:'red', s:'ddx',
-    sub:['{sub}','Approved by the owner','Rejected by BCM'],
+    sub:['{sub}','NOC verified','Rejected by BCM'],
     note:{tone:'red', t:'BCM rejected your request', p:'Reason: outstanding chilled-water dues of AED 1,240. Clear the dues and submit a new move-out request.', acts:[['support','Contact support','ghost'],['raise','Raise SR','ghost'],['new','New request','primary']]} }
 };
 MO.ST = ST;
@@ -2158,7 +2158,7 @@ function initMoChat(sec){
     home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>', truck:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
     x:'<path d="M6 6l12 12M18 6 6 18"/>', edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>', doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
     building:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>', chev:'<path d="m9 6 6 6-6 6"/>',
-    track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>', skip:'<path d="m6 6 6 6-6 6M13 6l6 6-6 6"/>'
+    track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>', upload:'<path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>', file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>', skip:'<path d="m6 6 6 6-6 6M13 6l6 6-6 6"/>'
   };
   function icon(n, s){ s=s||18; return '<svg class="icon" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>'; }
   function words(t){ return t.split(/(\s+)/).map(function(w,i){ return /^\s+$/.test(w) ? w : '<span class="w" style="--wi:'+i+'">'+esc(w)+'</span>'; }).join(''); }
@@ -2231,7 +2231,14 @@ function initMoChat(sec){
     }
     function card(rows, head){ return '<div class="idcard moc-card">'+(head||'')+'<dl>'+rows.map(function(r){ return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]))+'</dd>'; }).join('')+'</dl></div>'; }
     function unitHead(u){ return '<div class="moc-unit"><span class="moc-tile">'+icon(u.icon,20)+'</span><div><p>'+esc(u.type+' · '+u.name)+'</p><span>'+esc(u.community+' · '+u.code)+'</span></div></div>'; }
-    var TERMS = ['Clear all dues — service charges, gas clearance and chilled-water bills.','Owner NOC — tenants and holiday home agents need the owner’s No Objection Certificate. We request it for you.','Return access cards, keys and parking stickers on move-out day.','Moving hours are 8 am – 6 pm; we’ll confirm your service lift slot.','The unit may be inspected; damage beyond normal wear can be deducted from your deposit.','Your move-out date can’t be changed after you submit.'];
+    var TERMS = ['Move-out request must be submitted at least 3 days prior to the moving-out date.','Moving company must arrange to protect the common area (floors, walls, doors, lifts) to avoid damages. Customer is responsible for damages caused to the common area.','No disturbance should be caused to other residents, which includes but is not limited to blocking the driveway, using an unassigned lift for shifting, and noise.','Move-out timing is between 09:00 am and 07:00 pm.','Management shall not accept any liabilities whatsoever for loss or damage of goods or items, or for any injury, accident or losses sustained/incurred by the resident(s) in any part of the building and/or the common areas/shared facilities within the development at any time.','Personal belongings must not be placed and/or stored in any part of the building and/or the common area/shared facilities.','All waste generated during the move-out, including but not limited to cartons, boxes, plastic sheets and protection, is the responsibility of the customer and must be disposed of off the premises.'];
+    function askNoc(){ alive(); return new Promise(function(res){
+      dock.innerHTML = '<p class="t-caption" style="text-align:center;margin:0">Owner’s NOC · PDF or photo</p><div class="upload">'+
+        '<label>'+icon('upload',22)+'<span>Upload NOC</span><input type="file" accept="image/*,application/pdf" /></label>'+
+        '<button type="button" data-sample>'+icon('file',22)+'<span>Use sample</span></button></div>';
+      $('input',dock).onchange = function(e){ var f=e.target.files[0]; if(!f) return; dock.innerHTML=''; me('📎 '+f.name); res(f.name); };
+      $('[data-sample]',dock).onclick = function(){ dock.innerHTML=''; me('📎 Owner-NOC.pdf'); res('Owner-NOC.pdf'); };
+    }); }
     function finish(){
       alive();
       dock.innerHTML = '<div class="dock__choices" style="grid-template-columns:1fr 1fr"><button class="rbtn rbtn--ghost" type="button" data-home style="justify-content:center">Back to property</button><button class="rbtn rbtn--primary" type="button" data-track style="justify-content:center">Track request</button></div>';
@@ -2239,7 +2246,7 @@ function initMoChat(sec){
       $('[data-track]',dock).onclick = function(){ var n=nav(); if(n) n.navigate('mo:details','SLIDE_IN/350/EASE_OUT/LEFT'); };
     }
 
-    var unit = MO.unit(), date, movers=false, company='', notes='';
+    var unit = MO.unit(), date, noc='', movers=false, company='', notes='';
     step(0);
     var flow = wait(REDUCED?0:450).then(function(){
       var r = MO.req;
@@ -2254,7 +2261,10 @@ function initMoChat(sec){
       return say('When would you like to move out? Pick a date at least 3 days from today. Please note the date can’t be changed once you submit.');
     }).then(pickDate).then(function(d){
       date = d; step(2);
-      return say('Got it — '+fmtS(d)+'. Will you be using movers & packers?');
+      return say('Got it — '+fmtS(d)+'. Next, please upload the No Objection Certificate (NOC) issued by the unit owner. BCM needs it to approve your move-out.');
+    }).then(askNoc).then(function(f){
+      noc = f;
+      return say('Thanks, the owner’s NOC is attached. Will you be using movers & packers?');
     }).then(function(){ return choose([['yes','Yes','truck'],['no','No','x']], '1fr 1fr'); })
     .then(function(c){
       movers = c==='yes';
@@ -2268,7 +2278,7 @@ function initMoChat(sec){
     }).then(function(){ return askText({ ph:'Type your special needs', skip:'No special needs', max:300 }); })
     .then(function(v){
       notes = v;
-      var rows = [['Unit', unitLabel(unit)],['Move-out date', fmt(date)],['Movers & packers', movers?'Yes':'No']];
+      var rows = [['Unit', unitLabel(unit)],['Move-out date', fmt(date)],['Owner NOC', '📎 '+noc],['Movers & packers', movers?'Yes':'No']];
       if(movers) rows.push(['Company', company]);
       rows.push(['Special needs', notes || '—']);
       return say('Here’s a summary of your move-out request. Does everything look right?', card(rows));
@@ -2276,14 +2286,14 @@ function initMoChat(sec){
     .then(function(c){
       if(c==='edit'){ setTimeout(start, REDUCED?0:250); throw new Stale(); }
       step(4);
-      return say('Before I submit, please read the Terms & Conditions:', '<ol class="moc-terms">'+TERMS.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('')+'</ol><p class="moc-proto">Prototype: final wording to be provided by Bloom.</p>');
+      return say('Before I submit, please read the Terms & Conditions:', '<ol class="moc-terms">'+TERMS.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('')+'</ol>');
     }).then(terms).then(function(){
-      return progress(['Creating your request','Generating request ID','Requesting the owner’s NOC']);
+      return progress(['Creating your request','Attaching the owner’s NOC','Generating request ID']);
     }).then(function(){
-      MO.reqs[unit.id] = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, submitted:new Date(), status:'submitted' };
+      MO.reqs[unit.id] = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, noc:noc, submitted:new Date(), status:'submitted' };
       refreshCards(); step(5);
       var r = MO.reqs[unit.id];
-      return say('Your move-out request has been submitted. We’ve asked the owner for the NOC; after that, BCM will review it. You’ll get updates in the app and by email.',
+      return say('Your move-out request has been submitted with the owner’s NOC. BCM will verify the NOC and review your request. You’ll get updates in the app and by email.',
         '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
     }).then(finish);
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
@@ -2469,7 +2479,7 @@ function initPD(sec){
            '<button type="button" class="mox-btn mox-btn--ghost" data-pact="contact"><span class="mox-btn-t">Contact community team</span></button>';
     } else if(!r){
       h += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
-           '<p class="mox-muted">Submit a move-out request with Bloom GPT. We’ll ask the owner for the NOC, then BCM reviews it.</p></div></div>'+
+           '<p class="mox-muted">Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.</p></div></div>'+
            '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today. It can’t be changed after you submit.</span></div>'+
            '<button type="button" class="mox-btn mox-btn--primary" data-pact="start"><span class="mox-btn-t">Request move-out</span></button>';
     } else {
@@ -2661,7 +2671,7 @@ var I = {
 function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||'')+'</svg>'; }
 var TONE = { request:['#922a22','rgba(146,42,34,.08)'], tenancy:['#8f5a1c','rgba(183,134,63,.14)'], payment:['#2f6f73','rgba(47,111,115,.12)'], community:['#34506b','rgba(52,80,107,.1)'], account:['#5e7445','rgba(94,116,69,.12)'] };
 var N = window.__nt = window.__nt || { items: [
-  { id:1, g:'Today', t:'10:24 am', cat:'tenancy', ic:'exit', unread:true, title:'Owner NOC requested', body:'We’ve asked the owner of Villa 138 for the NOC on your move-out request MO-24864.', go:{ sid:'pd:details', unit:'v138' } },
+  { id:1, g:'Today', t:'10:24 am', cat:'tenancy', ic:'exit', unread:true, title:'Owner NOC received', body:'BCM is verifying the owner’s NOC you uploaded for move-out request MO-24864.', go:{ sid:'pd:details', unit:'v138' } },
   { id:2, g:'Today', t:'9:05 am', cat:'request', ic:'wrench', unread:true, title:'AC Filter Check is in progress', body:'A technician is assigned to SR-9042. Expected visit: 3 Aug, 10 am – 12 pm.', go:{ sid:'244:12287' } },
   { id:3, g:'Today', t:'8:00 am', cat:'payment', ic:'card', unread:true, title:'Service charge due in 5 days', body:'AED 4,250 for Q4 2026 · Villa 138. Pay before 26 Oct to avoid a late fee.', toast:'Prototype: payments open here.' },
   { id:4, g:'Yesterday', t:'6:40 pm', cat:'tenancy', ic:'doc', title:'Tenancy contract expiring soon', body:'Renew Villa 138 before 10 Oct 2026 to keep your access active.', go:{ sid:'pd:details', unit:'v138' } },
