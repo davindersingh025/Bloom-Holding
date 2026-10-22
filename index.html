@@ -1007,6 +1007,11 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 /* Dashboard "Bloom Holding": Bloom in Orpheus Pro Medium */
 [data-node-id="195:7876"]>span:first-child,[data-node-id="252:23853"]>span:first-child{font-family:"Orpheus Pro","Instrument Serif",Georgia,serif!important;font-weight:500!important;font-style:normal!important;font-size:30px!important;letter-spacing:-.4px!important}
 </style>
+<style id="note-in-css">
+.mox-card>.mox-note--in{margin-top:14px!important}
+.mox-note--in .mox-acts{padding-left:0}
+.mox-note--in .mox-acts .mox-btn{height:44px}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -2379,6 +2384,8 @@ function initDetails(sec){
   var root = sec.querySelector('.mox'); if(!root) return;
   var $ = function(s){ return root.querySelector(s); };
   var toast = toaster(root), tl = $('[data-tl]'), note = $('[data-note]'), rows = $('[data-rows]'), demo = $('[data-demo]');
+  // actions live inside the Progress card, under the steps
+  if(tl && note){ var pc = tl.closest('.mox-card') || tl.parentNode; pc.appendChild(note); note.classList.add('mox-note--in'); }
   ORDER.forEach(function(k){ var b=document.createElement('button'); b.type='button'; b.className='mox-chip'; b.dataset.st=k; b.textContent=DEMO[k]; b.setAttribute('aria-pressed','false'); demo.appendChild(b); });
   STEPS.forEach(function(t){ var li=document.createElement('li'); li.className='mox-step'; li.innerHTML='<div class="mox-rail"><span class="mox-dot">'+ICON_OK+ICON_X+'</span><span class="mox-line"></span></div><div class="mox-st"><p class="mox-st-t">'+t+'</p><p class="mox-st-s"></p></div>'; tl.appendChild(li); });
   var last = null;
