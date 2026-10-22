@@ -895,6 +895,28 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 .mox-note--in .mox-acts{padding-left:0}
 .mox-note--in .mox-acts .mox-btn{height:44px}
 </style>
+<style id="pf2-css">
+/* Profile v2 + property documents */
+.pfx .pf-me{width:100%;text-align:left;color:#1c1c19;cursor:pointer}
+.pfx .pf-me .pf-av{width:56px;height:56px;font-size:19px}
+.pfx .pf-me .pf-ht{flex:1}
+.pfx .pf-list{padding:6px 16px}
+.pfx .pf-list .pf-row:first-child{border-top:0}
+.pfx .pf-lang{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 16px;border-radius:20px;background:#fff;border:1px solid #efe7e3;position:relative;cursor:pointer}
+.pfx .pf-lang .pf-k{flex:1}
+.pfx .pf-lang select{appearance:none;-webkit-appearance:none;border:0;background:none;font:500 14px 'Matter','Figtree',sans-serif;color:#6b665c;padding-right:4px;cursor:pointer}
+.pfx .pf-pw,.pfx .pf-out{height:52px}
+.pfx .pf-pw .mox-btn-t,.pfx .pf-out .mox-btn-t{display:inline-flex;align-items:center;gap:8px}
+.pfx .pf-out .mox-btn-t{color:#fff!important}
+.pdx .pd-docs{display:grid;margin-top:8px;padding-top:12px;border-top:1px solid #f3ede9}
+.pdx .pd-dr{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-top:1px solid #f3ede9;background:none;text-align:left;color:#1c1c19;cursor:pointer}
+.pdx .pd-docs .mox-eyebrow+.pd-dr{border-top:0}
+.pdx .pd-di{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(146,42,34,.08);color:#922a22}
+.pdx .pd-dt{flex:1;min-width:0;display:grid;gap:1px}
+.pdx .pd-dt b{font-size:14.5px;font-weight:500}
+.pdx .pd-dt small{font-size:12.5px;color:#6b665c}
+.pdx .pd-dc{color:#8a847a;display:grid}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -2549,7 +2571,7 @@ function initPD(sec){
     var ends = D8(c.end) + (left >= 0 && left <= 60 ? ' <span style="color:#8f5a1c;font-weight:600">· '+left+' days left</span>' : '');
     con.innerHTML = '<div class="pd-hd"><p class="mox-eyebrow">TENANCY CONTRACT</p><span class="mox-pill" data-tone="'+c.tone+'">'+esc(c.status)+'</span></div>' +
       rows([['Contract no.', c.no], ['Ejari no.', c.ejari], ['Start date', D8(c.start)], ['End date', ends, true], ['Annual rent', c.rent], ['Payment', c.pay], ['Security deposit', c.deposit]]) +
-      '<div class="pd-doc"><button type="button" class="mox-btn mox-btn--ghost" data-pact="contract"><span class="mox-btn-t">'+icon('doc',17)+'View contract</span></button></div>';
+      '<div class="pd-docs"><p class="mox-eyebrow">DOCUMENTS</p>'+[['Tenancy contract','PDF · signed '+D8(c.start)],['Ejari certificate','PDF · '+c.ejari],['Move-in inspection report','PDF · '+D8(c.start)],['Community rules & regulations','PDF']].map(function(d){ return '<button type="button" class="pd-dr" data-pact="contract" data-doc="'+esc(d[0])+'"><span class="pd-di">'+icon('doc',18)+'</span><span class="pd-dt"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span><span class="pd-dc">'+icon('chev',16)+'</span></button>'; }).join('')+'</div>';
     // move-out for this property
     var r = MO.reqs[u.id], ST = MO.ST, h = '<p class="mox-eyebrow">MOVE-OUT</p>';
     mo.classList.toggle('pd-mo--off', u.moveOut === false);
@@ -2589,7 +2611,7 @@ function initPD(sec){
     else if(a==='contact'){ toast('Our community team will call you back within 24 hours.'); return; }
     else if(a==='new'){ MO.req = null; render(false); n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
   });
-  con.addEventListener('click', function(e){ if(e.target.closest('[data-pact="contract"]')) toast('Prototype: the signed tenancy contract (PDF) opens here.'); });
+  con.addEventListener('click', function(e){ var d=e.target.closest('[data-pact="contract"]'); if(d) toast('Prototype: '+(d.getAttribute('data-doc')||'the document')+' (PDF) opens here.'); });
   $('[data-pback]', root).addEventListener('click', function(){ setTimeout(function(){ var n = nav(); if(!n) return; var s = n.stack(); if(s.length > 1) n.back(); else n.navigate('252:23836', 'SMART_ANIMATE/300/EASE_OUT'); }, 90); });
   sec.__onEnter = function(){ render(false); var sc = $('[data-pscroll]', root); if(sc) sc.scrollTop = 0; };
   built = render;
@@ -2644,6 +2666,7 @@ var I = {
   id:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16a3 3 0 0 1 5 0M14 10h4M14 13h4"/>', home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   building:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>', globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>', doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  feedback:'<path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/>', key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>', down:'<path d="m6 9 6 6 6-6"/>',
   logout:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>'
 };
 function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||'')+'</svg>'; }
@@ -2693,22 +2716,23 @@ function initProfile(sec){
   function render(){
     var units = (MO && MO.units) ? MO.units() : [];
     body.innerHTML =
-      '<div class="mox-card pf-head"><span class="pf-av">ST</span><div class="pf-ht"><p class="mox-h3" style="font-size:20px;line-height:26px">Sarah Tan</p><p class="mox-muted">Tenant · '+units.length+(units.length===1?' property':' properties')+'</p></div></div>'+
-      '<div class="mox-card pf-sec"><p class="mox-eyebrow">ACCOUNT</p>'+
-        row('mail','Email','sarah.tan@example.com','soon')+row('phone','Phone','+971 50 123 4567','soon')+row('id','Emirates ID','','soon','<span class="mox-pill" data-tone="green">Verified</span>')+'</div>'+
+      '<button type="button" class="mox-card pf-head pf-me" data-fact="personal"><span class="pf-av">ST</span><span class="pf-ht"><span class="mox-h3" style="font-size:19px;line-height:25px">Sarah Tan</span><span class="mox-muted">Personal information</span></span>'+icon('chev',18,'#8a847a')+'</button>'+
       '<div class="mox-card pf-sec"><p class="mox-eyebrow">MY PROPERTIES</p>'+
-        units.map(function(u){ return '<button type="button" class="pf-row" data-unit="'+u.id+'"><span class="pf-ic">'+icon(u.icon,18,'#922a22')+'</span><span class="pf-k">'+esc(u.name)+'<small>'+esc(u.community+' · '+u.code)+'</small></span><span class="pf-v"></span>'+icon('chev',16,'#8a847a')+'</button>'; }).join('')+'</div>'+
-      '<div class="mox-card pf-sec"><p class="mox-eyebrow">SETTINGS</p>'+
-        row('globe','Language','English','soon')+row('bell','Notifications','On','soon')+row('help','Help & support','','soon')+row('doc','Terms & privacy','','soon')+'</div>'+
-      '<button type="button" class="mox-btn mox-btn--ghost pf-out" data-fact="logout"><span class="mox-btn-t">'+icon('logout',18,'#922a22')+'Log out</span></button>'+
-      '<p class="mox-proto" style="text-align:center">Prototype · Bloom app v1.0</p>';
+        units.map(function(u){ return '<button type="button" class="pf-row" data-unit="'+u.id+'"><span class="pf-ic">'+icon(u.icon,18,'#922a22')+'</span><span class="pf-k">'+esc(u.name)+'<small>'+esc(u.community+' · Documents & contract')+'</small></span><span class="pf-v"></span>'+icon('chev',16,'#8a847a')+'</button>'; }).join('')+'</div>'+
+      '<div class="mox-card pf-sec pf-list">'+
+        row('help','FAQs','','soon')+row('feedback','Provide feedback','','soon')+row('phone','Contacts','','soon')+'</div>'+
+      '<label class="pf-lang"><span class="pf-ic">'+icon('globe',18,'#922a22')+'</span><span class="pf-k">Language</span><select aria-label="Language" data-lang><option>English</option><option>العربية</option></select>'+icon('down',16,'#6b665c')+'</label>'+
+      '<button type="button" class="mox-btn mox-btn--ghost pf-pw" data-fact="password"><span class="mox-btn-t">'+icon('key',18,'#1a1a1a')+'Change password</span></button>'+
+      '<button type="button" class="mox-btn mox-btn--primary pf-out" data-fact="logout"><span class="mox-btn-t">'+icon('logout',18,'#fff')+'Log out</span></button>'+
+      '<p class="mox-proto" style="text-align:center">Bloom app v1.0</p>';
+    var sel = $('[data-lang]', body); if(sel) sel.addEventListener('change', function(){ toast('Prototype: the app switches to '+sel.value+' here.'); });
   }
   body.addEventListener('click', function(e){
     var u = e.target.closest('[data-unit]'), a = e.target.closest('[data-fact]'), n = nav();
     if(u && MO){ MO.cur = u.getAttribute('data-unit'); if(n) n.navigate('pd:details','SLIDE_IN/350/EASE_OUT/LEFT'); return; }
     if(!a) return;
     if(a.dataset.fact==='logout'){ if(n) n.navigate('212:8793','SMART_ANIMATE/300/EASE_OUT'); return; }
-    toast('Prototype: this setting opens here.');
+    toast(a.dataset.fact==='personal' ? 'Prototype: name, email, phone and Emirates ID open here.' : a.dataset.fact==='password' ? 'Prototype: change your password here.' : 'Prototype: this opens here.');
   });
   $('[data-fback]', root).addEventListener('click', function(){ setTimeout(function(){ var n = nav(); if(n && n.stack().length > 1) n.back(); else if(n) n.navigate('252:23836','SMART_ANIMATE/300/EASE_OUT'); }, 90); });
   sec.__onEnter = function(){ render(); var sc = $('[data-fscroll]', root); if(sc) sc.scrollTop = 0; };
