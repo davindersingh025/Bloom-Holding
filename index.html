@@ -4260,7 +4260,7 @@ function initNew(sec){
     }
     var s = SCOPES[k], list = places(k), cur = list.filter(function(p){ return p.id===SR.place; })[0] || current(k); SR.place = cur && cur.id;
     var lab = k==='unit' ? (list.length>1 ? 'Select unit' : 'Unit') : (list.length>1 ? 'Select community' : 'Community');
-    var h = '<div class="sr-sw" role="tablist" aria-label="Request for">'+['unit','common'].map(function(x){ return '<button type="button" role="tab" data-swap="'+x+'" aria-selected="'+(x===k)+'">'+esc(SCOPES[x].title)+'</button>'; }).join('')+'</div>';
+    var h = '';   // scope is chosen on Home — no switch here
     h += '<p class="mox-eyebrow sr-lab">'+esc(lab.toUpperCase())+'</p>';
     h += '<div class="sr-chips'+(list.length>1?'':' is-one')+'" role="radiogroup" aria-label="'+esc(lab)+'">'+list.map(function(p){ var on = p.id===SR.place;
       return '<button type="button" class="sr-chip" role="radio" aria-checked="'+on+'" data-place="'+esc(p.id)+'" title="'+esc(p.meta)+'"><i>'+icon(p.icon,15)+'</i>'+esc(p.name)+'</button>'; }).join('')+'</div>';
