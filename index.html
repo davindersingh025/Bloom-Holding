@@ -1605,7 +1605,7 @@ function initReg(sec){
     wait(REDUCED?0:450).then(function(){
       return say('Hey there 👋 Great to see you! I’m Bloom GPT, here to help with anything property-related. What brings you by today?');
     }).then(function(){
-      return choose([['owner','I own a property','key'],['agent','I’m a holiday home agent','bed'],['tenant','I’m a tenant','home'],['searching','Searching for a property','search']]);
+      return choose([['owner','I own a property'],['agent','I’m a holiday home agent'],['tenant','I’m a tenant'],['searching','Searching for a property']]);
     }).then(function(r){
       role = r; step(1);
       if(role==='searching'){
