@@ -1170,6 +1170,13 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 [class*="rounded-[24px]"],[class*="rounded-[20px]"],[class*="rounded-[22px]"],[class*="rounded-[18px]"]{border-radius:16px!important}
 .pfx .pf-hero{border-radius:16px!important}
 </style>
+<style id="nt-mark-css">
+.ntx .nt-mark.nt-mark--t{width:auto;height:44px;border-radius:0;padding:0 4px;font-size:13.5px;font-weight:600;color:#922a22;white-space:nowrap}
+.ntx .nt-mark.nt-mark--t:disabled{color:#b5aea6;opacity:1}
+.ntx .mox-bar{position:relative}
+.ntx .mox-bar-t{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
+.ntx .mox-body{padding-top:8px}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -2923,7 +2930,7 @@ var TONE = { request:['#922a22','rgba(146,42,34,.08)'], tenancy:['#8f5a1c','rgba
 var N = window.__nt = window.__nt || { items: [
   { id:1, g:'Today', t:'10:24 am', cat:'tenancy', ic:'exit', unread:true, title:'Owner NOC received', body:'BCM is verifying the owner’s NOC you uploaded for move-out request MO-24864.', go:{ sid:'pd:details', unit:'v138' } },
   { id:2, g:'Today', t:'9:05 am', cat:'request', ic:'wrench', unread:true, title:'AC Filter Check is in progress', body:'A technician is assigned to SR-9042. Expected visit: 3 Aug, 10 am – 12 pm.', go:{ sid:'244:12287' } },
-  { id:3, g:'Today', t:'8:00 am', cat:'payment', ic:'card', unread:true, title:'Service charge due in 5 days', body:'AED 4,250 for Q4 2026 · Villa 138. Pay before 26 Oct to avoid a late fee.', toast:'Prototype: payments open here.' },
+  { id:3, g:'Today', t:'8:00 am', cat:'payment', ic:'card', unread:true, title:'Rent cheque due in 5 days', body:'Cheque 3 of 4 · AED 71,250 for Villa 138 will be presented on 28 Oct.', toast:'Prototype: payments open here.' },
   { id:4, g:'Yesterday', t:'6:40 pm', cat:'tenancy', ic:'doc', title:'Tenancy contract expiring soon', body:'Renew Villa 138 before 10 Oct 2026 to keep your access active.', go:{ sid:'pd:details', unit:'v138' } },
   { id:5, g:'Yesterday', t:'11:15 am', cat:'request', ic:'wrench', title:'Kitchen tap leaking — submitted', body:'SR-9038 was received by the Unit Maintenance team.', go:{ sid:'244:12190' } },
   { id:6, g:'Earlier', t:'Mon', cat:'community', ic:'megaphone', title:'Pool maintenance on 25 Oct', body:'The Bloom Gardens pool will be closed from 7 am to 1 pm.', toast:'Prototype: community notices open here.' },
@@ -2938,8 +2945,7 @@ function unread(){ return N.items.filter(function(x){ return x.unread; }).length
   var src = D.getElementById('tpl-mo-details'); if(!src || D.getElementById('tpl-nt-list')) return;
   var c = src.content, sb = c.querySelector('.mox-sb'), bar = c.querySelector('.mox-bar');
   var t = D.createElement('template'); t.id = 'tpl-nt-list';
-  t.innerHTML = '<div class="mox mox--det ntx">'+sb.outerHTML+bar.outerHTML.replace(/data-mback/, 'data-nback').replace(/<span class="mox-ib-sp"><\/span>/, '<button type="button" class="nt-mark" data-nmark aria-label="Mark all as read">'+icon('checks',20)+'</button>')+
-    '<div class="nt-filters" data-nfilters role="tablist" aria-label="Filter notifications"></div>'+
+  t.innerHTML = '<div class="mox mox--det ntx">'+sb.outerHTML+bar.outerHTML.replace(/data-mback/, 'data-nback').replace(/<span class="mox-ib-sp"><\/span>/, '<button type="button" class="nt-mark nt-mark--t" data-nmark>Mark all as read</button>')+
     '<div class="mox-body" data-nscroll></div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
   src.parentNode.insertBefore(t, src.nextSibling);
   if(DATA.screens.indexOf(SID) < 0) DATA.screens.push(SID);
@@ -2951,7 +2957,7 @@ function initList(sec){
   var body = $('[data-nscroll]', root), fl = $('[data-nfilters]', root), mark = $('[data-nmark]', root), toastEl = $('[data-mtoast]', root), tt = null;
   function toast(m){ if(!toastEl) return; toastEl.textContent = m; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2400); }
   function render(){
-    fl.innerHTML = FILTERS.map(function(f){ var n = f[0]==='all' ? unread() : N.items.filter(function(x){ return x.cat===f[0] && x.unread; }).length;
+    N.filter = 'all'; if(fl) fl.innerHTML = FILTERS.map(function(f){ var n = f[0]==='all' ? unread() : N.items.filter(function(x){ return x.cat===f[0] && x.unread; }).length;
       return '<button type="button" class="mox-chip nt-chip" role="tab" data-nf="'+f[0]+'" aria-pressed="'+(N.filter===f[0])+'">'+esc(f[1])+(n?'<b>'+n+'</b>':'')+'</button>'; }).join('');
     var list = N.items.filter(function(x){ return N.filter==='all' || x.cat===N.filter; });
     mark.disabled = !unread();
@@ -2966,7 +2972,7 @@ function initList(sec){
     h += '</div>';
     body.innerHTML = h;
   }
-  fl.addEventListener('click', function(e){ var b = e.target.closest('[data-nf]'); if(!b) return; N.filter = b.dataset.nf; render(); A(body,[{opacity:0,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:260,easing:'cubic-bezier(.16,1,.3,1)'}); });
+  if(fl) fl.addEventListener('click', function(e){ var b = e.target.closest('[data-nf]'); if(!b) return; N.filter = b.dataset.nf; render(); A(body,[{opacity:0,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:260,easing:'cubic-bezier(.16,1,.3,1)'}); });
   mark.addEventListener('click', function(){ if(!unread()) return; N.items.forEach(function(x){ x.unread = false; }); render(); refreshBells(); toast('All notifications marked as read.'); });
   body.addEventListener('click', function(e){
     var b = e.target.closest('[data-nid]'); if(!b) return;
