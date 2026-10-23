@@ -4274,6 +4274,7 @@ var SR = window.__sr = window.__sr || { requests:[], last:null, viewing:null };
 
 /* ---------- icons (24px line icons, 1.6 stroke) ---------- */
 var I2 = {   // issue-type icons (24px, 1.7 stroke) — fuller, more descriptive glyphs
+  leak:'<path d="M12 3s6 6.3 6 10.5a6 6 0 0 1-12 0C6 9.3 12 3 12 3Z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/><path d="M4 20h3M17 20h3"/>',
   faucet:'<path d="M8 8V5M5 5h6"/><path d="M3 8h10a6 6 0 0 1 6 6v1h-4v-1a2 2 0 0 0-2-2H3Z"/><path d="M17 17.6s1.4 1.5 1.4 2.4a1.4 1.4 0 0 1-2.8 0c0-.9 1.4-2.4 1.4-2.4Z"/>',
   plug:'<path d="M9 3v5M15 3v5"/><path d="M6 8h12v2.5a6 6 0 0 1-12 0Z"/><path d="M12 16.5V21"/>',
   ac:'<rect x="3" y="5" width="18" height="8" rx="2"/><path d="M7 9.5h10"/><path d="M8 16v2M12 16v3M16 16v2"/>',
@@ -4297,7 +4298,7 @@ var I2 = {   // issue-type icons (24px, 1.7 stroke) — fuller, more descriptive
 };
 var TN = { sky:['#E0F2FE','#0284C7'], amber:['#FEF3C7','#D97706'], green:['#DCFCE7','#16A34A'], slate:['#F1F5F9','#475569'], red:['#F6E7E5','#922A22'], violet:['#EDE9FE','#7C3AED'], teal:['#CCFBF1','#0D9488'], rose:['#FFE4E6','#E11D48'] };
 var SUBX = {
-  'Plumbing':['faucet','sky','Pipes, taps, pressure'], 'Electrical':['plug','amber','Wiring, breakers, power'], 'AC / HVAC':['wind','green','Cooling, thermostat, airflow'], 'Pest Control':['bug','teal','Insects, rodents, treatment'], 'Others':['dots','slate','Anything else'],
+  'Plumbing':['faucet','sky','Pipes, taps, pressure'], 'Water Leakage':['leak','sky','Leaks, drips, seepage'], 'Electrical':['plug','amber','Wiring, breakers, power'], 'AC / HVAC':['wind','green','Cooling, thermostat, airflow'], 'Pest Control':['bug','teal','Insects, rodents, treatment'], 'Others':['dots','slate','Anything else'],
   'Payment Issue':['cardx','rose','Failed or incorrect payments'], 'Service Charge':['building$','amber','Charges & invoices'], 'Payment Receipt':['receipt','sky','Download or resend'], 'Statement of Account':['ledger','violet','Your account history'], 'Community Fines':['ticket','red','Dispute or pay a fine'],
   'Property Documents':['folder','sky','Request a document'], 'Update Property Documents':['fileedit','amber','Replace or renew records'], 'Tenancy Renewal':['calrenew','green','Extend your lease'], 'Tenant / Occupant Update':['useredit','violet','Change occupant details'], 'NOC / Clearance':['shield','teal','Request an NOC'],
   'Access Card':['idcard','sky','New, lost or faulty cards'], 'Visitor Access':['userplus','violet','Guest & visitor passes'], 'Cleaning':['sparkle','teal','Common area cleaning'], 'Waste Management':['bin','green','Bins & collection']
@@ -4338,8 +4339,7 @@ var SCOPES = {
     { id:'documents', name:'Property & Documents', tag:'Contracts, tenancy & documents', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc',c:'#2F6F73'},{n:'Update Property Documents',i:'refresh',c:'#8F5A1C'},{n:'Tenancy Renewal',i:'refresh',c:'#5B6B3A',roles:TEN},{n:'Tenant / Occupant Update',i:'people',c:'#7A4F6D',roles:TEN},{n:'NOC / Clearance',i:'stamp',c:'#922A22',roles:TEN}] } ]},
   common:{ key:'common', title:'Common areas', sub:'Access, shared spaces & community payments', icon:'community', color:'#2F6F73', team:'Community Team', cats:[
     { id:'access', name:'Access & Visitors', tag:'Cards & visitor passes', icon:'pass', color:'#64748B', subs:[{n:'Access Card',i:'card',c:'#2F6F73'},{n:'Visitor Access',i:'pass',c:'#34506B'}] },
-    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:[{n:'Plumbing',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
-    { id:'cleaning', name:'Cleaning & Waste', tag:'Clean spaces, less waste', icon:'spray', color:'#34506B', subs:[{n:'Cleaning',i:'broom',c:'#2F6F73'},{n:'Waste Management',i:'trash',c:'#5B6B3A'},{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
+    { id:'maintenance', name:'Cleaning & Maintenance', tag:'Repairs, cleaning & waste', icon:'wrench', color:'#922A22', subs:[{n:'Water Leakage',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Pest Control',i:'bug',c:'#5B6B3A'},{n:'Cleaning',i:'broom',c:'#2F6F73'},{n:'Waste Management',i:'trash',c:'#5B6B3A'}] },
     { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},SC,{n:'Community Fines',i:'fine',c:'#7A4F6D'},{n:'Payment Receipt',i:'receipt',c:'#2F6F73'},{n:'Statement of Account',i:'statement',c:'#34506B'}] } ]}
 };
 SR.scopes = SCOPES;
