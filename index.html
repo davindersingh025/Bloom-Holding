@@ -2890,9 +2890,16 @@ function initPD(sec){
     // tenancy contract
     var c = u.contract, left = daysTo(c.end);
     var ends = D8(c.end) + (left >= 0 && left <= 60 ? ' <span style="color:#8f5a1c;font-weight:600">· '+left+' days left</span>' : '');
+    // tenant journey: no rent / payment / deposit, only the tenancy contract document, and Renew when expiring soon
+    var TEN = !!(window.__journey && window.__journey.id==='tenant');
+    var crow = [['Contract no.', c.no], ['Ejari no.', c.ejari], ['Start date', D8(c.start)], ['End date', ends, true]];
+    if(!TEN) crow = crow.concat([['Annual rent', c.rent], ['Payment', c.pay], ['Security deposit', c.deposit]]);
+    var cdocs = [['Tenancy contract','PDF · signed '+D8(c.start)]];
+    if(!TEN) cdocs = cdocs.concat([['Ejari certificate','PDF · '+c.ejari],['Move-in inspection report','PDF · '+D8(c.start)],['Community rules & regulations','PDF']]);
+    var renew = TEN && /expiring/i.test(c.status) ? '<button type="button" class="mox-btn mox-btn--dark pd-renew" data-pact="renew"><span class="mox-btn-t">Renew contract</span></button>' : '';
     con.innerHTML = '<div class="pd-hd"><p class="mox-eyebrow">TENANCY CONTRACT</p><span class="mox-pill" data-tone="'+c.tone+'">'+esc(c.status)+'</span></div>' +
-      rows([['Contract no.', c.no], ['Ejari no.', c.ejari], ['Start date', D8(c.start)], ['End date', ends, true], ['Annual rent', c.rent], ['Payment', c.pay], ['Security deposit', c.deposit]]) +
-      '<div class="pd-docs"><p class="mox-eyebrow">DOCUMENTS</p>'+[['Tenancy contract','PDF · signed '+D8(c.start)],['Ejari certificate','PDF · '+c.ejari],['Move-in inspection report','PDF · '+D8(c.start)],['Community rules & regulations','PDF']].map(function(d){ return '<button type="button" class="pd-dr" data-pact="contract" data-doc="'+esc(d[0])+'"><span class="pd-di">'+icon('doc',18)+'</span><span class="pd-dt"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span><span class="pd-dc">'+icon('chev',16)+'</span></button>'; }).join('')+'</div>';
+      rows(crow) + renew +
+      '<div class="pd-docs"><p class="mox-eyebrow">DOCUMENTS</p>'+cdocs.map(function(d){ return '<button type="button" class="pd-dr" data-pact="contract" data-doc="'+esc(d[0])+'"><span class="pd-di">'+icon('doc',18)+'</span><span class="pd-dt"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span><span class="pd-dc">'+icon('chev',16)+'</span></button>'; }).join('')+'</div>';
     // move-out for this property
     var r = MO.reqs[u.id], ST = MO.ST, h = '<p class="mox-eyebrow">MOVE-OUT</p>';
     mo.classList.toggle('pd-mo--off', u.moveOut === false);
@@ -2932,7 +2939,10 @@ function initPD(sec){
     else if(a==='contact'){ toast('Our community team will call you back within 24 hours.'); return; }
     else if(a==='new'){ MO.req = null; render(false); n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
   });
-  con.addEventListener('click', function(e){ var d=e.target.closest('[data-pact="contract"]'); if(d) toast('Prototype: '+(d.getAttribute('data-doc')||'the document')+' (PDF) opens here.'); });
+  con.addEventListener('click', function(e){
+    var rn = e.target.closest('[data-pact="renew"]');
+    if(rn){ window.__gptIntent = { type:'renew', unit:MO.unit().id }; var n = nav(); if(n) n.navigate('gpt:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); return; }
+    var d=e.target.closest('[data-pact="contract"]'); if(d) toast('Prototype: '+(d.getAttribute('data-doc')||'the document')+' (PDF) opens here.'); });
   $('[data-pback]', root).addEventListener('click', function(){ setTimeout(function(){ var n = nav(); if(!n) return; var s = n.stack(); if(s.length > 1) n.back(); else n.navigate('252:23836', 'SMART_ANIMATE/300/EASE_OUT'); }, 90); });
   sec.__onEnter = function(){ render(false); var sc = $('[data-pscroll]', root); if(sc) sc.scrollTop = 0; };
   built = render;
@@ -4751,6 +4761,7 @@ if(dev) new MutationObserver(function(){ if(busy) return; busy=true; requestAnim
 .gpt-list{display:grid;gap:8px}
 .gpt-list .rbtn{justify-content:flex-start;text-align:left}
 .gpt-list .rbtn small{margin-left:auto;font-weight:400;font-size:12px;color:#8a847a;padding-left:8px}
+.pd-renew{width:100%;height:48px;margin:14px 0 2px;border:0;border-radius:14px;background:#1a1a1a!important;color:#fff!important;box-shadow:none!important;font-weight:600;cursor:pointer}
 .gpt-file{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;border-radius:10px;background:rgba(28,28,26,.06);font-size:12.5px;color:#3a3833}
 </style>
 <script id="gpt-js">(function(){
@@ -5013,8 +5024,56 @@ function initGpt(sec){
       });
     }
 
+    /* ---------- tenancy renewal (from Property details → Renew contract) ---------- */
+    var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function d8(d){ return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); }
+    function renew(unitId){
+      var us = (MO && MO.units) ? MO.units() : [], u = us.filter(function(x){ return x.id===unitId; })[0] || us[0];
+      var c = u.contract, start = new Date(c.end.getTime()+864e5), years = 1, end, occ = '', eid = '';
+      return say('Hi '+first+'! Let’s renew your tenancy contract for '+u.name+'. Here are your current contract details:',
+        card([['Unit', u.name+' · '+u.community],['Contract no.', c.no],['Ejari no.', c.ejari],['Ends on', d8(c.end)],['Status','<span class="mox-pill" data-tone="'+c.tone+'">'+esc(c.status)+'</span>', true]]))
+      .then(function(){ return say('How long would you like to renew for?'); })
+      .then(function(){ return choose([['1','1 year','clock'],['2','2 years','clock']], '1fr 1fr'); })
+      .then(function(v){
+        years = +v; end = new Date(start.getFullYear()+years, start.getMonth(), start.getDate()-1);
+        return say('Your renewed contract would run from '+d8(start)+' to '+d8(end)+'. Will the same people continue to live in the unit?');
+      }).then(function(){ return choose([['same','Yes, no changes','check'],['change','Update occupants','edit']], '1fr 1fr'); })
+      .then(function(c2){
+        if(c2!=='change') return;
+        return say('Please tell me what has changed, for example a new occupant or someone moving out.')
+          .then(function(){ return askText({ ph:'Describe the occupant changes', max:300 }); }).then(function(v){ occ = v; });
+      }).then(function(){ return say('Is your Emirates ID still valid, or would you like to upload an updated copy?'); })
+      .then(function(){ return choose([['ok','Still valid','check'],['up','Upload updated ID','file']], '1fr 1fr'); })
+      .then(function(c3){
+        if(c3==='up'){ eid = 'Emirates_ID_'+(first||'tenant')+'.pdf'; return say('Thanks, your Emirates ID is attached.', '<span class="gpt-file">'+icon('file',14)+esc(eid)+' · 640 KB</span>'); }
+      }).then(function(){
+        return say('Here’s a summary of your renewal request. Shall I submit it?', card([['Unit', u.name+' · '+u.community],['Current contract', c.no],['Renewal term', years+(years>1?' years':' year')],['New start date', d8(start)],['New end date', d8(end)],['Occupants', occ || 'No changes'],['Emirates ID', eid || 'Still valid']]));
+      }).then(function(){ return choose([['edit','Edit','edit'],['ok','Submit renewal','check','primary']], '1fr 1fr'); })
+      .then(function(c4){
+        if(c4==='edit') return say('No problem, let’s go through it again.').then(function(){ return renew(u.id); });
+        return progress(['Creating your renewal request','Generating request ID','Sending to the leasing team']).then(function(){
+          var rec = {
+            id: 'SR-' + (9043 + SR.requests.length), scope:'unit', categoryId:'documents', category:'Property & Documents', subcategory:'Tenancy Renewal',
+            description: 'Renew '+c.no+' for '+years+(years>1?' years':' year')+' · '+d8(start)+' to '+d8(end)+(occ?' · Occupants: '+occ:''),
+            locationType:'inside_unit', location: u.name+' · '+u.community, routedTo: SR.scopes.unit.team, preferredDate: null,
+            attachments: eid ? [eid] : [], status:'Submitted', submittedAt: new Date().toISOString(), via:'Bloom GPT'
+          };
+          SR.requests.unshift(rec); SR.last = rec; SR.viewing = rec;
+          try{ D.dispatchEvent(new CustomEvent('bloom:sr-submitted', { detail: rec })); }catch(x){}
+          return say('Your renewal request has been submitted. The leasing team will share the renewed contract for e-signature, and you’ll get updates in the app and by email.',
+            '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', rec.id],['Request','Tenancy renewal · '+years+(years>1?' years':' year')],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]))
+            .then(function(){ return choose([['track','Track request','track','primary'],['more','Something else','chat']], '1fr 1fr'); })
+            .then(function(c5){ if(c5==='track'){ var n=nav(); if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); throw new Stale(); } return menu('Sure — what else can I help you with?'); });
+        });
+      });
+    }
+
     var first = ((window.__journey && window.__journey.user && window.__journey.user.name) || 'Sarah Tan').split(' ')[0];
-    var flow = wait(REDUCED?0:400).then(function(){ return menu('Hi '+first+'! I’m Bloom GPT. How can I help you today?'); });
+    var intent = window.__gptIntent; window.__gptIntent = null;
+    var flow = wait(REDUCED?0:400).then(function(){
+      if(intent && intent.type==='renew') return renew(intent.unit);
+      return menu('Hi '+first+'! I’m Bloom GPT. How can I help you today?');
+    });
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
   }
   sec.__onEnter = start;
