@@ -970,6 +970,26 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 .srx .sr-demo button{height:34px;padding:0 14px;border-radius:999px;border:1px solid #ddd2cc;background:#fff;font-size:12.5px;font-weight:600;color:#54504a}
 .srx .sr-demo button[aria-pressed="true"]{background:#1c1c19;border-color:#1c1c19;color:#f3f1ea}
 </style>
+<style id="pf-hero-css">
+/* Profile — modern hero */
+.pfx .pf-hero{position:relative;display:grid;justify-items:center;text-align:center;gap:6px;padding:0 16px 16px;border-radius:24px;background:#fff;border:1px solid #efe7e3;overflow:hidden}
+.pfx .pf-cover{position:absolute;left:0;right:0;top:0;height:76px;background:#922a22}
+.pfx .pf-cover::after{content:"";position:absolute;inset:0;background:radial-gradient(120px 80px at 85% 0,rgba(243,241,234,.16),transparent 70%),radial-gradient(90px 60px at 10% 100%,rgba(243,241,234,.08),transparent 70%)}
+.pfx .pf-av2{position:relative;z-index:1;margin-top:28px;width:88px;height:88px;border-radius:50%;display:grid;place-items:center;background:#f3f1ea;color:#922a22;font:500 30px/1 "Orpheus Pro","Instrument Serif",Georgia,serif;letter-spacing:-.5px;box-shadow:0 0 0 4px #fff}
+.pfx .pf-name{margin:8px 0 0!important;font:500 26px/30px "Orpheus Pro","Instrument Serif",Georgia,serif;letter-spacing:-.4px;color:#1c1c19}
+.pfx .pf-mail{margin:0!important;font-size:13px;line-height:18px;color:#6b665c}
+.pfx .pf-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.pfx .pf-tag{height:26px;padding:0 10px;border-radius:999px;display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:#54504a;background:rgba(28,28,26,.06)}
+.pfx .pf-tag--role{background:rgba(146,42,34,.1);color:#922a22}
+.pfx .pf-tag--ok{background:rgba(46,125,91,.1);color:#2e7d5b}
+.pfx .pf-stats{width:100%;display:grid;grid-template-columns:repeat(3,1fr);margin-top:12px;padding:12px 0;border-top:1px solid #f3ede9;border-bottom:1px solid #f3ede9}
+.pfx .pf-stats>div{display:grid;gap:2px}
+.pfx .pf-stats>div+div{border-left:1px solid #f3ede9}
+.pfx .pf-stats b{font-size:18px;font-weight:600;line-height:22px;color:#1c1c19}
+.pfx .pf-stats span{font-size:11.5px;color:#6b665c}
+.pfx .pf-pi{margin-top:12px;width:100%;height:46px;border-radius:14px;background:#1a1a1a;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer}
+.pfx .pf-pi:active{background:#000}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -2773,7 +2793,12 @@ function initProfile(sec){
   function render(){
     var units = (MO && MO.units) ? MO.units() : [];
     body.innerHTML =
-      '<button type="button" class="mox-card pf-head pf-me" data-fact="personal"><span class="pf-av">ST</span><span class="pf-ht"><span class="mox-h3" style="font-size:19px;line-height:25px">Sarah Tan</span><span class="mox-muted">Personal information</span></span>'+icon('chev',18,'#8a847a')+'</button>'+
+      '<section class="pf-hero"><div class="pf-cover" aria-hidden="true"></div>'+
+        '<span class="pf-av2" aria-hidden="true">ST</span>'+
+        '<p class="pf-name">Sarah Tan</p><p class="pf-mail">sarah.tan@example.com · +971 50 123 4567</p>'+
+        '<div class="pf-tags"><span class="pf-tag pf-tag--role">Tenant</span><span class="pf-tag">'+esc(units[0]?units[0].community:'Bloom Gardens')+'</span><span class="pf-tag pf-tag--ok">ID verified</span></div>'+
+        '<div class="pf-stats"><div><b>'+units.length+'</b><span>'+(units.length===1?'Property':'Properties')+'</span></div><div><b>'+(3+((window.__sr&&window.__sr.requests)?window.__sr.requests.length:0))+'</b><span>Active requests</span></div><div><b>2025</b><span>Member since</span></div></div>'+
+        '<button type="button" class="pf-pi" data-fact="personal">View personal information</button></section>'+
       '<div class="mox-card pf-sec"><p class="mox-eyebrow">MY PROPERTIES</p>'+
         units.map(function(u){ return '<button type="button" class="pf-row" data-unit="'+u.id+'"><span class="pf-ic">'+icon(u.icon,18,'#922a22')+'</span><span class="pf-k">'+esc(u.name)+'<small>'+esc(u.community+' · Documents & contract')+'</small></span><span class="pf-v"></span>'+icon('chev',16,'#8a847a')+'</button>'; }).join('')+'</div>'+
       '<div class="mox-card pf-sec pf-list">'+
@@ -4274,8 +4299,6 @@ function initNew(sec){
       return '<button type="button" class="sr-chip" role="radio" aria-checked="'+on+'" data-place="'+esc(p.id)+'" title="'+esc(p.meta)+'"><i>'+icon(p.icon,15)+'</i>'+esc(p.name)+'</button>'; }).join('')+'</div>';
     h += '<p class="mox-eyebrow sr-lab">WHAT DO YOU NEED HELP WITH?</p><div class="sr-grid">'+catsFor(k).map(function(c){
       return '<button type="button" class="sr-gc" data-cat="'+c.id+'" style="--c:'+c.color+';border-color:'+hexA(c.color,.22)+'"><span class="sr-gi">'+icon(c.icon,20,'#fff')+'</span><span class="sr-ga">'+icon('arrow',16,hexA(c.color,.7))+'</span><b>'+esc(c.name)+'</b><small>'+esc(c.tag)+'</small></button>'; }).join('')+'</div>';
-    h += '<p class="sr-team">Handled by the '+esc(s.team)+'.</p>';
-    h += '<div class="sr-demo"><p class="mox-eyebrow">PROTOTYPE · VIEW AS</p><div>'+ROLES.map(function(r){ return '<button type="button" data-role="'+r[0]+'" aria-pressed="'+(SR.role===r[0])+'">'+r[1]+'</button>'; }).join('')+'</div></div>';
     body.innerHTML = h;
   }
   body.addEventListener('click', function(e){
