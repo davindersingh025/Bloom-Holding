@@ -1202,6 +1202,7 @@ textarea.sr-ta{min-height:112px}
 .lgx-bar .lgx-logo.bloom-wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;pointer-events:none}
 .lgx-bar .lgx-logo.bloom-wm .bloom-logo{height:32px;width:auto;display:block}
 </style>
+<style id="pd-units-hidden">.pd-units[hidden]{display:none!important}</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -2495,7 +2496,7 @@ var UNITS = [
     contract:{ no:'TC-2026-00305', ejari:'0012026-052463', start:new Date(2026,5,15), end:new Date(2027,5,14), rent:'AED 62,000 / year', pay:'1 cheque', deposit:'AED 3,100', status:'Active', tone:'green' } }
 ];
 function unitLabel(u){ return u.name+' · '+u.community; }
-var MO = window.__mo = { reqs:{}, cur:'v138', origin:'pd:details', multi:true };
+var MO = window.__mo = { reqs:{}, cur:'v138', origin:'pd:details', multi:!(window.__journey && window.__journey.id==='tenant') };   // tenants hold a single unit
 MO.units = function(){ return MO.multi ? UNITS : UNITS.slice(0,1); };
 MO.unit = function(){ var us = MO.units(); for(var i=0;i<us.length;i++) if(us[i].id===MO.cur) return us[i]; return us[0]; };
 Object.defineProperty(MO, 'req', { get:function(){ return MO.reqs[MO.unit().id] || null; }, set:function(v){ var id = MO.unit().id; if(v) MO.reqs[id] = v; else delete MO.reqs[id]; } });
@@ -2867,6 +2868,7 @@ var built = null;
 function initPD(sec){
   var root = $('.pdx', sec); if(!root) return;
   var units = $('[data-punits]', root), resHost = $('[data-pres]', root), prop = $('[data-pprop]', root), con = $('[data-pcon]', root), mo = $('[data-pmo]', root), demo = $('[data-pdemo]', root);
+  if(window.__journey && window.__journey.id==='tenant' && demo && demo.closest('.mox-demo')) demo.closest('.mox-demo').hidden = true;   // tenant journey: single unit, no multi-property preview
   var toastEl = $('[data-mtoast]', root), tt = null;
   function toast(m){ if(!toastEl) return; toastEl.textContent = m; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2400); }
   var bt = $('.mox-bar-t', root); if(bt) bt.textContent = 'Property details';
