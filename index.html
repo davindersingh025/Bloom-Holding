@@ -1583,6 +1583,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   function swapEls(root){
     if(cur.id==='tenant' || !root || !root.querySelectorAll) return;
     root.querySelectorAll('.pf-av2').forEach(function(e){ if(e.textContent.trim()===BASE.initials) e.textContent = U.initials; });
+    root.querySelectorAll('[data-name="Avatar"] p, [data-name="Avatar"] span').forEach(function(e){ if(!e.children.length && e.textContent.trim()===BASE.initials) e.textContent = U.initials; });
     root.querySelectorAll('.pf-tag--role').forEach(function(e){ if(e.textContent.trim()===BASE.role) e.textContent = U.role; });
   }
   function apply(root){ swapText(root); swapEls(root); }
@@ -1663,9 +1664,9 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   #jr .jr-panel{display:none;position:absolute;right:0;bottom:44px;width:min(264px,calc(100vw - 24px));box-sizing:border-box}
   #jr.is-open .jr-panel{display:block}
 }
-html.is-mobile #jr{right:10px;bottom:auto;top:calc(env(safe-area-inset-top,0px) + 54px)}
-html.is-mobile #jr .jr-fab{height:30px;padding:0 11px 0 9px;font-size:11.5px;opacity:.92}
-html.is-mobile #jr .jr-panel{bottom:auto;top:38px}
+html.is-mobile #jr{right:auto;left:50%;bottom:auto;top:calc(env(safe-area-inset-top,0px) + 10px);transform:translateX(-50%)}
+html.is-mobile #jr .jr-fab{height:26px;padding:0 10px 0 8px;gap:6px;font-size:11px;margin:0 auto;box-shadow:none;background:rgba(255,255,255,.9)}
+html.is-mobile #jr .jr-panel{bottom:auto;top:34px;right:auto;left:50%;transform:translateX(-50%)}
 </style>
 
 <script>window.__initHome=function(ROOT){
@@ -4520,6 +4521,7 @@ function building(u){ var a=(u.address||'').split(','); a.shift(); return a.join
 function communities(){ var seen={}, out=[]; units().forEach(function(u){ if(!seen[u.community]){ seen[u.community]=1; out.push({ id:u.community, name:u.community, units:u.name }); } else { out.filter(function(c){ return c.id===u.community; })[0].units += ', '+u.name; } }); return out; }
 function places(scope){ return scope==='unit' ? units().map(function(u){ return { id:u.id, name:u.name, meta:building(u), icon:u.icon==='building'?'community':'home', u:u }; }) : communities().map(function(c){ return { id:c.id, name:c.name, meta:'Your units: '+c.units, icon:'community' }; }); }
 function current(scope){ var list = places(scope), last = scope==='unit' ? SR.lastUnit : SR.lastCommunity; return list.filter(function(p){ return p.id===last; })[0] || list[0]; }
+SR.catsFor = catsFor; SR.subsFor = subsFor; SR.places = places; SR.current = current; SR.subx = SUBX; SR.tones = TN;   // shared with Bloom GPT chat
 
 /* ---------- screens share the move-out details chrome ---------- */
 function makeScreen(sid, cls){
@@ -4727,6 +4729,305 @@ window.__decorate=function(sec){ if(prev) prev(sec); try{ strip(sec); }catch(e){
   if(sec&&sec.dataset&&sec.dataset.sid==='244:12287'){ srHead(sec); var pe=sec.__onEnter; sec.__onEnter=function(){ if(pe) pe(); srHead(sec); }; } };
 var dev=D.getElementById('device'), busy=false;
 if(dev) new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFrame(function(){ strip(dev); busy=false; }); }).observe(dev,{subtree:true,childList:true});
+})();</script>
+<style id="gpt-css">
+.gpt .reg__hero .t-caption{margin:0}
+.gpt-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.gpt-opt{position:relative;display:grid;align-content:start;gap:10px;min-height:104px;padding:12px!important;border-radius:16px!important;background:#fff!important;border:1px solid #e9e1dc!important;box-shadow:none!important;text-align:left;color:#1c1c19;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color 160ms,opacity 200ms,transform 160ms;opacity:0;animation:gptIn 420ms cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(var(--i,0)*55ms)}
+.gpt-opt:active{transform:scale(.97)}
+.gpt-opt b{display:block;font:600 13.5px/18px 'Matter','Figtree',sans-serif}
+.gpt-opt small{display:block;margin-top:2px;font-size:11.5px;line-height:15px;color:#6b665c}
+.gpt-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.gpt-opts.is-used .gpt-opt{pointer-events:none;opacity:.45;animation:none}
+.gpt-opts.is-used .gpt-opt.is-on{opacity:1;border-color:#922a22}
+@keyframes gptIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.gpt-list{display:grid;gap:8px}
+.gpt-list .rbtn{justify-content:flex-start;text-align:left}
+.gpt-list .rbtn small{margin-left:auto;font-weight:400;font-size:12px;color:#8a847a;padding-left:8px}
+.gpt-file{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;border-radius:10px;background:rgba(28,28,26,.06);font-size:12.5px;color:#3a3833}
+</style>
+<script id="gpt-js">(function(){
+'use strict';
+/* ==========================================================================
+   Bloom GPT tab → chat assistant (same chat UI as Register / Move-out).
+   "Hi <first name>! I’m Bloom GPT. How can I help you today?"
+   Quick options from the app, or type a request:
+   · Raise a service request (My unit / Common areas → property → category →
+     issue → description → photo → review → submit) → saved in
+     window.__sr.requests, so it shows in My requests like any other request.
+   · Request move-out → pick unit → hands over to the existing move-out chat.
+   · Track my requests → My requests.
+   ========================================================================== */
+var DATA = window.__BLOOM, MO = window.__mo, SR = window.__sr; if(!DATA) return;
+var D = document, SID = 'gpt:chat', HOME = '252:23836', LIST = '244:12190';
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function nav(){ return window.__bloomNav; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function A(el,kf,o){ if(!el||REDUCED||!el.animate) return null; try{ return el.animate(kf,o); }catch(e){ return null; } }
+function txt(el){ return el ? (el.textContent||'').replace(/\s+/g,' ').trim() : ''; }
+
+/* ---------- screen: copy of the move-out chat chrome ---------- */
+(function(){
+  var src = D.getElementById('tpl-mo-chat'); if(!src || D.getElementById('tpl-gpt-chat')) return;
+  var t = D.createElement('template'); t.id = 'tpl-gpt-chat';
+  t.innerHTML = src.innerHTML;
+  var r = t.content.firstElementChild;
+  r.classList.remove('moc'); r.classList.add('gpt'); r.setAttribute('aria-label','Bloom GPT');
+  var tt = r.querySelector('.rgx-bar__title'); if(tt) tt.textContent = 'Bloom GPT';
+  var cap = r.querySelector('.reg__hero .t-caption'); if(cap) cap.textContent = 'Your Bloom assistant · requests, move-out & more';
+  var steps = r.querySelector('.reg__steps'); if(steps) steps.remove();
+  src.parentNode.insertBefore(t, src.nextSibling);
+  if(DATA.screens.indexOf(SID) < 0) DATA.screens.push(SID);
+})();
+
+var IC = {
+  check:'<path d="m5 12 5 5 9-10"/>', arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>', clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  community:'<path d="M3 21h18"/><path d="M5 21V10l5-3v14"/><path d="M10 21V4l9 4v13"/><path d="M13 10h3M13 13h3M13 16h3"/>',
+  wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4Z"/>',
+  truck:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
+  pass:'<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/>',
+  receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/>',
+  track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>', edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
+  camera:'<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  skip:'<path d="m6 6 6 6-6 6M13 6l6 6-6 6"/>', chat:'<path d="M4 5h16v11H8l-4 4Z"/>', file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>'
+};
+function icon(n, s, c){ s=s||18; return '<svg class="icon" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>'; }
+
+/* quick options shown under the welcome message */
+var MENU = [
+  { k:'repair',  t:'Home repair',          s:'Plumbing, AC, electrical',  ic:'wrench',    c:'#922A22', go:{ flow:'sr', scope:'unit', cat:'maintenance' } },
+  { k:'common',  t:'Common area issue',    s:'Leaks, cleaning, waste',    ic:'community', c:'#2F6F73', go:{ flow:'sr', scope:'common' } },
+  { k:'moveout', t:'Request move-out',     s:'Date, owner NOC & review',  ic:'truck',     c:'#8F5A1C', go:{ flow:'moveout' } },
+  { k:'access',  t:'Access card or visitor pass', s:'Cards & guest passes', ic:'pass',   c:'#34506B', go:{ flow:'sr', scope:'common', cat:'access' } },
+  { k:'pay',     t:'Payments & receipts',  s:'Receipts, payment issues',  ic:'receipt',   c:'#5B6B3A', go:{ flow:'sr', scope:'unit', cat:'payments' } },
+  { k:'track',   t:'Track my requests',    s:'See status & updates',      ic:'track',     c:'#64748B', go:{ flow:'track' } }
+];
+function hexA(h,a){ var n=parseInt(h.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+
+/* typed requests → the closest flow */
+function understand(v){
+  var s = v.toLowerCase();
+  if(/move[\s-]?out|moving out|vacat|leav(e|ing) the (unit|villa|apartment)/.test(s)) return { flow:'moveout' };
+  if(/track|status|my request|update on/.test(s)) return { flow:'track' };
+  if(/access card|gate|visitor|guest|key ?card/.test(s)) return { flow:'sr', scope:'common', cat:'access', sub:/visitor|guest/.test(s)?'Visitor Access':'Access Card' };
+  if(/clean|garbage|waste|trash|bin/.test(s)) return { flow:'sr', scope:'common', cat:'maintenance', sub:/waste|garbage|trash|bin/.test(s)?'Waste Management':'Cleaning' };
+  if(/fine/.test(s)) return { flow:'sr', scope:'common', cat:'payments', sub:'Community Fines' };
+  if(/receipt/.test(s)) return { flow:'sr', scope:'unit', cat:'payments', sub:'Payment Receipt' };
+  if(/statement/.test(s)) return { flow:'sr', scope:'unit', cat:'payments', sub:'Statement of Account' };
+  if(/pay|charge|bill|invoice|refund/.test(s)) return { flow:'sr', scope:'unit', cat:'payments' };
+  if(/document|contract|title deed|renew|noc|tenancy/.test(s)) return { flow:'sr', scope:'unit', cat:'documents' };
+  var common = /lobby|corridor|pool|gym|parking|lift|elevator|common|garden|building/.test(s);
+  if(/leak|water|plumb|tap|pipe|drain|toilet|sink/.test(s)) return common ? { flow:'sr', scope:'common', cat:'maintenance', sub:'Water Leakage' } : { flow:'sr', scope:'unit', cat:'maintenance', sub:'Plumbing' };
+  if(/\bac\b|a\/c|hvac|cool|air ?con|thermostat/.test(s)) return { flow:'sr', scope:common?'common':'unit', cat:'maintenance', sub:'AC / HVAC' };
+  if(/electric|power|light|socket|switch|breaker/.test(s)) return { flow:'sr', scope:common?'common':'unit', cat:'maintenance', sub:'Electrical' };
+  if(/pest|cockroach|insect|rat|mouse|ant|termite/.test(s)) return { flow:'sr', scope:common?'common':'unit', cat:'maintenance', sub:'Pest Control' };
+  if(/repair|broken|fix|not working/.test(s)) return { flow:'sr', scope:common?'common':null, cat:common?'maintenance':null };
+  return null;
+}
+
+function initGpt(sec){
+  var root = sec.querySelector('.rgx'); if(!root) return;
+  var $ = function(s, r){ return (r||root).querySelector(s); };
+  var log = $('[data-log]'), dock = $('[data-dock]'), scroller = $('[data-scroll]'), run = 0, origin = HOME;
+  var siri = function(){ return window.__siri ? window.__siri() : '<span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span>'; };
+  function html(str){ var t=D.createElement('template'); t.innerHTML=str.trim(); return t.content.firstElementChild; }
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, REDUCED?0:ms); }); }
+  function Stale(){}
+  function words(t){ return t.split(/(\s+)/).map(function(w,i){ return /^\s+$/.test(w) ? w : '<span class="w" style="--wi:'+i+'">'+esc(w)+'</span>'; }).join(''); }
+  function leave(sid){ var n = nav(); if(!n) return; var s = n.stack();
+    if(s.length > 1 && s[s.length-2] === sid) n.back(); else n.navigate(sid, 'SMART_ANIMATE/300/EASE_OUT'); }
+
+  $('[data-rclose]').addEventListener('click', function(){ run++; dock.innerHTML=''; setTimeout(function(){ leave(origin); }, 90); });
+
+  function start(){
+    var me_run = ++run;
+    var n0 = nav(), st = n0 ? n0.stack() : [];
+    for(var i=st.length-2;i>=0;i--){ if(st[i] && st[i]!==SID && String(st[i]).indexOf('mo:')!==0 && String(st[i]).indexOf('sr:')!==0){ origin = st[i]; break; } }
+    log.innerHTML = ''; dock.innerHTML = ''; dock.onclick = null; scroller.scrollTop = 0;
+    var heroOrb = $('.reg__hero .siri'); if(heroOrb){ heroOrb.style.animation='none'; void heroOrb.offsetWidth; heroOrb.style.animation=''; }
+    function alive(){ if(me_run !== run) throw new Stale(); }
+    function toEnd(){ requestAnimationFrame(function(){ scroller.scrollTo({ top: scroller.scrollHeight, behavior: REDUCED?'auto':'smooth' }); }); }
+    function say(text, extra){
+      alive();
+      var row = html('<div class="msg msg--bot">'+siri()+'<div class="msg__body"><span class="typing" aria-label="Thinking"><i></i><i></i><i></i></span></div></div>');
+      log.appendChild(row); var av = row.firstElementChild; av.classList.add('is-thinking'); toEnd();
+      return wait(650).then(function(){
+        alive();
+        $('.msg__body', row).innerHTML = '<p class="msg__text"><span class="sr-only">'+esc(text)+'</span><span aria-hidden="true">'+words(text)+'</span></p>';
+        av.classList.remove('is-thinking'); av.classList.add('is-speaking');
+        return wait(Math.min(1800, text.split(/\s+/).length*26 + 220));
+      }).then(function(){
+        alive();
+        if(extra) $('.msg__body', row).insertAdjacentHTML('beforeend', extra);
+        av.classList.remove('is-speaking'); toEnd(); return row;
+      });
+    }
+    function me(t){ alive(); log.appendChild(html('<div class="msg msg--user">'+esc(t)+'</div>')); toEnd(); }
+    function choose(opts, cols){ alive(); return new Promise(function(res){
+      dock.innerHTML = '<div class="dock__choices'+(cols?'':' gpt-list')+'"'+(cols?' style="grid-template-columns:'+cols+'"':'')+'>'+opts.map(function(o){ return '<button class="rbtn rbtn--'+(o[3]||'ghost')+'" type="button" data-c="'+esc(o[0])+'"'+(cols?' style="justify-content:center"':'')+'>'+(o[2]?icon(o[2]):'')+'<span>'+esc(o[1])+'</span>'+(o[4]?'<small>'+esc(o[4])+'</small>':'')+'</button>'; }).join('')+'</div>';
+      dock.onclick = function(e){ var b=e.target.closest('[data-c]'); if(!b) return; dock.innerHTML=''; dock.onclick=null; me($('span',b).textContent.trim()); res(b.dataset.c); };
+    }); }
+    function askText(o){ alive(); return new Promise(function(res){
+      dock.innerHTML = (o.skip?'<div class="moc-skip"><button class="moc-chip" type="button" data-skip>'+icon('skip',14)+esc(o.skip)+'</button></div>':'')+
+        '<div class="rgx-ask" role="group"><label class="sr-only" for="gpt-in">'+esc(o.ph)+'</label><input class="input" id="gpt-in" type="text" autocomplete="off" maxlength="'+(o.max||200)+'" placeholder="'+esc(o.ph)+'" enterkeyhint="send" /><button class="ask__send" type="button" aria-label="Send">'+icon('arrow',20)+'</button></div>';
+      var i=$('input',dock), done=false;
+      if(o.focus!==false) setTimeout(function(){ try{ i.focus({preventScroll:true}); }catch(e){} }, 50);
+      function send(){ if(done) return; var v=i.value.trim();
+        if(!v){ i.classList.remove('is-empty'); void i.offsetWidth; i.classList.add('is-empty'); try{ i.focus({preventScroll:true}); }catch(e){} return; }
+        done=true; dock.innerHTML=''; me(v); res(v); }
+      $('.ask__send',dock).addEventListener('click', send);
+      i.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); send(); } });
+      var sk=$('[data-skip]',dock); if(sk) sk.addEventListener('click', function(){ if(done) return; done=true; dock.innerHTML=''; me(o.skip); res(''); });
+      if(o.onReady) o.onReady(function(v){ if(done) return; done=true; dock.innerHTML=''; res(v); });
+    }); }
+    function progress(items){
+      alive();
+      var row = html('<div class="msg msg--bot">'+siri()+'<div class="msg__body"><ul class="scan">'+items.map(function(x){ return '<li>'+icon('clock',14)+' '+esc(x)+'</li>'; }).join('')+'</ul></div></div>');
+      log.appendChild(row); row.firstElementChild.classList.add('is-thinking'); toEnd();
+      var p = Promise.resolve();
+      Array.prototype.forEach.call(row.querySelectorAll('li'), function(li){ p = p.then(function(){ return wait(500); }).then(function(){ alive(); li.classList.add('is-done'); li.innerHTML = icon('check',14)+' '+esc(li.textContent.trim()); }); });
+      return p.then(function(){ row.firstElementChild.classList.remove('is-thinking'); });
+    }
+    function card(rows){ return '<div class="idcard moc-card"><dl>'+rows.map(function(r){ return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]))+'</dd>'; }).join('')+'</dl></div>'; }
+
+    /* ---------- main menu: option tiles in the message + free text in the dock ---------- */
+    function menu(text){
+      alive();
+      var tiles = '<div class="gpt-opts" data-opts>'+MENU.map(function(m,i){ return '<button type="button" class="gpt-opt" data-m="'+m.k+'" style="--i:'+i+'"><span class="gpt-ic" style="background:'+hexA(m.c,.1)+'">'+icon(m.ic,20,m.c)+'</span><span><b>'+esc(m.t)+'</b><small>'+esc(m.s)+'</small></span></button>'; }).join('')+'</div>';
+      return say(text, tiles).then(function(row){
+        var box = $('[data-opts]', row);
+        return askText({ ph:'Type your request, e.g. AC not cooling', focus:false, onReady:function(pickTile){
+          box.onclick = function(e){ var b = e.target.closest('[data-m]'); if(!b || box.classList.contains('is-used')) return;
+            box.classList.add('is-used'); b.classList.add('is-on'); var m = MENU.filter(function(x){ return x.k===b.dataset.m; })[0];
+            me(m.t); pickTile({ go:m.go }); };
+        }}).then(function(v){
+          box.classList.add('is-used');
+          if(v && v.go) return v.go;
+          var g = understand(v);
+          if(g) return g;
+          return say('I’m not sure I got that. You can pick one of these to get started:').then(function(){ return { flow:'again' }; });
+        });
+      }).then(route);
+    }
+    function route(g){
+      if(g.flow==='again') return menu('Here’s what I can help with:');
+      if(g.flow==='track') return track();
+      if(g.flow==='moveout') return moveout();
+      return raise(g);
+    }
+    function after(){
+      return choose([['more','Something else','chat'],['home','Back to dashboard','home']], '1fr 1fr').then(function(c){
+        if(c==='home'){ leave(origin); throw new Stale(); }
+        return menu('Sure — what else can I help you with?');
+      });
+    }
+
+    /* ---------- track ---------- */
+    function track(){
+      var list = (SR && SR.requests) || [];
+      var head = list.length ? 'You have '+list.length+' request'+(list.length>1?'s':'')+' raised here. The latest:' : 'Here are your requests and their latest status.';
+      var extra = list.length ? card([['Request ID', list[0].id],['Issue', list[0].category+' · '+list[0].subcategory],['Status','<span class="mox-pill" data-tone="blue">'+esc(list[0].status)+'</span>', true]]) : '';
+      return say(head, extra).then(function(){ return choose([['open','Open My requests','track','primary'],['more','Something else','chat']], '1fr 1fr'); })
+        .then(function(c){ if(c==='open'){ var n=nav(); if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); throw new Stale(); } return menu('Sure — what else can I help you with?'); });
+    }
+
+    /* ---------- move-out → existing move-out chat ---------- */
+    function moveout(){
+      var us = (MO && MO.units) ? MO.units() : [];
+      var p = us.length > 1
+        ? say('Happy to help with your move-out. Which property are you moving out of?').then(function(){ return choose(us.map(function(u){ return [u.id, u.name, u.icon==='building'?'community':'home', 'ghost', u.community]; })); })
+        : say('Happy to help with your move-out'+(us[0]?' from '+us[0].name+', '+us[0].community:'')+'. I’ll take you through it step by step: date, owner NOC, then review.').then(function(){ return choose([['go','Start move-out','truck','primary'],['back','Not now','x']], '1fr 1fr'); }).then(function(c){ if(c==='back') return null; return us[0] ? us[0].id : 'go'; });
+      return p.then(function(id){
+        if(!id) return menu('No problem. Anything else?');
+        if(MO){ if(id!=='go') MO.cur = id; MO.origin = origin; }
+        return say('Opening the move-out assistant…').then(function(){ return wait(350); }).then(function(){
+          var n = nav(); if(n) n.navigate('mo:chat','SLIDE_IN/350/EASE_OUT/LEFT'); throw new Stale(); });
+      });
+    }
+
+    /* ---------- raise a service request in chat ---------- */
+    function raise(g){
+      var scope = g.scope, place, cat, sub, desc = '', photo = '';
+      var p = Promise.resolve();
+      if(!scope) p = p.then(function(){ return say('Is this about your unit or the common areas?'); })
+        .then(function(){ return choose([['unit','My unit','home'],['common','Common areas','community']], '1fr 1fr'); })
+        .then(function(c){ scope = c; });
+      return p.then(function(){
+        var list = SR.places(scope);
+        if(list.length <= 1){ place = list[0]; return; }
+        return say(scope==='unit' ? 'Which property is this for?' : 'Which community is this for?')
+          .then(function(){ return choose(list.map(function(x){ return [x.id, x.name, x.icon==='community'?'community':'home', 'ghost', scope==='unit'?x.meta:'']; })); })
+          .then(function(id){ place = list.filter(function(x){ return x.id===id; })[0]; });
+      }).then(function(){
+        if(scope==='unit') SR.lastUnit = place && place.id; else SR.lastCommunity = place && place.id;
+        var cats = SR.catsFor(scope);
+        cat = cats.filter(function(c){ return c.id===g.cat; })[0];
+        if(cat) return;
+        return say('What is it about?').then(function(){ return choose(cats.map(function(c){ return [c.id, c.name, '', 'ghost', c.tag]; })); })
+          .then(function(id){ cat = cats.filter(function(c){ return c.id===id; })[0]; });
+      }).then(function(){
+        var subs = SR.subsFor(cat);
+        sub = subs.filter(function(s){ return s.n===g.sub; })[0];
+        if(sub) return say('Got it — '+sub.n.toLowerCase()+' '+(scope==='unit'?'in '+(place?place.name:'your unit'):'in the common areas')+'.');
+        return say('Which of these best describes it?').then(function(){ return choose(subs.map(function(s){ var x = SR.subx && SR.subx[s.n]; return [s.n, s.n, '', 'ghost', x?x[2]:'']; })); })
+          .then(function(n){ sub = subs.filter(function(s){ return s.n===n; })[0]; });
+      }).then(function(){
+        return say('Tell me a bit more so the team can come prepared. This is optional.');
+      }).then(function(){ return askText({ ph:'Describe the issue (optional)', skip:'Skip', max:500 }); })
+      .then(function(v){ desc = v;
+        return say('Would you like to add a photo? It helps the team understand the issue.');
+      }).then(function(){ return choose([['add','Add a photo','camera'],['no','No photo','skip']], '1fr 1fr'); })
+      .then(function(c){
+        if(c==='add'){ photo = 'IMG_'+(2400+Math.floor(Math.random()*500))+'.jpg';
+          return say('Photo attached.', '<span class="gpt-file">'+icon('file',14)+esc(photo)+' · 1.8 MB</span>'); }
+      }).then(function(){
+        var rows = [['Area', scope==='unit'?'My unit':'Common areas'],['Location', place ? (scope==='unit' ? place.name+' · '+(place.u?place.u.community:place.meta) : place.name) : '—'],['Category', cat.name],['Issue', sub.n],['Description', desc || '—'],['Photo', photo || '—']];
+        return say('Here’s your request. Shall I submit it?', card(rows));
+      }).then(function(){ return choose([['edit','Edit','edit'],['ok','Submit request','check','primary']], '1fr 1fr'); })
+      .then(function(c){
+        if(c==='edit') return say('No problem, let’s go through it again.').then(function(){ return raise({ flow:'sr', scope:g.scope, cat:g.cat }); });
+        return progress(['Creating your request','Generating request ID','Assigning to '+SR.scopes[scope].team]).then(function(){
+          var rec = {
+            id: 'SR-' + (9043 + SR.requests.length),
+            scope: scope, categoryId: cat.id, category: cat.name, subcategory: sub.n, description: desc,
+            locationType: scope==='unit' ? 'inside_unit' : 'common_area',
+            location: scope==='unit' ? ((place?place.name:'')+' · '+(place&&place.u?place.u.community:'')) : ('Common areas · '+(place?place.name:'')),
+            routedTo: SR.scopes[scope].team, preferredDate: null, attachments: photo ? [photo] : [],
+            status: 'Submitted', submittedAt: new Date().toISOString(), via: 'Bloom GPT'
+          };
+          SR.requests.unshift(rec); SR.last = rec; SR.viewing = rec;
+          try{ D.dispatchEvent(new CustomEvent('bloom:sr-submitted', { detail: rec })); }catch(x){}
+          return say('Done! Your request has been submitted. You can track its status anytime in My requests.',
+            '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', rec.id],['Issue', rec.category+' · '+rec.subcategory],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]))
+            .then(function(){ return choose([['track','Track request','track','primary'],['more','Something else','chat']], '1fr 1fr'); })
+            .then(function(c2){ if(c2==='track'){ var n=nav(); if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); throw new Stale(); } return menu('Sure — what else can I help you with?'); });
+        });
+      });
+    }
+
+    var first = ((window.__journey && window.__journey.user && window.__journey.user.name) || 'Sarah Tan').split(' ')[0];
+    var flow = wait(REDUCED?0:400).then(function(){ return menu('Hi '+first+'! I’m Bloom GPT. How can I help you today?'); });
+    flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
+  }
+  sec.__onEnter = start;
+}
+
+/* ---------- Bloom GPT tab opens the assistant ---------- */
+function wireTab(sec){
+  Array.prototype.forEach.call(sec.querySelectorAll('[data-name="#tabbar"]'), function(bar){
+    Array.prototype.forEach.call(bar.children, function(t){
+      if(t.__gpt || !/Bloom GPT/.test(txt(t))) return; t.__gpt = true;
+      t.style.cursor = 'pointer'; t.setAttribute('role','button'); t.setAttribute('aria-label','Open Bloom GPT');
+      t.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }, true);
+    });
+  });
+}
+
+var prev = window.__decorate;
+window.__decorate = function(sec){ if(prev) prev(sec); wireTab(sec); };
+window.__initScreen = window.__initScreen || {};
+window.__initScreen[SID] = initGpt;
 })();</script>
 <script id="issue-tone-js">(function(){
 /* Issue-type tiles: Access Card teal #2F6F73, Gate Pass slate #34506B (icon) on a 10% tint */
