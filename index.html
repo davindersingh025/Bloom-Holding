@@ -1081,6 +1081,12 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 .lgx-btn--primary:disabled{background:#c9c4bd!important;color:#f3f1ea!important;cursor:not-allowed;box-shadow:none!important}
 .lgx-btn--primary:disabled:active{transform:none}
 </style>
+<style id="sr-demo-css">
+.srx .sr-demo{margin-top:6px;padding-top:14px;border-top:1px dashed #d6cdc8;display:grid;gap:10px}
+.srx .sr-demo>div{display:flex;flex-wrap:wrap;gap:8px}
+.srx .sr-demo button{height:34px;padding:0 14px;border-radius:999px;border:1px solid #ddd2cc;background:#fff;font-size:12.5px;font-weight:600;color:#54504a}
+.srx .sr-demo button[aria-pressed="true"]{background:#1c1c19;border-color:#1c1c19;color:#f3f1ea}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -4199,23 +4205,25 @@ function icon(n,s,c,w){ s=s||20; return '<svg width="'+s+'" height="'+s+'" viewB
 function hexA(h,a){ var n=parseInt(h.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
 
 /* ---------- catalogue (exactly as agreed) ---------- */
-var MAINT = [{n:'Plumbing',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Others',i:'dots',c:'#64748B'}];
+var OWN = ['owner'], TEN = ['tenant','agent'];   // persona rules: Service Charge → owners only; tenancy items → tenants & holiday home agents
+var SC = {n:'Service Charge',i:'coins',c:'#8F5A1C',roles:OWN};
 var SCOPES = {
   unit:{ key:'unit', title:'My unit', sub:'Repairs, payments & documents for your home', icon:'home', color:'#922A22', team:'CRM Team', cats:[
-    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:MAINT },
-    { id:'cleaning', name:'Cleaning & Waste', tag:'Pest control', icon:'spray', color:'#34506B', subs:[{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
-    { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},{n:'Service Charge',i:'coins',c:'#8F5A1C'},{n:'Payment Receipt',i:'receipt',c:'#2F6F73'}] },
-    { id:'documents', name:'Property & Documents', tag:'Contracts & documents', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc',c:'#2F6F73'},{n:'Update Property Documents',i:'refresh',c:'#8F5A1C'}] },
-    { id:'tenancy', name:'Tenancy', tag:'Rental & lease queries', icon:'key', color:'#5B6B3A', tenant:true, subs:[{n:'Tenancy Renewal',i:'refresh',c:'#5B6B3A'},{n:'Tenant / Occupant Update',i:'people',c:'#7A4F6D'},{n:'NOC / Clearance',i:'stamp',c:'#922A22'}] } ]},
+    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:[{n:'Plumbing',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
+    { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},SC,{n:'Payment Receipt',i:'receipt',c:'#2F6F73'},{n:'Statement of Account',i:'statement',c:'#34506B'}] },
+    { id:'documents', name:'Property & Documents', tag:'Contracts, tenancy & documents', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc',c:'#2F6F73'},{n:'Update Property Documents',i:'refresh',c:'#8F5A1C'},{n:'Tenancy Renewal',i:'refresh',c:'#5B6B3A',roles:TEN},{n:'Tenant / Occupant Update',i:'people',c:'#7A4F6D',roles:TEN},{n:'NOC / Clearance',i:'stamp',c:'#922A22',roles:TEN}] } ]},
   common:{ key:'common', title:'Common areas', sub:'Access, shared spaces & community payments', icon:'community', color:'#2F6F73', team:'Community Team', cats:[
     { id:'access', name:'Access & Visitors', tag:'Cards & visitor passes', icon:'pass', color:'#64748B', subs:[{n:'Access Card',i:'card',c:'#2F6F73'},{n:'Visitor Access',i:'pass',c:'#34506B'}] },
-    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:MAINT },
+    { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:[{n:'Plumbing',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Others',i:'dots',c:'#64748B'}] },
     { id:'cleaning', name:'Cleaning & Waste', tag:'Clean spaces, less waste', icon:'spray', color:'#34506B', subs:[{n:'Cleaning',i:'broom',c:'#2F6F73'},{n:'Waste Management',i:'trash',c:'#5B6B3A'},{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
-    { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},{n:'Service Charge',i:'coins',c:'#8F5A1C'},{n:'Community Fines',i:'fine',c:'#7A4F6D'},{n:'Payment Receipt',i:'receipt',c:'#2F6F73'},{n:'Statement of Account',i:'statement',c:'#34506B'}] } ]}
+    { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},SC,{n:'Community Fines',i:'fine',c:'#7A4F6D'},{n:'Payment Receipt',i:'receipt',c:'#2F6F73'},{n:'Statement of Account',i:'statement',c:'#34506B'}] } ]}
 };
 SR.scopes = SCOPES;
-var ROLE = 'tenant';   // signed-in user (Sarah Tan) is a tenant → Tenancy is shown
-function catsFor(scope){ return SCOPES[scope].cats.filter(function(c){ return !c.tenant || ROLE==='tenant'; }); }
+SR.role = SR.role || 'tenant';   // signed-in persona (Sarah Tan = tenant); prototype can preview owner / holiday home agent
+var ROLES = [['tenant','Tenant'],['owner','Owner'],['agent','Holiday home agent']];
+function allowed(x){ return !x.roles || x.roles.indexOf(SR.role) >= 0; }
+function subsFor(c){ return c.subs.filter(allowed); }
+function catsFor(scope){ return SCOPES[scope].cats.filter(function(c){ return allowed(c) && subsFor(c).length; }); }
 
 function units(){ return (MO && MO.units) ? MO.units() : []; }
 function building(u){ var a=(u.address||'').split(','); a.shift(); return a.join(',').trim() || u.community; }
@@ -4267,10 +4275,12 @@ function initNew(sec){
     h += '<p class="mox-eyebrow sr-lab">WHAT DO YOU NEED HELP WITH?</p><div class="sr-grid">'+catsFor(k).map(function(c){
       return '<button type="button" class="sr-gc" data-cat="'+c.id+'" style="--c:'+c.color+';border-color:'+hexA(c.color,.22)+'"><span class="sr-gi">'+icon(c.icon,20,'#fff')+'</span><span class="sr-ga">'+icon('arrow',16,hexA(c.color,.7))+'</span><b>'+esc(c.name)+'</b><small>'+esc(c.tag)+'</small></button>'; }).join('')+'</div>';
     h += '<p class="sr-team">Handled by the '+esc(s.team)+'.</p>';
+    h += '<div class="sr-demo"><p class="mox-eyebrow">PROTOTYPE · VIEW AS</p><div>'+ROLES.map(function(r){ return '<button type="button" data-role="'+r[0]+'" aria-pressed="'+(SR.role===r[0])+'">'+r[1]+'</button>'; }).join('')+'</div></div>';
     body.innerHTML = h;
   }
   body.addEventListener('click', function(e){
     var sc = e.target.closest('[data-scope]'); if(sc){ SR.scope = sc.dataset.scope; SR.place = (current(SR.scope)||{}).id; render(); body.scrollTop = 0; return; }
+    var ro = e.target.closest('[data-role]'); if(ro){ SR.role = ro.dataset.role; render(); return; }
     var sw = e.target.closest('[data-swap]'); if(sw){ if(SR.scope!==sw.dataset.swap){ SR.scope = sw.dataset.swap; SR.place = (current(SR.scope)||{}).id; render(); } return; }
     var pl = e.target.closest('[data-place]'); if(pl){ SR.place = pl.dataset.place; $$('.sr-chip', body).forEach(function(b){ b.setAttribute('aria-checked', b===pl); }); A(pl,[{scale:'1'},{scale:'.98',offset:.4},{scale:'1'}],{duration:300}); return; }
     var ct = e.target.closest('[data-cat]'); if(ct){
@@ -4298,7 +4308,7 @@ function initIssue(sec){
     $('.mox-bar-t', root).textContent = 'New request';
     body.innerHTML =
       '<div class="mox-card sr-tag"><span class="sr-tile" style="background:'+hexA(c.color,.1)+'">'+icon(c.icon,20,c.color)+'</span><span class="sr-pt"><small>'+esc(SCOPES[k].title.toUpperCase())+' · '+esc(p?p.name:'')+'</small><b>'+esc(c.name)+'</b></span><button type="button" class="sr-change" data-change>Change</button></div>'+
-      '<p class="sr-flab" id="sr-it">Issue type</p><div class="sr-subs" role="radiogroup" aria-labelledby="sr-it">'+c.subs.map(function(s,i){
+      '<p class="sr-flab" id="sr-it">Issue type</p><div class="sr-subs" role="radiogroup" aria-labelledby="sr-it">'+subsFor(c).map(function(s,i){
         return '<button type="button" class="sr-sub" role="radio" aria-checked="false" data-sub="'+i+'"><span class="sr-tile" style="background:'+hexA(s.c||c.color,.1)+'">'+icon(s.i||c.icon,20,s.c||c.color)+'</span><span class="sr-radio" aria-hidden="true">'+icon('check',12,'#fff',2.6)+'</span><b>'+esc(s.n)+'</b></button>'; }).join('')+'</div>'+
       '<label class="sr-flab" for="sr-desc">Description <span>(optional)</span></label><div class="sr-ta"><textarea id="sr-desc" maxlength="500" rows="4" placeholder="Tell us a bit more about the issue"></textarea><span class="sr-count" data-count>0/500</span></div>'+
       '<p class="sr-flab">Photos <span>(optional)</span></p><div class="sr-photos" data-photos></div><p class="sr-hint">Up to 5 photos · JPG or PNG · 5 MB each</p><p class="sr-err" data-perr role="alert" hidden></p>';
@@ -4329,7 +4339,7 @@ function initIssue(sec){
     if(e.target.closest('[data-change]')){ goBack('sr:new'); return; }
     var rm = e.target.closest('[data-rm]'); if(rm){ var f = st.files.splice(+rm.dataset.rm,1)[0]; try{ URL.revokeObjectURL(f.url); }catch(x){} paintPhotos(); return; }
     var sb = e.target.closest('[data-sub]'); if(sb){
-      st.sub = cat().subs[+sb.dataset.sub];
+      st.sub = subsFor(cat())[+sb.dataset.sub];
       $$('.sr-sub', body).forEach(function(b){ b.setAttribute('aria-checked', b===sb); });
       A(sb,[{scale:'1'},{scale:'.97',offset:.35},{scale:'1'}],{duration:340,easing:'cubic-bezier(.34,1.56,.64,1)'});
       $('[data-submit]', foot).disabled = false;
