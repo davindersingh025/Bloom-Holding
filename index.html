@@ -4409,7 +4409,7 @@ function initNew(sec){
     h += '<div class="sr-chips'+(list.length>1?'':' is-one')+'" role="radiogroup" aria-label="'+esc(lab)+'">'+list.map(function(p){ var on = p.id===SR.place;
       return '<button type="button" class="sr-chip" role="radio" aria-checked="'+on+'" data-place="'+esc(p.id)+'" title="'+esc(p.meta)+'"><i>'+icon(p.icon,15)+'</i>'+esc(p.name)+'</button>'; }).join('')+'</div>';
     h += '<p class="mox-eyebrow sr-lab">WHAT DO YOU NEED HELP WITH?</p><div class="sr-grid">'+catsFor(k).map(function(c){
-      return '<button type="button" class="sr-gc" data-cat="'+c.id+'" style="--c:'+c.color+';border-color:'+hexA(c.color,.22)+'"><span class="sr-gi">'+icon(c.icon,20,'#fff')+'</span><span class="sr-ga">'+icon('arrow',16,hexA(c.color,.7))+'</span><b>'+esc(c.name)+'</b><small>'+esc(c.tag)+'</small></button>'; }).join('')+'</div>';
+      return '<button type="button" class="sr-gc" data-cat="'+c.id+'" style="--c:'+c.color+';border-color:'+hexA(c.color,.22)+'"><span class="sr-gi">'+icon(c.icon,20,'#fff')+'</span><span class="sr-ga">'+icon('arrow',16,hexA(c.color,.7))+'</span><b>'+esc(c.name).replace(' &amp; ',' &amp;<br>')+'</b><small>'+esc(c.tag)+'</small></button>'; }).join('')+'</div>';
     body.innerHTML = h;
     stagger(body,'.sr-chip'); stagger(body,'.sr-gc'); stagger(body,'.sr-scope');
   }
