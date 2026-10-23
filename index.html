@@ -1003,6 +1003,56 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 .srx .sr-sub[aria-checked="true"] .sr-sel{display:block}
 .srx .sr-sub[aria-checked="true"] small{color:#6b665c}
 </style>
+<style id="sr-scope2-css">
+/* Home scope cards — same style as the Landing page cards */
+.sr-scope{min-height:150px;border:1px solid;padding:16px}
+.sr-scope .sr-gi{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--c);box-shadow:0 8px 18px -10px var(--c);margin-bottom:18px}
+.sr-scope .sr-scope-t{font-size:17px;line-height:22px;letter-spacing:-.2px}
+.sr-scope .sr-scope-s{margin-top:auto;padding-top:10px;font-size:12.5px;font-weight:600;color:var(--c)}
+.sr-scope{display:flex!important;flex-direction:column;align-items:flex-start}
+</style>
+<style id="sr-motion-css">
+/* Service request motion: staggered entrance, icon pop, press + arrow nudge */
+@keyframes srRise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes srSlide{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes srPop{0%{transform:scale(.4) rotate(-12deg);opacity:0}60%{transform:scale(1.12) rotate(4deg);opacity:1}100%{transform:none}}
+@keyframes srBounce{0%{transform:scale(1)}40%{transform:scale(.92)}75%{transform:scale(1.04)}100%{transform:scale(1)}}
+.sr-in.sr-chip{animation:srSlide 420ms cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i)*60ms)}
+.sr-in.sr-gc,.sr-in.sr-scope,.sr-in.sr-sub{animation:srRise 520ms cubic-bezier(.16,1,.3,1) both;animation-delay:calc(120ms + var(--i)*70ms)}
+.sr-in .sr-gi,.sr-in.sr-sub .sr-tile{animation:srPop 560ms cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(260ms + var(--i)*70ms)}
+.sr-gc,.sr-scope,.sr-sub{transition:transform 260ms cubic-bezier(.34,1.56,.64,1),box-shadow 260ms ease,border-color 200ms}
+.sr-gc:active,.sr-scope:active,.sr-sub:active{transform:scale(.97)}
+.sr-gc .sr-ga,.sr-scope .sr-go{transition:transform 260ms cubic-bezier(.34,1.56,.64,1)}
+.sr-gc:hover .sr-ga,.sr-gc:active .sr-ga,.sr-scope:hover .sr-go,.sr-scope:active .sr-go{transform:translate(3px,-3px)}
+.sr-gc:hover,.sr-scope:hover{box-shadow:0 14px 28px -20px rgba(28,28,25,.35)}
+.sr-gc .sr-gi,.sr-scope .sr-gi{transition:transform 300ms cubic-bezier(.34,1.56,.64,1)}
+.sr-gc:active .sr-gi,.sr-scope:active .sr-gi{transform:scale(.9) rotate(-6deg)}
+.srx .sr-chip[aria-checked="true"]{animation:srBounce 380ms cubic-bezier(.34,1.56,.64,1)}
+.srx .sr-sub[aria-checked="true"] .sr-sel{animation:srPop 420ms cubic-bezier(.34,1.56,.64,1)}
+@media (prefers-reduced-motion:reduce){.sr-in,.sr-in *,.sr-chip,.sr-sub .sr-sel{animation:none!important}.sr-gc,.sr-scope,.sr-sub,.sr-ga,.sr-go,.sr-gi{transition:none!important}}
+</style>
+<style id="sr-motion2-css">
+/* Issue screen motion */
+@keyframes srDrop{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes srFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes srWig{0%{transform:rotate(0) scale(1)}25%{transform:rotate(-10deg) scale(1.1)}50%{transform:rotate(8deg) scale(1.1)}75%{transform:rotate(-4deg) scale(1.04)}100%{transform:none}}
+@keyframes srReady{0%{box-shadow:0 0 0 0 rgba(26,26,26,.35)}100%{box-shadow:0 0 0 12px rgba(26,26,26,0)}}
+.sr-in.sr-tag{animation:srDrop 420ms cubic-bezier(.16,1,.3,1) both}
+.sr-in.sr-flab,.sr-in.sr-ta,.sr-in.sr-photos,.sr-in.sr-hint{animation:srFade 460ms cubic-bezier(.16,1,.3,1) both;animation-delay:calc(380ms + var(--i)*45ms)}
+.sr-sub .sr-tile.sr-wig{animation:srWig 520ms cubic-bezier(.34,1.56,.64,1)}
+.srx .srx-foot .mox-btn{transition:background-color 220ms ease,transform 200ms}
+.srx .srx-foot .mox-btn.sr-ready{animation:srReady 700ms ease-out}
+.srx .sr-ta{transition:border-color 180ms,box-shadow 180ms}
+.srx .sr-ta:focus-within{box-shadow:0 0 0 3px rgba(146,42,34,.08)}
+.srx .sr-add{transition:transform 260ms cubic-bezier(.34,1.56,.64,1),border-color 180ms}
+.srx .sr-add:active{transform:scale(.95)}
+.srx .sr-ph{animation:srPop 420ms cubic-bezier(.34,1.56,.64,1) both}
+@media (prefers-reduced-motion:reduce){.sr-tile.sr-wig,.sr-ready,.sr-ph{animation:none!important}}
+/* Cards: 16px corners everywhere (rectangular, not pill-like) */
+.mox-card,.srx .sr-tag,.sr-gc,.sr-scope,.srx .sr-sub,.pfx .pf-hero,.pfx .pf-lang,.qs,[data-cat],.tcard,.stat,.idcard,.moc-card,
+[class*="rounded-[24px]"],[class*="rounded-[20px]"],[class*="rounded-[22px]"],[class*="rounded-[18px]"]{border-radius:16px!important}
+.pfx .pf-hero{border-radius:16px!important}
+</style>
 <style id="btn-dark">
 /* All primary (red) buttons → #1A1A1A */
 .lgx-btn--primary,.mox-btn--primary,.rbtn--primary,.ask__send,
@@ -4317,9 +4367,11 @@ function toaster(root){ var el=$('[data-mtoast]',root), tt=null; return function
 /* scope cards — Home and (when opened without a scope) the New request screen */
 function scopeCards(){
   return '<div class="sr-scopes">'+['unit','common'].map(function(k){ var s=SCOPES[k], cur=current(k);
-    return '<button type="button" class="sr-scope" data-scope="'+k+'"><span class="sr-tile" style="background:'+hexA(s.color,.1)+'">'+icon(s.icon,20,s.color)+'</span>'+
-      '<span class="sr-go">'+icon('arrow',16,'#6b665c')+'</span><span class="sr-scope-t">'+esc(s.title)+'</span><span class="sr-scope-s">'+esc(cur ? cur.name : s.sub)+'</span></button>'; }).join('')+'</div>';
+    var tag = cur ? cur.name : s.sub;
+    return '<button type="button" class="sr-scope" data-scope="'+k+'" style="--c:'+s.color+';border-color:'+hexA(s.color,.22)+'"><span class="sr-gi">'+icon(s.icon,20,'#fff')+'</span>'+
+      '<span class="sr-go">'+icon('arrow',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span><span class="sr-scope-s">'+esc(tag)+'</span></button>'; }).join('')+'</div>';
 }
+function stagger(root, sel){ $$(sel, root).forEach(function(el,i){ el.style.setProperty('--i', i); el.classList.remove('sr-in'); void el.offsetWidth; el.classList.add('sr-in'); }); }
 function openScope(k){ SR.scope = k; SR.place = (current(k)||{}).id; var n=nav(); if(n) n.navigate('sr:new','SLIDE_IN/350/EASE_OUT/LEFT'); }
 
 /* ---------- 2 · unit / community + categories ---------- */
@@ -4343,6 +4395,7 @@ function initNew(sec){
     h += '<p class="mox-eyebrow sr-lab">WHAT DO YOU NEED HELP WITH?</p><div class="sr-grid">'+catsFor(k).map(function(c){
       return '<button type="button" class="sr-gc" data-cat="'+c.id+'" style="--c:'+c.color+';border-color:'+hexA(c.color,.22)+'"><span class="sr-gi">'+icon(c.icon,20,'#fff')+'</span><span class="sr-ga">'+icon('arrow',16,hexA(c.color,.7))+'</span><b>'+esc(c.name)+'</b><small>'+esc(c.tag)+'</small></button>'; }).join('')+'</div>';
     body.innerHTML = h;
+    stagger(body,'.sr-chip'); stagger(body,'.sr-gc'); stagger(body,'.sr-scope');
   }
   body.addEventListener('click', function(e){
     var sc = e.target.closest('[data-scope]'); if(sc){ SR.scope = sc.dataset.scope; SR.place = (current(SR.scope)||{}).id; render(); body.scrollTop = 0; return; }
@@ -4383,6 +4436,7 @@ function initIssue(sec){
     paintPhotos();
     var ta = $('#sr-desc', body); ta.addEventListener('input', function(){ $('[data-count]', body).textContent = ta.value.length+'/500'; });
     sheet.hidden = true; sheet.innerHTML = '';
+    stagger(body,'.sr-tag, .sr-flab, .sr-ta, .sr-photos, .sr-hint'); stagger(body,'.sr-sub');
   }
   function paintPhotos(){
     var box = $('[data-photos]', body); if(!box) return;
@@ -4409,7 +4463,8 @@ function initIssue(sec){
       st.sub = subsFor(cat())[+sb.dataset.sub];
       $$('.sr-sub', body).forEach(function(b){ b.setAttribute('aria-checked', b===sb); });
       A(sb,[{scale:'1'},{scale:'.97',offset:.35},{scale:'1'}],{duration:340,easing:'cubic-bezier(.34,1.56,.64,1)'});
-      $('[data-submit]', foot).disabled = false;
+      var sbt = $('[data-submit]', foot); if(sbt.disabled){ sbt.disabled = false; sbt.classList.remove('sr-ready'); void sbt.offsetWidth; sbt.classList.add('sr-ready'); }
+      var ti = $('.sr-tile', sb); if(ti){ ti.classList.remove('sr-wig'); void ti.offsetWidth; ti.classList.add('sr-wig'); }
     }
   });
   foot.addEventListener('click', function(e){ var b = e.target.closest('[data-submit]'); if(!b || b.disabled || !st.sub) return; submit(); });
@@ -4450,6 +4505,7 @@ function fixHome(sec){
   grid.style.display = 'none';
   var box = D.createElement('div'); box.className = 'sr-home'; box.innerHTML = scopeCards();
   grid.parentNode.insertBefore(box, grid.nextSibling);
+  stagger(box,'.sr-scope');
   box.addEventListener('click', function(e){ var b = e.target.closest('[data-scope]'); if(!b) return; e.preventDefault(); e.stopPropagation(); A(b,[{scale:'1'},{scale:'.97',offset:.4},{scale:'1'}],{duration:320}); setTimeout(function(){ openScope(b.dataset.scope); }, REDUCED?0:140); }, true);
   // the old 6-card grid set the page height — shrink it to end just below the two cards
   function fit(){ var canvas = $('.canvas', sec); if(!canvas || sec.hidden) return;
