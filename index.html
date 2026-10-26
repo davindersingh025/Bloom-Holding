@@ -794,13 +794,13 @@ button,a[class*="btn"],.rbtn,.mox-btn,.lgx-btn,[data-name^="Button"]{box-shadow:
 </style>
 <style id="send-btn-css">
 /* Chat send button: #1A1A1A rounded square (matches the UI) */
-.rgx .ask__send{border-radius:14px!important;background:#1a1a1a!important;color:#fff!important}
+.rgx .ask__send{border-radius:12px!important;background:#1a1a1a!important;color:#fff!important}
 .rgx .ask__send:active{background:#000!important}
 .rgx .rgx-ask .input{border-radius:14px!important}
 </style>
 <style id="r14-white-css">
-/* All action buttons: 14px corner radius */
-.btn,.rbtn,.mox-btn,.lgx-btn,a[class*="btn"],button[data-name^="Button"],a[data-name^="Button"],[data-name^="Button"]{border-radius:14px!important}
+/* All action buttons: 12px corner radius */
+.btn,.rbtn,.mox-btn,.lgx-btn,.pd-renew,a[class*="btn"],button[data-name^="Button"],a[data-name^="Button"],[data-name^="Button"],[data-name^="Button"] > [aria-hidden="true"]{border-radius:12px!important}
 /* Service / category boxes: white */
 .qs,[data-cat]{background:#fff!important;background-image:none!important}
 </style>
@@ -5069,10 +5069,53 @@ function initGpt(sec){
       });
     }
 
+    /* ---------- tenancy renewal from the dashboard "Tenancy contract expiring soon" card (tenant only) ----------
+       Upload latest contract → review extracted details → confirm → request submitted.
+       PROTOTYPE: no OCR; "extracted" details come from the tenant's sample contract. */
+    var upUrls = [];
+    function uploadDoc(label){ alive(); return new Promise(function(res){
+      dock.innerHTML = '<p class="t-caption" style="text-align:center;margin:0">'+esc(label)+'</p><div class="upload">'+
+        '<label>'+icon('camera',22)+'<span>Take photo / upload</span><input type="file" accept="image/*,application/pdf" /></label>'+
+        '<button type="button" data-sample>'+icon('file',22)+'<span>Use sample</span></button></div>';
+      $('input',dock).onchange = function(e){ var f=e.target.files[0]; if(!f) return; dock.innerHTML=''; me('📎 '+f.name); res(f.name); };
+      $('[data-sample]',dock).onclick = function(){ dock.innerHTML=''; me('📎 Tenancy_Contract_'+(first||'Tenant')+'.pdf'); res('sample'); };
+    }); }
+    function renewUpload(unitId){
+      var us = (MO && MO.units) ? MO.units() : [], u = us.filter(function(x){ return x.id===unitId; })[0] || us[0];
+      var c = u.contract, fullName = ((window.__journey && window.__journey.user && window.__journey.user.name) || 'Sarah Tan');
+      function getContract(){
+        return uploadDoc('Latest tenancy contract')
+          .then(function(){ return progress(['Detecting document','Reading contract details','Checking tenancy dates']); })
+          .then(function(){
+            return say('Here are the details I extracted from your contract. Please review them and confirm they’re correct:',
+              card([['Tenant name', fullName],['Unit', u.name+' · '+u.community],['Contract no.', c.no],['Ejari no.', c.ejari],['Start date', d8(c.start)],['Expiry date', d8(c.end)],['Annual rent', c.rent],['Payment', c.pay]]));
+          })
+          .then(function(){ return choose([['redo','Re-upload','file'],['ok','Confirm','check','primary']], '1fr 1fr'); })
+          .then(function(v){ if(v==='redo') return say('No problem — please upload your latest tenancy contract again.').then(getContract); });
+      }
+      return say('Want to renew your tenancy? Please upload your latest tenancy contract.')
+        .then(getContract)
+        .then(function(){ return progress(['Creating your renewal request','Generating request ID','Sending to the leasing team']); })
+        .then(function(){
+          var rec = {
+            id: 'SR-' + (9043 + SR.requests.length), scope:'unit', categoryId:'documents', category:'Property & Documents', subcategory:'Tenancy Renewal',
+            description: 'Renew '+c.no+' (expires '+d8(c.end)+') · latest contract uploaded via Bloom GPT',
+            locationType:'inside_unit', location: u.name+' · '+u.community, routedTo: SR.scopes.unit.team, preferredDate: null,
+            attachments: ['Tenancy_Contract.pdf'], status:'Submitted', submittedAt: new Date().toISOString(), via:'Bloom GPT'
+          };
+          SR.requests.unshift(rec); SR.last = rec; SR.viewing = rec;
+          try{ D.dispatchEvent(new CustomEvent('bloom:sr-submitted', { detail: rec })); }catch(x){}
+          return say('Your tenancy renewal request has been submitted successfully. You will be notified once your tenancy contract has been renewed.',
+            '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', rec.id],['Request','Tenancy renewal'],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
+        })
+        .then(function(){ return choose([['track','Track request','track','primary'],['home','Back to dashboard','home']], '1fr 1fr'); })
+        .then(function(v){ var n=nav(); if(v==='track'){ if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); } else { var s=n?n.stack():[]; if(n && s.length>1 && s[s.length-2]!==SID) n.back(); else leave(origin); } throw new Stale(); });
+    }
+
     var first = ((window.__journey && window.__journey.user && window.__journey.user.name) || 'Sarah Tan').split(' ')[0];
     var intent = window.__gptIntent; window.__gptIntent = null;
     var flow = wait(REDUCED?0:400).then(function(){
-      if(intent && intent.type==='renew') return renew(intent.unit);
+      if(intent && intent.type==='renew') return intent.src==='dashboard' ? renewUpload(intent.unit) : renew(intent.unit);
       return menu('Hi '+first+'! I’m Bloom GPT. How can I help you today?');
     });
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
@@ -5091,8 +5134,25 @@ function wireTab(sec){
   });
 }
 
+/* ---------- "Tenancy contract expiring soon" card on the dashboards → Bloom GPT renewal (tenant only) ---------- */
+var RENEW_CARDS = ['203:8210','252:23872'];
+function isTenant(){ return !!(window.__journey && window.__journey.id==='tenant'); }
+function wireRenewCard(sec){
+  RENEW_CARDS.forEach(function(nid){
+    var el = sec.querySelector('[data-node-id="'+nid+'"]'); if(!el || el.__renew) return; el.__renew = true;
+    if(!isTenant()){ el.style.display = 'none'; return; }
+    el.style.cursor = 'pointer'; el.setAttribute('role','button'); el.tabIndex = 0;
+    el.setAttribute('aria-label','Tenancy contract expiring soon. Renew with Bloom GPT');
+    function go(e){ e.preventDefault(); e.stopPropagation();
+      window.__gptIntent = { type:'renew', src:'dashboard', unit:(MO && MO.unit) ? MO.unit().id : null };
+      var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+    el.addEventListener('click', go, true);
+    el.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' ') go(e); });
+  });
+}
+
 var prev = window.__decorate;
-window.__decorate = function(sec){ if(prev) prev(sec); wireTab(sec); };
+window.__decorate = function(sec){ if(prev) prev(sec); wireTab(sec); wireRenewCard(sec); };
 window.__initScreen = window.__initScreen || {};
 window.__initScreen[SID] = initGpt;
 })();</script>
@@ -5211,3 +5271,9 @@ var dev=document.getElementById('device'); var busy=false;
 new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFrame(function(){ paint(dev); busy=false; }); }).observe(dev||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-name']});
 paint(dev);
 })();</script>
+<style id="ui-polish-css">
+/* Property details → Tenancy contract card spacing */
+.pd-hd{margin-bottom:0!important;padding-bottom:12px}
+.pd-renew{margin:8px 0 0!important}
+.pd-renew + .pd-docs{margin-top:24px!important;padding-top:16px!important}
+</style>
