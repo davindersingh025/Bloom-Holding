@@ -4809,7 +4809,8 @@ var IC = {
   receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/>',
   track:'<path d="M3 12h4l3-8 4 16 3-8h4"/>', edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
   camera:'<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.5"/>',
-  skip:'<path d="m6 6 6 6-6 6M13 6l6 6-6 6"/>', chat:'<path d="M4 5h16v11H8l-4 4Z"/>', file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>'
+  skip:'<path d="m6 6 6 6-6 6M13 6l6 6-6 6"/>', key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
+  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m9 14.5 2 2 4-4"/>', chat:'<path d="M4 5h16v11H8l-4 4Z"/>', file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>'
 };
 function icon(n, s, c){ s=s||18; return '<svg class="icon" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>'; }
 
@@ -4822,11 +4823,13 @@ var MENU = [
   { k:'pay',     t:'Payments & receipts',  s:'Receipts, payment issues',  ic:'receipt',   c:'#5B6B3A', go:{ flow:'sr', scope:'unit', cat:'payments' } },
   { k:'track',   t:'Track my requests',    s:'See status & updates',      ic:'track',     c:'#64748B', go:{ flow:'track' } }
 ];
+function menuItems(){ var x = window.__gptMenuExtra ? window.__gptMenuExtra() : []; return x.concat(MENU); }
 function hexA(h,a){ var n=parseInt(h.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
 
 /* typed requests → the closest flow */
 function understand(v){
   var s = v.toLowerCase();
+  if(window.__gptUnderstand){ var u0 = window.__gptUnderstand(s); if(u0) return u0; }
   if(/move[\s-]?out|moving out|vacat|leav(e|ing) the (unit|villa|apartment)/.test(s)) return { flow:'moveout' };
   if(/track|status|my request|update on/.test(s)) return { flow:'track' };
   if(/access card|gate|visitor|guest|key ?card/.test(s)) return { flow:'sr', scope:'common', cat:'access', sub:/visitor|guest/.test(s)?'Visitor Access':'Access Card' };
@@ -4913,12 +4916,12 @@ function initGpt(sec){
     /* ---------- main menu: option tiles in the message + free text in the dock ---------- */
     function menu(text){
       alive();
-      var tiles = '<div class="gpt-opts" data-opts>'+MENU.map(function(m,i){ return '<button type="button" class="gpt-opt" data-m="'+m.k+'" style="--i:'+i+'"><span class="gpt-ic" style="background:'+hexA(m.c,.1)+'">'+icon(m.ic,20,m.c)+'</span><span><b>'+esc(m.t)+'</b><small>'+esc(m.s)+'</small></span></button>'; }).join('')+'</div>';
+      var tiles = '<div class="gpt-opts" data-opts>'+menuItems().map(function(m,i){ return '<button type="button" class="gpt-opt" data-m="'+m.k+'" style="--i:'+i+'"><span class="gpt-ic" style="background:'+hexA(m.c,.1)+'">'+icon(m.ic,20,m.c)+'</span><span><b>'+esc(m.t)+'</b><small>'+esc(m.s)+'</small></span></button>'; }).join('')+'</div>';
       return say(text, tiles).then(function(row){
         var box = $('[data-opts]', row);
         return askText({ ph:'Type your request, e.g. AC not cooling', focus:false, onReady:function(pickTile){
           box.onclick = function(e){ var b = e.target.closest('[data-m]'); if(!b || box.classList.contains('is-used')) return;
-            box.classList.add('is-used'); b.classList.add('is-on'); var m = MENU.filter(function(x){ return x.k===b.dataset.m; })[0];
+            box.classList.add('is-used'); b.classList.add('is-on'); var m = menuItems().filter(function(x){ return x.k===b.dataset.m; })[0];
             me(m.t); pickTile({ go:m.go }); };
         }}).then(function(v){
           box.classList.add('is-used');
@@ -4930,6 +4933,7 @@ function initGpt(sec){
       }).then(route);
     }
     function route(g){
+      var F = window.__gptFlows; if(F && F[g.flow]) return F[g.flow](api(), g);
       if(g.flow==='again') return menu('Here’s what I can help with:');
       if(g.flow==='track') return track();
       if(g.flow==='moveout') return moveout();
@@ -5073,12 +5077,12 @@ function initGpt(sec){
        Upload latest contract → review extracted details → confirm → request submitted.
        PROTOTYPE: no OCR; "extracted" details come from the tenant's sample contract. */
     var upUrls = [];
-    function uploadDoc(label){ alive(); return new Promise(function(res){
+    function uploadDoc(label, sampleName){ alive(); return new Promise(function(res){
       dock.innerHTML = '<p class="t-caption" style="text-align:center;margin:0">'+esc(label)+'</p><div class="upload">'+
         '<label>'+icon('camera',22)+'<span>Take photo / upload</span><input type="file" accept="image/*,application/pdf" /></label>'+
         '<button type="button" data-sample>'+icon('file',22)+'<span>Use sample</span></button></div>';
       $('input',dock).onchange = function(e){ var f=e.target.files[0]; if(!f) return; dock.innerHTML=''; me('📎 '+f.name); res(f.name); };
-      $('[data-sample]',dock).onclick = function(){ dock.innerHTML=''; me('📎 Tenancy_Contract_'+(first||'Tenant')+'.pdf'); res('sample'); };
+      $('[data-sample]',dock).onclick = function(){ dock.innerHTML=''; me('📎 '+(sampleName||('Tenancy_Contract_'+(first||'Tenant')+'.pdf'))); res('sample'); };
     }); }
     function renewUpload(unitId){
       var us = (MO && MO.units) ? MO.units() : [], u = us.filter(function(x){ return x.id===unitId; })[0] || us[0];
@@ -5112,10 +5116,16 @@ function initGpt(sec){
         .then(function(v){ var n=nav(); if(v==='track'){ if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); } else { var s=n?n.stack():[]; if(n && s.length>1 && s[s.length-2]!==SID) n.back(); else leave(origin); } throw new Stale(); });
     }
 
+    /* helpers handed to journey flows registered in window.__gptFlows */
+    function api(){ return { say:say, me:me, choose:choose, askText:askText, progress:progress, card:card, uploadDoc:uploadDoc,
+      dock:dock, alive:alive, wait:wait, icon:icon, esc:esc, html:html, toEnd:toEnd, menu:menu, after:after, Stale:Stale, first:first, nav:nav, SID:SID,
+      back:function(){ var n=nav(), s=n?n.stack():[]; if(n && s.length>1 && s[s.length-2]!==SID) n.back(); else leave(origin); } }; }
+
     var first = ((window.__journey && window.__journey.user && window.__journey.user.name) || 'Sarah Tan').split(' ')[0];
     var intent = window.__gptIntent; window.__gptIntent = null;
     var flow = wait(REDUCED?0:400).then(function(){
       if(intent && intent.type==='renew') return intent.src==='dashboard' ? renewUpload(intent.unit) : renew(intent.unit);
+      var F = window.__gptFlows; if(intent && F && F[intent.type]) return F[intent.type](api(), intent);
       return menu('Hi '+first+'! I’m Bloom GPT. How can I help you today?');
     });
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
@@ -5270,6 +5280,486 @@ function paint(root){ if(!root) return; Object.keys(T).forEach(function(k){ root
 var dev=document.getElementById('device'); var busy=false;
 new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFrame(function(){ paint(dev); busy=false; }); }).observe(dev||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-name']});
 paint(dev);
+})();</script>
+<style id="bk-css">
+/* ==== Holiday Home agent: Check-in + My bookings (extends the Bloom/mox system) ==== */
+/* dashboard check-in entry (same surface as the tenancy card) */
+.bk-cta{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 260ms cubic-bezier(.34,1.56,.64,1)}
+.bk-cta:active{transform:scale(.98)}
+.bk-cta-ic{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(248,245,235,.12);box-shadow:inset 0 0 0 1.5px rgba(248,245,235,.35);color:#f8f5eb}
+.bk-cta-t{flex:1;min-width:0;display:grid;gap:2px}
+.bk-cta-t b{font:600 15px/24px 'Matter','Figtree',sans-serif;color:#f8f5eb}
+.bk-cta-t small{font-size:12px;line-height:16px;color:#ebcfc7}
+.bk-cta-go{flex:none;color:#f8f5eb;display:grid}
+.bk-cta-stats{display:flex;gap:6px;margin-top:8px}
+.bk-cta-stats span{font-size:11px;font-weight:600;line-height:14px;padding:4px 8px;border-radius:999px;background:rgba(248,245,235,.12);color:#f8f5eb}
+
+/* bottom navigation: Bookings tab */
+.bk-tab{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* My bookings (tab screen, modelled on My requests) */
+.bkl{background:#faf7f4}
+.bkl .bkl-scroll{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:8px 16px 140px}
+.bkl .bkl-scroll::-webkit-scrollbar{display:none}
+.bkl-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 4px 20px}
+.bkl-title{margin:0;font:700 34px/34.7px 'Matter','Figtree',sans-serif;letter-spacing:-1.2px;color:#1c1c19;white-space:nowrap}
+.bkl-title i{font-family:'Orpheus Pro','Cormorant Garamond',Georgia,serif;font-weight:400;letter-spacing:-.3px;color:#922a22}
+.bkl-new{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:12px;background:#1a1a1a;color:#f3f1ea;font:600 14px/1 'Matter','Figtree',sans-serif;border:0;cursor:pointer}
+.bkl-new:active{transform:scale(.97)}
+.bkl-seg{display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(28,28,25,.04);border:1px solid #ebe3de;margin-bottom:16px}
+.bkl-seg button{flex:1;height:40px;border-radius:999px;border:0;background:none;font:600 14px/1 'Matter','Figtree',sans-serif;color:#54504a;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:background-color 200ms,color 200ms,box-shadow 200ms}
+.bkl-seg button.is-on{background:#fff;color:#1c1c19;box-shadow:0 1px 2px rgba(28,28,25,.06),0 4px 12px -6px rgba(28,28,25,.18)}
+.bkl-seg em{font-style:normal;font-size:11px;font-weight:600;color:#8a847a}
+.bkl-list{display:grid;gap:12px}
+.bk-card{display:grid;gap:14px;width:100%;padding:16px;border-radius:16px;background:#fff;border:1px solid #efe7e3;text-align:left;color:#1c1c19;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:bkIn 420ms cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0) * 50ms);transition:transform 260ms cubic-bezier(.34,1.56,.64,1)}
+.bk-card:active{transform:scale(.98)}
+.bk-top{display:flex;align-items:center;gap:12px}
+.bk-tile{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(146,42,34,.08);color:#922a22}
+.bk-tt{flex:1;min-width:0;display:grid;gap:1px}
+.bk-tt b{font:600 15px/23px 'Matter','Figtree',sans-serif;letter-spacing:.1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-tt small{font-size:12px;line-height:15px;color:#6b665c}
+.bk-guest{display:flex;align-items:center;gap:8px;font-size:13px;line-height:18px;color:#54504a}
+.bk-guest b{font-weight:600;color:#1c1c19}
+.bk-dates{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:12px;border-radius:12px;background:#faf7f4}
+.bk-dates div{display:grid;gap:2px}
+.bk-dates div:last-child{text-align:right}
+.bk-dates small{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#8a847a}
+.bk-dates b{font-size:13.5px;line-height:18px;font-weight:600}
+.bk-nights{font-size:11.5px;font-weight:600;color:#6b665c;padding:3px 8px;border-radius:999px;background:#fff;border:1px solid #efe7e3;white-space:nowrap}
+.bkl-empty{display:grid;justify-items:center;gap:10px;text-align:center;padding:56px 24px;color:#6b665c;font-size:14px;line-height:20px}
+.bkl-empty .bk-tile{width:56px;height:56px;border-radius:16px}
+.bkl-tabbar{position:absolute!important;z-index:6}
+@keyframes bkIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Booking details */
+.bkd .mox-body{padding-bottom:20px}
+.bkd .bk-h{font-size:18px;font-weight:700;line-height:24px;letter-spacing:-.2px}
+.bkd .bk-stay{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-top:12px}
+.bkd .bk-stay div{display:grid;gap:3px}
+.bkd .bk-stay div:last-child{text-align:right}
+.bkd .bk-stay small{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#8a847a}
+.bkd .bk-stay b{font-size:15px;line-height:20px;font-weight:600}
+.bkd .bk-stay span{font-size:12.5px;color:#6b665c}
+.bkd .bk-gh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px}
+.bkd .bk-gl{display:grid}
+.bkd .bk-g{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #f3ede9}
+.bkd .bk-g:first-child{border-top:0}
+.bkd .bk-av{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#f6f1ef;color:#922a22;font-size:13px;font-weight:700}
+.bkd .bk-gt{flex:1;min-width:0;display:grid;gap:1px}
+.bkd .bk-gt b{font-size:14.5px;line-height:20px;font-weight:600}
+.bkd .bk-gt small{font-size:12px;line-height:16px;color:#6b665c}
+.bkd .bk-lead{font-size:11px;font-weight:600;color:#922a22;margin-left:6px}
+.bkd .bk-ext{display:flex;gap:8px;margin-top:12px}
+.bkd .bk-ext button{flex:1;height:44px;border-radius:12px;border:1px solid #ddd2cc;background:#fff;font:600 14px/1 'Matter','Figtree',sans-serif;color:#1c1c19;cursor:pointer}
+.bkd .bk-ext button:active{transform:scale(.97);border-color:#922a22}
+.bkd .bk-call{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#922a22;text-decoration:none}
+.bkd .mox-foot{background:#faf7f4}
+.bkd .mox-foot:empty{display:none}
+.bkd .mox-btn--dark{background:#1a1a1a;color:#fff}
+
+/* Bloom GPT check-in pickers */
+.gpt .bk-pick{display:grid;gap:10px}
+.gpt .bk-pick .t-caption{text-align:center;margin:0}
+.gpt .bk-strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -12px;padding:2px 12px 4px;scroll-snap-type:x proximity}
+.gpt .bk-strip::-webkit-scrollbar{display:none}
+.gpt .bk-day{flex:none;width:62px;height:76px;border-radius:14px;background:#fff;border:1px solid #ddd2cc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;scroll-snap-align:start;cursor:pointer;font:inherit;color:#1c1c19;transition:transform 200ms,border-color 160ms}
+.gpt .bk-day:active{transform:scale(.95);border-color:#922a22}
+.gpt .bk-day small{font-size:11px;font-weight:600;color:#8a847a;text-transform:uppercase;letter-spacing:.5px}
+.gpt .bk-day b{font-size:20px;line-height:24px;font-weight:700}
+.gpt .bk-day em{font-style:normal;font-size:10.5px;color:#6b665c}
+.gpt .bk-day.is-today{border-color:#922a22}
+.gpt .bk-step{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px;border-radius:16px;background:#fff;border:1px solid #ddd2cc}
+.gpt .bk-step button{width:44px;height:44px;border-radius:12px;border:0;background:rgba(146,42,34,.08);color:#922a22;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.gpt .bk-step button:disabled{opacity:.35;cursor:default}
+.gpt .bk-step output{font:600 16px/22px 'Matter','Figtree',sans-serif;text-align:center}
+.gpt .bk-step output small{display:block;font-size:11.5px;font-weight:400;color:#8a847a}
+.gpt .bk-ok{width:100%;justify-content:center!important}
+</style>
+<script id="bk-js">(function(){
+'use strict';
+/* ==========================================================================
+   Holiday Home agent — Check-in & My bookings  (journey: holiday only)
+   - Dashboard "Guest check-in" card + Bloom GPT tile  → Bloom GPT check-in:
+     property → main guest → past bookings → dates → number of people →
+     Emirates ID / passport per guest (details extracted, validity checked) →
+     review → submitted to Bloom (no approval needed) → security informed.
+   - Bottom navigation "Bookings" → My bookings (Ongoing / Past)
+     → Booking details (stay, guests & documents, progress, actions:
+       check out · extend stay · mark arrived · cancel · book again).
+   PROTOTYPE: no OCR/backend — document details are sample data; bookings
+   live in memory for this session (window.__bk).
+   ========================================================================== */
+var DATA = window.__BLOOM; if(!DATA) return;
+var D = document, LIST = 'bk:list', DET = 'bk:detail', GPT = 'gpt:chat', HOME = '252:23836', REQ = '244:12190';
+var DASH_CTA = { '252:23836':'252:23872', '195:7859':'203:8210' };   // check-in card sits where the tenant's contract card is
+function isAgent(){ return !!(window.__journey && window.__journey.id==='holiday'); }
+function nav(){ return window.__bloomNav; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- icons (Bloom duotone style) ---------- */
+function duo(paths, c, s){ c=c||'#6B665C'; s=s||24; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths.replace(/FILL/g,c)+'</svg>'; }
+var P = {
+  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="FILL" fill-opacity=".16"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m9 14.5 2 2 4-4"/>',
+  key:'<circle cx="8" cy="15" r="4" fill="FILL" fill-opacity=".16"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
+  home:'<path d="M5 9.6 12 3l7 6.6V19a1.6 1.6 0 0 1-1.6 1.6H6.6A1.6 1.6 0 0 1 5 19Z" fill="FILL" fill-opacity=".16"/><path d="M9.5 20.6V14a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6.6M3 11l9-8 9 8"/>',
+  building:'<rect x="5" y="3" width="14" height="18" rx="1.5" fill="FILL" fill-opacity=".16"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>', plus:'<path d="M12 5v14M5 12h14"/>', phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
+  shield:'<path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z" fill="FILL" fill-opacity=".16"/><path d="m9 12 2 2 4-4"/>',
+  ok:'<path d="m6 12 4 4 8-9"/>', x:'<path d="M7 7l10 10M17 7 7 17"/>'
+};
+
+/* ---------- data ---------- */
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function day0(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function addD(d,n){ var x = day0(d); x.setDate(x.getDate()+n); return x; }
+function fS(d){ return DOW[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]; }
+function fL(d){ return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); }
+function nights(a,b){ return Math.round((day0(b)-day0(a))/864e5); }
+function nTxt(n){ return n+' night'+(n===1?'':'s'); }
+function gTxt(n){ return n+' guest'+(n===1?'':'s'); }
+function initials(n){ return String(n).split(/\s+/).map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase(); }
+var TODAY = day0(new Date());
+function units(){ return (window.__mo && window.__mo.units) ? window.__mo.units() : [{ id:'v138', name:'Villa 138', community:'Bloom Gardens', icon:'home' }]; }
+function unitById(id){ var us = units(); for(var i=0;i<us.length;i++) if(us[i].id===id) return us[i]; return us[0]; }
+
+var NAMES = [['Sara Khan','Pakistan'],['Daniel Moore','United Kingdom'],['Lina Haddad','Lebanon'],['Arjun Mehta','India'],['Mia Schneider','Germany'],['Omar Farouk','Egypt'],['Chloe Martin','France'],['Yusuf Ali','UAE'],['Hana Sato','Japan']];
+function docFor(name, nat, i){
+  var eid = nat==='UAE' || i%3===0;
+  return { name:name, nat:nat, type: eid ? 'Emirates ID' : 'Passport',
+    no: eid ? '784-••••-•••'+(4210+i*37)%10000+'-'+(i%9+1) : (nat.slice(0,1).toUpperCase()+'••••'+String(5821+i*913).slice(-4)),
+    exp: addD(TODAY, 400 + i*97), valid:true };
+}
+function party(lead, nat, n, seed){ var g = [docFor(lead, nat||'United Kingdom', seed||0)]; for(var i=1;i<n;i++){ var x = NAMES[(i+(seed||0))%NAMES.length]; g.push(docFor(x[0], x[1], i+(seed||0))); } return g; }
+function mk(id, unit, lead, nat, inO, outO, n, status, phone){
+  var cin = addD(TODAY,inO), cout = addD(TODAY,outO);
+  return { id:id, unit:unit, guests:party(lead, nat, n, id.charCodeAt(5)%5), checkIn:cin, checkOut:cout, status:status, phone:phone||'+971 50 '+(300+id.charCodeAt(4)%600)+' '+(1000+id.charCodeAt(5)*7%9000),
+    submitted:addD(cin, inO>0 ? -inO : -2), security:true, checkedOutAt: status==='Checked out' ? cout : null };
+}
+var BK = window.__bk = window.__bk || {
+  list: [
+    mk('BK-2041','v138','Ahmed Khan','Pakistan',-2, 2, 3,'Checked in','+971 50 412 7781'),
+    mk('BK-2046','a1204','Elena Petrova','Russia', 3, 7, 2,'Upcoming','+971 55 903 1146'),
+    mk('BK-2038','a305','James Walker','United Kingdom',-11,-8, 1,'Checked out'),
+    mk('BK-2029','v138','Priya Nair','India',-25,-20, 4,'Checked out'),
+    mk('BK-2023','a305','Tom Becker','Germany',-40,-38, 1,'Cancelled'),
+    mk('BK-2017','a1204','Ahmed Khan','Pakistan',-62,-58, 2,'Checked out')
+  ],
+  seq: 2047, viewing: null
+};
+BK.get = function(id){ for(var i=0;i<BK.list.length;i++) if(BK.list[i].id===id) return BK.list[i]; return null; };
+BK.ongoing = function(){ return BK.list.filter(function(b){ return b.status==='Checked in' || b.status==='Upcoming'; }).sort(function(a,b){ return a.checkIn-b.checkIn; }); };
+BK.past = function(){ return BK.list.filter(function(b){ return b.status==='Checked out' || b.status==='Cancelled'; }).sort(function(a,b){ return b.checkOut-a.checkOut; }); };
+BK.byGuest = function(name){ var k = String(name).trim().toLowerCase(); return BK.list.filter(function(b){ return b.guests[0].name.toLowerCase()===k; }).sort(function(a,b){ return b.checkIn-a.checkIn; }); };
+var TONE = { 'Checked in':'green', 'Upcoming':'', 'Checked out':'grey', 'Cancelled':'red' };
+function pill(st){ return '<span class="mox-pill"'+(TONE[st]?' data-tone="'+TONE[st]+'"':'')+'>'+esc(st)+'</span>'; }
+function openBooking(id){ BK.viewing = id; var n = nav(); if(n) n.navigate(DET, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+function openGpt(intent){ window.__gptIntent = intent; var n = nav(); if(n) n.navigate(GPT, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+function changed(){ try{ D.dispatchEvent(new CustomEvent('bloom:bk-changed')); }catch(e){} }
+
+/* ==========================================================================
+   Bloom GPT — check-in conversation (and check-out from Booking details)
+   ========================================================================== */
+function pickDay(a, from, count, caption, sub){
+  a.alive();
+  return new Promise(function(res){
+    var h = '<div class="bk-pick"><p class="t-caption">'+esc(caption)+'</p><div class="bk-strip" role="listbox" aria-label="'+esc(caption)+'">';
+    for(var i=0;i<count;i++){ var d = addD(from,i);
+      h += '<button type="button" class="bk-day'+(+d===+TODAY?' is-today':'')+'" data-d="'+(+d)+'" role="option"><small>'+(+d===+TODAY?'Today':DOW[d.getDay()])+'</small><b>'+d.getDate()+'</b><em>'+(sub?sub(d):MON[d.getMonth()])+'</em></button>'; }
+    a.dock.innerHTML = h+'</div></div>';
+    a.dock.onclick = function(e){ var b = e.target.closest('[data-d]'); if(!b) return; var d = new Date(+b.dataset.d); a.dock.innerHTML=''; a.dock.onclick=null; res(d); };
+  });
+}
+function pickCount(a, lead){
+  a.alive();
+  return new Promise(function(res){
+    var n = 2;
+    a.dock.innerHTML = '<div class="bk-pick"><p class="t-caption">Number of people staying</p><div class="bk-step"><button type="button" data-m aria-label="Fewer">−</button><output aria-live="polite"></output><button type="button" data-p aria-label="More">+</button></div><button type="button" class="rbtn rbtn--primary bk-ok" data-ok>Continue</button></div>';
+    var out = a.dock.querySelector('output'), m = a.dock.querySelector('[data-m]'), p = a.dock.querySelector('[data-p]');
+    function draw(){ out.innerHTML = gTxt(n)+'<small>including '+esc(lead.split(' ')[0])+'</small>'; m.disabled = n<=1; p.disabled = n>=10; }
+    m.onclick = function(){ if(n>1){ n--; draw(); } }; p.onclick = function(){ if(n<10){ n++; draw(); } };
+    a.dock.querySelector('[data-ok]').onclick = function(){ a.dock.innerHTML=''; res(n); };
+    draw();
+  });
+}
+function stayCard(a, b){
+  var u = unitById(b.unit);
+  return a.card([['Booking ID', b.id],['Property', u.name+' · '+u.community],['Main guest', b.guests[0].name],['Stay', fS(b.checkIn)+' → '+fS(b.checkOut)],['Status', pill(b.status), true]]);
+}
+
+function checkin(a, g){
+  g = g || {};
+  var u, lead = g.guest || '', cin, cout, n, docs = [];
+  var p = Promise.resolve();
+  // 1. property
+  if(g.unit) u = unitById(g.unit);
+  else p = p.then(function(){ return a.say('Let’s check in your guest. Which property are they staying at?'); })
+    .then(function(){ var us = units(); return a.choose(us.map(function(x){ return [x.id, x.name, x.icon==='building'?'community':'home', 'ghost', x.community]; })); })
+    .then(function(id){ u = unitById(id); });
+  // 2. main guest
+  p = p.then(function(){
+    if(lead) return a.say('Checking in '+lead+' again at '+u.name+'.');
+    return a.say('What’s the main guest’s full name, as shown on their ID?')
+      .then(function loop(){ return a.askText({ ph:'Guest full name', max:60 }).then(function(v){ if(v.trim().split(/\s+/).length>=2) return v.trim(); return a.say('Please enter their first and last name.').then(loop); }); })
+      .then(function(v){ lead = v.replace(/\b\w/g, function(c){ return c.toUpperCase(); }); });
+  });
+  // 3. past bookings for this guest
+  p = p.then(function(){ return a.progress(['Checking past bookings']); })
+    .then(function(){
+      var past = BK.byGuest(lead).filter(function(b){ return b.status==='Checked out'; });
+      if(!past.length) return a.say('No past bookings found for '+lead+'. This will be their first stay with you.');
+      var rows = past.slice(0,3).map(function(b){ var x = unitById(b.unit); return [x.name, b.checkIn.getDate()+' '+MON[b.checkIn.getMonth()]+' – '+fL(b.checkOut)+' · '+nTxt(nights(b.checkIn,b.checkOut))]; });
+      return a.say('Welcome back! '+lead+' has '+past.length+' past booking'+(past.length>1?'s':'')+' with you:', a.card(rows));
+    });
+  // 4. dates
+  p = p.then(function(){ return a.say('When is '+lead.split(' ')[0]+' checking in?'); })
+    .then(function(){ return pickDay(a, TODAY, 21, 'Check-in date'); })
+    .then(function(d){ cin = d; a.me(fS(d)); return a.say('And the check-out date?'); })
+    .then(function(){ return pickDay(a, addD(cin,1), 30, 'Check-out date', function(d){ return nTxt(nights(cin,d)); }); })
+    .then(function(d){ cout = d; a.me(fS(d)+' · '+nTxt(nights(cin,d))); return clash(); });
+  function clash(){
+    var hit = BK.ongoing().filter(function(b){ return b.unit===u.id && b.checkIn < cout && b.checkOut > cin; })[0];
+    if(!hit) return;
+    return a.say('Heads up: '+u.name+' already has '+hit.guests[0].name+' ('+hit.id+') from '+fS(hit.checkIn)+' to '+fS(hit.checkOut)+'. Would you like to pick other dates?')
+      .then(function(){ return a.choose([['go','Continue anyway','skip'],['re','Pick other dates','edit','primary']], '1fr 1fr'); })
+      .then(function(c){ if(c==='go') return;
+        return a.say('Sure. When is '+lead.split(' ')[0]+' checking in?')
+          .then(function(){ return pickDay(a, TODAY, 21, 'Check-in date'); })
+          .then(function(d){ cin = d; a.me(fS(d)); return a.say('And the check-out date?'); })
+          .then(function(){ return pickDay(a, addD(cin,1), 30, 'Check-out date', function(d){ return nTxt(nights(cin,d)); }); })
+          .then(function(d){ cout = d; a.me(fS(d)+' · '+nTxt(nights(cin,d))); return clash(); }); });
+  }
+  // 5. number of people
+  p = p.then(function(){ return a.say('How many people are staying, including '+lead.split(' ')[0]+'?'); })
+    .then(function(){ return pickCount(a, lead); })
+    .then(function(v){ n = v; a.me(gTxt(v)); });
+  // 6. documents per guest → extract + validity
+  p = p.then(function(){ return a.say(n>1 ? 'Please upload the Emirates ID or passport for each of the '+n+' guests. I’ll read the details and check they’re valid for the whole stay.' : 'Please upload '+lead.split(' ')[0]+'’s Emirates ID or passport. I’ll read the details and check it’s valid for the whole stay.'); })
+    .then(function(){
+      var q = Promise.resolve(), guests = party(lead, (BK.byGuest(lead)[0]||{guests:[{nat:'United Kingdom'}]}).guests[0].nat, n, BK.seq%5);
+      guests.forEach(function(gu, i){
+        q = q.then(function(){ return a.uploadDoc('Guest '+(i+1)+' of '+n+' · Emirates ID or passport', (gu.type==='Passport'?'Passport_':'Emirates_ID_')+gu.name.split(' ')[0]+'.jpg'); })
+          .then(function(){ return a.progress(['Reading document','Checking validity until '+fS(cout)]); })
+          .then(function(){ gu.valid = gu.exp > cout; docs.push(gu);
+            return a.say((i===0?'Main guest':'Guest '+(i+1))+' verified ✓', a.card([['Name', gu.name],['Document', gu.type],['Number', gu.no],['Nationality', gu.nat],['Expiry', fL(gu.exp)],['Status', '<span class="mox-pill" data-tone="green">Valid for stay</span>', true]])); });
+      });
+      return q;
+    });
+  // 7. review
+  function review(){
+    return a.say('Here’s the check-in summary. Shall I submit it?', a.card([['Property', u.name+' · '+u.community],['Main guest', lead],['Check-in', fS(cin)],['Check-out', fS(cout)+' · '+nTxt(nights(cin,cout))],['Guests', gTxt(n)],['Documents', docs.length+' of '+n+' verified'],['Approval', 'Not required']]))
+      .then(function(){ return a.choose([['edit','Start over','edit'],['ok','Submit check-in','check','primary']], '1fr 1fr'); })
+      .then(function(c){ if(c==='edit') return a.say('No problem, let’s go through it again.').then(function(){ return checkin(a, { unit:u.id }); }).then(function(){ throw new a.Stale(); }); });
+  }
+  // 8. submit (no approval) → inform security → success
+  return p.then(review)
+    .then(function(){ return a.progress(['Submitting to Bloom','Generating booking ID','Informing '+u.community+' security']); })
+    .then(function(){
+      var b = { id:'BK-'+(BK.seq++), unit:u.id, guests:docs, checkIn:cin, checkOut:cout, status: +cin===+TODAY ? 'Checked in' : 'Upcoming',
+        phone:'+971 50 '+(200+Math.floor(Math.random()*700))+' '+(1000+Math.floor(Math.random()*8999)), submitted:TODAY, security:true, via:'Bloom GPT' };
+      BK.list.unshift(b); changed();
+      return a.say('Check-in submitted successfully! No approval is needed. '+u.community+' security has been informed and will expect '+lead.split(' ')[0]+(n>1?'’s party of '+n:'')+' on '+fS(cin)+'.',
+        '<div class="done"><span class="done__icon">'+a.icon('check',26)+'</span></div>'+stayCard(a,b)).then(function(){ return b; });
+    })
+    .then(function(b){ return a.choose([['view','View booking','arrow','primary'],['home','Back to dashboard','home']], '1fr 1fr').then(function(c){
+      if(c==='view'){ BK.viewing = b.id; var nn = nav(); if(nn) nn.navigate(DET,'SLIDE_IN/350/EASE_OUT/LEFT'); }
+      else a.back();
+      throw new a.Stale();
+    }); });
+}
+
+function checkout(a, g){
+  var b = BK.get(g.id); if(!b) return a.menu('Hi! How can I help you today?');
+  var u = unitById(b.unit), lead = b.guests[0].name;
+  return a.say('Ready to check out '+lead+(b.guests.length>1?'’s party':'')+' from '+u.name+'?', stayCard(a,b))
+    .then(function(){ return a.choose([['no','Not now','x'],['ok','Confirm check-out','check','primary']], '1fr 1fr'); })
+    .then(function(c){
+      if(c==='no'){ a.back(); throw new a.Stale(); }
+      return a.progress(['Updating booking','Informing '+u.community+' security','Ending guest access']);
+    })
+    .then(function(){
+      b.status = 'Checked out'; b.checkedOutAt = TODAY; if(b.checkOut > TODAY) b.checkOut = TODAY; changed();
+      return a.say(lead+' has been checked out. '+u.community+' security has been informed and guest access has ended.',
+        '<div class="done"><span class="done__icon">'+a.icon('check',26)+'</span></div>'+stayCard(a,b));
+    })
+    .then(function(){ return a.choose([['view','View booking','arrow','primary'],['list','My bookings','home']], '1fr 1fr'); })
+    .then(function(c){ var nn = nav(); if(!nn) throw new a.Stale();
+      if(c==='view'){ BK.viewing = b.id; nn.back(); } else nn.navigate(LIST,'SMART_ANIMATE/300/EASE_OUT');
+      throw new a.Stale(); });
+}
+
+window.__gptFlows = window.__gptFlows || {};
+window.__gptFlows.checkin = function(a, g){ if(!isAgent()) return a.menu('Hi! How can I help you today?'); return checkin(a, g); };
+window.__gptFlows.checkout = function(a, g){ if(!isAgent()) return a.menu('Hi! How can I help you today?'); return checkout(a, g); };
+window.__gptFlows.bookings = function(a){ return a.say('Opening your bookings…').then(function(){ return a.wait(300); }).then(function(){ var n = nav(); if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); throw new a.Stale(); }); };
+window.__gptMenuExtra = function(){ return isAgent() ? [
+  { k:'checkin',  t:'Guest check-in', s:'Guests, dates & IDs',   ic:'key',   c:'#2F6F73', go:{ flow:'checkin' } },
+  { k:'bookings', t:'My bookings',    s:'Ongoing & past stays',  ic:'cal',   c:'#922A22', go:{ flow:'bookings' } }
+] : []; };
+window.__gptUnderstand = function(s){ if(!isAgent()) return null;
+  if(/check[\s-]?out/.test(s)) return { flow:'bookings' };
+  if(/check[\s-]?in|guest|arriv/.test(s)) return { flow:'checkin' };
+  if(/booking|reservation|stay/.test(s)) return { flow:'bookings' };
+  return null; };
+
+/* ==========================================================================
+   Screens
+   ========================================================================== */
+function tabItem(label, svg, active){
+  return '<a class="content-stretch cursor-pointer flex flex-[1_0_0] flex-col gap-[2px] h-[52px] items-center justify-center min-w-px relative'+(active?' py-[4px] rounded-[26px]':'')+' bk-tab" data-bk-tab="'+label+'" role="link" aria-label="'+label+'"'+(active?' aria-current="page"':'')+'>'+
+    (active?'<div aria-hidden="true" class="absolute bg-[rgba(146,42,34,0.08)] inset-0 pointer-events-none rounded-[26px]"></div>':'')+
+    '<div class="relative shrink-0 size-[24px]">'+svg+'</div><p class="[word-break:break-word] font-[\'Instrument_Sans\'] font-semibold leading-[12px] relative shrink-0 text-['+(active?'#922a22':'#6b665c')+'] text-[10px] whitespace-nowrap" style=\'font-variation-settings:"wdth" 100\'>'+label+'</p></a>';
+}
+(function(){
+  var src = D.getElementById('tpl-mo-details'); if(!src || D.getElementById('tpl-bk-list')) return;
+  var c = src.content, sb = c.querySelector('.mox-sb'), bar = c.querySelector('.mox-bar');
+  // My bookings: status bar, title row, Ongoing/Past, list, bottom navigation (Bookings active)
+  var tb = '';
+  var dash = D.getElementById('tpl-252-23836'), reqs = D.getElementById('tpl-244-12190');
+  var dBar = dash && dash.content.querySelector('[data-name="#tabbar"]'), rBar = reqs && reqs.content.querySelector('[data-name="#tabbar"]');
+  if(dBar && rBar){
+    var shell = dBar.cloneNode(false); shell.removeAttribute('data-node-id'); shell.removeAttribute('data-motion'); shell.classList.add('bkl-tabbar');
+    function pick(bar, re){ return Array.prototype.filter.call(bar.children, function(t){ return re.test(t.textContent); })[0]; }
+    var home = pick(rBar, /Home/), req = pick(dBar, /Requests/), gpt = pick(dBar, /Bloom GPT/);
+    [home, null, req, gpt].forEach(function(t){
+      if(t===null){ shell.insertAdjacentHTML('beforeend', tabItem('Bookings', duo(P.cal,'#922A22'), true)); return; }
+      if(!t) return; var k = t.cloneNode(true);
+      [k].concat(Array.prototype.slice.call(k.querySelectorAll('[data-node-id]'))).forEach(function(e){ e.removeAttribute('data-node-id'); e.removeAttribute('data-motion'); });
+      k.setAttribute('data-bk-nav', /Home/.test(k.textContent)?'home':/Requests/.test(k.textContent)?'req':'gpt'); shell.appendChild(k);
+    });
+    tb = shell.outerHTML;
+  }
+  var t = D.createElement('template'); t.id = 'tpl-bk-list';
+  t.innerHTML = '<div class="mox bkl">'+sb.outerHTML+'<div class="bkl-scroll" data-bscroll><div class="bkl-head"><h1 class="bkl-title">My <i>bookings</i></h1><button type="button" class="bkl-new" data-bnew>'+duo(P.plus,'#F3F1EA',16)+'New check-in</button></div>'+
+    '<div class="bkl-seg" role="tablist" aria-label="Bookings"><button type="button" role="tab" data-seg="on" class="is-on" aria-selected="true">Ongoing <em data-cnt="on"></em></button><button type="button" role="tab" data-seg="past" aria-selected="false">Past <em data-cnt="past"></em></button></div>'+
+    '<div class="bkl-list" data-blist role="tabpanel"></div></div>'+tb+'<div class="mox-ind"></div></div>';
+  src.parentNode.insertBefore(t, src.nextSibling);
+  // Booking details: same chrome as the move-out / property details
+  var t2 = D.createElement('template'); t2.id = 'tpl-bk-detail';
+  t2.innerHTML = '<div class="mox mox--det bkd">'+sb.outerHTML+bar.outerHTML.replace(/data-mback/, 'data-bback')+
+    '<div class="mox-body" data-dscroll></div><div class="mox-foot" data-dfoot></div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
+  src.parentNode.insertBefore(t2, t.nextSibling);
+  [LIST, DET].forEach(function(s){ if(DATA.screens.indexOf(s) < 0) DATA.screens.push(s); });
+})();
+
+function cardHtml(b, i){
+  var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut);
+  return '<button type="button" class="bk-card" data-bk="'+b.id+'" style="--i:'+i+'">'+
+    '<div class="bk-top"><span class="bk-tile">'+duo(u.icon==='building'?P.building:P.home,'#922A22',20)+'</span><span class="bk-tt"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+' · '+b.id+'</small></span>'+pill(b.status)+'</div>'+
+    '<div class="bk-guest">'+duo(P.user,'#6B665C',16)+'<span><b>'+esc(b.guests[0].name)+'</b>'+(b.guests.length>1?' + '+(b.guests.length-1)+' guest'+(b.guests.length>2?'s':''):'')+'</span></div>'+
+    '<div class="bk-dates"><div><small>Check-in</small><b>'+fS(b.checkIn)+'</b></div><span class="bk-nights">'+nTxt(n)+'</span><div><small>Check-out</small><b>'+fS(b.checkOut)+'</b></div></div></button>';
+}
+
+function initList(sec){
+  var root = sec.querySelector('.bkl'); if(!root) return;
+  var list = root.querySelector('[data-blist]'), tab = 'on';
+  function render(){
+    var on = BK.ongoing(), past = BK.past(), rows = tab==='on' ? on : past;
+    root.querySelector('[data-cnt="on"]').textContent = on.length; root.querySelector('[data-cnt="past"]').textContent = past.length;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-seg]'), function(b){ var is = b.dataset.seg===tab; b.classList.toggle('is-on', is); b.setAttribute('aria-selected', is?'true':'false'); });
+    list.innerHTML = rows.length ? rows.map(cardHtml).join('') :
+      '<div class="bkl-empty"><span class="bk-tile">'+duo(P.cal,'#922A22',26)+'</span><b style="color:#1c1c19">'+(tab==='on'?'No ongoing bookings':'No past bookings yet')+'</b><span>'+(tab==='on'?'Check in a guest with Bloom GPT and the stay will show up here.':'Completed and cancelled stays will appear here.')+'</span></div>';
+  }
+  root.addEventListener('click', function(e){
+    var s = e.target.closest('[data-seg]'); if(s){ tab = s.dataset.seg; render(); root.querySelector('[data-bscroll]').scrollTop = 0; return; }
+    var c = e.target.closest('[data-bk]'); if(c){ setTimeout(function(){ openBooking(c.dataset.bk); }, REDUCED?0:120); return; }
+    if(e.target.closest('[data-bnew]')){ openGpt({ type:'checkin' }); return; }
+    var t = e.target.closest('[data-bk-nav]'); if(t){ e.preventDefault(); e.stopPropagation(); var n = nav(); if(!n) return;
+      if(t.dataset.bkNav==='home') n.navigate(HOME,'SMART_ANIMATE/300/EASE_OUT');
+      else if(t.dataset.bkNav==='req') n.navigate(REQ,'SMART_ANIMATE/300/EASE_OUT'); }
+  }, true);
+  D.addEventListener('bloom:bk-changed', render);
+  sec.__onEnter = function(){ render(); };
+  render();
+}
+
+function initDetail(sec){
+  var root = sec.querySelector('.bkd'); if(!root) return;
+  var body = root.querySelector('[data-dscroll]'), foot = root.querySelector('[data-dfoot]'), toastEl = root.querySelector('[data-mtoast]'), tt = null, arm = null, extOpen = false;
+  var bt = root.querySelector('.mox-bar-t'); if(bt) bt.textContent = 'Booking details';
+  function toast(m){ toastEl.textContent = m; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2600); }
+  function steps(b){
+    var u = unitById(b.unit), out = b.status==='Checked out', can = b.status==='Cancelled', inn = b.status==='Checked in' || out;
+    var S = [
+      ['Check-in submitted', 'Via Bloom GPT · no approval needed', 'd'],
+      ['Security informed', u.community+' security has the guest list', 'd'],
+      can ? ['Booking cancelled', 'Security informed · access removed', 'x'] : ['Guests checked in', inn ? fS(b.checkIn) : 'Expected '+fS(b.checkIn), inn ? 'd' : 'c'],
+    ];
+    if(!can) S.push(['Checked out', out ? fS(b.checkedOutAt||b.checkOut)+' · access ended' : 'Due '+fS(b.checkOut), out ? 'd' : (b.status==='Checked in' ? 'c' : '')]);
+    var OK = '<svg class="i-ok" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>', X = '<svg class="i-x" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+    return S.map(function(s){ return '<li class="mox-step" data-s="'+s[2]+'"><div class="mox-rail"><span class="mox-dot">'+OK+X+'</span><span class="mox-line"></span></div><div class="mox-st"><p class="mox-st-t">'+esc(s[0])+'</p><p class="mox-st-s">'+esc(s[1])+'</p></div></li>'; }).join('');
+  }
+  function render(){
+    var b = BK.get(BK.viewing) || BK.ongoing()[0] || BK.list[0]; if(!b) return;
+    BK.viewing = b.id;
+    var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut), lead = b.guests[0];
+    body.innerHTML =
+      '<div class="mox-card mox-sum"><span class="mox-tile mox-tile--lg">'+duo(u.icon==='building'?P.building:P.home,'#922A22',24)+'</span><div class="mox-sum-t"><p class="bk-h">'+esc(u.name)+'</p><p class="mox-muted">'+esc(u.community)+' · '+b.id+'</p></div>'+pill(b.status)+'</div>'+
+      '<div class="mox-card"><p class="mox-eyebrow">STAY</p><div class="bk-stay"><div><small>Check-in</small><b>'+fS(b.checkIn)+'</b><span>From 3:00 pm</span></div><span class="bk-nights">'+nTxt(n)+'</span><div><small>Check-out</small><b>'+fS(b.checkOut)+'</b><span>By 12:00 pm</span></div></div>'+
+        (extOpen && b.status==='Checked in' ? '<div class="bk-ext" role="group" aria-label="Extend stay by">'+[1,2,3].map(function(k){ return '<button type="button" data-ext="'+k+'">+'+nTxt(k)+'</button>'; }).join('')+'</div>' : '')+'</div>'+
+      '<div class="mox-card"><div class="bk-gh"><p class="mox-eyebrow">GUESTS · '+b.guests.length+'</p><a class="bk-call" href="tel:'+b.phone.replace(/\s/g,'')+'" data-call>'+duo(P.phone,'#922A22',16)+'Call guest</a></div><div class="bk-gl">'+
+        b.guests.map(function(g,i){ return '<div class="bk-g"><span class="bk-av">'+initials(g.name)+'</span><span class="bk-gt"><b>'+esc(g.name)+(i===0?'<span class="bk-lead">Main guest</span>':'')+'</b><small>'+esc(g.type)+' · '+esc(g.no)+'</small><small>Valid until '+fL(g.exp)+'</small></span><span class="mox-pill" data-tone="green">Verified</span></div>'; }).join('')+'</div></div>'+
+      '<div class="mox-card"><p class="mox-eyebrow">PROGRESS</p><ol class="mox-tl">'+steps(b)+'</ol></div>'+
+      '<div class="mox-card mox-rows"><div class="mox-row"><span class="mox-k">Booking ID</span><span class="mox-v">'+b.id+'</span></div><div class="mox-row"><span class="mox-k">Main guest phone</span><span class="mox-v">'+esc(b.phone)+'</span></div><div class="mox-row"><span class="mox-k">Submitted</span><span class="mox-v">'+fL(b.submitted)+'</span></div><div class="mox-row"><span class="mox-k">Approval</span><span class="mox-v">Not required</span></div></div>';
+    var A = [];
+    if(b.status==='Checked in') A = [['checkout','Check out guest','primary'],['extend', extOpen?'Close':'Extend stay','ghost']];
+    else if(b.status==='Upcoming') A = [['arrived','Mark as arrived','primary'],['cancel', arm===b.id?'Tap again to cancel':'Cancel booking','ghost']];
+    else A = [['again','Check in '+lead.name.split(' ')[0]+' again','primary']];
+    foot.innerHTML = A.map(function(x){ return '<button type="button" class="mox-btn mox-btn--'+x[2]+'" data-act="'+x[0]+'"><span class="mox-btn-t">'+esc(x[1])+'</span></button>'; }).join('');
+  }
+  root.addEventListener('click', function(e){
+    var b = BK.get(BK.viewing); if(!b) return;
+    if(e.target.closest('[data-bback]')){ setTimeout(function(){ var n = nav(), s = n ? n.stack() : []; if(!n) return; if(s.length>1 && s[s.length-2]!==GPT) n.back(); else n.navigate(LIST,'SMART_ANIMATE/300/EASE_OUT'); }, 90); return; }
+    if(e.target.closest('[data-call]')){ e.preventDefault(); toast('Calling '+b.guests[0].name+' on '+b.phone+'…'); return; }
+    var ex = e.target.closest('[data-ext]');
+    if(ex){ var k = +ex.dataset.ext; b.checkOut = addD(b.checkOut, k); extOpen = false; changed(); render(); toast('Stay extended to '+fS(b.checkOut)+'. Security informed.'); return; }
+    var a = e.target.closest('[data-act]'); if(!a) return;
+    var act = a.dataset.act;
+    if(act==='checkout') openGpt({ type:'checkout', id:b.id });
+    else if(act==='extend'){ extOpen = !extOpen; render(); }
+    else if(act==='arrived'){ b.status = 'Checked in'; if(b.checkIn > TODAY){ var len = nights(b.checkIn,b.checkOut); b.checkIn = TODAY; b.checkOut = addD(TODAY, len); } changed(); render(); toast(b.guests[0].name+' checked in. Security informed.'); }
+    else if(act==='cancel'){ if(arm!==b.id){ arm = b.id; render(); setTimeout(function(){ if(arm===b.id){ arm = null; render(); } }, 3000); return; } arm = null; b.status = 'Cancelled'; changed(); render(); toast('Booking cancelled. Security informed and access removed.'); }
+    else if(act==='again') openGpt({ type:'checkin', unit:b.unit, guest:b.guests[0].name });
+  });
+  sec.__onEnter = function(){ extOpen = false; arm = null; render(); body.scrollTop = 0; };
+  render();
+}
+
+/* ==========================================================================
+   Dashboard entry + bottom navigation (holiday journey only)
+   ========================================================================== */
+function ctaStats(){ var on = BK.ongoing(), inn = on.filter(function(b){ return b.status==='Checked in'; }).length, up = on.length - inn; return '<span>'+inn+' in-house</span><span>'+up+' upcoming</span>'; }
+function wireDashboard(sec){
+  var nid = DASH_CTA[sec.dataset.sid]; if(!nid) return;
+  var ref = sec.querySelector('[data-node-id="'+nid+'"]'); if(!ref || ref.__bk) return; ref.__bk = true;
+  var el = D.createElement('div');
+  el.className = ref.className; el.classList.add('bk-cta'); el.style.display = '';
+  el.setAttribute('role','button'); el.tabIndex = 0; el.setAttribute('aria-label','Guest check-in with Bloom GPT');
+  el.innerHTML = '<span class="bk-cta-ic">'+duo(P.key,'#F8F5EB',24)+'</span><span class="bk-cta-t"><b>Guest check-in</b><small>Register guests and inform security in a few steps</small><span class="bk-cta-stats" data-stats>'+ctaStats()+'</span></span><span class="bk-cta-go">'+duo(P.arrow,'#F8F5EB',18)+'</span>';
+  ref.parentNode.insertBefore(el, ref);
+  function go(e){ e.preventDefault(); e.stopPropagation(); setTimeout(function(){ openGpt({ type:'checkin' }); }, REDUCED?0:120); }
+  el.addEventListener('click', go);
+  el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') go(e); });
+  D.addEventListener('bloom:bk-changed', function(){ var s = el.querySelector('[data-stats]'); if(s) s.innerHTML = ctaStats(); });
+}
+function wireTabbars(sec){
+  if(sec.dataset.sid===LIST) return;
+  Array.prototype.forEach.call(sec.querySelectorAll('[data-name="#tabbar"]'), function(bar){
+    if(bar.__bk) return; bar.__bk = true;
+    var home = Array.prototype.filter.call(bar.children, function(t){ return /Home/.test(t.textContent); })[0];
+    var item = D.createElement('div'); item.innerHTML = tabItem('Bookings', duo(P.cal,'#6B665C'), false); item = item.firstChild;
+    if(home && home.nextSibling) bar.insertBefore(item, home.nextSibling); else bar.appendChild(item);
+    item.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); item.classList.remove('is-bounce'); void item.offsetWidth; item.classList.add('is-bounce');
+      var n = nav(); if(n) n.navigate(LIST, 'SMART_ANIMATE/300/EASE_OUT'); }, true);
+  });
+}
+var prev = window.__decorate;
+window.__decorate = function(sec){ if(prev) prev(sec); if(!isAgent()) return; wireDashboard(sec); wireTabbars(sec); };
+window.__initScreen = window.__initScreen || {};
+window.__initScreen[LIST] = initList;
+window.__initScreen[DET] = initDetail;
 })();</script>
 <script id="active-request-js">
 /* Dashboard "Active request" card (AC Filter Check · SR-9042) → its service request details page */
