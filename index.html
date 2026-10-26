@@ -5094,7 +5094,7 @@ function initGpt(sec){
             return say('Here are the details I extracted from your contract. Please review them and confirm they’re correct:',
               card([['Tenant name', fullName],['Unit', u.name+' · '+u.community],['Contract no.', c.no],['Ejari no.', c.ejari],['Start date', d8(c.start)],['Expiry date', d8(c.end)],['Annual rent', c.rent],['Payment', c.pay]]));
           })
-          .then(function(){ return choose([['redo','Re-upload','file'],['ok','Confirm','check','primary']], '1fr 1fr'); })
+          .then(function(){ return choose([['redo','Re-upload',''],['ok','Confirm','','primary']], '1fr 1fr'); })
           .then(function(v){ if(v==='redo') return say('No problem — please upload your latest tenancy contract again.').then(getContract); });
       }
       return say('Want to renew your tenancy? Please upload your latest tenancy contract.')
@@ -5112,7 +5112,7 @@ function initGpt(sec){
           return say('Your tenancy renewal request has been submitted successfully. You will be notified once your tenancy contract has been renewed.',
             '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', rec.id],['Request','Tenancy renewal'],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
         })
-        .then(function(){ return choose([['track','Track request','track','primary'],['home','Back to dashboard','home']], '1fr 1fr'); })
+        .then(function(){ return choose([['track','Track request','','primary'],['home','Back to dashboard','']], '1fr 1fr'); })
         .then(function(v){ var n=nav(); if(v==='track'){ if(n) n.navigate(LIST,'SLIDE_IN/350/EASE_OUT/LEFT'); } else { var s=n?n.stack():[]; if(n && s.length>1 && s[s.length-2]!==SID) n.back(); else leave(origin); } throw new Stale(); });
     }
 
@@ -5496,7 +5496,7 @@ function checkin(a, g){
   // 1. property
   if(g.unit) u = unitById(g.unit);
   else p = p.then(function(){ return a.say('Let’s check in your guest. Which property are they staying at?'); })
-    .then(function(){ var us = units(); return a.choose(us.map(function(x){ return [x.id, x.name, x.icon==='building'?'community':'home', 'ghost', x.community]; })); })
+    .then(function(){ var us = units(); return a.choose(us.map(function(x){ return [x.id, x.name, '', 'ghost', x.community]; })); })
     .then(function(id){ u = unitById(id); });
   // 2. main guest
   p = p.then(function(){
@@ -5523,7 +5523,7 @@ function checkin(a, g){
     var hit = BK.ongoing().filter(function(b){ return b.unit===u.id && b.checkIn < cout && b.checkOut > cin; })[0];
     if(!hit) return;
     return a.say('Heads up: '+u.name+' already has '+hit.guests[0].name+' ('+hit.id+') from '+fS(hit.checkIn)+' to '+fS(hit.checkOut)+'. Would you like to pick other dates?')
-      .then(function(){ return a.choose([['go','Continue anyway','skip'],['re','Pick other dates','edit','primary']], '1fr 1fr'); })
+      .then(function(){ return a.choose([['go','Continue anyway',''],['re','Pick other dates','','primary']], '1fr 1fr'); })
       .then(function(c){ if(c==='go') return;
         return a.say('Sure. When is '+lead.split(' ')[0]+' checking in?')
           .then(function(){ return pickDay(a, TODAY, 21, 'Check-in date'); })
@@ -5550,7 +5550,7 @@ function checkin(a, g){
   // 7. review
   function review(){
     return a.say('Here’s the check-in summary. Shall I submit it?', a.card([['Property', u.name+' · '+u.community],['Main guest', lead],['Check-in', fS(cin)],['Check-out', fS(cout)+' · '+nTxt(nights(cin,cout))],['Guests', gTxt(n)],['Documents', docs.length+' of '+n+' verified'],['Approval', 'Not required']]))
-      .then(function(){ return a.choose([['edit','Start over','edit'],['ok','Submit check-in','check','primary']], '1fr 1fr'); })
+      .then(function(){ return a.choose([['edit','Start over',''],['ok','Submit check-in','','primary']], '1fr 1fr'); })
       .then(function(c){ if(c==='edit') return a.say('No problem, let’s go through it again.').then(function(){ return checkin(a, { unit:u.id }); }).then(function(){ throw new a.Stale(); }); });
   }
   // 8. submit (no approval) → inform security → success
@@ -5563,7 +5563,7 @@ function checkin(a, g){
       return a.say('Check-in submitted successfully! No approval is needed. '+u.community+' security has been informed and will expect '+lead.split(' ')[0]+(n>1?'’s party of '+n:'')+' on '+fS(cin)+'.',
         '<div class="done"><span class="done__icon">'+a.icon('check',26)+'</span></div>'+stayCard(a,b)).then(function(){ return b; });
     })
-    .then(function(b){ return a.choose([['view','View booking','arrow','primary'],['home','Back to dashboard','home']], '1fr 1fr').then(function(c){
+    .then(function(b){ return a.choose([['view','View booking','','primary'],['home','Back to dashboard','']], '1fr 1fr').then(function(c){
       if(c==='view'){ BK.viewing = b.id; var nn = nav(); if(nn) nn.navigate(DET,'SLIDE_IN/350/EASE_OUT/LEFT'); }
       else a.back();
       throw new a.Stale();
@@ -5574,7 +5574,7 @@ function checkout(a, g){
   var b = BK.get(g.id); if(!b) return a.menu('Hi! How can I help you today?');
   var u = unitById(b.unit), lead = b.guests[0].name;
   return a.say('Ready to check out '+lead+(b.guests.length>1?'’s party':'')+' from '+u.name+'?', stayCard(a,b))
-    .then(function(){ return a.choose([['no','Not now','x'],['ok','Confirm check-out','check','primary']], '1fr 1fr'); })
+    .then(function(){ return a.choose([['no','Not now',''],['ok','Confirm check-out','','primary']], '1fr 1fr'); })
     .then(function(c){
       if(c==='no'){ a.back(); throw new a.Stale(); }
       return a.progress(['Updating booking','Informing '+u.community+' security','Ending guest access']);
@@ -5584,7 +5584,7 @@ function checkout(a, g){
       return a.say(lead+' has been checked out. '+u.community+' security has been informed and guest access has ended.',
         '<div class="done"><span class="done__icon">'+a.icon('check',26)+'</span></div>'+stayCard(a,b));
     })
-    .then(function(){ return a.choose([['view','View booking','arrow','primary'],['list','My bookings','home']], '1fr 1fr'); })
+    .then(function(){ return a.choose([['view','View booking','','primary'],['list','My bookings','']], '1fr 1fr'); })
     .then(function(c){ var nn = nav(); if(!nn) throw new a.Stale();
       if(c==='view'){ BK.viewing = b.id; nn.back(); } else nn.navigate(LIST,'SMART_ANIMATE/300/EASE_OUT');
       throw new a.Stale(); });
@@ -5632,7 +5632,7 @@ function tabItem(label, svg, active){
     tb = shell.outerHTML;
   }
   var t = D.createElement('template'); t.id = 'tpl-bk-list';
-  t.innerHTML = '<div class="mox bkl">'+sb.outerHTML+'<div class="bkl-scroll" data-bscroll><div class="bkl-head"><h1 class="bkl-title">My <i>bookings</i></h1><button type="button" class="bkl-new" data-bnew>'+duo(P.plus,'#F3F1EA',16)+'New check-in</button></div>'+
+  t.innerHTML = '<div class="mox bkl">'+sb.outerHTML+'<div class="bkl-scroll" data-bscroll><div class="bkl-head"><h1 class="bkl-title">My <i>bookings</i></h1><button type="button" class="bkl-new" data-bnew>New check-in</button></div>'+
     '<div class="bkl-seg" role="tablist" aria-label="Bookings"><button type="button" role="tab" data-seg="on" class="is-on" aria-selected="true">Ongoing <em data-cnt="on"></em></button><button type="button" role="tab" data-seg="past" aria-selected="false">Past <em data-cnt="past"></em></button></div>'+
     '<div class="bkl-list" data-blist role="tabpanel"></div></div>'+tb+'<div class="mox-ind"></div></div>';
   src.parentNode.insertBefore(t, src.nextSibling);
