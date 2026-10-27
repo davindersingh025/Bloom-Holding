@@ -243,3 +243,15 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
   .nav__end { gap: 2px !important; }
   .nav__menu-btn, .nav__search-m { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
 }
+
+/* Bloom GPT link — background, border and hover copied from the original HTML */
+.nav__gpt:not(.nav__gpt--lg) {
+  background: linear-gradient(180deg, rgba(253, 237, 234, 0.95), rgba(249, 222, 218, 0.9)) !important;
+  border: 1.5px solid rgba(209, 31, 34, 0.3) !important;
+  padding-inline: 8px 16px !important;
+  transition: border-color 250ms, box-shadow 350ms, transform 400ms var(--ease-spring) !important;
+}
+.nav__gpt:not(.nav__gpt--lg):hover { background: linear-gradient(180deg, rgba(253, 237, 234, 0.95), rgba(249, 222, 218, 0.9)) !important; border-color: #D11F22 !important; box-shadow: 0 10px 22px -14px #D11F22 !important; }
+.nav__gpt.is-current:not(.nav__gpt--lg) { background: linear-gradient(180deg, rgba(253, 237, 234, 0.95), rgba(249, 222, 218, 0.9)) !important; border-color: #D11F22 !important; }
+.nav__gpt:not(.nav__gpt--lg):active { transform: scale(0.97); }
+@media (max-width: 1100px) { .nav__gpt:not(.nav__gpt--lg) { width: 40px !important; padding: 0 !important; justify-content: center; } }
