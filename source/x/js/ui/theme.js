@@ -25,7 +25,10 @@ function syncButton(btn) {
 
 /* A sliding light/dark switch: sun and moon sit in the track, the knob
    glides between them (role="switch", checked = dark). */
-export const themeToggle = (cls = "") => `
+/* Theme switching is paused for now — the toggle renders nothing and the
+   site always runs in light mode. */
+export const themeToggle = () => "";
+const _themeToggleOff = (cls = "") => `
   <button class="theme-toggle ${cls}" type="button" role="switch" data-theme-toggle aria-checked="${getTheme() === "dark"}" aria-label="Dark mode" title="${getTheme() === "dark" ? "Switch to light mode" : "Switch to dark mode"}">
     <span class="theme-toggle__sun" aria-hidden="true">${icon("sun", 15)}</span>
     <span class="theme-toggle__moon" aria-hidden="true">${icon("moon", 15)}</span>
@@ -50,6 +53,8 @@ export function toggleTheme(originEl) {
 
 /* One delegated listener for every toggle on the page (nav, login, register). */
 export function initTheme() {
+  apply("light");
+  return;
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-theme-toggle]");
     if (btn) toggleTheme(btn);
