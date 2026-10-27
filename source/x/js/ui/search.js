@@ -19,9 +19,8 @@ function buildIndex() {
     items.push({ group: "Projects & properties", label: p.name, sub: p.category, href: `#/project/${p.id}`, thumb: p.images[0] ? img(p.images[0], 120) : null })
   );
   items.push(
-    { group: "Actions", label: "Sign in", sub: "Owner portal", action: () => openAuth(), iconName: "id" },
+    { group: "Actions", label: "Login", sub: "Your properties & requests", action: () => openAuth(), iconName: "id" },
     { group: "Actions", label: "Contact sales", sub: "800 Bloom (25666)", action: () => openContact(), iconName: "phone" },
-    { group: "Actions", label: "Your Property, Simplified", sub: "Owner portal overview", href: "#/portal", iconName: "building" },
   );
   return items;
 }

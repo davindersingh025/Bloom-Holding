@@ -10,7 +10,7 @@ route("/", () => import("bloom:/js/pages/universal.js"));
 route("/space/:id", () => import("bloom:/js/pages/space.js"));
 route("/properties", () => import("bloom:/js/pages/properties.js"));
 route("/project/:id", () => import("bloom:/js/pages/project.js"));
-route("/portal", () => import("bloom:/js/pages/portal.js"));
+route("/portal", () => import("bloom:/js/pages/universal.js"));   /* owner portal page retired */
 route("/login", () => import("bloom:/js/pages/login.js"));
 route("/register", () => import("bloom:/js/pages/register.js"));
 route("/gpt", () => import("bloom:/js/pages/gpt.js"));
@@ -31,6 +31,7 @@ const afterRender = (meta, view) => {
   /* Login ⇄ My Bloom in the public nav once the visitor signs in or logs out */
   if (signedIn() !== wasSignedIn) { wasSignedIn = signedIn(); nav.redraw(); }
   setNavRoute(meta.key);
+  document.body.classList.toggle("in-app", meta.key === "app");
   /* The login page is a focused, chrome-free experience */
   document.body.classList.toggle("is-focus", ["login", "register", "gpt", "app"].includes(meta.key));
   /* Division wayfinding colour for the whole page (see tokens.css) */

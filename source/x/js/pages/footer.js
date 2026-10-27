@@ -38,8 +38,7 @@ export function renderFooter(mount) {
 
           <nav class="reveal" style="--i:1" aria-label="${t("divisions")}">
             <p class="footer__h t-meta">${t("divisions")}</p>
-            <ul class="footer__links">${DIVISIONS.map((d) => `<li><a href="${d.route}">${esc(d.name)}</a></li>`).join("")}
-              <li><a href="#/portal">${t("portal")}</a></li></ul>
+            <ul class="footer__links">${DIVISIONS.map((d) => `<li><a href="${d.route}">${esc(d.name)}</a></li>`).join("")}</ul>
           </nav>
 
           <nav class="reveal" style="--i:2" aria-label="${t("ourProjects")}">

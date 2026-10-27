@@ -126,12 +126,17 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 .qs:hover .qs__meta { color: var(--c) !important; }
 .qs-portal { background: var(--color-primary) !important; box-shadow: none !important; border-radius: 24px !important; }
 .qs-portal__rings { display: none !important; }
-.qs-portal__cta { background: transparent !important; color: var(--cream) !important; border: 1px solid rgba(248, 245, 235, 0.4) !important; }
+.qs-portal { cursor: default; }
+.qs-portal__auth { display: flex; gap: 10px; flex-wrap: wrap; justify-self: end; }
+.qs-portal__auth .btn { height: 48px; padding-inline: 24px; }
+.qs-portal__auth .btn--ghost-light { border: 1px solid rgba(248, 245, 235, 0.45) !important; color: var(--cream) !important; background: transparent !important; }
+.qs-portal__auth .btn--ghost-light:hover { background: rgba(248, 245, 235, 0.1) !important; }
+.qs-portal:hover { translate: none !important; }
+@media (max-width: 760px) { .qs-portal__auth { grid-column: 1 / -1; justify-self: stretch; } .qs-portal__auth .btn { flex: 1; } }
 
 /* ---- red chapters: flat brand red ------------------------------------------------------ */
-.marquee { background: var(--color-background) !important; border-block: 1px solid var(--color-border); padding-block: 20px !important; }
-.marquee__track span { color: #54504A !important; -webkit-text-stroke: 0 !important; background: none !important; -webkit-background-clip: border-box !important; font-family: var(--font-matter); font-weight: 600; font-size: clamp(1.75rem, 1.2rem + 2vw, 3rem) !important; letter-spacing: -0.02em; }
-.marquee__track .marquee__dot { color: var(--color-primary) !important; font-size: 1.25rem !important; }
+/* marquee: kept exactly as the original web file (gradient band, Bricolage display type) */
+.marquee__track span { font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif; }
 .cta-band { background: var(--color-primary) !important; }
 .cta-band::before, .cta-band::after, .cta-band [class*="pattern"], .cta-band [class*="lattice"] { display: none !important; }
 .portal-teaser { background: var(--color-primary) !important; }

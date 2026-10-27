@@ -1,7 +1,8 @@
 /* Profile · Contact us · Notifications (same content as the mobile app). */
 
 import * as st from "bloom:/js/app/store.js";
-import { icon, esc, rows, eyebrow, btn, tile, unitIcon, avatar, segmented } from "bloom:/js/app/ui.js";
+import { icon, esc, eyebrow, btn, tile, unitIcon, avatar, segmented, pill, orb } from "bloom:/js/app/ui.js";
+import { LOGO } from "bloom:/js/ui/logo.js";
 import { toast } from "bloom:/js/app/shell.js";
 
 export function page(ctx) {
@@ -14,39 +15,103 @@ function profile({ shell }) {
   const sh = shell({ active: "profile", title: "Profile" });
   const c = sh.content;
   const u = st.journey().user, us = st.units();
-  const row = (ic, k, act) => `<button type="button" class="pf-row" data-f="${act}">${tile(ic)}<span class="pf-k">${esc(k)}</span>${icon("chev", 16, "#8A847A")}</button>`;
-  c.innerHTML = `
-    <div class="pf-grid">
-      <section class="ap-card pf-hero">
-        <div class="pf-cover" aria-hidden="true"></div>
-        ${avatar(u.name, "pf-av")}
-        <h1 class="ap-h2 pf-name">${esc(u.name)}</h1>
-        <p class="ap-muted">${esc(u.email)} · ${esc(u.phone)}</p>
-        <div class="pf-tags"><span class="pf-tag pf-tag--role">${esc(u.role)}</span><span class="pf-tag">${esc(us[0].community)}</span><span class="pf-tag pf-tag--ok">ID verified</span></div>
-        <div class="pf-stats"><div><b>${us.length}</b><span>${us.length === 1 ? "Property" : "Properties"}</span></div><div><b>${st.activeRequests().length}</b><span>Active requests</span></div><div><b>${st.isAgent() ? st.ongoing().length : st.unreadCount()}</b><span>${st.isAgent() ? "Ongoing bookings" : "Unread updates"}</span></div></div>
-        ${btn("View personal information", { kind: "ghost", attrs: 'data-f="personal"' })}
+  const memberSince = { tenant: "Oct 2025", holiday: "Apr 2025", owner: "Jun 2022" }[st.journey().id];
+  const memberId = { tenant: "BLM-25-01138", holiday: "BLM-HH-20431", owner: "BLM-22-00614" }[st.journey().id];
+  let tab = "overview";
+  const prefs = { push: true, email: true, sms: false };
+
+  const stats = () => [
+    [us.length, us.length === 1 ? "Property" : "Properties"],
+    [st.activeRequests().length, "Active requests"],
+    st.isAgent() ? [st.ongoing().length, "Ongoing stays"] : [st.unreadCount(), "Unread updates"],
+  ];
+  const activity = () => {
+    const items = st.requests().slice(0, 4).map((r) => ({ t: r.title, s: `Ref #${r.id} · ${r.status}`, d: r.submitted, href: `#/app/requests/${r.id}`, ic: "wrench", tone: st.REQ_STATUS[r.status] }));
+    if (st.isAgent()) st.bookings().slice(0, 3).forEach((b) => items.push({ t: `${b.guests[0].name} · ${st.unit(b.unit).name}`, s: `${b.id} · ${b.status}`, d: b.checkIn, href: `#/app/bookings/${b.id}`, ic: "key", tone: st.BK_TONE[b.status] }));
+    return items.sort((x, y) => y.d - x.d).slice(0, 5);
+  };
+  const sw = (k, label, sub) => `<label class="pf-sw"><span class="pf-sw-t"><b>${esc(label)}</b><small>${esc(sub)}</small></span><input type="checkbox" role="switch" data-pref="${k}" ${prefs[k] ? "checked" : ""}><i aria-hidden="true"></i></label>`;
+  const link = (ic, k, sub, attrs) => `<a class="pf-link" ${attrs}>${tile(ic)}<span class="pf-k">${esc(k)}${sub ? `<small>${esc(sub)}</small>` : ""}</span>${icon("chev", 16, "#8A847A")}</a>`;
+
+  function panel() {
+    if (tab === "info") return `
+      <section class="ap-card pf-panel">
+        <div class="pf-fields">${[["Full name", u.name, "user"], ["Email", u.email, "mail"], ["Mobile", u.phone, "phone"], ["Emirates ID", "784-••••-•••••21-3", "id"], ["Nationality", "United Arab Emirates", "globe"], ["Role", u.role, "key"]].map(([k, v, ic]) => `
+          <div class="pf-field">${tile(ic)}<span><small>${esc(k)}</small><b>${esc(v)}</b></span>${k === "Role" ? "" : '<em class="pf-ok">Verified</em>'}</div>`).join("")}</div>
+        <div class="pf-note">${icon("info", 16, "#1A1A1A")}<span>Your details come from your Emirates ID and contract. To change them, raise a request and our team will update them.</span></div>
+        ${btn("Request a change", { kind: "ghost", href: "#/app/requests/new?scope=unit" })}
+      </section>`;
+    if (tab === "settings") return `
+      <section class="ap-card pf-panel">
+        <p class="ap-eyebrow">NOTIFICATIONS</p>
+        <div class="pf-sws">${sw("push", "Push notifications", "Request updates, bookings and reminders")}${sw("email", "Email", "Statements, receipts and confirmations")}${sw("sms", "SMS", "Urgent alerts only")}</div>
+        <p class="ap-eyebrow pf-gap">LANGUAGE</p>
+        ${segmented([["en", "English"], ["ar", "العربية"]], "en", "data-lang")}
+        <p class="ap-eyebrow pf-gap">SECURITY & HELP</p>
+        <div class="pf-links">${link("lock", "Change password", "Last changed 3 months ago", 'href="#" data-soon')}${link("help", "FAQs", "", 'href="#" data-soon')}${link("feedback", "Provide feedback", "", 'href="#" data-soon')}${link("phone", "Contact us", "800 BLOOM (25666)", 'href="#/app/contact"')}</div>
+        <a class="ap-btn ap-btn--ghost pf-logout" href="#/" data-logout>Log out</a>
+      </section>`;
+    return `
+      <section class="ap-card pf-panel">
+        <div class="ap-card-h"><p class="ap-eyebrow">${us.length > 1 ? "MY PROPERTIES" : "MY PROPERTY"}</p></div>
+        <div class="pf-props">${us.map((x, i) => { const s = st.unitStatus(x); return `
+          <a class="pf-prop" href="#/app/property/${x.id}" style="--i:${i}">
+            <span class="pf-prop-img">${icon(unitIcon(x), 26, "#922A22")}<img src="${st.unitImg(x, 360)}" alt="" loading="lazy" onerror="this.remove()"></span>
+            <span class="pf-prop-t"><b>${esc(x.name)}</b><small>${esc(x.type)} · ${esc(x.community)}</small>${s ? pill(st.ST_LABEL[s], st.ST_TONE[s]) : st.isTenant() ? pill(x.contract.status, x.contract.tone) : ""}</span>
+            ${icon("chev", 16, "#8A847A")}
+          </a>`; }).join("")}</div>
       </section>
-      <div class="pd-col">
-        <section class="ap-card">${eyebrow(us.length > 1 ? "MY PROPERTIES" : "MY PROPERTY")}${us.map((x) => `<a class="pf-row" href="#/app/property/${x.id}">${tile(unitIcon(x))}<span class="pf-k">${esc(x.name)}<small>${esc(x.community)} · Documents & contract</small></span>${icon("chev", 16, "#8A847A")}</a>`).join("")}</section>
-        <section class="ap-card">${row("help", "FAQs", "soon")}${row("feedback", "Provide feedback", "soon")}<a class="pf-row" href="#/app/contact">${tile("phone")}<span class="pf-k">Contact us</span>${icon("chev", 16, "#8A847A")}</a>
-          <label class="pf-row pf-lang">${tile("globe")}<span class="pf-k">Language</span><select aria-label="Language" data-lang><option>English</option><option>العربية</option></select></label></section>
-        <section class="ap-card">${row("lock", "Change password", "soon")}<a class="pf-row pf-out" href="#/" data-logout>${tile("logout")}<span class="pf-k">Log out</span></a></section>
-      </div>
-    </div>
-    <div class="ap-modal" data-modal hidden></div>`;
-  const m = c.querySelector("[data-modal]");
+      <section class="ap-card pf-panel">
+        <div class="ap-card-h"><p class="ap-eyebrow">RECENT ACTIVITY</p><a class="ap-link" href="#/app/requests">View all</a></div>
+        <ol class="pf-act">${activity().map((x) => `<li><a href="${x.href}"><span class="pf-act-dot" data-tone="${x.tone}"></span><span class="pf-act-t"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span><time>${st.fmtDM(x.d)}</time></a></li>`).join("")}</ol>
+      </section>`;
+  }
+
+  function draw() {
+    c.innerHTML = `
+      <div class="pf">
+        <aside class="pf-side">
+          <div class="pf-card" data-tilt>
+            <div class="pf-card-glow" aria-hidden="true"></div>
+            <div class="pf-card-top"><span class="pf-card-logo">${LOGO}</span><span class="pf-card-role">${esc(u.role)}</span></div>
+            <div class="pf-card-mid">${avatar(u.name, "pf-card-av")}<span><b class="pf-card-name">${esc(u.name)}</b><small>Member since ${memberSince}</small></span></div>
+            <div class="pf-card-bot"><span><small>MEMBER ID</small><b>${memberId}</b></span><span class="pf-card-ver">${icon("check", 14, "#1A1A1A")} ID verified</span></div>
+          </div>
+          <div class="pf-stats">${stats().map(([n, l]) => `<div><b>${n}</b><span>${esc(l)}</span></div>`).join("")}</div>
+          <div class="pf-quick">
+            <a href="#/app/gpt" class="pf-q">${orb("pf-q-orb")}<span>Ask Bloom GPT</span></a>
+            <a href="#/app/contact" class="pf-q">${icon("phone", 20, "#922A22")}<span>Contact us</span></a>
+          </div>
+        </aside>
+        <div class="pf-main">
+          <div class="pf-head"><h1 class="ap-h1">Hello, <i>${esc(u.name.split(" ")[0])}</i></h1><p class="ap-muted">${esc(u.email)} · ${esc(u.phone)}</p></div>
+          ${segmented([["overview", "Overview"], ["info", "Personal info"], ["settings", "Settings"]], tab, "data-tab")}
+          <div class="pf-body" data-body>${panel()}</div>
+        </div>
+      </div>`;
+    tiltCard(c.querySelector("[data-tilt]"));
+  }
+  draw();
+
   c.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-tab]"); if (t) { tab = t.dataset.tab; c.querySelectorAll("[data-tab]").forEach((b) => { const on = b.dataset.tab === tab; b.classList.toggle("is-on", on); b.setAttribute("aria-selected", on); }); const body = c.querySelector("[data-body]"); body.innerHTML = panel(); body.classList.remove("is-swap"); void body.offsetWidth; body.classList.add("is-swap"); return; }
     if (e.target.closest("[data-logout]")) { st.signOut(); return; }
-    const f = e.target.closest("[data-f]"); if (!f) return;
-    if (f.dataset.f === "soon") return toast("Prototype: this opens in the full app.");
-    if (f.dataset.f === "personal") {
-      m.innerHTML = `<div class="ap-modal-card ap-modal-card--l" role="dialog" aria-modal="true" aria-labelledby="pi-h"><div class="ap-card-h"><h2 id="pi-h" class="ap-h2">Personal information</h2><button type="button" class="ap-ib" data-x aria-label="Close">${icon("x", 18)}</button></div>${rows([["Full name", u.name], ["Email", u.email], ["Mobile", u.phone], ["Emirates ID", "784-••••-•••••21-3"], ["Nationality", "United Arab Emirates"], ["Role", u.role]])}<p class="ap-muted" style="margin-top:12px">To change these details, raise a request or contact us.</p></div>`;
-      m.hidden = false; m.querySelector("[data-x]").focus();
-    }
+    if (e.target.closest("[data-soon]")) { e.preventDefault(); toast("Prototype: this opens in the full app."); return; }
+    const l = e.target.closest("[data-lang]"); if (l && l.dataset.lang === "ar") toast("Prototype: Arabic is available on the public site (EN / عربي).");
   });
-  m.addEventListener("click", (e) => { if (e.target === m || e.target.closest("[data-x]")) m.hidden = true; });
-  c.querySelector("[data-lang]").addEventListener("change", (e) => { if (e.target.selectedIndex) toast("Prototype: Arabic is available on the public site (EN / عربي)."); e.target.selectedIndex = 0; });
+  c.addEventListener("change", (e) => { const p = e.target.closest("[data-pref]"); if (p) { prefs[p.dataset.pref] = p.checked; toast(`${p.closest(".pf-sw").querySelector("b").textContent} ${p.checked ? "on" : "off"}`); } });
   return { title: "Profile", cleanup: sh.cleanup };
+}
+
+/* the membership card leans gently towards the pointer */
+function tiltCard(el) {
+  if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(hover: none)").matches) return;
+  el.addEventListener("pointermove", (e) => {
+    const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+    el.style.setProperty("--rx", `${(-y * 8).toFixed(2)}deg`); el.style.setProperty("--ry", `${(x * 10).toFixed(2)}deg`);
+    el.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(0)}%`); el.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(0)}%`);
+  });
+  el.addEventListener("pointerleave", () => { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); });
 }
 
 function contact({ shell }) {

@@ -3,7 +3,7 @@
    typewriter placeholder, and "Try asking" chips. Asking anything turns the
    page into a conversation: the hero folds away, the ask bar docks at the
    bottom and Bloom GPT streams its answer with cards and links built from
-   the site's own content (communities, divisions, owner portal, contact).
+   the site's own content (communities, divisions, your account, contact).
    PROTOTYPE: answers come from simple intent matching over local data —
    there is no model or backend, and nothing typed leaves the browser. */
 
@@ -50,7 +50,7 @@ const CHIPS = [
   ["landscape", "leaf", "Landscaping services", "خدمات تنسيق الحدائق"],
   ["facilities", "wrench", "Maintenance request", "طلب صيانة"],
   ["communities", "pin", "Explore communities", "استكشف المجتمعات"],
-  ["portal", "key", "Take me to the owner portal", "خذني إلى بوابة الملاك"],
+  ["portal", "key", "Manage my property", "إدارة عقاري"],
   ["help", "headset", "Help", "المساعدة"],
 ];
 
@@ -205,7 +205,7 @@ export function render(view) {
         text: A ? "إليك أبرز ما يحدث في بلوم الآن:" : "Here's what's worth your attention at Bloom right now:",
         html: `<ul class="gpt__list">
           <li style="--i:0">${icon("building", 16)}<span><strong>${PROJECTS.length} ${A ? "مجتمعاً" : "communities"}</strong> ${A ? "متاحة للاستفسار في أبوظبي ودبي والعين" : "open for enquiries across Abu Dhabi, Dubai and Al Ain"}</span></li>
-          <li style="--i:1">${icon("wallet", 16)}<span><strong>${A ? "دفعاتك وتقدّم البناء" : "Your payments & construction progress"}</strong> ${A ? "— سجّل الدخول إلى بوابة الملاك لرؤيتها" : "— sign in to the owner portal to see them live"}</span></li>
+          <li style="--i:1">${icon("wallet", 16)}<span><strong>${A ? "دفعاتك وتقدّم البناء" : "Your payments & construction progress"}</strong> ${A ? "— سجّل الدخول إلى حسابك في بلوم لرؤيتها" : "— sign in to your Bloom account to see them live"}</span></li>
           <li style="--i:2">${icon("school", 16)}<span><strong>${A ? "التسجيل المدرسي" : "School admissions"}</strong> ${A ? "مفتوح في مدارس برايتون كوليدج بلوم" : "are open at Brighton College Bloom schools"}</span></li>
         </ul>${actions([["#/login", A ? "تسجيل الدخول" : "Sign in", true], ["#/properties", A ? "استكشف العقارات" : "Explore properties"]])}${follow(["payments", "home", "help"])}`,
       };
@@ -232,14 +232,14 @@ export function render(view) {
         };
       }
       case "payments": case "progress": case "portal": return {
-        text: intent === "payments" ? (A ? "دفعاتك وفواتيرك وتنبيهاتها موجودة في بوابة الملاك. سجّل الدخول لرؤيتها — أو أنشئ حساباً إن كنت جديداً." : "Your payments, invoices and due-date alerts live in the owner portal. Sign in to see them — or register if you're new.")
-          : intent === "progress" ? (A ? "يمكنك متابعة تقدّم البناء لكل وحدة مع تحديثات مباشرة داخل بوابة الملاك." : "You can follow construction progress for each of your units, with live updates, inside the owner portal.")
-          : (A ? "بوابة الملاك تجمع عقاراتك ودفعاتك ومستنداتك في مكان واحد." : "The owner portal brings your properties, payments and documents together in one place."),
+        text: intent === "payments" ? (A ? "دفعاتك وفواتيرك وتنبيهاتها موجودة في حسابك في بلوم. سجّل الدخول لرؤيتها — أو أنشئ حساباً إن كنت جديداً." : "Your payments, invoices and due-date alerts live in your Bloom account. Sign in to see them — or register if you're new.")
+          : intent === "progress" ? (A ? "يمكنك متابعة تقدّم البناء لكل وحدة مع تحديثات مباشرة داخل حسابك في بلوم." : "You can follow construction progress for each of your units, with live updates, inside your Bloom account.")
+          : (A ? "حسابك في بلوم تجمع عقاراتك ودفعاتك ومستنداتك في مكان واحد." : "Your Bloom account brings your properties, payments, documents and requests together in one place."),
         html: `<ul class="gpt__list">
           <li style="--i:0">${icon("building", 16)}<span>${A ? "إدارة العقارات ومتابعة البناء" : "Property management & construction tracking"}</span></li>
           <li style="--i:1">${icon("wallet", 16)}<span>${A ? "متابعة الدفعات مع تنبيهات فورية" : "Payment tracking with real-time alerts"}</span></li>
           <li style="--i:2">${icon("shield", 16)}<span>${A ? "منصة آمنة ومشفّرة" : "Secure, encrypted platform"}</span></li>
-        </ul>${actions([["#/login", A ? "تسجيل الدخول" : "Sign in", true], ["#/register", A ? "التسجيل" : "Register"], ["#/portal", A ? "كيف تعمل البوابة" : "How the portal works"]])}`,
+        </ul>${actions([["#/login", A ? "تسجيل الدخول" : "Login", true], ["#/register", A ? "التسجيل" : "Register"], ["#/properties", A ? "استكشف العقارات" : "Explore properties"]])}`,
       };
       case "register": return {
         text: A ? "يمكنك التسجيل خلال دقيقتين مع Bloom GPT — فقط الهوية ومستند العقار والبريد والهاتف." : "You can register in about two minutes with Bloom GPT — just your Emirates ID, a property document, email and phone.",
@@ -261,7 +261,7 @@ export function render(view) {
           html: `<div class="gpt__cards">${card(`#/project/${hit.id}`, hit.images?.[0], hit.name, hit.collection, 0)}</div>`,
         };
         return {
-          text: A ? "لست متأكداً من ذلك بعد — لكن يمكنني المساعدة في المنازل والمدارس والفنادق والصيانة وبوابة الملاك. جرّب أحد هذه:" : "I'm not sure about that one yet — but I can help with homes, schools, hotels, maintenance and the owner portal. Try one of these:",
+          text: A ? "لست متأكداً من ذلك بعد — لكن يمكنني المساعدة في المنازل والمدارس والفنادق والصيانة وحسابك في بلوم. جرّب أحد هذه:" : "I'm not sure about that one yet — but I can help with homes, schools, hotels, maintenance and your Bloom account. Try one of these:",
           html: follow(["home", "education", "hospitality", "portal", "help"]),
         };
       }

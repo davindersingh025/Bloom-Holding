@@ -99,7 +99,7 @@ const VIEWS = {
       <h1 class="login__title">You're all set</h1>
       <p class="login__sub">Signed in as <strong>${email}</strong>.</p>
       <p class="login__proto">${icon("info", 14)} Prototype: authentication runs on Bloom's servers, which this preview doesn't connect to.</p>
-      <a class="login__primary" href="#/portal"><span class="btn__label">Continue to the owner portal</span></a>
+      <a class="login__primary" href="#/app"><span class="btn__label">Go to dashboard</span></a>
     </div>`,
 };
 

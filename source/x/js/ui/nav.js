@@ -1,6 +1,5 @@
 /* Floating navigation: free-standing logo + pill.
    - Plain, labelled destinations: Properties · Divisions ▾
-     (Owner portal page is linked from the home quick start, footer and mobile menu)
    - Divisions menu: colour-coded, each entry says what you can do there
    - Search (⌘K), language, contact, sign in
    - Scroll progress as a slim terracotta line along the pill
@@ -97,9 +96,6 @@ function openSheet() {
       <a class="sheet__home ${currentKey === "universal" ? "is-current" : ""}" href="#/" data-close>${t("theBloomExperience")} ${arrow(18)}</a>
       <ul class="sheet__list">
         ${DIVISIONS.map((d, i) => `<li style="--i:${i}">${divisionItem(d, "sheet__link").replace("<a ", "<a data-close ")}</li>`).join("")}
-        <li style="--i:${DIVISIONS.length}"><a data-close class="sheet__link ${currentKey === "portal" ? "is-current" : ""}" href="#/portal" style="--c: var(--div-portal)">
-          <span class="menu__thumb menu__thumb--icon">${icon("building", 18)}</span>
-          <span class="menu__text"><span class="menu__label">${t("portal")}</span><span class="menu__sub">Manage your property</span></span>${arrow(16)}</a></li>
       </ul>
       <div class="sheet__foot">
         <a class="nav__gpt nav__gpt--lg" href="#/gpt" data-close><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span><span>Ask Bloom GPT</span>${arrow(16)}</a>

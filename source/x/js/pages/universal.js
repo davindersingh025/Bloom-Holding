@@ -152,13 +152,12 @@ function quickstart() {
             <span class="qs__dots" aria-hidden="true"></span>
           </a></li>`).join("")}
       </ul>
-      <a class="qs-portal" href="#/portal">
+      <div class="qs-portal">
         <span class="qs-portal__icon">${icon("key", 26)}</span>
         <span class="qs-portal__text"><span class="qs-portal__task">${t("manageProperty")}</span>
-          <span class="qs-portal__meta">${t("portal")} · payments, progress, documents</span></span>
-        <span class="qs-portal__cta">${t("portal")} ${arrow(16)}</span>
-        <span class="qs-portal__rings" aria-hidden="true"><i></i><i></i><i></i></span>
-      </a>
+          <span class="qs-portal__meta">Payments, progress, documents and requests</span></span>
+        <span class="qs-portal__auth"><button type="button" class="btn btn--light" data-qs-login>${t("signIn")}</button><button type="button" class="btn btn--ghost-light" data-qs-register>${t("register")}</button></span>
+      </div>
       <p class="quickstart__foot t-caption">${EXPLORE.length} properties &amp; assets across Abu Dhabi, Al Ain and Dubai · <a href="#/properties?tab=explore">${t("browseAll")}</a></p>
     </div>
     </div>
@@ -233,7 +232,6 @@ function portalTeaser() {
               <span><span class="feature-list__title">${esc(f.title)}</span><span class="t-body">${esc(f.body)}</span></span>
             </li>`).join("")}
         </ol>
-        <a class="link-arrow reveal" href="#/portal">How the portal works ${arrow(16)}</a>
       </div>
 
       <!-- Layered, animated composition: Ken Burns photo with a light sweep,
@@ -408,6 +406,8 @@ export function render(view) {
 
   view.querySelector("[data-signin]").addEventListener("click", () => openAuth());
   view.querySelector("[data-register-cta]").addEventListener("click", () => openAuth("register"));
+  view.querySelector("[data-qs-login]").addEventListener("click", () => openAuth());
+  view.querySelector("[data-qs-register]").addEventListener("click", () => openAuth("register"));
 
   /* Owner-portal visual: layers shift at different depths with the pointer */
   const scene = view.querySelector("[data-depth-scene]");

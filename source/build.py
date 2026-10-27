@@ -6,7 +6,7 @@ src = open(f'{ROOT}/web.html', encoding='utf-8').read()
 
 # fonts: add Figtree (≈ Matter) + Cormorant Garamond Italic (≈ Orpheus Pro Italic) + Instrument Serif
 old_font = re.search(r'<link rel="stylesheet" href="https://fonts.googleapis.com/css2\?[^"]+" />', src).group(0)
-new_font = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700'
+new_font = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700'
             '&family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Instrument+Serif:ital@0;1'
             '&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" />')
 src = src.replace(old_font, new_font)
