@@ -13,7 +13,8 @@ src = src.replace(old_font, new_font)
 
 # brand layer after the last stylesheet
 brand = open(f'{ROOT}/x/css/brand.css', encoding='utf-8').read()
-src = src.replace('  <script type="importmap">', f'  <style data-src="css/brand.css">\n{brand}\n</style>\n  <script type="importmap">', 1)
+appcss = open(f'{ROOT}/x/css/app.css', encoding='utf-8').read()
+src = src.replace('  <script type="importmap">', f'  <style data-src="css/brand.css">\n{brand}\n</style>\n  <style data-src="css/app.css">\n{appcss}\n</style>\n  <script type="importmap">', 1)
 
 # modules
 i = src.find('<script type="importmap">') + len('<script type="importmap">'); j = src.find('</script>', i)

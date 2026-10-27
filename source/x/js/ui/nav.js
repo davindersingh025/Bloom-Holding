@@ -16,6 +16,8 @@ import { openContact } from "bloom:/js/ui/contact.js";
 import { openOverlay } from "bloom:/js/ui/overlay.js";
 import { themeToggle } from "bloom:/js/ui/theme.js";
 
+const signedIn = () => { try { return sessionStorage.getItem("bloom-signed-in") === "1"; } catch (e) { return false; } };
+
 let navEl, currentKey = "universal";
 
 const isDivision = (key) => DIVISIONS.some((d) => d.id === key && d.id !== "properties");
@@ -50,13 +52,13 @@ function template() {
       </div>
 
       <div class="nav__end">
-        <a class="nav__gpt ${currentKey === "gpt" ? "is-current" : ""}" href="#/gpt" data-magnetic aria-label="Bloom GPT"><span class="gpt-ball" aria-hidden="true"><i class="gpt-ball__spark"></i></span><span class="nav__gpt-label">Bloom GPT</span></a>
+        <a class="nav__gpt ${currentKey === "gpt" ? "is-current" : ""}" href="#/gpt" data-magnetic aria-label="Bloom GPT"><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span><span class="nav__gpt-label">Bloom GPT</span></a>
         ${themeToggle("nav__theme")}
         <button class="icon-btn nav__search-m" data-search aria-label="${t("search")}">${icon("search", 20)}</button>
         <button class="nav__register" data-register data-magnetic>
           ${t("register")}
         </button>
-        <button class="btn btn--primary nav__signin" data-signin data-magnetic>${t("signIn")}</button>
+        <button class="btn btn--primary nav__signin" data-signin data-magnetic>${signedIn() ? "My Bloom" : t("signIn")}</button>
         <button class="icon-btn nav__menu-btn" data-sheet aria-label="${t("menu")}">${icon("menu", 22)}</button>
       </div>
       <span class="nav__progress" aria-hidden="true"><span></span></span>
@@ -100,7 +102,7 @@ function openSheet() {
           <span class="menu__text"><span class="menu__label">${t("portal")}</span><span class="menu__sub">Manage your property</span></span>${arrow(16)}</a></li>
       </ul>
       <div class="sheet__foot">
-        <a class="nav__gpt nav__gpt--lg" href="#/gpt" data-close><span class="gpt-ball" aria-hidden="true"></span><span>Ask Bloom GPT</span>${arrow(16)}</a>
+        <a class="nav__gpt nav__gpt--lg" href="#/gpt" data-close><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span><span>Ask Bloom GPT</span>${arrow(16)}</a>
         <div class="sheet__auth">
           <button class="nav__register nav__register--lg" data-sheet-register>${t("register")}</button>
           <button class="btn btn--primary btn--lg" data-sheet-signin>${t("signIn")}</button>
@@ -162,7 +164,7 @@ export function mountNav() {
   function wire() {
     navEl.querySelector(".nav__link--menu").addEventListener("click", () => toggleMenu());
     navEl.querySelectorAll("[data-search]").forEach((b) => b.addEventListener("click", () => openSearch()));
-    navEl.querySelector("[data-signin]").addEventListener("click", () => openAuth());
+    navEl.querySelector("[data-signin]").addEventListener("click", () => { if (signedIn()) location.hash = "/app"; else openAuth(); });
     navEl.querySelector("[data-register]").addEventListener("click", () => openAuth("register"));
     navEl.querySelector("[data-sheet]").addEventListener("click", openSheet);
     navEl.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));

@@ -97,7 +97,7 @@ export function render(view) {
       </header>
 
       <div class="gpt__hero" data-hero>
-        <p class="gpt__greet"><span class="gpt-ball" aria-hidden="true"></span>${esc(greet)}<span class="gpt__dot" aria-hidden="true"></span>${esc(dateStr)}</p>
+        <p class="gpt__greet"><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span>${esc(greet)}<span class="gpt__dot" aria-hidden="true"></span>${esc(dateStr)}</p>
         <p class="gpt__eyebrow">${icon("sparkle", 16)} ${L().eyebrow}</p>
         <h1 class="gpt__title"><span class="gpt__title-a">${L().titleA}</span> <span class="gpt__title-b">${L().titleB}</span></h1>
         <p class="gpt__sub">${L().sub}</p>
@@ -106,7 +106,7 @@ export function render(view) {
       <div class="gpt__log" data-log role="log" aria-live="polite" aria-relevant="additions"></div>
 
       <form class="gpt__ask" data-ask autocomplete="off">
-        <span class="gpt-ball gpt-ball--lg" aria-hidden="true" data-ball></span>
+        <span class="siri gpt-orb--lg" aria-hidden="true" data-ball><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span>
         <label class="sr-only" for="gpt-input">${L().label}</label>
         <input id="gpt-input" class="gpt__input" data-input type="text" enterkeyhint="send" />
         <span class="gpt__ph" data-ph aria-hidden="true"></span>
@@ -165,7 +165,7 @@ export function render(view) {
   async function botMsg({ text, html = "" }) {
     const row = document.createElement("div");
     row.className = "gpt__row gpt__row--bot is-thinking";
-    row.innerHTML = `<span class="gpt-ball" aria-hidden="true"></span><div class="gpt__bubble"><span class="gpt__thinking">${L().thinking}<i></i><i></i><i></i></span></div>`;
+    row.innerHTML = `<span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span><div class="gpt__bubble"><span class="gpt__thinking">${L().thinking}<i></i><i></i><i></i></span></div>`;
     log.appendChild(row);
     ball.classList.add("is-thinking");
     toBottom();

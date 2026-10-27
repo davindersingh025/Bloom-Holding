@@ -14,6 +14,13 @@ import { reducedMotion } from "bloom:/js/ui/motion.js";
 import { toast } from "bloom:/js/ui/toast.js";
 import { themeToggle } from "bloom:/js/ui/theme.js";
 
+/* Prototype sign-in: remember the demo journey and open the signed-in web (#/app) */
+const demoJourney = () => { try { return sessionStorage.getItem("bloom-journey") || "tenant"; } catch (e) { return "tenant"; } };
+function enterApp() {
+  try { sessionStorage.setItem("bloom-signed-in", "1"); } catch (e) {}
+  location.hash = `/app?journey=${demoJourney()}`;
+}
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /* ---- Field markup -------------------------------------------------------- */
@@ -57,6 +64,10 @@ const VIEWS = {
       <button type="button" class="login__alt" data-emirates>
         <span class="login__alt-icon login__uaepass" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 11v3a6 6 0 0 1-1 3.4"/><path d="M8.6 7.6A4.5 4.5 0 0 1 16.5 11v2.5a10 10 0 0 1-.6 3.4"/><path d="M7.5 11a4.5 4.5 0 0 1 .3-1.6M7.5 14v-3M5 9.2a7.5 7.5 0 0 1 14 1.8v2"/><path d="M6.2 18a10 10 0 0 0 1.3-4M9.5 20a9 9 0 0 0 1.3-3"/></svg></span><span class="btn__label">Continue with UAE PASS</span><span class="spinner" aria-hidden="true"></span>
       </button>
+      <div class="login__demo" role="group" aria-label="Demo journey">
+        <span class="login__demo-l">Prototype · sign in as</span>
+        <div class="login__demo-seg">${[["tenant", "Tenant"], ["holiday", "Holiday Home"], ["owner", "Owner + Resident"]].map(([k, l]) => `<button type="button" data-journey="${k}" aria-pressed="${k === demoJourney()}">${l}</button>`).join("")}</div>
+      </div>
     </form>`,
 
   forgot: () => `
@@ -213,6 +224,10 @@ export function render(view, { query }) {
 
   function wire(name) {
     stage.querySelectorAll("[data-view]").forEach((b) => b.addEventListener("click", () => show(b.dataset.view)));
+    stage.querySelectorAll("[data-journey]").forEach((b) => b.addEventListener("click", () => {
+      try { sessionStorage.setItem("bloom-journey", b.dataset.journey); } catch (e) {}
+      stage.querySelectorAll("[data-journey]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    }));
     stage.querySelector("[data-resend]")?.addEventListener("click", () => toast({ title: "Reset link sent again", body: "Check your spam folder too." }));
     const form = stage.querySelector("form");
     if (!form) return;
@@ -247,7 +262,7 @@ export function render(view, { query }) {
       btn.classList.add("is-loading"); btn.disabled = true;
       setTimeout(() => {
         btn.classList.remove("is-loading"); btn.disabled = false;
-        toast({ tone: "info", title: "UAE PASS", body: "In production this hands off to UAE PASS. Not connected in this prototype." });
+        enterApp();
       }, 900);
     });
 
@@ -262,7 +277,7 @@ export function render(view, { query }) {
       }
       const email = form.querySelector('input[type="email"]').value.trim().replace(/[<>&"']/g, "");
       btn.classList.add("is-loading"); btn.disabled = true;
-      setTimeout(() => show(name === "signin" ? "success" : "sent", email), 1100);
+      setTimeout(() => (name === "signin" ? enterApp() : show("sent", email)), 900);
     });
   }
 

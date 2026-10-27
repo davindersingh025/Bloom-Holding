@@ -14,6 +14,9 @@ route("/portal", () => import("bloom:/js/pages/portal.js"));
 route("/login", () => import("bloom:/js/pages/login.js"));
 route("/register", () => import("bloom:/js/pages/register.js"));
 route("/gpt", () => import("bloom:/js/pages/gpt.js"));
+route("/app", () => import("bloom:/js/pages/app.js"));
+route("/app/:a", () => import("bloom:/js/pages/app.js"));
+route("/app/:a/:b", () => import("bloom:/js/pages/app.js"));
 
 applyLang();
 initTheme();
@@ -22,10 +25,14 @@ const nav = mountNav();
 const footer = document.getElementById("site-footer-root");
 renderFooter(footer);
 
+const signedIn = () => { try { return sessionStorage.getItem("bloom-signed-in") === "1"; } catch (e) { return false; } };
+let wasSignedIn = signedIn();
 const afterRender = (meta, view) => {
+  /* Login ⇄ My Bloom in the public nav once the visitor signs in or logs out */
+  if (signedIn() !== wasSignedIn) { wasSignedIn = signedIn(); nav.redraw(); }
   setNavRoute(meta.key);
   /* The login page is a focused, chrome-free experience */
-  document.body.classList.toggle("is-focus", ["login", "register", "gpt"].includes(meta.key));
+  document.body.classList.toggle("is-focus", ["login", "register", "gpt", "app"].includes(meta.key));
   /* Division wayfinding colour for the whole page (see tokens.css) */
   document.documentElement.dataset.division = meta.key === "universal" ? "" : meta.key;
   splitWords(view);

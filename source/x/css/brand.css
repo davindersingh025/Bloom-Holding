@@ -176,3 +176,21 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 /* ---- responsive fixes for the icon-free buttons ------------------------------------------ */
 @media (max-width: 960px) { .nav__end > .nav__register { display: none !important; } }   /* Register stays in the menu sheet */
 @media (max-width: 520px) { .login__wordmark { display: none !important; } }
+
+/* ---- Bloom GPT mark: the Siri orb (as in the mobile app) ---------------------------------- */
+.nav__gpt .siri { --s: 24px; }
+.nav__gpt--lg .siri { --s: 28px; }
+.gpt__greet .siri { --s: 22px; }
+.siri.gpt-orb--lg { --s: 46px; }
+.gpt__row .siri { --s: 30px; flex: none; }
+@media (max-width: 900px) { .nav__end .nav__gpt .siri { --s: 22px; } }
+
+/* ---- login: prototype journey picker ------------------------------------------------------ */
+.login__demo { display: grid; gap: 8px; justify-items: center; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--color-border-strong); }
+.login__demo-l { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted); }
+.login__demo-seg { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.login__demo-seg button { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--color-border-strong); background: var(--color-surface); font: 600 13px/1 var(--font-matter); color: var(--color-text-secondary); cursor: pointer; }
+.login__demo-seg button[aria-pressed="true"] { background: var(--btn-dark); border-color: var(--btn-dark); color: #fff; }
+:root[data-theme="dark"] .login__demo-seg button[aria-pressed="true"] { color: #1A1A1A; }
+.rg__done { display: flex; flex-wrap: wrap; gap: 8px; }
+.rg__btn--ghost { background: #fff !important; color: #1C1C19 !important; border: 1px solid var(--color-border-strong) !important; }

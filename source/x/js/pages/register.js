@@ -598,7 +598,9 @@ export function render(view) {
     const row = await bot(`✓ ${L().doneMsg}`, { delay: 500 });
     const cta = document.createElement("div");
     cta.className = "rg__done";
-    cta.innerHTML = `<a class="rg__btn" href="#/properties">${L().explore}</a>`;
+    const J = { tenant: "tenant", owner: "owner", agent: "holiday" }[role];
+    cta.innerHTML = J ? `<a class="rg__btn rg__btn--ghost" href="#/properties">${L().explore}</a><a class="rg__btn" href="#/app?journey=${J}" data-dash>${getLang() === "ar" ? "الذهاب إلى لوحة التحكم" : "Go to dashboard"}</a>` : `<a class="rg__btn" href="#/properties">${L().explore}</a>`;
+    cta.querySelector("[data-dash]")?.addEventListener("click", () => { try { sessionStorage.setItem("bloom-signed-in", "1"); } catch (e) {} });
     row.querySelector(".rg__bubble").appendChild(cta);
     row.classList.add("is-celebrate");
     scrollDown();
