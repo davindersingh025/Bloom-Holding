@@ -1,0 +1,178 @@
+/* ==========================================================================
+   Brand refresh — brings the web up to the current mobile app design
+   (Bloom brand guidelines). Loaded after every other stylesheet.
+   · Matter (≈ Figtree) for all UI text, headlines in Orpheus Pro Medium
+     (≈ Instrument Serif), accent words in Orpheus Pro Italic (≈ Cormorant
+     Garamond Italic) — licensed .woff2 files load when present in /fonts
+   · Brand red #922A22, flat (no gradients) · cream canvas
+   · Buttons #1A1A1A · 12px radius · no shadows · no icons
+   · Brand SVG wordmark · white service cards · 40px icon tiles
+   ========================================================================== */
+@font-face { font-family: "Matter"; font-weight: 400; font-style: normal; font-display: swap; src: local("Matter"), local("Matter-Regular"); }
+@font-face { font-family: "Matter"; font-weight: 500; font-style: normal; font-display: swap; src: local("Matter Medium"), local("Matter-Medium"); }
+@font-face { font-family: "Matter"; font-weight: 600; font-style: normal; font-display: swap; src: local("Matter SemiBold"), local("Matter-SemiBold"); }
+@font-face { font-family: "Matter"; font-weight: 700; font-style: normal; font-display: swap; src: local("Matter Bold"), local("Matter-Bold"); }
+@font-face { font-family: "Orpheus Pro"; font-weight: 500; font-style: normal; font-display: swap; src: local("Orpheus Pro Medium"), local("OrpheusPro-Medium"); }
+@font-face { font-family: "Orpheus Pro"; font-weight: 400; font-style: italic; font-display: swap; src: local("Orpheus Pro Italic"), local("OrpheusPro-Italic"); }
+
+:root {
+  --font-matter: "Matter", "Figtree", Arial, sans-serif;
+  --font-orpheus: "Orpheus Pro", "Cormorant Garamond", Georgia, serif;          /* italic accents */
+  --font-orpheus-md: "Orpheus Pro", "Instrument Serif", Georgia, serif;         /* headlines */
+  --font-display: var(--font-matter);
+  --font-heading: var(--font-matter);
+  --font-body: var(--font-matter);
+  --font-serif: var(--font-orpheus);
+  --color-background: #F8F5EB;
+  --color-tint: #F3F1EA;
+  --color-secondary: #1A1A1A;
+  --color-secondary-hover: #000000;
+  --grad-brand: linear-gradient(#922A22, #922A22);
+  --btn-dark: #1A1A1A;
+  --tracking-display: -0.02em;
+}
+:root[data-theme="dark"] { --btn-dark: #F8F5EB; }
+
+body { font-family: var(--font-body); background: var(--color-background); }
+
+/* ---- type ------------------------------------------------------------------- */
+.t-serif, .t-serif * { font-family: var(--font-orpheus) !important; font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+/* Public-site headlines: Orpheus Pro Medium (focused pages — login, register, Bloom GPT — stay in Matter) */
+body:not(.is-focus) :is(.t-display, .t-h1, .t-h2, .dv-slide__title) {
+  font-family: var(--font-orpheus-md); font-weight: 500; letter-spacing: -0.02em; line-height: 1.04;
+}
+body:not(.is-focus) .t-display { font-size: clamp(3rem, 1.4rem + 5.6vw, 6.75rem); }
+body:not(.is-focus) .t-h2 { line-height: 1.08; }
+/* accent words: solid brand red (on red/dark surfaces: cream) — no gradient text */
+.grad-text,
+:is(.t-display, .t-h1, .t-h2) .t-serif,
+:is(.t-display, .t-h1, .t-h2) .t-serif .w > span {
+  background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important;
+  color: var(--color-primary) !important; animation: none !important; -webkit-text-fill-color: currentColor;
+}
+.dv-slide__title .t-serif, .dv-slide__title .t-serif .w > span { background: none !important; -webkit-background-clip: border-box !important; animation: none !important; -webkit-text-fill-color: currentColor; }
+:is(.on-dark, .cta-band, .portal-teaser, .qs-portal, .vhero) :is(.t-display, .t-h1, .t-h2, .dv-slide__title) .t-serif,
+:is(.on-dark, .cta-band, .portal-teaser, .qs-portal, .vhero) :is(.t-display, .t-h1, .t-h2, .dv-slide__title) .t-serif .w > span { color: #F3E3C9 !important; }
+.eyebrow__num { background: none !important; color: var(--color-primary) !important; -webkit-text-fill-color: currentColor; }
+.eyebrow__rule { background: var(--color-primary) !important; opacity: 0.6; }
+.on-dark .eyebrow__num { color: #F3E3C9 !important; }
+.on-dark .eyebrow__rule { background: rgba(248, 245, 235, 0.5) !important; }
+
+/* ---- wordmark: brand SVG ------------------------------------------------------- */
+.wordmark--logo { display: inline-flex; align-items: center; line-height: 0; color: var(--color-primary); font-size: 0 !important; }
+.wordmark--logo .bloom-logo { display: block; height: 28px; width: auto; }
+.nav__brand .wordmark--logo .bloom-logo { height: 30px; }
+.sheet .wordmark--logo .bloom-logo, .login__wordmark .bloom-logo, .rg__wordmark .bloom-logo { height: 30px; }
+.wordmark--lg.wordmark--logo .bloom-logo { height: 40px; }
+:root[data-theme="dark"] .wordmark--logo { color: #F3E3C9; }
+
+/* ---- buttons: #1A1A1A, 12px radius, no shadow, no icons -------------------------------- */
+.btn, .nav__signin, .nav__register, .login__primary, .login__alt, .rg__btn, .rg__chip, .dv-slide__cta, .qs-portal__cta,
+.book__cta, .fb__cta, .fb__view, .lgx-btn { border-radius: 12px !important; box-shadow: none !important; }
+.btn:focus-visible, .nav__signin:focus-visible, .nav__register:focus-visible { border-radius: 12px; }
+.btn--primary, .nav__signin, .login__primary, .rg__btn:not(.rg__btn--ghost), .book__cta, .fb__cta {
+  background: var(--btn-dark) !important; color: #fff !important; border-color: transparent !important; animation: none !important;
+}
+:root[data-theme="dark"] :is(.btn--primary, .nav__signin, .login__primary, .rg__btn:not(.rg__btn--ghost)) { color: #1A1A1A !important; }
+.btn--primary:hover, .nav__signin:hover, .login__primary:hover, .rg__btn:not(.rg__btn--ghost):hover { background: #000 !important; translate: none; }
+.login__primary::after, .nav__signin::after { display: none !important; }
+.cta-band .btn--primary, .cta-band .btn--primary:hover { background: #fff !important; color: var(--color-primary) !important; }
+.btn--light { background: var(--cream) !important; color: var(--color-primary) !important; }
+.nav__register { background: var(--color-surface) !important; border: 1px solid var(--color-border-strong) !important; color: var(--color-text-primary) !important; padding-inline: 18px !important; }
+.nav__register:hover { border-color: var(--color-text-primary) !important; }
+/* no icons inside text buttons (icon-only buttons keep theirs) */
+:is(.btn, .nav__signin, .nav__register, .login__primary, .rg__btn, .rg__chip, .dv-slide__cta, .qs-portal__cta, .rg__restart, .rg__hint, .portal-teaser__register) :is(.icon, .siri) { display: none !important; }
+.login__alt { background: var(--btn-dark) !important; color: #fff !important; border-color: transparent !important; }
+.login__alt:hover { background: #000 !important; translate: none; }
+.login__alt-icon { background: none !important; color: #fff !important; width: 22px !important; height: 22px !important; }
+:root[data-theme="dark"] .login__alt, :root[data-theme="dark"] .login__alt-icon { color: #1A1A1A !important; }
+.login__link[data-view="forgot"] { color: var(--color-text-primary) !important; }
+.login__row { justify-content: flex-end !important; }
+.icon-btn, .seg, .seg__btn { box-shadow: none; }
+
+/* ---- hero: banner is a rounded rectangle (was an arch) ------------------------------------ */
+.hero__kicker { display: none !important; }
+.hero__arch { aspect-ratio: 4 / 5; }
+.hero__arch-frame { border-radius: 24px !important; border: 0 !important; box-shadow: none !important; }
+.hero__arch-outline { border-radius: 32px !important; inset: -10px !important; transform: none !important; background: none !important; -webkit-mask: none !important; mask: none !important;
+  border: 1px solid rgba(146, 42, 34, 0.3) !important; opacity: 1 !important; z-index: -1; }
+.hero__arch-chip { inset-inline-start: 20px !important; inset-inline-end: 20px; bottom: 20px !important; border-radius: 18px !important; justify-content: space-between; animation: none !important; box-shadow: none !important; }
+.hero__swash path { stroke: var(--color-primary) !important; }
+.hero__halo, .hero__grain { display: none !important; }
+.hero__bg { background: var(--color-background) !important; }
+@media (max-width: 1023px) { .hero__arch { aspect-ratio: 4 / 3; } }
+
+/* ---- stats: separate white cards, superscript "+" -------------------------------------- */
+.stats { background: none !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; gap: 12px; overflow: visible; }
+.stat { background: #fff; border: 1px solid var(--color-border) !important; border-radius: 20px; }
+:root[data-theme="dark"] .stat { background: var(--color-surface); }
+.stat::after { display: none; }
+.stat__icon { width: 40px !important; height: 40px !important; border-radius: 12px !important; background: color-mix(in srgb, var(--c) 10%, #fff) !important; }
+.stat__value { font-family: var(--font-matter); }
+.stat__suffix { color: inherit !important; }
+.stat__suffix--sup { font-size: 0.58em; align-self: flex-start; margin-top: 0.1em; }
+
+/* ---- quick start: plain white cards (as mobile) ------------------------------------------- */
+.qs { background: #fff !important; border: 1px solid var(--color-border) !important; box-shadow: none !important; min-height: 200px !important; grid-template-rows: auto 1fr !important; }
+:root[data-theme="dark"] .qs { background: var(--color-surface) !important; }
+.qs::before, .qs::after, .qs__tags, .qs__photo, .qs__dots, .qs__halo { display: none !important; }
+.qs:hover { color: inherit !important; border-color: var(--color-border-strong) !important; translate: 0 -4px; box-shadow: none !important; }
+.qs__icon { width: 40px !important; height: 40px !important; border-radius: 50% !important; background: var(--c) !important; box-shadow: none !important; color: #fff !important; }
+.qs__icon .icon { width: 20px; height: 20px; }
+.qs:hover .qs__icon { background: var(--c) !important; color: #fff !important; rotate: none !important; scale: 1 !important; }
+.qs__go { width: auto !important; height: auto !important; background: none !important; color: var(--c) !important; }
+.qs:hover .qs__go { background: none !important; rotate: none !important; scale: 1.1; }
+.qs__text { max-width: none !important; }
+.qs:hover .qs__meta { color: var(--c) !important; }
+.qs-portal { background: var(--color-primary) !important; box-shadow: none !important; border-radius: 24px !important; }
+.qs-portal__rings { display: none !important; }
+.qs-portal__cta { background: transparent !important; color: var(--cream) !important; border: 1px solid rgba(248, 245, 235, 0.4) !important; }
+
+/* ---- red chapters: flat brand red ------------------------------------------------------ */
+.marquee { background: var(--color-background) !important; border-block: 1px solid var(--color-border); padding-block: 20px !important; }
+.marquee__track span { color: #54504A !important; -webkit-text-stroke: 0 !important; background: none !important; -webkit-background-clip: border-box !important; font-family: var(--font-matter); font-weight: 600; font-size: clamp(1.75rem, 1.2rem + 2vw, 3rem) !important; letter-spacing: -0.02em; }
+.marquee__track .marquee__dot { color: var(--color-primary) !important; font-size: 1.25rem !important; }
+.cta-band { background: var(--color-primary) !important; }
+.cta-band::before, .cta-band::after, .cta-band [class*="pattern"], .cta-band [class*="lattice"] { display: none !important; }
+.portal-teaser { background: var(--color-primary) !important; }
+.portal-teaser::before, .portal-teaser::after, .portal-teaser [class*="glow"], .portal-teaser [class*="lattice"] { display: none !important; }
+.section-head__title::after, [class*="__underline"] { background: var(--color-primary) !important; }
+.footer { background: var(--color-background) !important; }
+.vhero__shade { background: linear-gradient(180deg, rgba(146, 42, 34, 0.35), rgba(92, 26, 21, 0.85)) !important; }
+.login__wash { background: linear-gradient(180deg, rgba(146, 42, 34, 0.55), rgba(92, 26, 21, 0.92)) !important; }
+
+/* ---- cards & notes ---------------------------------------------------------------------- */
+.notif, .toast { box-shadow: 0 12px 28px -18px rgba(28, 28, 25, 0.35) !important; }
+.tst__card { background: var(--color-primary) !important; }
+.feature-list__icon, .features__icon, .notif__icon, .menu__thumb--icon { border-radius: 12px !important; }
+
+/* ---- login (mobile copy & look) ---------------------------------------------------------- */
+.login__title { font-family: var(--font-matter); font-weight: 600; letter-spacing: -0.02em; }
+.lf__input { border-radius: 14px !important; }
+.login__switch, .login__switch-ink { border-radius: 14px !important; }
+.login__switch-btn { border-radius: 12px !important; }
+
+/* ---- register / Bloom GPT chips -------------------------------------------------------- */
+.rg__chip { background: #fff !important; border: 1px solid var(--color-border-strong) !important; color: var(--color-text-primary) !important; font-weight: 600 !important; }
+.rg__chip--solid { background: var(--btn-dark) !important; color: #fff !important; border-color: transparent !important; }
+.rg__chip:hover { border-color: var(--color-text-primary) !important; }
+.rg__send, .gpt__send { border-radius: 12px !important; background: var(--btn-dark) !important; box-shadow: none !important; }
+:root[data-theme="dark"] .rg__chip { background: var(--color-surface) !important; }
+
+/* ---- Bloom GPT & register pages: calm cream canvas, solid type --------------------------- */
+.gpt { background: var(--color-background) !important; }
+.gpt__bg { display: none !important; }
+.gpt__title { color: #1C1C19 !important; font-family: var(--font-matter) !important; font-weight: 700 !important; letter-spacing: -0.035em !important; }
+.gpt__title-b { background: none !important; -webkit-background-clip: border-box !important; color: var(--color-primary) !important; }
+.gpt__sub { color: #54504A !important; }
+.gpt__chip { border-radius: 12px !important; box-shadow: none !important; }
+.rg { background: var(--color-background) !important; }
+.rg__mesh, .rg__aura { display: none !important; }
+:root[data-theme="dark"] :is(.gpt, .rg) { background: var(--color-background) !important; }
+:root[data-theme="dark"] .gpt__title { color: var(--color-text-primary) !important; }
+.login__brand-title { font-family: var(--font-orpheus-md) !important; font-weight: 500 !important; letter-spacing: -0.02em; }
+.login__brand-title .t-serif { color: #F3E3C9 !important; }
+
+/* ---- responsive fixes for the icon-free buttons ------------------------------------------ */
+@media (max-width: 960px) { .nav__end > .nav__register { display: none !important; } }   /* Register stays in the menu sheet */
+@media (max-width: 520px) { .login__wordmark { display: none !important; } }
