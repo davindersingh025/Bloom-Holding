@@ -51,13 +51,13 @@ function template() {
       </div>
 
       <div class="nav__end">
-        <a class="nav__gpt ${currentKey === "gpt" ? "is-current" : ""}" href="#/gpt" data-magnetic aria-label="Bloom GPT"><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span><span class="nav__gpt-label">Bloom GPT</span></a>
+        <a class="nav__gpt ${currentKey === "gpt" ? "is-current" : ""}" href="#/gpt" aria-label="Bloom GPT"><span class="siri" aria-hidden="true"><i></i><i></i><i></i><i></i><em></em><u></u><b></b></span><span class="nav__gpt-label">Bloom GPT</span></a>
         ${themeToggle("nav__theme")}
         <button class="icon-btn nav__search-m" data-search aria-label="${t("search")}">${icon("search", 20)}</button>
-        <button class="nav__register" data-register data-magnetic>
+        <button class="nav__register" data-register>
           ${t("register")}
         </button>
-        <button class="btn btn--primary nav__signin" data-signin data-magnetic>${signedIn() ? "My Bloom" : t("signIn")}</button>
+        <button class="btn btn--primary nav__signin" data-signin>${signedIn() ? "My Bloom" : t("signIn")}</button>
         <button class="icon-btn nav__menu-btn" data-sheet aria-label="${t("menu")}">${icon("menu", 22)}</button>
       </div>
       <span class="nav__progress" aria-hidden="true"><span></span></span>

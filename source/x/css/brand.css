@@ -199,3 +199,47 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 :root[data-theme="dark"] .login__demo-seg button[aria-pressed="true"] { color: #1A1A1A; }
 .rg__done { display: flex; flex-wrap: wrap; gap: 8px; }
 .rg__btn--ghost { background: #fff !important; color: #1C1C19 !important; border: 1px solid var(--color-border-strong) !important; }
+
+/* ==========================================================================
+   Header — decluttered: one control height (40px), quiet utilities,
+   a hairline divider, then Register (outline) + Login (dark).
+   ========================================================================== */
+.nav { --nav-ctl: 40px; }
+.nav__pill { background: rgba(255, 255, 255, 0.92) !important; box-shadow: 0 0 0 1px rgba(28, 28, 25, 0.06), 0 14px 30px -24px rgba(92, 26, 21, 0.4) !important; }
+.nav__end { gap: 6px !important; }
+/* Bloom GPT: orb + label, no pink pill */
+.nav__gpt:not(.nav__gpt--lg) { height: 40px !important; padding-inline: 8px 12px !important; border: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 12px !important; color: var(--color-text-primary) !important; font-family: var(--font-matter) !important; font-size: 15px !important; font-weight: 600 !important; }
+.nav__gpt:not(.nav__gpt--lg):hover, .nav__gpt.is-current { background: rgba(28, 28, 25, 0.05) !important; }
+.nav__gpt .siri { --s: 22px !important; }
+/* theme: a single icon button (moon in light mode, sun in dark mode) */
+.nav__theme.theme-toggle { --tw: 40px; --th: 40px; width: 40px !important; height: 40px !important; padding: 0 !important; display: grid !important; place-items: center !important; border-radius: 12px !important; background: transparent !important; box-shadow: none !important; border: 0 !important; }
+.nav__theme.theme-toggle:hover { background: rgba(28, 28, 25, 0.05) !important; }
+.nav__theme .theme-toggle__knob { display: none !important; }
+.nav__theme > span:not(.theme-toggle__knob) { grid-area: 1 / 1; color: var(--color-text-secondary) !important; }
+.nav__theme[aria-checked="false"] .theme-toggle__sun, .nav__theme[aria-checked="true"] .theme-toggle__moon { display: none !important; }
+.nav__theme .icon { width: 19px; height: 19px; }
+:root[data-theme="dark"] .nav__theme > span { color: #F3E3C9 !important; }
+/* search + language: same height, quieter */
+.nav__search { height: 40px !important; width: auto !important; padding-inline: 10px !important; border-radius: 12px !important; gap: 6px !important; }
+.nav__lang { height: 40px !important; padding: 3px !important; border-radius: 12px !important; }
+.nav__lang .seg__btn { border-radius: 9px !important; padding-inline: 10px !important; font-size: 13px !important; }
+/* divider before the account actions */
+.nav__end .nav__register { margin-inline-start: 6px; position: relative; }
+.nav__end .nav__register::before { content: ""; position: absolute; inset-inline-start: -9px; top: 9px; bottom: 9px; width: 1px; background: var(--color-border-strong); }
+/* Register + Login: identical size, aligned */
+.nav__end .nav__register, .nav__end .nav__signin { height: 40px !important; min-height: 40px !important; padding-inline: 18px !important; font-family: var(--font-matter) !important; font-size: 15px !important; font-weight: 600 !important; line-height: 1 !important; transform: none !important; align-self: center; display: inline-flex; align-items: center !important; justify-content: center !important; overflow: visible !important; }
+.nav__end .nav__signin { --btn-h: 40px; }
+.nav__end .nav__register { background: transparent !important; border: 1px solid var(--color-border-strong) !important; }
+@media (max-width: 900px) { .nav { --nav-ctl: 40px; } .nav__end .nav__register::before { display: none; } }
+
+/* header declutter — dark pill + phone layout */
+:root[data-theme="dark"] .nav__pill { background: rgba(32,25,22,0.92) !important; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 14px 30px -24px rgba(0,0,0,0.6) !important; }
+:root[data-theme="dark"] .nav__gpt:not(.nav__gpt--lg) { color: #F3E3C9 !important; }
+:root[data-theme="dark"] .nav__gpt:not(.nav__gpt--lg):hover, :root[data-theme="dark"] .nav__gpt.is-current { background: rgba(255,255,255,0.06) !important; }
+:root[data-theme="dark"] .nav__end .nav__register { color: #F3E3C9 !important; border-color: rgba(243,227,201,0.3) !important; }
+:root[data-theme="dark"] .nav__end .nav__register:hover { border-color: #F3E3C9 !important; }
+@media (max-width: 900px) {
+  .nav__end > .nav__signin, .nav__end > .nav__register { display: none !important; }
+  .nav__end { gap: 2px !important; }
+  .nav__menu-btn, .nav__search-m { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
+}
