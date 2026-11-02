@@ -48,6 +48,17 @@ const P = {
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   qr: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 14h2M14 18h2M18 18h2v2"/>',
   amen: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4M8 14h3M8 17h6"/>',
+  hash: '<path d="M5 9h14M5 15h14M10 3 8 21M16 3l-2 18"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8Z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
+  download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  door: '<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16"/><path d="M14.5 12h.01"/>',
+  cal: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>',
+  calx: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4M10 13l4 4M14 13l-4 4"/>',
+  brief: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18"/>',
+  house: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  apt: '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3 3 0 0 1 0 6M18 20a6 6 0 0 0-3-5.2"/>',
   chat: '<path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/>',
 };
 export function icon(name, size = 20, color = "currentColor", cls = "") {
@@ -58,7 +69,11 @@ export const pill = (label, tone = "blue", extra = "") => `<span class="ap-pill"
 export const rows = (list) => `<dl class="ap-rows">${list.filter(Boolean).map((r) => `<div class="ap-row"><dt>${esc(r[0])}</dt><dd>${r[2] ? r[1] : esc(r[1])}</dd></div>`).join("")}</dl>`;
 export const tile = (name, color = "#922A22", bg) => `<span class="ap-tile" style="${bg ? `background:${bg};` : ""}">${icon(name, 20, color)}</span>`;
 export const eyebrow = (t, right = "") => `<div class="ap-eb"><p class="ap-eyebrow">${esc(t)}</p>${right}</div>`;
-export const docRows = (list) => list.map((d) => `<button type="button" class="ap-doc" data-doc="${esc(d[0])}"><span class="ap-tile">${icon("doc", 18, "#922A22")}</span><span class="ap-doc-t"><b>${esc(d[0])}</b><small>${esc(d[1])}</small></span>${icon("chev", 16, "#8A847A")}</button>`).join("");
+export const docRows = (list) => list.map((d) => `<button type="button" class="ap-doc" data-doc="${esc(d[0])}"><span class="ap-doc-i">${icon("file", 20, "#1C1C19")}</span><span class="ap-doc-t"><b>${esc(d[0])}</b><small>${esc(d[1])}</small></span><span class="ap-doc-dl" aria-label="Download">${icon("download", 18, "#1C1C19")}</span></button>`).join("");
+/* mobile-style section heading: bare line icon + title (+ optional pill/action on the right) */
+export const secH = (ic, title, right = "") => `<div class="ud-h">${icon(ic, 22, "#1C1C19")}<b>${esc(title)}</b>${right}</div>`;
+/* detail rows with a leading bare line icon: [icon, label, value, rawHtml?] */
+export const irows = (list) => `<dl class="ap-rows ap-rows--i">${list.filter(Boolean).map((r) => `<div class="ap-row"><dt>${icon(r[0], 20, "#1C1C19")}<span>${esc(r[1])}</span></dt><dd>${r[3] ? r[2] : esc(r[2])}</dd></div>`).join("")}</dl>`;
 export const hint = (text) => `<div class="ap-hint">${icon("info", 16, "#1A1A1A")}<span>${esc(text)}</span></div>`;
 export const btn = (label, { kind = "primary", attrs = "", href } = {}) =>
   href ? `<a class="ap-btn ap-btn--${kind}" href="${href}" ${attrs}>${esc(label)}</a>` : `<button type="button" class="ap-btn ap-btn--${kind}" ${attrs}>${esc(label)}</button>`;

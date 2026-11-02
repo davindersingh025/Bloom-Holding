@@ -7,7 +7,7 @@
              agreement with owner + holiday home permit · move-out */
 
 import * as st from "bloom:/js/app/store.js";
-import { icon, esc, pill, rows, eyebrow, docRows, hint, btn, segmented, unitIcon, avatar, tile } from "bloom:/js/app/ui.js";
+import { icon, esc, pill, rows, eyebrow, docRows, hint, btn, segmented, unitIcon, avatar, tile, secH, irows } from "bloom:/js/app/ui.js";
 import { toast } from "bloom:/js/app/shell.js";
 
 const OMAR = "Omar Al Suwaidi";
@@ -20,11 +20,11 @@ export function page({ shell, b }) {
 
   const card = (inner, cls = "") => `<section class="ap-card ${cls}">${inner}</section>`;
   const endTxt = (end) => { const l = st.daysTo(end); return esc(st.fmt(end)) + (l >= 0 && l <= 60 ? ` <span class="ap-warn">· ${l} days left</span>` : ""); };
-  const docs = (l) => card(eyebrow("DOCUMENTS") + `<div class="ap-docs">${docRows(l)}</div>`);
+  const docs = (l) => card(secH("folder", "Documents") + `<div class="ap-docs ap-docs--box">${docRows(l)}</div>`);
 
   function ownerCard(u) {
-    if (!st.isOwner()) return card(eyebrow("OWNER DETAILS") + rows([["Owner name", u.ownerName || OMAR]]));
-    return card(eyebrow("OWNER DETAILS") + `<div class="pd-owners">${u.own.owners.map((o) => `<div class="pd-own">${avatar(o[0])}<span class="pd-ot"><b>${esc(o[0])}</b><small>Ownership share ${o[1]}%</small></span>${o[2] ? '<span class="pd-prim">Primary</span>' : ""}</div>`).join("")}</div>`);
+    if (!st.isOwner()) return card(secH("user", "Owner details") + `<div class="pd-owners"><div class="pd-own">${avatar(u.ownerName || OMAR)}<span class="pd-ot"><b>${esc(u.ownerName || OMAR)}</b><small>Owner</small></span></div></div>`);
+    return card(secH("user", "Owner details") + `<div class="pd-owners">${u.own.owners.map((o) => `<div class="pd-own">${avatar(o[0])}<span class="pd-ot"><b>${esc(o[0])}</b><small>Ownership share ${o[1]}%</small></span>${o[2] ? '<span class="pd-prim">Primary</span>' : ""}</div>`).join("")}</div>`);
   }
   function payments(u) {
     const o = u.own;
@@ -38,39 +38,39 @@ export function page({ shell, b }) {
       hist = [["Service charge · Q4 2026", "Paid 1 Oct 2026", sc, "Paid", "green"], ["Service charge · Q3 2026", "Paid 1 Jul 2026", sc, "Paid", "green"], ["Final payment", `Paid ${st.fmt(o.handover || new Date(2023, 11, 10))}`, "Fully paid", "Paid", "green"]];
     }
     const L = payTab === "up" ? up : hist;
-    return card(eyebrow("PAYMENTS") + segmented([["up", "Upcoming"], ["hist", "History"]], payTab, "data-ptab") +
+    return card(secH("card", "Payments") + segmented([["up", "Upcoming"], ["hist", "History"]], payTab, "data-ptab") +
       `<div class="pd-pl">${L.map((x) => `<div class="pd-pr"><span class="pd-pt"><b>${esc(x[0])}</b><small>${esc(x[1])}</small></span><span class="pd-pa"><b>${esc(x[2])}</b>${pill(x[3], x[4])}</span></div>`).join("")}</div>`);
   }
   function statusCards(u) {
     const o = u.own, spa = ["Sales and Purchase Agreement", `PDF · signed ${st.fmt(o.spa)}`];
-    if (o.status === "pending") return card(eyebrow("PAYMENT SUMMARY") +
+    if (o.status === "pending") return card(secH("coins", "Payment summary") +
       `<div class="pd-prog"><div class="pd-prog-h"><span>Payment completed</span><b>${o.paidPct}%</b></div><div class="pd-bar"><i style="width:${o.paidPct}%"></i></div></div>` +
-      rows([["Amount outstanding", o.outstanding], ["Next due date", st.fmt(o.next)]]) + hint("Handover after payment is complete.")) + docs([spa]);
-    if (o.status === "vacant") return card(eyebrow("OCCUPANCY") + `<div class="pd-occ">${tile("home", "#6B665C", "rgba(28,28,26,.06)")}<span class="pd-ot"><b>Unit is vacant</b><small>Handed over ${st.fmt(o.handover)}</small></span>${pill("Fully paid", "green")}</div>`) +
+      irows([["coins", "Amount outstanding", o.outstanding], ["cal", "Next due date", st.fmt(o.next)]]) + hint("Handover after payment is complete.")) + docs([spa]);
+    if (o.status === "vacant") return card(secH("house", "Occupancy") + `<div class="pd-occ">${tile("home", "#6B665C", "rgba(28,28,26,.06)")}<span class="pd-ot"><b>Unit is vacant</b><small>Handed over ${st.fmt(o.handover)}</small></span>${pill("Fully paid", "green")}</div>`) +
       docs([spa, ["Handover documents", `PDF · ${st.fmt(o.handover)}`]]);
-    if (o.status === "resident") return card(eyebrow("OCCUPANCY") + `<div class="pd-occ">${tile("home")}<span class="pd-ot"><b>You live here</b><small>Moved in on ${st.fmt(o.moveIn)}</small></span></div>`) + docs([spa]);
-    if (o.status === "rented") { const t = o.tenancy; return card(eyebrow("TENANCY CONTRACT", pill(t.status, t.tone)) + rows([["Tenant name", t.tenant], ["Contract no.", t.no], ["Start date", st.fmt(t.start)], ["End date", endTxt(t.end), true]])) +
+    if (o.status === "resident") return card(secH("house", "Occupancy") + `<div class="pd-occ">${tile("home")}<span class="pd-ot"><b>You live here</b><small>Moved in on ${st.fmt(o.moveIn)}</small></span></div>`) + docs([spa]);
+    if (o.status === "rented") { const t = o.tenancy; return card(secH("doc", "Tenancy contract", pill(t.status, t.tone)) + irows([["user", "Tenant name", t.tenant], ["hash", "Contract no.", t.no], ["cal", "Start date", st.fmt(t.start)], ["calx", "End date", endTxt(t.end), true]])) +
       docs([spa, ["Tenancy contract", `PDF · signed ${st.fmt(t.start)}`]]); }
-    if (o.status === "holiday") return card(eyebrow("HOLIDAY HOME") + rows([["Agent", o.agent], ["Company", o.company]])) + docs([spa, ["Tenancy contract", `PDF · signed ${st.fmt(o.hhContract)}`]]);
+    if (o.status === "holiday") return card(secH("key", "Holiday home") + irows([["user", "Agent", o.agent], ["brief", "Company", o.company]])) + docs([spa, ["Tenancy contract", `PDF · signed ${st.fmt(o.hhContract)}`]]);
     return "";
   }
   function tenantContract(u) {
     const k = u.contract;
-    return card(eyebrow("TENANCY CONTRACT", pill(k.status, k.tone)) +
-      rows([["Contract no.", k.no], ["Ejari no.", k.ejari], ["Start date", st.fmt(k.start)], ["End date", endTxt(k.end), true]]) +
+    return card(secH("doc", "Tenancy contract", pill(k.status, k.tone)) +
+      irows([["hash", "Contract no.", k.no], ["file", "Ejari no.", k.ejari], ["cal", "Start date", st.fmt(k.start)], ["calx", "End date", endTxt(k.end), true]]) +
       (k.status === "Expiring soon" ? btn("Renew contract", { attrs: "data-renew" }) : "") +
-      `<div class="pd-docs"><p class="ap-eyebrow">DOCUMENTS</p><div class="ap-docs">${docRows([["Tenancy contract", `PDF · signed ${st.fmt(u.upcoming ? st.addDays(st.TODAY, -6) : k.start)}`]])}</div></div>`);
+      `<div class="pd-docs"><div class="ud-h ud-h--sub">${icon("folder", 20, "#1C1C19")}<b>Documents</b></div><div class="ap-docs ap-docs--box">${docRows([["Tenancy contract", `PDF · signed ${st.fmt(u.upcoming ? st.addDays(st.TODAY, -6) : k.start)}`]])}</div></div>`);
   }
   function moveoutCard(u) {
     if (!st.canMoveOut(u)) return "";
     const r = st.moveout(u.id);
-    let h = eyebrow("MOVE-OUT");
+    let h = secH("exit", "Move-out");
     if (!r) {
       const sub = st.isOwner() ? "Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date." : "Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.";
-      h += `<div class="pd-mo-h">${tile("exit")}<span class="pd-ot"><b class="ap-h3">Moving out of ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-out", { attrs: "data-mo-start" });
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving out of ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-out", { attrs: "data-mo-start" });
     } else {
       const s = st.MO_ST[r.status], closed = ["nocRejected", "bcmRejected"].includes(r.status);
-      h += `<div class="pd-mo-h">${tile("exit")}<span class="pd-ot"><b class="ap-h3">Move-out request · ${esc(r.id)}</b><small>Move-out on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Move-out request · ${esc(r.id)}</b><small>Move-out on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
         (closed ? `<div class="ap-btns">${btn("Track request", { kind: "ghost", href: `#/app/moveout/${u.id}` })}${btn("New request", { attrs: "data-mo-new" })}</div>` : btn("Track request", { href: `#/app/moveout/${u.id}` }));
     }
     return card(h);
@@ -79,13 +79,13 @@ export function page({ shell, b }) {
   function moveinCard(u) {
     if (!st.canMoveIn(u)) return "";
     const r = st.movein(u.id), t = (x) => tile("enter", "#2E7D5B", "rgba(46,125,91,.1)");
-    let h = eyebrow("MOVE-IN");
+    let h = secH("enter", "Move-in");
     if (!r) {
       const sub = st.isOwner() ? "Book your move-in with Bloom GPT. Upload your title deed and Emirates ID, then BCM confirms your slot and access cards." : `Your tenancy starts on ${st.fmt(u.contract.start)}. Book your move-in with Bloom GPT — you’ll need your Ejari certificate and Emirates ID.`;
-      h += `<div class="pd-mo-h">${t()}<span class="pd-ot"><b class="ap-h3">Moving in to ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-in", { attrs: "data-mi-start" });
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving in to ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-in", { attrs: "data-mi-start" });
     } else {
       const s = st.MI_ST[r.status], closed = ["docsRejected", "bcmRejected"].includes(r.status);
-      h += `<div class="pd-mo-h">${t()}<span class="pd-ot"><b class="ap-h3">Move-in request · ${esc(r.id)}</b><small>Move-in on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Move-in request · ${esc(r.id)}</b><small>Move-in on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
         (closed ? `<div class="ap-btns">${btn("Track request", { kind: "ghost", href: `#/app/movein/${u.id}` })}${btn("New request", { attrs: "data-mi-new" })}</div>` : btn("Track request", { href: `#/app/movein/${u.id}` }));
     }
     return card(h);
@@ -98,7 +98,7 @@ export function page({ shell, b }) {
         <div class="db-res-h"><span class="db-live" aria-hidden="true"></span><span class="db-comm">${esc(u.community.toUpperCase())}</span><span class="db-code">${esc(u.code)}</span></div>
         <div class="pd-head-b"><span class="pd-img" aria-hidden="true">${icon(unitIcon(u), 34, "#922A22")}<img src="${st.unitImg(u, 640)}" alt="" loading="lazy" onerror="this.remove()"></span>
         <span class="pd-head-t"><b>${esc(u.type)}</b><small>${icon("pin", 14, "#922A22")} ${esc(u.address)}</small>${s ? pill(st.ST_LABEL[s], st.ST_TONE[s], 'class="pd-chip"') : ""}</span></div></section>`;
-    const prop = card(eyebrow("PROPERTY") + rows([["Property type", u.type], ["Unit", u.name], ["Community", u.community], ["Address", u.address], ["Unit code", u.code]]));
+    const prop = card(secH("building", "About unit") + irows([[u.icon === "building" ? "apt" : "house", "Property type", u.type], ["door", "Unit", u.name], ["community", "Community", u.community], ["pin", "Address", u.address], ["tag", "Unit code", u.code]]));
     let side;
     if (st.isOwner()) side = statusCards(u) + ownerCard(u) + payments(u);
     else if (st.isAgent()) side = ownerCard(u) + docs([["Agreement with owner", `PDF · signed ${st.fmt(u.agreement)}`], ["Holiday home permit", `PDF · ${u.permit.no} · valid until ${st.fmt(u.permit.until)}`]]);

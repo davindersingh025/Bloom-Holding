@@ -1051,3 +1051,19 @@ body.in-app #view { transition: none !important; }
 .d6-mi-p { margin: 14px 0 18px; font-size: 15px; line-height: 1.55; color: var(--muted); }
 .d6-mi-p b { color: var(--ink); font-weight: 600; }
 .d6-mi-f { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---- Property details: mobile-style icons (bare line icons, section headings) ---- */
+.ud-h { display: flex; align-items: center; gap: 12px; min-height: 28px; margin-bottom: 12px; }
+.ud-h > .ai { flex: none; }
+.ud-h > b { flex: 1; min-width: 0; font-size: 17px; line-height: 24px; font-weight: 600; color: var(--ink); }
+.ud-h > .ap-pill { flex: none; }
+.ud-h--sub { margin: 4px 0 10px; }
+.ud-h--sub > b { font-size: 15px; line-height: 22px; }
+.ap-rows--i .ap-row dt { display: flex; align-items: center; gap: 12px; color: var(--muted); }
+.ap-rows--i .ap-row dt .ai { flex: none; }
+.ap-docs--box { gap: 10px; }
+.ap-docs--box .ap-doc { border: 1px solid #ECE6DF; border-radius: 14px; padding: 12px 16px; min-height: 64px; }
+.ap-docs--box .ap-doc:first-child { border-top: 1px solid #ECE6DF; }
+.ap-doc-i, .ap-doc-dl { flex: none; display: grid; place-items: center; }
+.ap-doc-dl { width: 32px; height: 32px; border-radius: 10px; }
+.ap-doc:hover .ap-doc-dl { background: rgba(28, 28, 25, 0.06); }
