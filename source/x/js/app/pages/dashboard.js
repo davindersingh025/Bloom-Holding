@@ -18,50 +18,60 @@ export function page({ shell }) {
     const on = st.ongoing(), inn = on.filter((b) => b.status === "Checked in").length;
     const s0 = st.unitStatus(u);
 
+    const st0 = s0 ? pill(st.ST_LABEL[s0], st.ST_TONE[s0]) : "";
+
+    /* Property — photo-led card */
     const residence = `
-      <a class="db-res" href="#/app/property/${u.id}" aria-label="View property details for ${esc(u.name)}">
-        <div class="db-res-h"><span class="db-live" aria-hidden="true"></span><span class="db-comm">${esc(u.community.toUpperCase())}</span><span class="db-code">${esc(u.code)}</span></div>
-        <div class="db-res-b">
-          <span class="db-res-img" aria-hidden="true">${icon(unitIcon(u), 30, "#922A22")}<img src="${st.unitImg(u)}" alt="" loading="lazy" onerror="this.remove()"></span>
-          <span class="db-res-t"><b>${esc(u.type)}</b><small>${icon("pin", 14, "#922A22")} ${esc(u.address)}</small>${s0 ? pill(st.ST_LABEL[s0], st.ST_TONE[s0]) : ""}</span>
-          <span class="db-go">${icon("chev", 18)}</span>
-        </div>
-        ${us.length > 1 ? `<span class="db-more">+ ${us.length - 1} more propert${us.length > 2 ? "ies" : "y"}</span>` : ""}
+      <a class="db2-prop db-in" style="--d:1" href="#/app/property/${u.id}" aria-label="View property details for ${esc(u.name)}">
+        <span class="db2-prop-media" aria-hidden="true">${icon(unitIcon(u), 40, "#922A22")}<img src="${st.unitImg(u, 960)}" alt="" loading="lazy" onerror="this.remove()"></span>
+        <span class="db2-prop-top"><span class="db2-chip"><i class="db-live"></i>${esc(u.community.toUpperCase())}</span><span class="db2-code">${esc(u.code)}</span></span>
+        <span class="db2-prop-b">
+          <span class="db2-prop-t"><b>${esc(u.type)}</b><small>${icon("pin", 14, "#922A22")} ${esc(u.address)}</small></span>
+          ${st0}<span class="db2-go">${icon("chev", 18)}</span>
+        </span>
+        ${us.length > 1 ? `<span class="db2-more">+ ${us.length - 1} more propert${us.length > 2 ? "ies" : "y"}</span>` : ""}
       </a>`;
 
+    /* Action — renewal (tenant) or guest check-in (agent) */
     const cta = st.isTenant() ? `
-      <button type="button" class="db-cta" data-renew aria-label="Tenancy contract expiring soon. Renew with Bloom GPT">
-        <span class="db-ring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="rgba(248,245,235,.25)" stroke-width="3"/><circle class="db-ring-arc" cx="24" cy="24" r="21" fill="none" stroke="#F8F5EB" stroke-width="3" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="106" transform="rotate(-90 24 24)"/></svg><b>12</b><small>Days</small></span>
-        <span class="db-cta-t"><b>Tenancy contract expiring soon</b><small>Renew before 10 Oct 2026 to keep access active</small></span>
-        <span class="db-cta-go">${icon("arrow", 18, "#F8F5EB")}</span>
+      <button type="button" class="db2-act db-in" style="--d:2" data-renew aria-label="Tenancy contract expiring soon. Renew with Bloom GPT">
+        <span class="db2-ring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="rgba(146,42,34,.14)" stroke-width="3.5"/><circle class="db-ring-arc" cx="24" cy="24" r="21" fill="none" stroke="#922A22" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="106" transform="rotate(-90 24 24)"/></svg><b>12</b><small>Days</small></span>
+        <span class="db2-act-t"><b>Tenancy contract expiring soon</b><small>Renew before 10 Oct 2026 to keep access active</small></span>
+        <span class="db2-act-go">${icon("arrow", 18, "#fff")}</span>
       </button>` : st.isAgent() ? `
-      <button type="button" class="db-cta" data-checkin aria-label="Guest check-in with Bloom GPT">
-        <span class="db-cta-ic">${icon("key", 24, "#F8F5EB")}</span>
-        <span class="db-cta-t"><b>Guest check-in</b><small>${inn} in-house · ${on.length - inn} upcoming</small></span>
-        <span class="db-cta-go">${icon("arrow", 18, "#F8F5EB")}</span>
+      <button type="button" class="db2-act db-in" style="--d:2" data-checkin aria-label="Guest check-in with Bloom GPT">
+        <span class="db2-ring db2-ring--ic">${icon("key", 24, "#922A22")}</span>
+        <span class="db2-act-t"><b>Guest check-in</b><small>${inn} in-house · ${on.length - inn} upcoming</small></span>
+        <span class="db2-act-go">${icon("arrow", 18, "#fff")}</span>
       </button>` : "";
 
+    /* Active request */
     const active = lead ? `
-      <a class="db-req" href="#/app/requests/${lead.id}" aria-label="${esc(lead.title)}, request ${lead.id}, ${esc(lead.status)}. View details">
-        <div class="db-req-h">${tile("wrench")}<span class="db-req-t"><b>${esc(lead.title)}</b><small>Ref #${lead.id} · ${esc(lead.category)}</small></span>${pill(lead.status, st.REQ_STATUS[lead.status])}</div>
-        <span class="db-bar"><i style="--w:${lead.progress}%"></i></span>
+      <a class="db2-req db-in" style="--d:3" href="#/app/requests/${lead.id}" aria-label="${esc(lead.title)}, request ${lead.id}, ${esc(lead.status)}. View details">
+        <span class="db2-req-h">${tile("wrench")}${pill(lead.status, st.REQ_STATUS[lead.status])}</span>
+        <b class="db2-req-t">${esc(lead.title)}</b>
+        <small class="db2-req-m">Ref #${lead.id} · ${esc(lead.category)}</small>
+        <span class="db2-req-p"><span class="db-bar"><i style="--w:${lead.progress}%"></i></span><em>${lead.progress}%</em></span>
       </a>` : "";
 
+    const scope = (href, ic, col, name, sub, d) => `
+      <a class="db2-scope db-in" style="--d:${d};--c:${col}" href="${href}"><span class="db2-scope-i">${icon(ic, 22, "#fff")}</span><span class="db2-scope-t"><b>${name}</b><small>${esc(sub)}</small></span><span class="db2-scope-go">${icon("arrowUR", 16, col)}</span></a>`;
+
     c.innerHTML = `
-      <div class="db">
-        <section class="db-hero db-in" style="--d:0">
-          <div class="db-hero-t">
-            <p class="db-hi">${greeting()}, ${esc(first)}</p>
-            <h1 class="db-h1">Welcome back to, <span>Bloom <i>Holding</i></span></h1>
-          </div>
-          ${residence}
-        </section>
-        ${cta || active ? `<div class="db-row ${cta && active ? "" : "db-row--one"}">${cta ? `<div class="db-in" style="--d:1">${cta}</div>` : ""}${active ? `<div class="db-in" style="--d:2">${active}</div>` : ""}</div>` : ""}
-        <section class="db-help db-in" style="--d:3" aria-labelledby="db-help-h">
-          <div class="db-sec-h"><h2 id="db-help-h" class="db-h2">How can we <i>help?</i></h2><p>Do you need help with your unit or the common areas?</p></div>
-          <div class="db-scopes">
-            <a class="db-scope" href="#/app/requests/new?scope=unit"><span class="ap-tile ap-tile--solid" style="background:#922A22">${icon("home", 20, "#fff")}</span><b>My unit</b><small style="color:#922A22">${esc(us.length > 1 ? `${us.length} properties` : u.name)}</small><span class="db-scope-go">${icon("arrowUR", 16, "#922A22")}</span></a>
-            <a class="db-scope" href="#/app/requests/new?scope=common"><span class="ap-tile ap-tile--solid" style="background:#2F6F73">${icon("community", 20, "#fff")}</span><b>Common areas</b><small style="color:#2F6F73">${esc(u.community)}</small><span class="db-scope-go">${icon("arrowUR", 16, "#2F6F73")}</span></a>
+      <div class="db2">
+        <header class="db2-head db-in" style="--d:0">
+          <p class="db2-hi">${greeting()}, ${esc(first)}</p>
+          <h1 class="db-h1 db2-h1">Welcome back to, <span>Bloom <i>Holding</i></span></h1>
+        </header>
+        <div class="db2-grid${cta || active ? "" : " db2-grid--one"}">
+          <div class="db2-main">${residence}</div>
+          ${cta || active ? `<aside class="db2-side">${cta}${active}</aside>` : ""}
+        </div>
+        <section class="db2-help db-in" style="--d:4" aria-labelledby="db-help-h">
+          <div class="db2-help-h"><h2 id="db-help-h" class="db-h2">How can we <i>help?</i></h2><p>Do you need help with your unit or the common areas?</p></div>
+          <div class="db2-scopes">
+            ${scope("#/app/requests/new?scope=unit", "home", "#922A22", "My unit", us.length > 1 ? `${us.length} properties` : u.name, 5)}
+            ${scope("#/app/requests/new?scope=common", "community", "#2F6F73", "Common areas", u.community, 6)}
           </div>
         </section>
       </div>`;
