@@ -66,22 +66,22 @@ export const unitImg = (u, w = 480) => `${IMG}${COMM_IMG[u.community] || COMM_IM
 function baseUnits() {
   return [
     { id: "v138", type: "4-Bedroom Villa", name: "Villa 138", community: "Bloom Gardens", code: "BG-P2-T-138", icon: "home", address: "Villa 138, Royal Palm Avenue",
-      contract: { no: "TC-2025-01138", ejari: "0012025-048120", start: D(2025, 10, 11), end: D(2026, 10, 10), status: "Expiring soon", tone: "amber" } },
+      contract: { no: "TC-2025-01138", ejari: "0012025-048120", start: D(2025, 10, 11), end: D(2026, 10, 10), status: "Expiring soon", tone: "amber", rent: "AED 285,000 / year", payment: "4 cheques", deposit: "AED 14,250" } },
     { id: "a1204", type: "2-Bedroom Apartment", name: "Apt 1204", community: "Bloom Towers", code: "BT-A-1204", icon: "building", address: "Apt 1204, Tower A, Bloom Towers",
-      contract: { no: "TC-2026-02204", ejari: "0012026-031877", start: D(2026, 3, 1), end: D(2027, 2, 28), status: "Active", tone: "green" } },
+      contract: { no: "TC-2026-02204", ejari: "0012026-031877", start: D(2026, 3, 1), end: D(2027, 2, 28), status: "Active", tone: "green", rent: "AED 118,000 / year", payment: "2 cheques", deposit: "AED 5,900" } },
     { id: "a305", type: "Studio Apartment", name: "Apt 305", community: "Bloom Living", code: "BL-C-305", icon: "building", address: "Apt 305, Building C, Bloom Living",
-      contract: { no: "TC-2026-00305", ejari: "0012026-052463", start: D(2026, 6, 15), end: D(2027, 6, 14), status: "Active", tone: "green" } },
+      contract: { no: "TC-2026-00305", ejari: "0012026-052463", start: D(2026, 6, 15), end: D(2027, 6, 14), status: "Active", tone: "green", rent: "AED 62,000 / year", payment: "4 cheques", deposit: "AED 3,100" } },
   ];
 }
 function unitsFor(id) {
   const [v138, a1204, a305] = baseUnits();
   if (id === "tenant") {
-    v138.ownerName = OMAR; a1204.ownerName = "Fatima Al Suwaidi";
-    /* new tenancy that starts soon — the move-in flow */
+    v138.ownerName = OMAR; a1204.ownerName = "Fatima Al Suwaidi"; a305.ownerName = "Khalid Rahman";
+    /* Apt 305: new tenancy that starts soon — the move-in flow */
     const st0 = addDays(TODAY, 10);
-    a1204.upcoming = true;
-    a1204.contract = { no: "TC-2026-03204", ejari: "0012026-067341", start: st0, end: addDays(st0, 364), status: "Starts soon", tone: "blue" };
-    return [v138, a1204];
+    a305.upcoming = true;
+    a305.contract = { ...a305.contract, no: "TC-2026-03305", ejari: "0012026-067341", start: st0, end: addDays(st0, 364), status: "Starts soon", tone: "blue" };
+    return [v138, a1204, a305];
   }
   if (id === "holiday") {
     v138.ownerName = OMAR; a1204.ownerName = "Fatima Al Suwaidi"; a305.ownerName = "Khalid Rahman";
@@ -170,21 +170,27 @@ export function addRequest(rec) {
 /* ---- move-out ------------------------------------------------------------------ */
 export const MO_ST = {
   submitted: { pill: "Submitted", tone: "blue", steps: ["d", "c", ""], sub: ["", "NOC uploaded · being verified", ""],
-    note: { t: "Move-out request submitted", p: "You uploaded the owner’s No Objection Certificate (NOC). BCM will verify it and then review your request." } },
+    note: { t: "Move-out request submitted", p: "BCM will verify the owner’s NOC and then review your request." } },
   nocApproved: { pill: "NOC Approved", tone: "green", steps: ["d", "d", "c"], sub: ["", "NOC verified", "Waiting for BCM approval"],
-    note: { t: "NOC verified", p: "BCM verified the owner’s NOC and is now reviewing your request and checking for outstanding dues (gas clearance, chilled water)." } },
+    note: { t: "NOC verified", p: "BCM verified the owner’s NOC and is now reviewing your request." } },
   nocRejected: { pill: "NOC Rejected", tone: "red", steps: ["d", "x", ""], sub: ["", "NOC not accepted", ""],
-    note: { t: "The NOC couldn’t be verified", p: "The NOC you uploaded couldn’t be verified. Submit a new move-out request with a valid NOC from the owner, or contact support." } },
-  needInfo: { pill: "Need info", tone: "amber", steps: ["d", "d", "c"], sub: ["", "NOC verified", "BCM needs more information"],
-    note: { t: "BCM needs more information", p: "Please share your final DEWA bill and confirm your forwarding address so BCM can complete the review." } },
-  bcmApproved: { pill: "Approved", tone: "green", steps: ["d", "d", "d"], sub: ["", "NOC verified", "Approved by BCM"],
-    note: { t: "Move-out approved", p: "BCM approved your move-out. Security has your date; return access cards on the day." } },
-  bcmRejected: { pill: "Rejected", tone: "red", steps: ["d", "d", "x"], sub: ["", "NOC verified", "Rejected by BCM"],
-    note: { t: "Move-out rejected", p: "BCM couldn’t approve this request because of outstanding dues. Clear them and submit a new request." } },
+    note: { t: "The NOC couldn’t be verified", p: "Submit a new move-out request with a valid NOC from the owner, or contact support." } },
+  needInfo: { pill: "Need Info", tone: "amber", steps: ["d", "d", "x"], sub: ["", "NOC verified", "BCM needs more information"],
+    note: { t: "BCM needs more information", p: "Please share your final DEWA bill and confirm your forwarding address." } },
+  bcmApproved: { pill: "BCM Approved", tone: "green", steps: ["d", "d", "d"], sub: ["", "NOC verified", "Approved by BCM"],
+    note: { t: "Move-out approved", p: "BCM approved your move-out. Return access cards to security on the day." } },
+  bcmRejected: { pill: "BCM Rejected", tone: "red", steps: ["d", "d", "x"], sub: ["", "NOC verified", "Rejected by BCM"],
+    note: { t: "Move-out rejected", p: "BCM couldn’t approve this request. Clear any outstanding dues and submit a new request." } },
 };
 export const MO_ORDER = ["submitted", "nocApproved", "nocRejected", "needInfo", "bcmApproved", "bcmRejected"];
 export const moveout = (unitId) => S.moveouts[unitId] || null;
 export function setMoveout(unitId, rec) { if (rec) S.moveouts[unitId] = rec; else delete S.moveouts[unitId]; emit("moveout"); }
+export function noteOwnerNoc(unitId, rec) {
+  const u = unit(unitId);
+  S.notifs = S.notifs.filter((n) => n.id !== 100);
+  S.notifs.unshift({ id: 100, g: "Today", t: "10:24 am", cat: "tenancy", ic: "exit", unread: true, title: "Owner NOC requested", body: `We’ve asked the owner of ${u.name} for the NOC on your move-out request ${rec.id}.`, go: `#/app/moveout/${unitId}` });
+  emit("notifs");
+}
 
 /* ---- move-in -------------------------------------------------------------------- */
 export const MI_ST = {
@@ -236,10 +242,8 @@ function seedNotifs() {
     { id: 7, g: "Earlier", t: "Sun", cat: "request", ic: "pass", title: "Gate pass approved", body: "Your visitor pass for 22 Oct is ready. Share it with your guest at the gate." },
     { id: 8, g: "Earlier", t: "12 Oct", cat: "account", ic: "user", title: "Welcome to Bloom", body: "Your account is verified. You can now raise requests and manage your properties.", go: "#/app/profile" },
   ];
-  if (isTenant()) base.unshift(
-    { id: 1, g: "Today", t: "10:24 am", cat: "tenancy", ic: "exit", unread: true, title: "Move-out made simple", body: "You can now raise a move-out request with Bloom GPT from Property details.", go: "#/app/property/v138" },
-    { id: 9, g: "Today", t: "10:30 am", cat: "tenancy", ic: "enter", unread: true, title: "Get ready to move in to Apt 1204", body: "Your new tenancy at Bloom Towers starts soon. Book your move-in with Bloom GPT.", go: "#/app/property/a1204" },
-    { id: 3, g: "Today", t: "8:00 am", cat: "payment", ic: "card", unread: true, title: "Rent cheque due in 5 days", body: "Cheque 3 of 4 · AED 71,250 for Villa 138 will be presented on 28 Oct." },
+  if (isTenant()) base.splice(1, 0,
+    { id: 3, g: "Today", t: "8:00 am", cat: "payment", ic: "card", unread: true, title: "Service charge due in 5 days", body: "AED 4,250 for Q4 2026 · Villa 138. Pay before 26 Oct to avoid a late fee." },
     { id: 4, g: "Yesterday", t: "6:40 pm", cat: "tenancy", ic: "doc", title: "Tenancy contract expiring soon", body: "Renew Villa 138 before 10 Oct 2026 to keep your access active.", go: "#/app/property/v138" });
   if (isAgent()) base.unshift(
     { id: 11, g: "Today", t: "10:02 am", cat: "booking", ic: "key", unread: true, title: "Guest checked in · BK-2041", body: "Ahmed Khan’s party of 3 checked in to Villa 138. Security has the guest list.", go: "#/app/bookings/BK-2041" },
@@ -260,7 +264,7 @@ export function reset() {
   S.units = unitsFor(journeyId);
   reqSeq = 9043;
   S.requests = seedRequests();
-  S.moveouts = {};
+  S.moveouts = isTenant() ? { a1204: { id: "MO-24934", date: addDays(TODAY, -4), movers: true, company: "Emirates Movers LLC", notes: "Service lift booking in the morning", noc: "Owner-NOC.pdf", submitted: addDays(TODAY, -18), status: "bcmRejected" } } : {};
   S.moveins = {};
   S.bookingSeq = 2047;
   S.bookings = isAgent() ? [

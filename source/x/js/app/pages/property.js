@@ -57,17 +57,17 @@ export function page({ shell, b }) {
   function tenantContract(u) {
     const k = u.contract;
     return card(secH("doc", "Tenancy contract", pill(k.status, k.tone)) +
-      irows([["hash", "Contract no.", k.no], ["file", "Ejari no.", k.ejari], ["cal", "Start date", st.fmt(k.start)], ["calx", "End date", endTxt(k.end), true]]) +
-      (k.status === "Expiring soon" ? btn("Renew contract", { attrs: "data-renew" }) : "") +
-      `<div class="pd-docs"><div class="ud-h ud-h--sub">${icon("folder", 20, "#1C1C19")}<b>Documents</b></div><div class="ap-docs ap-docs--box">${docRows([["Tenancy contract", `PDF · signed ${st.fmt(u.upcoming ? st.addDays(st.TODAY, -6) : k.start)}`]])}</div></div>`);
+      irows([["hash", "Contract no.", k.no], ["file", "Ejari no.", k.ejari], ["cal", "Start date", st.fmt(k.start)], ["calx", "End date", endTxt(k.end), true],
+        k.rent ? ["coins", "Annual rent", k.rent] : null, k.payment ? ["receipt", "Payment", k.payment] : null, k.deposit ? ["lock", "Security deposit", k.deposit] : null]) +
+      `<div class="pd-ctr-btns">${btn("View contract", { kind: "ghost", attrs: 'data-doc="Tenancy contract"' })}</div>`);
   }
   function moveoutCard(u) {
     if (!st.canMoveOut(u)) return "";
     const r = st.moveout(u.id);
     let h = secH("exit", "Move-out");
     if (!r) {
-      const sub = st.isOwner() ? "Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date." : "Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.";
-      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving out of ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-out", { attrs: "data-mo-start" });
+      const sub = st.isOwner() ? "Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date." : "Submit a move-out request with Bloom GPT. We’ll ask the owner for the NOC, then BCM reviews it.";
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving out of ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today. It can’t be changed after you submit.") + btn("Request move-out", { attrs: "data-mo-start" });
     } else {
       const s = st.MO_ST[r.status], closed = ["nocRejected", "bcmRejected"].includes(r.status);
       h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Move-out request · ${esc(r.id)}</b><small>Move-out on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
@@ -102,7 +102,7 @@ export function page({ shell, b }) {
     let side;
     if (st.isOwner()) side = statusCards(u) + ownerCard(u) + payments(u);
     else if (st.isAgent()) side = ownerCard(u) + docs([["Agreement with owner", `PDF · signed ${st.fmt(u.agreement)}`], ["Holiday home permit", `PDF · ${u.permit.no} · valid until ${st.fmt(u.permit.until)}`]]);
-    else side = tenantContract(u) + ownerCard(u);
+    else side = tenantContract(u);
     c.innerHTML = `${switcher}<div class="pd-grid ${fade ? "is-fade" : ""}"><div class="pd-col">${header}${prop}</div><div class="pd-col">${side}${moveinCard(u)}${moveoutCard(u)}</div></div>`;
   }
   draw(false);

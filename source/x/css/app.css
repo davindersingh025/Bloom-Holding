@@ -1067,3 +1067,23 @@ body.in-app #view { transition: none !important; }
 .ap-doc-i, .ap-doc-dl { flex: none; display: grid; place-items: center; }
 .ap-doc-dl { width: 32px; height: 32px; border-radius: 10px; }
 .ap-doc:hover .ap-doc-dl { background: rgba(28, 28, 25, 0.06); }
+.pd-ctr-btns { display: flex; gap: 10px; margin-top: 14px; }
+.pd-ctr-btns > * { flex: 1; }
+.pd-mo-h .ap-pill { margin-top: 4px; }
+/* move-out tracking: mobile-style alert dot, red sub-status, actions */
+.ap-tl-mo .ap-step:is([data-s="c"], [data-s="x"]) .ap-st-s { color: var(--red); }
+.ap-tl-mo .ap-step[data-s="x"] .ap-tdot .i-x { display: none !important; }
+.ap-tl-mo .ap-step[data-s="x"] .ap-tdot::after { content: "!"; color: #fff; font-size: 13px; font-weight: 700; line-height: 1; }
+.mo-acts { display: grid; gap: 10px; margin-top: 16px; }
+.mo-acts .ap-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mo-lock { display: inline-flex; align-items: center; gap: 6px; }
+/* Bloom GPT move-out: step progress, unit card, terms */
+.gx-steps { display: flex; gap: 6px; margin-top: 6px; }
+.gx-steps i { width: 28px; height: 4px; border-radius: 2px; background: #E6DFD7; transition: background 300ms; }
+.gx-steps i.is-on { background: var(--red); }
+.gx-unit-h { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.gx-unit-h b { display: block; font-size: 15px; font-weight: 600; color: var(--ink); }
+.gx-unit-h small { display: block; font-size: 12.5px; color: var(--muted); }
+.gx-terms-c { padding: 16px 18px 16px 8px; }
+.gx-terms-c .gx-terms { padding-left: 26px !important; gap: 10px; font-size: 13.5px; line-height: 1.5; }
+.gx-terms-c .gx-terms li::marker { color: var(--red); font-weight: 600; }

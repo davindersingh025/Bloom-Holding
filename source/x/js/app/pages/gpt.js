@@ -23,6 +23,15 @@ const MENU = () => [
   { k: "pay", t: "Payments & receipts", s: "Receipts, payment issues", ic: "receipt", c: "#5B6B3A", go: { flow: "sr", scope: "unit", cat: "payments" } },
   { k: "track", t: "Track my requests", s: "See status & updates", ic: "track", c: "#64748B", go: { flow: "track" } },
 ];
+const MO_TERMS = [
+  "The move-out date can’t be changed after you submit the request.",
+  "All dues (DEWA, gas and chilled water) must be cleared before the move-out date.",
+  "Moves take place between 8 am and 6 pm, using the service lift only.",
+  "Access cards and parking tags are returned to security on the move-out day.",
+  "Management isn’t liable for any loss of or damage to goods, or for any injury, accident or loss suffered by residents anywhere in the building, its common areas or shared facilities.",
+  "Personal belongings must not be placed or stored in any part of the building, its common areas or shared facilities.",
+  "All waste from the move-out, including cartons, boxes, plastic sheets and protection, is the resident’s responsibility and must be taken off the premises.",
+];
 const pTxt = (n) => `${n} ${n === 1 ? "person" : "people"}`;
 const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 
@@ -57,12 +66,14 @@ export function page({ shell }) {
     <div class="gx">
       <div class="gx-scroll" data-scroll>
         <div class="gx-col">
-          <div class="gx-hero">${orb("gx-orb")}<h2 class="gx-h">Bloom GPT</h2><p>Your Bloom assistant · requests, move-in, move-out &amp; more</p></div>
+          <div class="gx-hero">${orb("gx-orb")}<h2 class="gx-h">Bloom GPT</h2><p data-sub>Your Bloom assistant · requests, move-in, move-out &amp; more</p><div class="gx-steps" data-steps hidden><i></i><i></i><i></i><i></i><i></i></div></div>
           <div class="gx-log" data-log role="log" aria-live="polite"></div>
         </div>
       </div>
       <div class="gx-dock" data-dock></div>
     </div>`;
+  const stepsEl = c.querySelector("[data-steps]"), subEl = c.querySelector("[data-sub]");
+  const setSteps = (n, sub) => { if (sub) subEl.textContent = sub; stepsEl.hidden = n < 0; stepsEl.querySelectorAll("i").forEach((x, i) => x.classList.toggle("is-on", i < n)); };
   const log = c.querySelector("[data-log]"), dock = c.querySelector("[data-dock]"), scroller = c.querySelector("[data-scroll]");
   let run = 0, dead = false;
 
@@ -224,36 +235,38 @@ export function page({ shell }) {
           return say("You already have an active move-out request. Here’s where it stands:", card([["Request ID", r.id], ["Unit", `${u.name} · ${u.community}`], ["Move-out date", st.fmt(r.date)], ["Status", pill(st.MO_ST[r.status].pill, st.MO_ST[r.status].tone), true]]))
             .then(() => choose([["track", "Track request", "primary"], ["more", "Something else"]], true)).then((v) => (v === "track" ? go(`/app/moveout/${u.id}`) : menu("Sure — what else can I help you with?")));
         }
-        return say(`Hi ${first} 👋 I’ll help you raise a move-out request for ${u.name} in a few quick steps.`, card([["Unit type", u.type], ["Unit", u.name], ["Community", u.community]].concat(st.isTenant() && u.contract ? [["Contract ends", st.fmt(u.contract.end)]] : [])))
-          .then(() => choose([["yes", "Continue", "primary"], ["no", "Not now"]], true))
-          .then((v) => { if (v === "no") go(`/app/property/${u.id}`); })
-          .then(() => say("When would you like to move out? Pick a date at least 3 days from today. Please note the date can’t be changed once you submit."))
+        setSteps(0, "Move out in a few quick steps");
+        const unitCard = `<div class="gx-card gx-unit"><div class="gx-unit-h"><span class="ap-tile">${icon(u.icon === "building" ? "apt" : "house", 20, "#922A22")}</span><span><b>${esc(u.type)} · ${esc(u.name)}</b><small>${esc(u.community)} · ${esc(u.code)}</small></span></div><dl>${[["Unit type", u.type], ["Unit", u.name], ["Community", u.community]].concat(u.contract ? [["Contract ends", st.fmt(u.contract.end)]] : []).map((x) => `<dt>${esc(x[0])}</dt><dd>${esc(x[1])}</dd>`).join("")}</dl></div>`;
+        return say("Hi there 👋 I’m Bloom GPT. I’ll help you raise a move-out request for this property in a few quick steps.", unitCard)
+          .then(() => choose([["yes", "Continue", "primary"]], true))
+          .then(() => { setSteps(1); return say("When would you like to move out? Pick a date at least 3 days from today. Please note the date can’t be changed once you submit."); })
           .then(() => pickDay(st.addDays(st.TODAY, 3), 14, "Move-out date"))
           .then((d) => {
-            date = d; me(st.fmtS(d));
+            date = d; me(st.fmtS(d)); setSteps(2);
             if (OWNER) return say(`Got it — ${st.fmtS(d)}. As the owner, you don’t need a NOC. Will you be using movers & packers?`);
             return say(`Got it — ${st.fmtS(d)}. Next, please upload the No Objection Certificate (NOC) issued by the unit owner. BCM needs it to approve your move-out.`)
-              .then(() => uploadDoc("Owner’s NOC · PDF or photo", "Owner-NOC.pdf")).then((f) => { noc = f; return say("Thanks, the owner’s NOC is attached. Will you be using movers & packers?"); });
+              .then(() => uploadDoc("Owner’s NOC · PDF or photo", "Owner-NOC.pdf")).then((f) => { noc = f; setSteps(3); return say("Thanks, the owner’s NOC is attached. Will you be using movers & packers?"); });
           })
           .then(() => choose([["yes", "Yes"], ["no", "No"]], true))
           .then((v) => { movers = v === "yes"; if (!movers) return; return say("Great. What’s the name of the moving company?").then(() => askLoop({ ph: "e.g. Emirates Movers LLC" }, (x) => x.length >= 2, "Could you share the full company name?")).then((x) => { company = x; }); })
           .then(() => say("Any special needs for your move? For example a service lift booking or parking for the moving truck."))
           .then(() => askText({ ph: "Type your special needs", skip: "No special needs", max: 300 }))
-          .then((v) => { notes = v; return say("Here’s a summary of your move-out request. Does everything look right?", card([["Unit", `${u.name} · ${u.community}`], ["Move-out date", st.fmt(date)], ...(OWNER ? [] : [["Owner NOC", "📎 " + noc]]), ["Movers & packers", movers ? `Yes · ${company}` : "No"], ["Special needs", notes || "—"]])); })
-          .then(() => choose([["edit", "Edit"], ["ok", "Looks good", "primary"]], true))
+          .then((v) => { notes = v; setSteps(4); return say("Here’s a summary of your move-out request. Does everything look right?", card([["Unit", `${u.name} · ${u.community}`], ["Move-out date", st.fmt(date)], ...(OWNER ? [] : [["Owner NOC", "📎 " + noc]]), ["Movers & packers", movers ? "Yes" : "No"], ...(movers ? [["Company", company]] : []), ["Special needs", notes || "—"]])); })
+          .then(() => choose([["edit", "Edit"], ["ok", "Looks Good", "primary"]], true))
           .then((v) => {
             if (v === "edit") return say("No problem, let’s start again.").then(() => moveout(u.id)).then(() => { throw new Stale(); });
-            return say("Before I submit, please confirm the terms:", `<ol class="gx-terms"><li>The move-out date can’t be changed after you submit.</li><li>All dues (DEWA, gas, chilled water) must be cleared before the move-out date.</li><li>Access cards are returned to security on the day.</li></ol>`)
-              .then(() => choose([["ok", "I agree, submit", "primary"]]));
+            setSteps(5);
+            return say("Before I submit, please read and accept the move-out terms & conditions:", `<div class="gx-card gx-terms-c"><ol class="gx-terms">${MO_TERMS.map((t) => `<li>${esc(t)}</li>`).join("")}</ol></div>`)
+              .then(() => choose([["ok", "Accepted T&C · Submit request", "primary"]]));
           })
-          .then(() => progress(OWNER ? ["Creating your request", "Generating request ID"] : ["Creating your request", "Attaching the owner’s NOC", "Generating request ID"]))
+          .then(() => progress(OWNER ? ["Creating your request", "Generating request ID"] : ["Creating your request", "Generating request ID", "Attaching the owner’s NOC"]))
           .then(() => {
             const rec = { id: "MO-" + (24800 + Math.floor(Math.random() * 190)), date, movers, company, notes, noc: OWNER ? "" : noc, submitted: st.TODAY, status: "submitted" };
-            st.setMoveout(u.id, rec);
+            st.setMoveout(u.id, rec); if (!OWNER) st.noteOwnerNoc(u.id, rec);
             return say(OWNER ? "Your move-out request has been submitted. BCM will review it and confirm your date. You’ll get updates in the app and by email." : "Your move-out request has been submitted with the owner’s NOC. BCM will verify the NOC and review your request. You’ll get updates in the app and by email.",
-              done() + card([["Request ID", rec.id], ["Unit", `${u.name} · ${u.community}`], ["Move-out date", st.fmt(date)], ["Status", pill("Submitted", "blue"), true]]));
+              card([["Request ID", rec.id], ["Unit", `${u.name} · ${u.community}`], ["Move-out date", st.fmt(date)], ["Status", pill("Submitted", "blue"), true]]));
           })
-          .then(() => choose([["track", "Track request", "primary"], ["prop", "Property details"]], true))
+          .then(() => choose([["prop", "Back to property"], ["track", "Track request", "primary"]], true))
           .then((v) => go(v === "track" ? `/app/moveout/${u.id}` : `/app/property/${u.id}`));
       });
     }
