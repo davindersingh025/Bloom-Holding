@@ -60,18 +60,25 @@ export function page({ shell }) {
         <span class="d3-scope-t"><b>${name}</b><small>${esc(sub)}</small></span>
       </a>`;
 
+    const prop4 = `
+      <a class="d4-prop" href="#/app/property/${u.id}" aria-label="View property details for ${esc(u.name)}">
+        <span class="d4-prop-t"><em><i class="db-live" aria-hidden="true"></i>${esc(u.community.toUpperCase())} · ${esc(u.code)}</em><b>${esc(u.type)}</b><small>${icon("pin", 13, "#F2C6B4")} ${esc(u.address)}</small></span>
+        ${st0}<span class="d4-prop-go">${icon("arrowUR", 16)}</span>
+      </a>`;
+    const cards = [cta ? `<div class="d4-c">${cta}</div>` : "", active ? `<div class="d4-c">${active}</div>` : ""].filter(Boolean);
+
     c.innerHTML = `
-      <div class="d3">
-        <section class="d3-hero">
-          <div class="d3-hero-l db-in" style="--d:0">
-            <span class="d3-kicker"><i></i>${greeting()}, ${esc(first)}</span>
-            <h1 class="d3-h1">Welcome back to, <span>Bloom <i>Holding</i></span></h1>
-            ${cta}
+      <div class="d4">
+        <section class="d4-hero db-in" style="--d:0">
+          <span class="d4-hero-bg" aria-hidden="true"><img src="${st.unitImg(u, 1600)}" alt="" onerror="this.remove()"></span>
+          <div class="d4-hero-in">
+            <span class="d4-kicker"><i></i>${greeting()}, ${esc(first)}</span>
+            <h1 class="d4-h1">Welcome back to, <span>Bloom <i>Holding</i></span></h1>
           </div>
-          <div class="d3-hero-r db-in" style="--d:1">${prop}</div>
+          <div class="d4-hero-foot">${prop4}${us.length > 1 ? `<span class="d4-more">+ ${us.length - 1} more propert${us.length > 2 ? "ies" : "y"}</span>` : ""}</div>
         </section>
-        ${active ? `<section class="d3-strip db-in" style="--d:2">${active}</section>` : ""}
-        <section class="d3-help db-in" style="--d:3" aria-labelledby="db-help-h">
+        ${cards.length ? `<div class="d4-cards d4-cards--${cards.length} db-in" style="--d:1">${cards.join("")}</div>` : ""}
+        <section class="d3-help db-in" style="--d:2" aria-labelledby="db-help-h">
           <div class="d3-sec-h"><h2 id="db-help-h" class="d3-h2">How can we <i>help?</i></h2><p>Do you need help with your unit or the common areas?</p></div>
           <div class="d3-scopes">
             ${scope("#/app/requests/new?scope=unit", "home", "#922A22", "My unit", us.length > 1 ? `${us.length} properties` : u.name)}
