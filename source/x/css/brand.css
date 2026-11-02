@@ -296,3 +296,5 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 /* red chapters: keep flat brand red, add light and the lattice texture */
 .cta-band, .portal-teaser { background: radial-gradient(60% 80% at 88% 0%, rgba(248, 245, 235, 0.12), transparent 65%), radial-gradient(50% 70% at 0% 100%, rgba(60, 14, 10, 0.35), transparent 70%), var(--color-primary) !important; }
 .cta-band [class*="pattern"], .portal-teaser [class*="lattice"] { display: block !important; opacity: 0.14 !important; }
+/* hero: no underline under "Place" */
+.hero__swash { display: none !important; }
