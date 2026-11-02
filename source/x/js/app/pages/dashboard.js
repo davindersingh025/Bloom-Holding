@@ -72,7 +72,6 @@ export function page({ shell }) {
       ["#/app/gpt", "amen", "#B7863F", "Amenities", "Tennis Court, BBQ Lawn & Clubhouse"],
       ["#/app/gpt", "qr", "#4B5563", "Visitor Access", "Instant QR codes for guests & delivery"],
     ];
-    const prompts = ["Book the clubhouse tennis court for Friday 6 PM", "Download my Ejari tenancy registration cert", "When is the next community gardening round?"];
     const notices = [
       ["#922A22", "FACILITIES", "OCT 5, 2026", "Annual Lap Pool Chlorination & Maintenance", "The Community Clubhouse pool will be closed from 07:00 to 18:00 for scheduled quarterly sanitization."],
       ["#2E7D5B", "GREEN LIVING", "WEEKLY", "Landscape & Green Waste Collection", "Garden clippings should be placed in designated recyclable bags before Tuesday morning 08:00."],
@@ -95,13 +94,7 @@ export function page({ shell }) {
             </section>
           </div>
           <aside class="d6-col d6-side">
-            <div class="d6-card d6-gpt db-in" style="--d:2">
-              <div class="d6-gpt-h">${orb("d6-orb")}<b>BLOOM GPT</b><span class="d6-chip">AI Concierge</span></div>
-              <p>Hello ${esc(first)}. Need an immediate service or inquiry? Tap a prompt or ask anything about your home:</p>
-              <div class="d6-prompts">${prompts.map((q) => `<a href="#/app/gpt" data-q="${esc(q)}">“${esc(q)}”<span>${icon("arrow", 14, "#A39D93")}</span></a>`).join("")}</div>
-              <form class="d6-ask" data-ask><input type="text" placeholder="Ask Bloom Concierge…" aria-label="Ask Bloom Concierge"><button type="submit" aria-label="Send">${icon("arrow", 16, "#fff")}</button></form>
-            </div>
-            <div class="d6-card d6-notes db-in" style="--d:3">
+            <div class="d6-card d6-notes db-in" style="--d:2">
               <div class="d6-notes-h"><b>COMMUNITY NOTICES</b><span>${esc(u.community)}</span></div>
               ${notices.map(([col, cat, when, t, d]) => `<article class="d6-note"><p class="d6-note-k" style="--c:${col}">${cat}<span>·</span>${when}</p><h4>${t}</h4><p>${d}</p></article>`).join("")}
               <button type="button" class="d6-btn d6-btn--ghost d6-btn--wide" data-bylaws>View Community By-Laws (PDF)</button>

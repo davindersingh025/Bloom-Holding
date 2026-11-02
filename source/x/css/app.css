@@ -1028,3 +1028,14 @@ body.in-app #view { transition: none !important; }
   .d6-steps { font-size: 12px; } .d6-tech { flex-wrap: wrap; } .d6-tech .d6-btn { flex: 1; }
   .d6-notice-f { flex-wrap: wrap; } .d6-notice-f .d6-btn { width: 100%; }
 }
+
+/* ===== Consistent page margins — same as the landing page (1360px content, clamp(16px,4vw,56px) gutter) ===== */
+.ap.ap--top { --gut: clamp(16px, 4vw, 56px); --wrap: min(1360px, calc(100% - 2 * var(--gut))); --side-pad: max(var(--gut), calc((100% - 1360px) / 2)); }
+.ap--top .ap-hd-bar { width: 100%; max-width: none; margin: 0; padding-inline: var(--side-pad) !important; }
+.ap--top .ap-pagehead { width: var(--wrap); max-width: none; margin: 0 auto; padding-inline: 0; }
+.ap--top .ap-content, .ap--top .ap-content:has(.d6) { width: var(--wrap); max-width: none !important; margin: 0 auto; padding-inline: 0 !important; }
+.ap--top .ap-content--flush { width: 100%; }
+.ap--top .ap-foot { padding-inline: var(--side-pad); }
+.ap--top :is(.d6, .d5, .d4, .d3, .db2, .db, .pf, .nt-wrap, .bk, .rq, .ct) { max-width: none !important; width: 100%; margin-inline: 0; }
+.ap--top .ap-pop, .ap--top .ap-menu { right: var(--side-pad); }
+@media (max-width: 899px) { .ap--top .ap-content { padding-bottom: 120px !important; } }
