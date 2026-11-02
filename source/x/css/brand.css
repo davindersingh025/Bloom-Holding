@@ -298,3 +298,29 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 .cta-band [class*="pattern"], .portal-teaser [class*="lattice"] { display: block !important; opacity: 0.14 !important; }
 /* hero: no underline under "Place" */
 .hero__swash { display: none !important; }
+
+/* ===== Quick-start cards: hover animation restored (as the reference site) ===== */
+.qs { isolation: isolate; transition: translate 600ms var(--ease-spring), box-shadow 500ms var(--ease-out), border-color 400ms, color 300ms !important; }
+.qs::before { display: block !important; content: ""; position: absolute; z-index: -1; left: 22px; top: 22px; width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--c) 78%, #FF8A5B), var(--c) 60%, color-mix(in srgb, var(--c) 82%, #000)); scale: 0; transition: scale 700ms cubic-bezier(0.65, 0, 0.25, 1); }
+.qs::after { display: block !important; content: ""; position: absolute; z-index: -1; inset: 0; opacity: 0; background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.28), transparent 60%); transition: opacity 400ms; pointer-events: none; }
+.qs__halo { display: block !important; position: absolute; inset: -6px; border-radius: 22px; border: 2px solid rgba(255, 255, 255, 0.7); opacity: 0; pointer-events: none; }
+.qs__icon { position: relative; transition: background-color 300ms, color 300ms, rotate 500ms var(--ease-spring), scale 500ms var(--ease-spring), border-radius 300ms; }
+.qs__go { transition: background-color 300ms, color 300ms, rotate 500ms var(--ease-spring), scale 500ms var(--ease-spring); }
+.qs__photo { transition: scale 900ms var(--ease-expo), translate 900ms var(--ease-expo), rotate 900ms var(--ease-expo), border-color 400ms; }
+.qs__tag { transition: background-color 300ms, color 300ms, border-color 300ms, translate 400ms var(--ease-spring); }
+.qs:hover { translate: 0 -6px !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 30px 50px -28px color-mix(in srgb, var(--c) 90%, transparent) !important; }
+.qs:hover::before { scale: 30; }
+.qs:hover::after { opacity: 1; }
+.qs:hover .qs__icon { background: #fff !important; color: var(--c) !important; rotate: -10deg !important; scale: 1.06 !important; box-shadow: none !important; }
+.qs:hover .qs__icon svg { stroke: var(--c); }
+.qs:hover .qs__halo { border-radius: 50%; animation: qsHalo 1.6s var(--ease-out) infinite; }
+.qs:hover .qs__go { background: #fff !important; color: var(--c) !important; rotate: 45deg !important; scale: 1.1 !important; border-radius: 50%; width: 32px !important; height: 32px !important; display: grid; place-items: center; }
+.qs:hover .qs__meta { color: rgba(255, 255, 255, 0.85) !important; }
+.qs:hover .qs__title, .qs:hover .qs__text { color: #fff !important; }
+.qs:hover .qs__tag { background: rgba(255, 255, 255, 0.18) !important; border-color: rgba(255, 255, 255, 0.35) !important; color: #fff !important; translate: 0 -2px; }
+.qs:hover .qs__photo { scale: 1.12; translate: -10px -10px; rotate: -6deg; border-color: rgba(255, 255, 255, 0.85) !important; }
+.qs:hover .qs__photo img { scale: 1.3; }
+.qs:hover .qs__dots { opacity: 0.35 !important; background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1.2px, transparent 1.6px) !important; }
+@keyframes qsHalo { from { opacity: 0.9; scale: 1; } to { opacity: 0; scale: 1.5; } }
+@media (prefers-reduced-motion: reduce) { .qs:hover::before { transition: none; } .qs:hover .qs__halo { animation: none; } }
