@@ -62,6 +62,7 @@ const COMM_IMG = {
   "Bloom Living": "1uqU1ghxiJqGANvRUmwRdK/0040fd801874a30b55c941ed2e56b5fa/Hero_Image.jpg",
   "Bloom Marina": "2JCR76zsBua3VemMpnzXze/c86fbb3d283269c32cf493ce3068ad86/3BR_TH_Back_View_25MB_Hero_Image.jpg",
 };
+export const unitImgs = (u, w = 1200) => [u.community, ...Object.keys(COMM_IMG).filter((k) => k !== u.community)].map((k) => `${IMG}${COMM_IMG[k]}?w=${w}&q=72&fm=webp`);
 export const unitImg = (u, w = 480) => `${IMG}${COMM_IMG[u.community] || COMM_IMG["Bloom Gardens"]}?w=${w}&q=72&fm=webp`;
 function baseUnits() {
   return [

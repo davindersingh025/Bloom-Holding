@@ -7,7 +7,7 @@
              agreement with owner + holiday home permit · move-out */
 
 import * as st from "bloom:/js/app/store.js";
-import { icon, esc, pill, rows, eyebrow, docRows, hint, btn, segmented, unitIcon, avatar, tile, secH, irows } from "bloom:/js/app/ui.js";
+import { icon, esc, pill, rows, eyebrow, docRows, hint, btn, segmented, unitIcon, avatar, tile, secH, irows, ikv, facts, tip } from "bloom:/js/app/ui.js";
 import { toast } from "bloom:/js/app/shell.js";
 
 const OMAR = "Omar Al Suwaidi";
@@ -16,7 +16,7 @@ export function page({ shell, b }) {
   const sh = shell({ active: "properties", title: "Property details", back: "#/app" });
   const c = sh.content;
   let cur = st.units().some((u) => u.id === b) ? b : st.units()[0].id;
-  let payTab = "up";
+  let payTab = "up", shot = 0;
 
   const card = (inner, cls = "") => `<section class="ap-card ${cls}">${inner}</section>`;
   const endTxt = (end) => { const l = st.daysTo(end); return esc(st.fmt(end)) + (l >= 0 && l <= 60 ? ` <span class="ap-warn">· ${l} days left</span>` : ""); };
@@ -45,21 +45,21 @@ export function page({ shell, b }) {
     const o = u.own, spa = ["Sales and Purchase Agreement", `PDF · signed ${st.fmt(o.spa)}`];
     if (o.status === "pending") return card(secH("coins", "Payment summary") +
       `<div class="pd-prog"><div class="pd-prog-h"><span>Payment completed</span><b>${o.paidPct}%</b></div><div class="pd-bar"><i style="width:${o.paidPct}%"></i></div></div>` +
-      irows([["coins", "Amount outstanding", o.outstanding], ["cal", "Next due date", st.fmt(o.next)]]) + hint("Handover after payment is complete.")) + docs([spa]);
+      ikv([["coins", "Amount outstanding", o.outstanding], ["cal", "Next due date", st.fmt(o.next)]], "ud-kv--2") + hint("Handover after payment is complete.")) + docs([spa]);
     if (o.status === "vacant") return card(secH("house", "Occupancy") + `<div class="pd-occ">${tile("home", "#6B665C", "rgba(28,28,26,.06)")}<span class="pd-ot"><b>Unit is vacant</b><small>Handed over ${st.fmt(o.handover)}</small></span>${pill("Fully paid", "green")}</div>`) +
       docs([spa, ["Handover documents", `PDF · ${st.fmt(o.handover)}`]]);
     if (o.status === "resident") return card(secH("house", "Occupancy") + `<div class="pd-occ">${tile("home")}<span class="pd-ot"><b>You live here</b><small>Moved in on ${st.fmt(o.moveIn)}</small></span></div>`) + docs([spa]);
-    if (o.status === "rented") { const t = o.tenancy; return card(secH("doc", "Tenancy contract", pill(t.status, t.tone)) + irows([["user", "Tenant name", t.tenant], ["hash", "Contract no.", t.no], ["cal", "Start date", st.fmt(t.start)], ["calx", "End date", endTxt(t.end), true]])) +
+    if (o.status === "rented") { const t = o.tenancy; return card(secH("doc", "Tenancy contract", pill(t.status, t.tone)) + ikv([["user", "Tenant name", t.tenant], ["hash", "Contract no.", t.no]], "ud-kv--2")) +
       docs([spa, ["Tenancy contract", `PDF · signed ${st.fmt(t.start)}`]]); }
-    if (o.status === "holiday") return card(secH("key", "Holiday home") + irows([["user", "Agent", o.agent], ["brief", "Company", o.company]])) + docs([spa, ["Tenancy contract", `PDF · signed ${st.fmt(o.hhContract)}`]]);
+    if (o.status === "holiday") return card(secH("key", "Holiday home") + ikv([["user", "Agent", o.agent], ["brief", "Company", o.company]], "ud-kv--2")) + docs([spa, ["Tenancy contract", `PDF · signed ${st.fmt(o.hhContract)}`]]);
     return "";
   }
   function tenantContract(u) {
-    const k = u.contract;
+    const k = u.contract, ended = st.daysTo(k.end) < 0;
     return card(secH("doc", "Tenancy contract", pill(k.status, k.tone)) +
-      irows([["hash", "Contract no.", k.no], ["file", "Ejari no.", k.ejari], ["cal", "Start date", st.fmt(k.start)], ["calx", "End date", endTxt(k.end), true],
-        k.rent ? ["coins", "Annual rent", k.rent] : null, k.payment ? ["receipt", "Payment", k.payment] : null, k.deposit ? ["lock", "Security deposit", k.deposit] : null]) +
-      `<div class="pd-ctr-btns">${btn("View contract", { kind: "ghost", attrs: 'data-doc="Tenancy contract"' })}</div>`);
+      ikv([["hash", "Contract no.", k.no], ["file", "Ejari no.", k.ejari],
+        k.rent ? ["coins", "Annual rent", k.rent] : null, k.payment ? ["receipt", "Payment", k.payment] : null, k.deposit ? ["lock", "Security deposit", k.deposit] : null], "ud-kv--2") +
+      (ended && !u.upcoming ? `<div class="pd-ctr-btns">${btn("Renew contract", { attrs: "data-renew" })}</div>` : ""));
   }
   function moveoutCard(u) {
     if (!st.canMoveOut(u)) return "";
@@ -67,7 +67,7 @@ export function page({ shell, b }) {
     let h = secH("exit", "Move-out");
     if (!r) {
       const sub = st.isOwner() ? "Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date." : "Submit a move-out request with Bloom GPT. We’ll ask the owner for the NOC, then BCM reviews it.";
-      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving out of ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today. It can’t be changed after you submit.") + btn("Request move-out", { attrs: "data-mo-start" });
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving out of ${esc(u.name)}?</b><small>${sub}</small></span></div>` + tip("Pick a date at least 3 days from today.") + btn("Request move-out", { kind: "ghost", attrs: "data-mo-start" });
     } else {
       const s = st.MO_ST[r.status], closed = ["nocRejected", "bcmRejected"].includes(r.status);
       h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Move-out request · ${esc(r.id)}</b><small>Move-out on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
@@ -82,7 +82,7 @@ export function page({ shell, b }) {
     let h = secH("enter", "Move-in");
     if (!r) {
       const sub = st.isOwner() ? "Book your move-in with Bloom GPT. Upload your title deed and Emirates ID, then BCM confirms your slot and access cards." : `Your tenancy starts on ${st.fmt(u.contract.start)}. Book your move-in with Bloom GPT — you’ll need your Ejari certificate and Emirates ID.`;
-      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving in to ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-in", { attrs: "data-mi-start" });
+      h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Moving in to ${esc(u.name)}?</b><small>${sub}</small></span></div>` + tip("Pick a date at least 3 days from today.") + btn("Request move-in", { kind: "ghost", attrs: "data-mi-start" });
     } else {
       const s = st.MI_ST[r.status], closed = ["docsRejected", "bcmRejected"].includes(r.status);
       h += `<div class="pd-mo-h"><span class="pd-ot"><b class="ap-h3">Move-in request · ${esc(r.id)}</b><small>Move-in on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
@@ -91,25 +91,45 @@ export function page({ shell, b }) {
     return card(h);
   }
 
+  function keyCard(u) {
+    const warn = (d) => (st.daysTo(d) <= 60 ? " is-warn" : "");
+    let a, b;
+    if (st.isOwner()) {
+      const o = u.own;
+      if (o.status === "pending") { a = ["Payment completed", `${o.paidPct}%`]; b = ["Next due date", st.fmt(o.next), warn(o.next)]; }
+      else if (o.status === "rented") { a = ["Start date", st.fmt(o.tenancy.start)]; b = ["End date", st.fmt(o.tenancy.end), warn(o.tenancy.end)]; }
+      else if (o.status === "vacant") { a = ["Handed over", st.fmt(o.handover)]; b = ["Status", "Vacant"]; }
+      else if (o.status === "resident") { a = ["Moved in", st.fmt(o.moveIn)]; b = ["Status", "Resident"]; }
+      else { a = ["Holiday home since", st.fmt(o.hhContract)]; b = ["Agent", o.agent]; }
+    } else if (st.isAgent()) { a = ["Agreement signed", st.fmt(u.agreement)]; b = ["Permit valid until", st.fmt(u.permit.until), warn(u.permit.until)]; }
+    else { const k = u.contract; a = ["Start date", st.fmt(k.start)]; b = ["End date", st.fmt(k.end), u.upcoming ? "" : warn(k.end)]; }
+    return `<section class="ap-card ud-key"><div><small>${esc(a[0])}</small><b>${esc(a[1])}</b></div><div><small>${esc(b[0])}</small><b class="${b[2] || ""}">${esc(b[1])}</b></div></section>`;
+  }
+
   function draw(fade) {
     const list = st.units(), u = st.unit(cur), s = st.unitStatus(u);
     const switcher = list.length > 1 ? `<div class="pd-units" role="group" aria-label="Your properties">${list.map((x) => { const xs = st.unitStatus(x); return `<button type="button" class="pd-unit" data-u="${x.id}" aria-pressed="${x.id === u.id}"${xs ? ` aria-label="${esc(x.name + ", " + st.ST_LABEL[xs])}"` : ""}><i>${icon(unitIcon(x), 15)}</i>${esc(x.name)}${xs ? `<b class="pd-dot" data-tone="${st.ST_TONE[xs]}" aria-hidden="true"></b>` : ""}</button>`; }).join("")}</div>` : "";
-    const header = `<section class="ap-card pd-head">
-        <div class="db-res-h"><span class="db-live" aria-hidden="true"></span><span class="db-comm">${esc(u.community.toUpperCase())}</span><span class="db-code">${esc(u.code)}</span></div>
-        <div class="pd-head-b"><span class="pd-img" aria-hidden="true">${icon(unitIcon(u), 34, "#922A22")}<img src="${st.unitImg(u, 640)}" alt="" loading="lazy" onerror="this.remove()"></span>
-        <span class="pd-head-t"><b>${esc(u.type)}</b><small>${icon("pin", 14, "#922A22")} ${esc(u.address)}</small>${s ? pill(st.ST_LABEL[s], st.ST_TONE[s], 'class="pd-chip"') : ""}</span></div></section>`;
-    const prop = card(secH("building", "About unit") + irows([[u.icon === "building" ? "apt" : "house", "Property type", u.type], ["door", "Unit", u.name], ["community", "Community", u.community], ["pin", "Address", u.address], ["tag", "Unit code", u.code]]));
+    const imgs = st.unitImgs(u, 1400); if (shot >= imgs.length) shot = 0;
+    const header = `<section class="ud-hero" aria-label="Photos of ${esc(u.name)}">
+        <div class="ud-shots" style="--i:${shot}">${imgs.map((src, i) => `<span class="ud-shot">${icon(unitIcon(u), 40, "#922A22")}<img src="${src}" alt="" loading="${i ? "lazy" : "eager"}" onerror="this.remove()"></span>`).join("")}</div>
+        <div class="ud-dots" role="tablist" aria-label="Photo">${imgs.map((_, i) => `<button type="button" role="tab" data-shot="${i}" aria-selected="${i === shot}" aria-label="Photo ${i + 1} of ${imgs.length}"></button>`).join("")}</div>
+        ${s ? `<span class="ud-chip">${pill(st.ST_LABEL[s], st.ST_TONE[s])}</span>` : ""}
+      </section>
+      <div class="ud-title"><h2>${esc(u.address)}</h2><p>${esc(u.community)}</p></div>`;
+    const key = keyCard(u);
+    const prop = card(secH("building", "About unit") + facts([[u.icon === "building" ? "apt" : "house", u.type, "Property type"], ["tag", u.code, "Unit code"]]));
     let side;
     if (st.isOwner()) side = statusCards(u) + ownerCard(u) + payments(u);
     else if (st.isAgent()) side = ownerCard(u) + docs([["Agreement with owner", `PDF · signed ${st.fmt(u.agreement)}`], ["Holiday home permit", `PDF · ${u.permit.no} · valid until ${st.fmt(u.permit.until)}`]]);
-    else side = tenantContract(u);
-    c.innerHTML = `${switcher}<div class="pd-grid ${fade ? "is-fade" : ""}"><div class="pd-col">${header}${prop}</div><div class="pd-col">${side}${moveinCard(u)}${moveoutCard(u)}</div></div>`;
+    else side = tenantContract(u) + ownerCard(u) + docs([["Tenancy contract", `PDF · signed ${st.fmt(u.upcoming ? st.addDays(st.TODAY, -6) : u.contract.start)}`]]);
+    c.innerHTML = `${switcher}<div class="pd-grid ud ${fade ? "is-fade" : ""}"><div class="pd-col">${header}${key}${prop}</div><div class="pd-col">${side}${moveinCard(u)}${moveoutCard(u)}</div></div>`;
   }
   draw(false);
 
   c.addEventListener("click", (e) => {
     const ub = e.target.closest("[data-u]");
-    if (ub && ub.dataset.u !== cur) { cur = ub.dataset.u; payTab = "up"; history.replaceState(null, "", `#/app/property/${cur}`); draw(true); return; }
+    if (ub && ub.dataset.u !== cur) { cur = ub.dataset.u; payTab = "up"; shot = 0; history.replaceState(null, "", `#/app/property/${cur}`); draw(true); return; }
+    const sb = e.target.closest("[data-shot]"); if (sb) { shot = +sb.dataset.shot; c.querySelector(".ud-shots").style.setProperty("--i", shot); c.querySelectorAll("[data-shot]").forEach((x) => x.setAttribute("aria-selected", x === sb)); return; }
     const pt = e.target.closest("[data-ptab]"); if (pt) { payTab = pt.dataset.ptab; draw(false); return; }
     if (e.target.closest("[data-renew]")) { st.setIntent({ type: "renew", src: "property", unit: cur }); location.hash = "/app/gpt"; return; }
     if (e.target.closest("[data-mo-start]")) { st.setIntent({ type: "moveout", unit: cur }); location.hash = "/app/gpt"; return; }

@@ -74,6 +74,12 @@ export const docRows = (list) => list.map((d) => `<button type="button" class="a
 export const secH = (ic, title, right = "") => `<div class="ud-h">${icon(ic, 22, "#1C1C19")}<b>${esc(title)}</b>${right}</div>`;
 /* detail rows with a leading bare line icon: [icon, label, value, rawHtml?] */
 export const irows = (list) => `<dl class="ap-rows ap-rows--i">${list.filter(Boolean).map((r) => `<div class="ap-row"><dt>${icon(r[0], 20, "#1C1C19")}<span>${esc(r[1])}</span></dt><dd>${r[3] ? r[2] : esc(r[2])}</dd></div>`).join("")}</dl>`;
+/* mobile-style key/value: bare line icon, small label over a bold value: [icon, label, value, rawHtml?] */
+export const ikv = (list, cls = "") => `<dl class="ud-kv ${cls}">${list.filter(Boolean).map((r) => `<div class="ud-kv-i">${icon(r[0], 20, "#1C1C19")}<span><dt>${esc(r[1])}</dt><dd>${r[3] ? r[2] : esc(r[2])}</dd></span></div>`).join("")}</dl>`;
+/* "About unit" facts: icon + bold value, label underneath: [icon, value, label] */
+export const facts = (list) => `<div class="ud-facts">${list.filter(Boolean).map((r) => `<div class="ud-fact"><b>${icon(r[0], 20, "#1C1C19")}${esc(r[1])}</b><small>${esc(r[2])}</small></div>`).join("")}</div>`;
+/* plain icon tip (no box), as in the mobile Move-out card */
+export const tip = (text) => `<p class="ud-tip">${icon("info", 16, "#54504A")}<span>${esc(text)}</span></p>`;
 export const hint = (text) => `<div class="ap-hint">${icon("info", 16, "#1A1A1A")}<span>${esc(text)}</span></div>`;
 export const btn = (label, { kind = "primary", attrs = "", href } = {}) =>
   href ? `<a class="ap-btn ap-btn--${kind}" href="${href}" ${attrs}>${esc(label)}</a>` : `<button type="button" class="ap-btn ap-btn--${kind}" ${attrs}>${esc(label)}</button>`;
