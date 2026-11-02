@@ -2852,11 +2852,9 @@ function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" vie
       '<div data-pres hidden></div>'+
       '<div class="ud-hero pd-sw" data-uhero></div>'+
       '<div class="ud-head pd-sw" data-uhead></div>'+
-      '<div class="ud-key pd-sw" data-ukey></div>'+
       '<div class="pd-sw" data-pprop></div>'+
       '<div class="ud-stack" data-pcards></div>'+
       '<div class="pd-sw" data-pmo></div>'+
-      '<button type="button" class="ud-link pd-sw" data-uappt>Book an appointment</button>'+
       '<div class="mox-demo"><p class="mox-eyebrow">PROTOTYPE · PROPERTIES ON THIS ACCOUNT</p><div class="mox-demo-c" data-pdemo>'+
         '<button type="button" class="mox-chip" data-multi="1">Multiple properties</button><button type="button" class="mox-chip" data-multi="0">Single property</button></div></div>'+
     '</div><div class="ud-bar" data-ubar></div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
@@ -2930,7 +2928,7 @@ function initPD(sec){
   var toastEl = $('[data-mtoast]', root), tt = null;
   function toast(m){ if(!toastEl) return; toastEl.textContent = m; toastEl.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('is-in'); }, 2400); }
   var bt = $('.mox-bar-t', root); if(bt) bt.textContent = 'Unit details';
-  var hero = $('[data-uhero]', root), headEl = $('[data-uhead]', root), keyEl = $('[data-ukey]', root), barEl = $('[data-ubar]', root);
+  var hero = $('[data-uhero]', root), headEl = $('[data-uhead]', root), barEl = $('[data-ubar]', root);
   var res = RES ? strip(RES.cloneNode(true)) : null, rf = {};
   if(res){ res.classList.add('pd-res'); res.style.width = '100%'; resHost.appendChild(res); rf = resFields(res); }
 
@@ -2991,14 +2989,6 @@ function initPD(sec){
   /* ===== Unit details layout (hero · title · key card · accordions · sticky actions) ===== */
   var openS = { about:1, contract:1, owner:1, paysum:1, occ:1, tenancy:1, hh:1, pay:1, docs:1, mo:1 };
   var PHOTOS = (function(){ var a = []; $$('.arch-frame img, .fmedia img', D).forEach(function(i){ if(i.src && a.indexOf(i.src) < 0) a.push(i.src); }); return a; })();
-  function specs(u){
-    var t = u.type || '', beds = /studio/i.test(t) ? 0 : (parseInt(t, 10) || 1), villa = /villa/i.test(t);
-    var area = villa ? (beds >= 4 ? 4250 : 3180) : [520, 820, 1260, 1720][beds] || 1260;
-    var price = villa ? (beds >= 4 ? 4850000 : 3600000) : [780000, 965000, 1850000, 2400000][beds] || 1850000;
-    return { beds: beds, baths: villa ? beds + 1 : Math.max(1, beds), area: area, price: price, villa: villa };
-  }
-  function aed(n){ return 'AED ' + Number(n).toLocaleString('en-US'); }
-  var AMEN = [['pool','Swimming pools'],['gym','State of the art gymnasium'],['run','Walking & running tracks'],['kids','Kids play areas'],['tree','Parks & landscaping'],['shield','24/7 security'],['car','Parking space'],['mosque','Mosques'],['shop','Community centre, F&B & retail']];
   function acc(id, ic, title, pill, body){
     var on = !!openS[id];
     return '<section class="mox-card ud-acc pd-sw'+(on?' is-open':'')+'" data-acc="'+id+'">'+
@@ -3007,50 +2997,16 @@ function initPD(sec){
   }
   function dlRows(list){ return '<div class="ud-dl">'+list.map(function(d){ return '<button type="button" class="ud-doc" data-pact="contract" data-doc="'+esc(d[0])+'"><span class="ud-doc-i">'+icon('doc',20)+'</span><span class="ud-doc-t"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span><span class="ud-doc-d">'+icon('dl',20)+'</span></button>'; }).join('')+'</div>'; }
   function docsFor(u){
-    var L = [];
-    if(J==='owner'){ var o = u.own; L.push(['Sales and Purchase Agreement', 'PDF · signed '+D8(o.spa)]);
+    if(J==='owner'){ var o = u.own, L = [['Sales and Purchase Agreement', 'PDF · signed '+D8(o.spa)]];
       if(o.status==='vacant') L.push(['Handover documents', 'PDF · '+D8(o.handover)]);
       if(o.status==='rented') L.push(['Tenancy contract', 'PDF · signed '+D8(o.tenancy.start)]);
-      if(o.status==='holiday') L.push(['Holiday home contract', 'PDF · signed '+D8(o.hhContract)]); }
-    else if(J==='holiday'){ L.push(['Agreement with owner', 'PDF · signed '+D8(u.agreement)]); L.push(['Holiday home permit', 'PDF · '+u.permit.no+' · valid until '+D8(u.permit.until)]); }
-    else { L.push(['Tenancy contract', 'PDF · signed '+D8(u.contract.start)]); L.push(['Ejari certificate', 'PDF · '+u.contract.ejari]); }
-    L.push(['Unit brochure', 'PDF · '+u.community]);
-    return L;
+      if(o.status==='holiday') L.push(['Tenancy contract', 'PDF · signed '+D8(o.hhContract)]);
+      return L; }
+    if(J==='holiday') return [['Agreement with owner', 'PDF · signed '+D8(u.agreement)], ['Holiday home permit', 'PDF · '+u.permit.no+' · valid until '+D8(u.permit.until)]];
+    return [['Tenancy contract', 'PDF · signed '+D8(u.contract.start)]];
   }
-  function heroChip(u){
-    if(J==='owner' && u.own.status==='pending') return ['Construction completed 75%', null];
-    var st = unitStatus(u); if(st) return [ST_LABEL[st], ST_TONE[st]];
-    var c = u.contract, ex = c.status ? [c.status, c.tone] : expiry(c.end); return ['Tenancy · '+ex[0], ex[1]];
-  }
-  function subLine(u){
-    if(J==='owner'){ var o = u.own;
-      if(o.status==='pending') return 'Handover date: By May 2027';
-      if(o.status==='vacant') return 'Handed over on '+D8(o.handover||dt(2024,11,20));
-      if(o.status==='resident') return 'Moved in on '+D8(o.moveIn);
-      if(o.status==='rented') return 'Rented to '+o.tenancy.tenant;
-      return 'Holiday home · '+o.company; }
-    if(J==='holiday') return 'Owner · '+(u.ownerName||OMAR);
-    return 'Tenancy · '+D8(u.contract.start)+' – '+D8(u.contract.end);
-  }
-  function keyCard(u){
-    var sp = specs(u), L, R;
-    if(J==='owner'){ var o = u.own;
-      if(o.status==='pending'){ L = ['Amount outstanding', o.outstanding]; R = ['Paid so far', o.paidPct+'% · next due '+D8(o.next), 'amber']; }
-      else { L = ['Purchase price', aed(sp.price)];
-        R = { vacant:['Payment', 'Fully paid', 'green'], resident:['Service charge', 'Q1 2027 · AED 7,840', null], rented:['Rental income', (o.tenancy? 'AED '+Math.round(sp.price*0.065/1000)+',000 / year':''), 'green'], holiday:['Managed by', o.agent, null] }[o.status]; } }
-    else if(J==='holiday'){ L = ['Holiday home permit', u.permit.no]; R = ['Valid until', D8(u.permit.until), 'green']; }
-    else { var c = u.contract, left = daysTo(c.end); L = ['Annual rent', (c.rent||'').replace(' / year','')]; var tn = c.status ? c.tone : (left>=0 && left<=60 ? 'amber' : 'green'); R = ['Contract ends', D8(c.end) + (left>=0 && left<=60 ? ' · '+left+' days left' : ''), tn]; }
-    return '<div class="mox-card ud-kc"><div class="ud-kc-l"><small>'+esc(L[0])+'</small><b>'+esc(L[1])+'</b></div><div class="ud-kc-r"><small>'+esc(R[0])+'</small><b'+(R[2]?' data-tone="'+R[2]+'"':'')+'>'+esc(R[1])+'</b></div></div>';
-  }
-  function about(u){
-    var sp = specs(u);
-    var stat = function(ic, v, l){ return '<div class="ud-st"><span class="ud-st-v">'+icon(ic,20)+'<b>'+v+'</b></span><small>'+l+'</small></div>'; };
-    return acc('about', 'building', 'About unit', '',
-      '<p class="ud-sub">Unit info</p><div class="ud-stats">'+stat('bed', sp.beds || 'Studio', sp.beds ? 'Bedrooms' : 'Layout')+stat('bath', sp.baths, 'Bathrooms')+stat('area', sp.area.toLocaleString('en-US'), 'Area in sq ft')+'</div>'+
-      '<button type="button" class="ud-plan" data-uplan>View floor plan</button>'+
-      '<div class="ud-rows">'+rows([['Property type', u.type], ['Unit code', u.code], ['Community', u.community], ['Address', u.address]])+'</div>'+
-      '<p class="ud-sub">Amenities</p><div class="ud-am">'+AMEN.map(function(a){ return '<div class="ud-am-i"><span>'+icon(a[0],24)+'</span><small>'+esc(a[1])+'</small></div>'; }).join('')+'</div>');
-  }
+  function heroChip(u){ var st = unitStatus(u); return st ? [ST_LABEL[st], ST_TONE[st]] : null; }
+  function about(u){ return acc('about', 'building', 'About unit', '', rows([['Property type', u.type], ['Unit code', u.code]])); }
   function ownersAcc(u){
     if(J!=='owner') return acc('owner', 'user', 'Owner details', '', rows([['Owner name', u.ownerName || OMAR]]));
     return acc('owner', 'user', u.own.owners.length > 1 ? 'Owners' : 'Owner details', '', '<div class="pd-owners">'+u.own.owners.map(function(o){
@@ -3062,45 +3018,40 @@ function initPD(sec){
     if(o.status==='pending') return acc('paysum', 'card', 'Payment summary', '',
       '<div class="pd-prog"><div class="pd-prog-h"><span>Payment completed</span><b>'+o.paidPct+'%</b></div><div class="pd-bar"><i style="width:'+o.paidPct+'%"></i></div></div>'+
       rows([['Amount outstanding', o.outstanding], ['Next due date', D8(o.next)]])+'<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Handover after payment is complete.</span></div>');
-    if(o.status==='vacant') return acc('occ', 'home', 'Occupancy', pillH('Vacant','grey'), rows([['Status', 'Unit is vacant'], ['Handed over', D8(o.handover)], ['Payment', 'Fully paid']]));
-    if(o.status==='resident') return acc('occ', 'home', 'Occupancy', pillH('Resident','green'), rows([['Status', 'You live here'], ['Moved in', D8(o.moveIn)]]));
+    if(o.status==='vacant') return acc('occ', 'home', 'Occupancy', '', rows([['Handed over', D8(o.handover)], ['Payment', 'Fully paid']]));
+    if(o.status==='resident') return acc('occ', 'home', 'Occupancy', '', rows([['Moved in', D8(o.moveIn)]]));
     if(o.status==='rented'){ var t = o.tenancy, ex = t.status ? [t.status, t.tone] : expiry(t.end);
       return acc('tenancy', 'doc', 'Tenancy contract', pillH(ex[0], ex[1]), rows([['Tenant name', t.tenant], ['Contract no.', t.no], ['Start date', D8(t.start)], ['End date', endTxt(t.end), true]])); }
-    if(o.status==='holiday') return acc('hh', 'key', 'Holiday home', pillH('Holiday home','teal'), rows([['Agent', o.agent], ['Company', o.company], ['Contract since', D8(o.hhContract)]]));
+    if(o.status==='holiday') return acc('hh', 'key', 'Holiday home', '', rows([['Agent', o.agent], ['Company', o.company]]));
     return '';
   }
   function payAcc(u){ var h = payments(u); h = h.replace(/^<div class="mox-card pd-sec pd-sw pd-pay"><p class="mox-eyebrow">PAYMENTS<\/p>/, '').replace(/<\/div>$/, ''); return acc('pay', 'card', 'Payments', '', h); }
   function contractAcc(u){
     var c = u.contract, ex = c.status ? [c.status, c.tone] : expiry(c.end);
-    return acc('contract', 'doc', 'Tenancy contract', pillH(ex[0], ex[1]), rows([['Contract no.', c.no], ['Ejari no.', c.ejari], ['Start date', D8(c.start)], ['End date', endTxt(c.end), true], ['Payment', c.pay], ['Security deposit', c.deposit]]));
+    return acc('contract', 'doc', 'Tenancy contract', pillH(ex[0], ex[1]), rows([['Contract no.', c.no], ['Ejari no.', c.ejari], ['Start date', D8(c.start)], ['End date', endTxt(c.end), true]]));
   }
   function barFor(u){
-    var r = MO.reqs[u.id], mo = canMoveOut(u) ? (r ? ['Track move-out','track'] : ['Request move-out','start']) : null, a, b;
-    if(J==='tenant'){ var c = u.contract, ex = c.status ? c.status : expiry(c.end)[0]; a = mo; b = ex==='Expiring soon' ? ['Renew contract','renew'] : ['Ask Bloom GPT','gpt']; }
-    else if(J==='holiday'){ a = mo; b = ['Guest check-in','checkin']; }
-    else { var s = u.own.status;
-      if(s==='pending'){ a = ['Payment plan','plan']; b = ['Pay instalment','pay']; }
-      else if(s==='vacant'){ a = ['Contact us','contact']; b = ['Rent out unit','rent']; }
-      else if(s==='resident'){ a = mo; b = ['Ask Bloom GPT','gpt']; }
-      else if(s==='rented'){ a = ['Contact tenant','ctenant']; b = ['Ask Bloom GPT','gpt']; }
-      else { a = ['Contact agent','cagent']; b = ['Ask Bloom GPT','gpt']; } }
-    return (a ? '<button type="button" class="mox-btn mox-btn--ghost ud-b" data-ubact="'+a[1]+'"><span class="mox-btn-t">'+a[0]+'</span></button>' : '')+
-           '<button type="button" class="mox-btn mox-btn--dark ud-b" data-ubact="'+b[1]+'"><span class="mox-btn-t">'+b[0]+'</span></button>';
+    var r = MO.reqs[u.id], B = [];
+    if(canMoveOut(u)){
+      if(!r) B.push(['Request move-out','start']);
+      else if(['nocRejected','bcmRejected'].indexOf(r.status) >= 0){ B.push(['Track request','track']); B.push(['New request','new']); }
+      else B.push(['Track request','track']);
+    }
+    if(J==='tenant'){ var c = u.contract, ex = c.status ? c.status : expiry(c.end)[0]; if(ex==='Expiring soon') B.push(['Renew contract','renew']); }
+    return B.map(function(b, i){ return '<button type="button" class="mox-btn '+(i===B.length-1 ? 'mox-btn--dark' : 'mox-btn--ghost')+' ud-b" data-ubact="'+b[1]+'"><span class="mox-btn-t">'+b[0]+'</span></button>'; }).join('');
   }
   var heroIdx = 0;
   function heroHTML(u, list){
     var k = Math.max(0, list.indexOf(u)), ph = PHOTOS.length ? PHOTOS.slice(k % PHOTOS.length).concat(PHOTOS.slice(0, k % PHOTOS.length)) : [];
     var chip = heroChip(u);
     return '<div class="ud-gal" data-ugal>'+(ph.length ? ph : [null,null,null]).map(function(p, i){ return '<div class="ud-sl">'+(p ? '<img src="'+p+'" alt="'+(i ? '' : esc(u.name+' photo'))+'" draggable="false">' : '')+'</div>'; }).join('')+'</div>'+
-      '<span class="ud-chip"'+(chip[1]?' data-tone="'+chip[1]+'"':'')+'>'+esc(chip[0])+'</span>'+
+      (chip ? '<span class="ud-chip"'+(chip[1]?' data-tone="'+chip[1]+'"':'')+'>'+esc(chip[0])+'</span>' : '')+
       '<div class="ud-dots" aria-hidden="true">'+(ph.length ? ph : [0,0,0]).map(function(_, i){ return '<i'+(i===0?' class="is-on"':'')+'></i>'; }).join('')+'</div>';
   }
   function renderUD(list, u){
     hero.innerHTML = heroHTML(u, list);
-    headEl.innerHTML = '<div class="ud-head-t"><p class="ud-code">'+esc(u.code)+' · '+esc(u.type)+'</p><h2 class="ud-title">'+esc(u.name)+', '+esc(u.community)+'</h2><p class="ud-subl">'+esc(subLine(u))+'</p></div>'+
-      '<button type="button" class="ud-map" data-umap aria-label="Show '+esc(u.name)+' on the map">'+icon('pin',22)+'</button>';
-    keyEl.innerHTML = keyCard(u);
-    barEl.innerHTML = barFor(u);
+    headEl.innerHTML = '<div class="ud-head-t"><h2 class="ud-title">'+esc(u.address)+'</h2>'+(u.address.indexOf(u.community) < 0 ? '<p class="ud-subl">'+esc(u.community)+'</p>' : '')+'</div>';
+    barEl.innerHTML = barFor(u); barEl.hidden = !barEl.innerHTML;
     var g = $('[data-ugal]', hero), dots = $$('.ud-dots i', hero);
     if(g) g.addEventListener('scroll', function(){ var i = Math.round(g.scrollLeft / Math.max(1, g.clientWidth)); dots.forEach(function(d, j){ d.classList.toggle('is-on', j===i); }); }, { passive:true });
   }
@@ -3127,22 +3078,18 @@ function initPD(sec){
     cards.innerHTML = h + acc('docs', 'folder', 'Documents', '', dlRows(docsFor(u)));
     // move-out (tenant, owner living in the unit, holiday home agent)
     var r = MO.reqs[u.id], ST = MO.ST, m = '';
-    mo.hidden = !canMoveOut(u) || !r;
+    mo.hidden = !canMoveOut(u);
     if(!r){
       var sub = J==='owner' ? 'Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date.' : 'Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.';
-      m += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
+      m += '<div class="pd-mo-h"><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
            '<p class="mox-muted">'+sub+'</p></div></div>'+
-           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today.</span></div>'+
-           '<button type="button" class="mox-btn mox-btn--primary" data-pact="start"><span class="mox-btn-t">Request move-out</span></button>';
+           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today.</span></div>';
     } else {
       var s2 = ST[r.status], closed = ['nocRejected','bcmRejected'].indexOf(r.status) >= 0;
-      m += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out request · '+esc(r.id)+'</p>'+
+      m += '<div class="pd-mo-h"><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out request · '+esc(r.id)+'</p>'+
            '<p class="mox-muted">Move-out on '+esc(MO.fmtS(r.date))+'</p><span class="mox-pill" data-tone="'+s2.tone+'">'+esc(s2.pill)+'</span></div></div>';
-      m += closed
-        ? '<div class="pd-mo-acts"><button type="button" class="mox-btn mox-btn--ghost" data-pact="track"><span class="mox-btn-t">Track request</span></button><button type="button" class="mox-btn mox-btn--primary" data-pact="new"><span class="mox-btn-t">New request</span></button></div>'
-        : '<button type="button" class="mox-btn mox-btn--primary" data-pact="track"><span class="mox-btn-t">Track request</span></button>';
     }
-    mo.innerHTML = r ? acc('mo', 'exit', 'Move-out', '', m) : '';
+    mo.innerHTML = canMoveOut(u) ? acc('mo', 'exit', 'Move-out', '', m) : '';
     $$('[data-multi]', demo).forEach(function(b){ b.setAttribute('aria-pressed', (b.dataset.multi==='1')===MO.multi ? 'true' : 'false'); });
     if(fade) $$('.pd-sw', root).forEach(function(el, i){ A(el, [{opacity:0, translate:'0 8px'}, {opacity:1, translate:'0 0'}], {duration:340, delay:i*40, easing:'cubic-bezier(.16,1,.3,1)', fill:'backwards'}); });
   }
@@ -3155,17 +3102,12 @@ function initPD(sec){
   root.addEventListener('click', function(e){
     var h = e.target.closest('[data-acct]');
     if(h){ var id = h.dataset.acct, sec = h.closest('.ud-acc'), on = !sec.classList.contains('is-open'); openS[id] = on ? 1 : 0; sec.classList.toggle('is-open', on); h.setAttribute('aria-expanded', on); return; }
-    if(e.target.closest('[data-umap]')){ toast('Prototype: the map opens here with directions to '+MO.unit().name+'.'); return; }
-    if(e.target.closest('[data-uplan]')){ toast('Prototype: the floor plan (PDF) opens here.'); return; }
-    if(e.target.closest('[data-uappt]')){ toast('Prototype: pick a slot with the community team. We will confirm by SMS.'); return; }
     var b = e.target.closest('[data-ubact]'); if(!b) return;
     var a = b.dataset.ubact, n = nav(), u = MO.unit(); MO.origin = SID;
     if(a==='start' && n) n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT');
     else if(a==='track' && n) n.navigate('mo:details', 'SLIDE_IN/350/EASE_OUT/LEFT');
     else if(a==='renew'){ window.__gptIntent = { type:'renew', unit:u.id }; if(n) n.navigate('gpt:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
-    else if(a==='checkin'){ window.__gptIntent = { type:'checkin', unit:u.id }; if(n) n.navigate('gpt:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
-    else if(a==='gpt'){ if(n) n.navigate('gpt:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
-    else toast({ plan:'Prototype: your payment plan (10 instalments) opens here.', pay:'Prototype: secure payment for instalment 8 opens here.', contact:'Our community team will call you back within 24 hours.', rent:'Our leasing team will contact you to list '+u.name+'.', ctenant:'Prototype: call or message your tenant from here.', cagent:'Prototype: call or message your holiday home agent from here.' }[a] || 'Prototype action.');
+    else if(a==='new' && n){ MO.req = null; n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
   });
   mo.addEventListener('click', function(e){
     var b = e.target.closest('[data-pact]'); if(!b) return;
@@ -6124,6 +6066,7 @@ window.__initScreen[DET] = initDetail;
 .pdx .ud-doc-d{flex:none;display:grid;color:#1c1c19}
 .pdx .ud-stack{display:flex;flex-direction:column;gap:12px}
 .pdx .ud-link{align-self:center;margin:4px 0 6px;padding:6px 4px;font-size:15px;font-weight:600;color:#1c1c19;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+.pdx .ud-bar[hidden]{display:none!important}
 .pdx .ud-bar{flex:none;position:relative;z-index:2;display:flex;gap:10px;padding:12px 16px 28px;background:#fff;border-radius:24px 24px 0 0;box-shadow:0 -10px 30px -18px rgba(28,28,25,.28)}
 .pdx .ud-bar .mox-btn{flex:1 1 0;width:auto;height:52px;border-radius:12px;padding:0 12px;font-size:15px}
 .pdx .ud-bar .mox-btn--dark{background:#1a1a1a!important;color:#fff!important;box-shadow:none}
