@@ -28,6 +28,7 @@ export function shell(view, { active = "home", title = "", back = null, flush = 
             ${NAV().map((n) => `<a class="ap-hd-i ${n.k === active ? "is-on" : ""} ${n.ic === "gpt" ? "ap-hd-i--gpt" : ""}" href="${n.href}" ${n.k === active ? 'aria-current="page"' : ""}>${n.ic === "gpt" ? orb("siri--tab") : ""}<span>${esc(n.label)}</span></a>`).join("")}
           </nav>
           <div class="ap-hd-end">
+            <label class="ap-search">${icon("search", 16, "#8A847A")}<span class="sr-only">Search</span><input type="search" placeholder="Search documents, services…" data-search></label>
             <a class="ap-ib ap-ib--d ${active === "contact" ? "is-on" : ""}" href="#/app/contact" aria-label="Contact us">${icon("phone", 20)}</a>
             <button type="button" class="ap-ib ap-bell" data-bell aria-label="Notifications${unread ? `, ${unread} unread` : ""}" aria-expanded="false">${icon("bell", 20)}${unread ? `<b class="ap-badge">${unread}</b>` : ""}</button>
             <span class="ap-hd-sep" aria-hidden="true"></span>
@@ -44,6 +45,7 @@ export function shell(view, { active = "home", title = "", back = null, flush = 
       <div class="ap-main">
         ${back || title ? `<div class="ap-pagehead">${back ? `<a class="ap-back" href="${back}" aria-label="Back">${icon("chevL", 20)}</a>` : ""}${title ? `<h1 class="ap-title">${esc(title)}</h1>` : ""}</div>` : ""}
         <main class="ap-content ${flush ? "ap-content--flush" : ""}" data-content></main>
+        ${flush ? "" : `<footer class="ap-foot"><a class="ap-foot-logo" href="#/" aria-label="Bloom website">${LOGO}</a><span>© 2026 Bloom Holding PJSC. All rights reserved.</span><nav aria-label="Footer"><a href="#/" data-soon>Privacy Policy</a><a href="#/" data-soon>Terms of Tenancy</a><a href="#/app/contact">Emergency FM Contact</a><a href="#/app/gpt">Concierge Support</a></nav></footer>`}
       </div>
       <div class="ap-demo ap-demo--float" role="group" aria-label="Demo journey">
         <span class="ap-demo-l">Demo journey</span>
@@ -85,6 +87,8 @@ export function shell(view, { active = "home", title = "", back = null, flush = 
     const a = e.target.closest("[data-nt]");
     if (a) { st.markRead(+a.dataset.nt); if (a.getAttribute("href") === "#") { e.preventDefault(); drawPop(); } else close(); }
   });
+  root.querySelector("[data-search]")?.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.value.trim()) { try { sessionStorage.setItem("bloom-gpt-q", e.target.value.trim()); } catch (x) {} location.hash = "/app/gpt"; } });
+  root.querySelectorAll(".ap-foot [data-soon]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); toast("Prototype: this page opens in the full app."); }));
   const menu = root.querySelector("[data-menu]"), me = root.querySelector("[data-me]");
   const closeMenu = () => { menu.hidden = true; me.setAttribute("aria-expanded", "false"); };
   me.addEventListener("click", (e) => { e.stopPropagation(); close(); if (matchMedia("(max-width: 899px)").matches) { location.hash = "/app/profile"; return; } const o = menu.hidden; menu.hidden = !o; me.setAttribute("aria-expanded", String(o)); });

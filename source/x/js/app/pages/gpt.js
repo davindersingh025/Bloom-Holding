@@ -375,6 +375,8 @@ export function page({ shell }) {
       if (i && i.type === "moveout") return moveout(i.unit);
       if (i && i.type === "checkin" && st.isAgent()) return checkin(i);
       if (i && i.type === "checkout" && st.isAgent()) return checkout(i.id);
+      let q = null; try { q = sessionStorage.getItem("bloom-gpt-q"); sessionStorage.removeItem("bloom-gpt-q"); } catch (x) {}
+      if (q) { me(q); return say(`Thanks ${first} — I’ve noted “${q}”. In the full app I’ll take care of it right away. Meanwhile, here’s what I can help with:`).then(() => menu("")); }
       return menu(`Hi ${first}! I’m Bloom GPT. How can I help you today?`);
     }).catch((e) => { if (!(e instanceof Stale)) console.error(e); });
   }
