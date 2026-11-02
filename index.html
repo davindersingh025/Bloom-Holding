@@ -4290,6 +4290,30 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 
 .nav.is-scrolled.is-over-dark .nav__menu-btn, .nav.is-scrolled.is-over-dark .nav__search-m { background: transparent !important; }
 
+/* ===== Landing: richer elements (reference parity) — same fonts & brand colours ===== */
+/* hero */
+.hero__kicker { display: inline-flex !important; align-items: center; gap: 8px; padding: 6px 12px 6px 10px; border-radius: 999px; background: #fff !important; color: var(--color-text-secondary) !important; box-shadow: 0 0 0 1px var(--color-border); font: 600 11px/1 var(--font-matter); letter-spacing: 1.4px; text-transform: uppercase; }
+.hero__bg { background: radial-gradient(55% 60% at 82% 18%, rgba(146, 42, 34, 0.08), transparent 70%), radial-gradient(40% 50% at 8% 90%, rgba(217, 185, 138, 0.16), transparent 70%), var(--color-background) !important; }
+.hero__arch-frame { border-radius: 999px 999px 28px 28px !important; box-shadow: 0 30px 60px -36px rgba(92, 26, 21, 0.45) !important; }
+.hero__arch-outline { display: none !important; }
+.hero__arch-chip { box-shadow: 0 10px 24px -16px rgba(28, 28, 25, 0.35) !important; }
+/* stats: coloured accent bar per category */
+.stat { position: relative; overflow: hidden; }
+.stat::after { display: block !important; background: var(--c) !important; inset-inline: 20px; height: 3px; transform: scaleX(1); }
+/* quick start: photo, tags and dot texture back on the white cards */
+.qs { position: relative; overflow: hidden !important; min-height: 230px !important; }
+.qs__tags { display: flex !important; max-width: 62%; margin-top: 10px; }
+.qs__tag { background: color-mix(in srgb, var(--c) 7%, #fff) !important; color: color-mix(in srgb, var(--c) 80%, #1c1c19) !important; border: 1px solid color-mix(in srgb, var(--c) 22%, transparent) !important; font-family: var(--font-matter) !important; }
+.qs__photo { display: block !important; border: 4px solid #fff !important; box-shadow: 0 16px 30px -18px rgba(28, 28, 25, 0.45); }
+.qs__dots { display: block !important; opacity: 0.5 !important; background-image: radial-gradient(color-mix(in srgb, var(--c) 35%, transparent) 1.1px, transparent 1.5px) !important; }
+.qs__icon { box-shadow: 0 8px 18px -10px var(--c) !important; }
+/* manage my property: soft pulse rings */
+.qs-portal { position: relative; overflow: hidden; }
+.qs-portal__rings { display: block !important; }
+/* red chapters: keep flat brand red, add light and the lattice texture */
+.cta-band, .portal-teaser { background: radial-gradient(60% 80% at 88% 0%, rgba(248, 245, 235, 0.12), transparent 65%), radial-gradient(50% 70% at 0% 100%, rgba(60, 14, 10, 0.35), transparent 70%), var(--color-primary) !important; }
+.cta-band [class*="pattern"], .portal-teaser [class*="lattice"] { display: block !important; opacity: 0.14 !important; }
+
 </style>
   <style data-src="css/app.css">
 /* ==========================================================================
