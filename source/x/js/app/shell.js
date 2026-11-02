@@ -20,38 +20,35 @@ export function shell(view, { active = "home", title = "", back = null, flush = 
   const j = st.journey(), u = j.user;
   const unread = st.unreadCount();
   view.innerHTML = `
-    <div class="ap" data-journey="${j.id}">
-      <aside class="ap-side" aria-label="Main">
-        <a class="ap-brand" href="#/app" aria-label="Bloom — Home">${LOGO}</a>
-        <nav class="ap-nav">
-          ${NAV().map((n) => `<a class="ap-nav-i ${n.k === active ? "is-on" : ""}" href="${n.href}" ${n.k === active ? 'aria-current="page"' : ""}>${navIcon(n, n.k === active)}<span>${esc(n.label)}</span></a>`).join("")}
-        </nav>
-        <div class="ap-side-foot">
-          <a class="ap-nav-i ${active === "contact" ? "is-on" : ""}" href="#/app/contact">${icon("phone", 20, active === "contact" ? "#922A22" : "#6B665C")}<span>Contact us</span></a>
-          <a class="ap-nav-i" href="#/">${icon("globe", 20, "#6B665C")}<span>Bloom website</span></a>
-          <a class="ap-me ${active === "profile" ? "is-on" : ""}" href="#/app/profile">${avatar(u.name)}<span><b>${esc(u.name)}</b><small>${esc(u.role)}</small></span>${icon("chev", 16, "#8A847A")}</a>
-        </div>
-      </aside>
-      <div class="ap-main">
-        <header class="ap-top">
-          <div class="ap-top-l">
-            <a class="ap-brand ap-brand--m" href="#/app" aria-label="Bloom — Home">${LOGO}</a>
-            ${back ? `<a class="ap-back" href="${back}" aria-label="Back">${icon("chevL", 20)}</a>` : ""}
-            ${title ? `<h1 class="ap-title">${esc(title)}</h1>` : ""}
-          </div>
-          <div class="ap-top-r">
-            <div class="ap-demo" role="group" aria-label="Demo journey">
-              <span class="ap-demo-l">Demo journey</span>
-              <div class="ap-demo-seg">${st.JOURNEY_ORDER.map((id) => `<button type="button" data-journey="${id}" aria-pressed="${id === j.id}">${esc(st.JOURNEYS[id].label)}</button>`).join("")}</div>
-              <label class="ap-demo-sel"><span class="sr-only">Demo journey</span><select data-journey-sel>${st.JOURNEY_ORDER.map((id) => `<option value="${id}" ${id === j.id ? "selected" : ""}>${esc(st.JOURNEYS[id].label)}</option>`).join("")}</select>${icon("chevD", 14, "#fff")}</label>
-            </div>
-            <a class="ap-ib ap-ib--d" href="#/app/contact" aria-label="Contact us">${icon("phone", 20)}</a>
+    <div class="ap ap--top" data-journey="${j.id}">
+      <header class="ap-hd" aria-label="Main">
+        <div class="ap-hd-bar">
+          <a class="ap-brand" href="#/app" aria-label="Bloom — Home">${LOGO}</a>
+          <nav class="ap-hd-nav" aria-label="Main">
+            ${NAV().map((n) => `<a class="ap-hd-i ${n.k === active ? "is-on" : ""} ${n.ic === "gpt" ? "ap-hd-i--gpt" : ""}" href="${n.href}" ${n.k === active ? 'aria-current="page"' : ""}>${n.ic === "gpt" ? orb("siri--tab") : ""}<span>${esc(n.label)}</span></a>`).join("")}
+          </nav>
+          <div class="ap-hd-end">
+            <a class="ap-ib ap-ib--d ${active === "contact" ? "is-on" : ""}" href="#/app/contact" aria-label="Contact us">${icon("phone", 20)}</a>
             <button type="button" class="ap-ib ap-bell" data-bell aria-label="Notifications${unread ? `, ${unread} unread` : ""}" aria-expanded="false">${icon("bell", 20)}${unread ? `<b class="ap-badge">${unread}</b>` : ""}</button>
-            <a class="ap-top-me" href="#/app/profile" aria-label="Profile">${avatar(u.name)}</a>
+            <span class="ap-hd-sep" aria-hidden="true"></span>
+            <button type="button" class="ap-hd-me ${active === "profile" ? "is-on" : ""}" data-me aria-haspopup="true" aria-expanded="false">${avatar(u.name)}<span class="ap-hd-me-t"><b>${esc(u.name)}</b><small>${esc(u.role)}</small></span>${icon("chevD", 14, "#6B665C")}</button>
           </div>
           <div class="ap-pop" data-pop hidden></div>
-        </header>
+          <div class="ap-menu" data-menu hidden>
+            <a href="#/app/profile" class="${active === "profile" ? "is-on" : ""}">${icon("user", 18)}<span>My profile</span></a>
+            <a href="#/app/contact" class="${active === "contact" ? "is-on" : ""}">${icon("phone", 18)}<span>Contact us</span></a>
+            <a href="#/">${icon("globe", 18)}<span>Bloom website</span></a>
+          </div>
+        </div>
+      </header>
+      <div class="ap-main">
+        ${back || title ? `<div class="ap-pagehead">${back ? `<a class="ap-back" href="${back}" aria-label="Back">${icon("chevL", 20)}</a>` : ""}${title ? `<h1 class="ap-title">${esc(title)}</h1>` : ""}</div>` : ""}
         <main class="ap-content ${flush ? "ap-content--flush" : ""}" data-content></main>
+      </div>
+      <div class="ap-demo ap-demo--float" role="group" aria-label="Demo journey">
+        <span class="ap-demo-l">Demo journey</span>
+        <div class="ap-demo-seg">${st.JOURNEY_ORDER.map((id) => `<button type="button" data-journey="${id}" aria-pressed="${id === j.id}">${esc(st.JOURNEYS[id].label)}</button>`).join("")}</div>
+        <label class="ap-demo-sel"><span class="sr-only">Demo journey</span><select data-journey-sel>${st.JOURNEY_ORDER.map((id) => `<option value="${id}" ${id === j.id ? "selected" : ""}>${esc(st.JOURNEYS[id].label)}</option>`).join("")}</select>${icon("chevD", 14, "#fff")}</label>
       </div>
       <nav class="ap-tabs" aria-label="Main">
         ${NAV().filter((n) => !n.desk).map((n) => `<a class="ap-tab ${n.k === active ? "is-on" : ""}" href="${n.href}" ${n.k === active ? 'aria-current="page"' : ""}>${navIcon(n, n.k === active)}<span>${esc(n.label)}</span></a>`).join("")}
@@ -81,15 +78,18 @@ export function shell(view, { active = "home", title = "", back = null, flush = 
     e.stopPropagation();
     if (matchMedia("(max-width: 899px)").matches) { location.hash = "/app/notifications"; return; }
     if (!pop.hidden) return close();
-    drawPop(); pop.hidden = false; bell.setAttribute("aria-expanded", "true");
+    closeMenu(); drawPop(); pop.hidden = false; bell.setAttribute("aria-expanded", "true");
   });
   pop.addEventListener("click", (e) => {
     if (e.target.closest("[data-allread]")) { st.markAllRead(); drawPop(); return; }
     const a = e.target.closest("[data-nt]");
     if (a) { st.markRead(+a.dataset.nt); if (a.getAttribute("href") === "#") { e.preventDefault(); drawPop(); } else close(); }
   });
-  const outside = (e) => { if (!pop.hidden && !pop.contains(e.target) && !bell.contains(e.target)) close(); };
-  const onKey = (e) => { if (e.key === "Escape") close(); };
+  const menu = root.querySelector("[data-menu]"), me = root.querySelector("[data-me]");
+  const closeMenu = () => { menu.hidden = true; me.setAttribute("aria-expanded", "false"); };
+  me.addEventListener("click", (e) => { e.stopPropagation(); close(); if (matchMedia("(max-width: 899px)").matches) { location.hash = "/app/profile"; return; } const o = menu.hidden; menu.hidden = !o; me.setAttribute("aria-expanded", String(o)); });
+  const outside = (e) => { if (!pop.hidden && !pop.contains(e.target) && !bell.contains(e.target)) close(); if (!menu.hidden && !menu.contains(e.target) && !me.contains(e.target)) closeMenu(); };
+  const onKey = (e) => { if (e.key === "Escape") { close(); closeMenu(); } };
   document.addEventListener("click", outside);
   document.addEventListener("keydown", onKey);
   const off = st.on((w) => { if (w === "notifs") refreshBadge(); });

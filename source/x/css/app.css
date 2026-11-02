@@ -709,3 +709,120 @@ body.in-app #view { transition: none !important; }
 .ap .db2-h1 span { color: var(--ink) !important; }
 .ap .db2-h1 i { color: var(--red) !important; }
 .db2-ring--ic svg { position: static !important; width: 26px !important; height: 26px !important; }
+
+/* ===================== Top-navigation shell (landing-page style, no sidebar) ===================== */
+.ap.ap--top { display: block; --top: 96px;
+  background: radial-gradient(50% 40% at 85% 0%, rgba(146, 42, 34, 0.07), transparent 70%), radial-gradient(40% 40% at 0% 30%, rgba(217, 185, 138, 0.14), transparent 70%), var(--cream); background-attachment: fixed; }
+.ap-hd { position: sticky; top: 0; z-index: 30; padding: 14px 32px 0; pointer-events: none; }
+.ap-hd-bar { position: relative; pointer-events: auto; max-width: 1360px; margin: 0 auto; display: flex; align-items: center; gap: 16px; height: 68px; padding: 0 10px 0 26px; border-radius: 26px; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); box-shadow: 0 0 0 1px rgba(28, 28, 25, 0.06), 0 16px 34px -24px rgba(92, 26, 21, 0.4); }
+.ap--top .ap-brand { padding: 0; margin-right: 18px; }
+.ap--top .ap-brand .bloom-logo { height: 28px; }
+.ap-hd-nav { flex: 1; display: flex; align-items: center; gap: 4px; min-width: 0; }
+.ap-hd-i { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 14px; font-size: 15px; font-weight: 600; color: var(--ink2); white-space: nowrap; transition: background-color 200ms, color 200ms; }
+.ap-hd-i:hover { background: rgba(28, 28, 25, 0.04); color: var(--ink); }
+.ap-hd-i.is-on { color: var(--red); background: rgba(146, 42, 34, 0.07); }
+.ap-hd-i.is-on::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 5px; height: 2px; border-radius: 2px; background: var(--red); }
+.ap-hd-i--gpt { padding-left: 10px; }
+.ap-hd-i--gpt .siri { --s: 22px; }
+.ap-hd-end { display: flex; align-items: center; gap: 6px; }
+.ap-hd-sep { width: 1px; height: 28px; background: var(--line2); margin: 0 6px; }
+.ap-hd-end .ap-ib { width: 44px; height: 44px; border-radius: 14px; background: transparent; border: 0; }
+.ap-hd-end .ap-ib:hover, .ap-hd-end .ap-ib.is-on { background: rgba(28, 28, 25, 0.05); }
+.ap-hd-me { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 12px 0 6px; border: 0; border-radius: 16px; background: transparent; cursor: pointer; font-family: inherit; color: var(--ink); text-align: left; }
+.ap-hd-me:hover, .ap-hd-me.is-on, .ap-hd-me[aria-expanded="true"] { background: rgba(28, 28, 25, 0.05); }
+.ap-hd-me .ap-av { width: 40px; height: 40px; }
+.ap-hd-me-t { display: flex; flex-direction: column; line-height: 1.2; }
+.ap-hd-me-t b { font-size: 14px; font-weight: 600; } .ap-hd-me-t small { font-size: 12px; color: var(--muted); }
+.ap--top .ap-pop { top: 76px; right: 0; }
+.ap-menu { position: absolute; top: 76px; right: 0; width: 240px; padding: 8px; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 48px -24px rgba(28, 28, 25, 0.35); animation: apIn 220ms cubic-bezier(.16, 1, .3, 1); }
+.ap-menu[hidden] { display: none; }
+.ap-menu a { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 12px; font-size: 14.5px; font-weight: 600; color: var(--ink); }
+.ap-menu a:hover, .ap-menu a.is-on { background: #F6F1EF; color: var(--red); }
+.ap--top .ap-main { min-height: calc(100vh - 82px); }
+.ap-pagehead { max-width: 1200px; margin: 0 auto; width: 100%; padding: 26px 32px 0; display: flex; align-items: center; gap: 12px; }
+.ap-pagehead .ap-back { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: #fff; border: 1px solid var(--line); }
+.ap-pagehead .ap-title { font-family: var(--font-orpheus-md, "Orpheus Pro", "Instrument Serif", Georgia, serif); font-weight: 500; font-size: clamp(26px, 2.4vw, 34px); letter-spacing: -0.02em; line-height: 1.1; margin: 0; }
+.ap--top .ap-content { padding-top: 24px; }
+.ap-demo--float { position: fixed; z-index: 25; left: 20px; bottom: 20px; box-shadow: 0 16px 30px -18px rgba(28, 28, 25, 0.35); border-style: solid; }
+@media (max-width: 1240px) { .ap-hd-me-t { display: none; } .ap-hd-i { padding: 0 12px; } }
+@media (max-width: 1023px) { .ap-hd-i span { font-size: 14px; } .ap--top .ap-brand { margin-right: 6px; } }
+@media (max-width: 899px) {
+  .ap-hd { padding: 10px 12px 0; }
+  .ap-hd-bar { height: 60px; padding: 0 6px 0 18px; border-radius: 22px; }
+  .ap-hd-nav, .ap-hd-sep { display: none; }
+  .ap-hd-end { margin-left: auto; }
+  .ap--top .ap-brand .bloom-logo { height: 24px; }
+  .ap-pagehead { padding: 18px 16px 0; } .ap-pagehead .ap-title { font-size: 24px; }
+  .ap-demo--float { left: auto; right: 12px; bottom: 96px; padding: 3px; }
+}
+
+/* ===================== Dashboard v5 — landing-page composition ===================== */
+.d3 { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; padding-bottom: 40px; }
+.d3-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr); gap: 48px; align-items: center; min-height: 520px; }
+.d3-hero-l { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+.d3-kicker { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 10px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--line); font-size: 11.5px; font-weight: 600; letter-spacing: 1.3px; text-transform: uppercase; color: var(--ink2); }
+.d3-kicker i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px rgba(146, 42, 34, 0.12); }
+.ap .d3-h1 { margin: 0; font-family: var(--font-orpheus-md, "Orpheus Pro", "Instrument Serif", Georgia, serif); font-weight: 500; font-size: clamp(44px, 5.2vw, 76px); line-height: 1.02; letter-spacing: -0.025em; color: var(--ink); max-width: 11ch; }
+.ap .d3-h1 span { color: var(--ink); white-space: nowrap; }
+.ap .d3-h1 i { font-family: var(--font-orpheus, "Orpheus Pro", "Cormorant Garamond", Georgia, serif); font-style: italic; font-weight: 400; color: var(--red); position: relative; }
+.ap .d3-h1 i::after { content: ""; position: absolute; left: 2%; right: 4%; bottom: -0.06em; height: 0.09em; border-radius: 999px; background: var(--red); opacity: 0.85; transform: rotate(-1.2deg); }
+.d3-act { margin-top: 10px; display: flex; align-items: center; gap: 16px; width: min(520px, 100%); padding: 16px 16px 16px 16px; border: 0; border-radius: 22px; background: #fff; box-shadow: 0 0 0 1px var(--line), 0 18px 34px -26px rgba(92, 26, 21, 0.45); text-align: left; color: var(--ink); cursor: pointer; font-family: inherit; transition: transform 300ms cubic-bezier(.16,1,.3,1), box-shadow 300ms; }
+.d3-act:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(146, 42, 34, 0.3), 0 22px 40px -26px rgba(92, 26, 21, 0.55); }
+.d3-ring { position: relative; flex: none; width: 60px; height: 60px; display: grid; place-items: center; align-content: center; color: var(--red); }
+.d3-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.d3-ring b { font-size: 19px; line-height: 1; font-weight: 700; } .d3-ring small { font-size: 10px; color: var(--muted); }
+.d3-ring--ic { border-radius: 18px; background: rgba(146, 42, 34, 0.08); }
+.d3-ring--ic svg { position: static; width: 26px; height: 26px; }
+.d3-act-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.d3-act-t b { font-size: 16px; font-weight: 600; } .d3-act-t small { font-size: 13.5px; line-height: 19px; color: var(--ink2); }
+.d3-act-go { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--red); }
+/* arch property */
+.d3-arch { position: relative; display: block; width: min(460px, 100%); margin-left: auto; aspect-ratio: 4 / 5; text-decoration: none; color: var(--ink); }
+.d3-arch-frame { position: absolute; inset: 0; border-radius: 999px 999px 32px 32px; overflow: hidden; background: linear-gradient(160deg, #EFE5DA, #E0D0C0); box-shadow: 0 34px 70px -40px rgba(92, 26, 21, 0.55); }
+.d3-arch-ph { position: absolute; inset: 0; display: grid; place-items: center; }
+.d3-arch-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1000ms cubic-bezier(.16,1,.3,1); }
+.d3-arch:hover .d3-arch-frame img { transform: scale(1.05); }
+.d3-code { position: absolute; top: 22%; right: -14px; padding: 7px 12px; border-radius: 12px; background: #fff; box-shadow: 0 12px 24px -16px rgba(28, 28, 25, 0.4); font-size: 12px; font-weight: 600; letter-spacing: 0.4px; color: var(--red); }
+.d3-more { position: absolute; top: 32%; left: -14px; padding: 7px 12px; border-radius: 12px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; box-shadow: 0 12px 24px -16px rgba(28, 28, 25, 0.5); }
+.d3-chip { position: absolute; left: 18px; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 18px; border-radius: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 14px 30px -20px rgba(28, 28, 25, 0.5); }
+.d3-chip .db-live { flex: none; }
+.d3-chip-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.d3-chip-t em { font-style: normal; font-size: 10.5px; font-weight: 600; letter-spacing: 1.3px; color: var(--muted); }
+.d3-chip-t b { font-size: 17px; font-weight: 600; } .d3-chip-t small { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.d3-chip-go { flex: none; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: #F6F1EF; transition: background-color 200ms, color 200ms; }
+.d3-arch:hover .d3-chip-go { background: var(--red); color: #fff; }
+/* request strip — like the landing stats strip */
+.d3-strip { margin-top: -16px; }
+.d3-req { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(160px, 280px) auto auto; align-items: center; gap: 20px; padding: 20px 24px; border-radius: 24px; background: #fff; box-shadow: 0 0 0 1px var(--line); color: var(--ink); text-decoration: none; overflow: hidden; transition: transform 300ms cubic-bezier(.16,1,.3,1), box-shadow 300ms; }
+.d3-req::after { content: ""; position: absolute; left: 24px; right: 24px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--red); }
+.d3-req:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--line2), 0 18px 34px -26px rgba(92, 26, 21, 0.4); }
+.d3-req-t { display: flex; flex-direction: column; gap: 3px; min-width: 0; } .d3-req-t b { font-size: 17px; font-weight: 600; } .d3-req-t small { font-size: 13.5px; color: var(--muted); }
+.d3-req-p { display: flex; align-items: center; gap: 10px; } .d3-req-p .db-bar { flex: 1; margin: 0 !important; } .d3-req-p em { font-style: normal; font-size: 13px; font-weight: 600; color: var(--ink2); }
+.d3-req-go { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: #F6F1EF; }
+/* help — like the landing quick-start */
+.d3-sec-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 22px; }
+.ap .d3-h2 { margin: 0; font-family: var(--font-orpheus-md, "Orpheus Pro", "Instrument Serif", Georgia, serif); font-weight: 500; font-size: clamp(32px, 3.4vw, 48px); letter-spacing: -0.02em; line-height: 1.05; color: var(--ink); }
+.ap .d3-h2 i { font-family: var(--font-orpheus, "Orpheus Pro", "Cormorant Garamond", Georgia, serif); font-style: italic; font-weight: 400; color: var(--red); }
+.d3-sec-h p { max-width: 34ch; font-size: 15px; line-height: 23px; color: var(--ink2); }
+.d3-scopes { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.d3-scope { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; min-height: 210px; padding: 22px; border-radius: 24px; background: #fff; box-shadow: 0 0 0 1px var(--line); color: var(--ink); text-decoration: none; transition: transform 300ms cubic-bezier(.16,1,.3,1), box-shadow 300ms; }
+.d3-scope:hover { transform: translateY(-4px); box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 35%, transparent), 0 22px 40px -28px color-mix(in srgb, var(--c) 60%, transparent); }
+.d3-scope-dots { position: absolute; top: 0; right: 0; width: 55%; height: 75%; background-image: radial-gradient(color-mix(in srgb, var(--c) 30%, transparent) 1.1px, transparent 1.5px); background-size: 14px 14px; -webkit-mask-image: radial-gradient(ellipse at 100% 0%, #000, transparent 70%); mask-image: radial-gradient(ellipse at 100% 0%, #000, transparent 70%); pointer-events: none; }
+.d3-scope-top { position: relative; display: flex; justify-content: space-between; align-items: flex-start; }
+.d3-scope-i { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--c); box-shadow: 0 10px 20px -12px var(--c); }
+.d3-scope-go { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 8%, #fff); transition: transform 300ms; }
+.d3-scope:hover .d3-scope-go { transform: rotate(45deg); }
+.d3-scope-t { position: relative; display: flex; flex-direction: column; gap: 4px; }
+.d3-scope-t b { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; } .d3-scope-t small { font-size: 14.5px; font-weight: 600; color: var(--c); }
+@media (max-width: 1023px) {
+  .d3-hero { grid-template-columns: 1fr; min-height: 0; gap: 32px; }
+  .d3-arch { margin: 0 auto; width: min(420px, 100%); }
+  .d3-req { grid-template-columns: auto minmax(0, 1fr) auto auto; } .d3-req-p { grid-column: 1 / -1; order: 9; }
+}
+@media (max-width: 640px) {
+  .d3 { gap: 36px; } .ap .d3-h1 { font-size: 42px; }
+  .d3-scopes { grid-template-columns: 1fr; } .d3-scope { min-height: 160px; }
+  .d3-req { grid-template-columns: auto minmax(0, 1fr) auto; padding: 16px; gap: 12px; } .d3-req > .ap-pill, .d3-req > .mox-pill { display: none; }
+  .d3-code { right: 8px; } .d3-more { left: 8px; }
+}
+.ap .d3-h1 { max-width: 14ch; }
