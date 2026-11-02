@@ -1039,3 +1039,5 @@ body.in-app #view { transition: none !important; }
 .ap--top :is(.d6, .d5, .d4, .d3, .db2, .db, .pf, .nt-wrap, .bk, .rq, .ct) { max-width: none !important; width: 100%; margin-inline: 0; }
 .ap--top .ap-pop, .ap--top .ap-menu { right: var(--side-pad); }
 @media (max-width: 899px) { .ap--top .ap-content { padding-bottom: 120px !important; } }
+/* "Bloom Holding" — both words in Orpheus Pro Medium (upright) */
+.ap :is(.d6-h1, .d5-h1, .d4-h1, .d3-h1, .db-h1, .db2-h1) :is(b, i, span) { font-family: var(--font-orpheus-md, "Orpheus Pro", "Instrument Serif", Georgia, serif) !important; font-weight: 500 !important; font-style: normal !important; letter-spacing: -0.02em; }
