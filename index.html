@@ -4273,6 +4273,23 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 .nav__gpt:not(.nav__gpt--lg):active { transform: scale(0.97); }
 @media (max-width: 1100px) { .nav__gpt:not(.nav__gpt--lg) { width: 40px !important; padding: 0 !important; justify-content: center; } }
 
+/* Scrolled header — no separate tile behind the logo; logo and menu share one bar */
+.nav .nav__brand,
+.nav.is-scrolled .nav__brand { background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.nav__bar { border-radius: 26px; transition: background-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out), padding 320ms var(--ease-out); }
+.nav.is-scrolled .nav__bar {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 0 0 1px rgba(28, 28, 25, 0.06), 0 16px 34px -24px rgba(92, 26, 21, 0.45);
+  padding: 6px 6px 6px 24px; gap: 12px;
+}
+.nav.is-scrolled .nav__pill { background: transparent !important; box-shadow: none !important; border-color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.nav.is-scrolled .nav__brand { margin-inline-start: 0; padding: 0; }
+.nav.is-scrolled .nav__progress { inset-inline: 24px; bottom: 0; }
+@media (max-width: 900px) { .nav.is-scrolled .nav__bar { padding: 4px 4px 4px 16px; } }
+
+.nav.is-scrolled.is-over-dark .nav__menu-btn, .nav.is-scrolled.is-over-dark .nav__search-m { background: transparent !important; }
+
 </style>
   <style data-src="css/app.css">
 /* ==========================================================================
