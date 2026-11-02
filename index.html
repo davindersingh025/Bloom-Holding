@@ -3031,13 +3031,8 @@ function initPD(sec){
     return acc('contract', 'doc', 'Tenancy contract', pillH(ex[0], ex[1]), irows([['hash', 'Contract no.', c.no], ['doc', 'Ejari no.', c.ejari]]));
   }
   function barFor(u){
-    var r = MO.reqs[u.id], B = [];
-    if(canMoveOut(u)){
-      if(!r) B.push(['Request move-out','start']);
-      else if(['nocRejected','bcmRejected'].indexOf(r.status) >= 0){ B.push(['Track request','track']); B.push(['New request','new']); }
-      else B.push(['Track request','track']);
-    }
-    if(J==='tenant'){ var c = u.contract, ex = c.status ? c.status : expiry(c.end)[0]; if(ex==='Expiring soon') B.push(['Renew contract','renew']); }
+    var B = [];
+    if(J==='tenant' && daysTo(u.contract.end) < 0) B.push(['Renew contract','renew']);   // only once the contract has ended
     return B.map(function(b, i){ return '<button type="button" class="mox-btn '+(i===B.length-1 ? 'mox-btn--dark' : 'mox-btn--ghost')+' ud-b" data-ubact="'+b[1]+'"><span class="mox-btn-t">'+b[0]+'</span></button>'; }).join('');
   }
   var heroIdx = 0;
@@ -3103,11 +3098,14 @@ function initPD(sec){
       var sub = J==='owner' ? 'Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date.' : 'Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.';
       m += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
            '<p class="mox-muted">'+sub+'</p></div></div>'+
-           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today.</span></div>';
+           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today.</span></div>'+
+           '<button type="button" class="mox-btn mox-btn--ghost ud-mo-b" data-pact="start"><span class="mox-btn-t">Request move-out</span></button>';
     } else {
       var s2 = ST[r.status], closed = ['nocRejected','bcmRejected'].indexOf(r.status) >= 0;
       m += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out request · '+esc(r.id)+'</p>'+
-           '<p class="mox-muted">Move-out on '+esc(MO.fmtS(r.date))+'</p><span class="mox-pill" data-tone="'+s2.tone+'">'+esc(s2.pill)+'</span></div></div>';
+           '<p class="mox-muted">Move-out on '+esc(MO.fmtS(r.date))+'</p><span class="mox-pill" data-tone="'+s2.tone+'">'+esc(s2.pill)+'</span></div></div>'+
+           (closed ? '<div class="ud-mo-acts"><button type="button" class="mox-btn mox-btn--ghost ud-mo-b" data-pact="track"><span class="mox-btn-t">Track request</span></button><button type="button" class="mox-btn mox-btn--dark ud-mo-b" data-pact="new"><span class="mox-btn-t">New request</span></button></div>'
+                   : '<button type="button" class="mox-btn mox-btn--ghost ud-mo-b" data-pact="track"><span class="mox-btn-t">Track request</span></button>');
     }
     mo.innerHTML = canMoveOut(u) ? acc('mo', 'exit', 'Move-out', '', m) : '';
     $$('[data-multi]', demo).forEach(function(b){ b.setAttribute('aria-pressed', (b.dataset.multi==='1')===MO.multi ? 'true' : 'false'); });
@@ -6153,4 +6151,11 @@ window.__initScreen[DET] = initDetail;
 .arch .arch-outline{display:none!important}
 .arch .arch-frame{left:0!important;right:0!important;top:0!important;height:100%!important;border-radius:28px!important}
 .arch .arch-chip{bottom:16px;width:calc(100% - 32px)}
+
+.pdx .ud-mo-b{width:100%;height:48px;border-radius:12px;margin-top:14px;font-size:15px}
+.pdx .ud-mo-b.mox-btn--ghost{border:1.5px solid #1a1a1a;background:#fff;color:#1a1a1a}
+.pdx .ud-mo-b.mox-btn--dark{background:#1a1a1a!important;color:#fff!important}
+.pdx .ud-mo-acts{display:flex;gap:10px}
+.pdx .ud-mo-acts .ud-mo-b{flex:1 1 0}
+.pdx [data-acc="mo"] .pd-hint{margin-top:8px}
 </style>
