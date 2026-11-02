@@ -8,6 +8,16 @@ import { icon, esc, pill, tile, unitIcon } from "bloom:/js/app/ui.js";
 
 function greeting() { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; }
 
+function tiltCard(el) {
+  if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(hover: none)").matches) return;
+  el.addEventListener("pointermove", (e) => {
+    const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+    el.style.setProperty("--rx", `${(-y * 8).toFixed(2)}deg`); el.style.setProperty("--ry", `${(x * 10).toFixed(2)}deg`);
+    el.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(0)}%`); el.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(0)}%`);
+  });
+  el.addEventListener("pointerleave", () => { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); });
+}
+
 export function page({ shell }) {
   const sh = shell({ active: "home" });
   const c = sh.content;
@@ -60,32 +70,41 @@ export function page({ shell }) {
         <span class="d3-scope-t"><b>${name}</b><small>${esc(sub)}</small></span>
       </a>`;
 
-    const prop4 = `
-      <a class="d4-prop" href="#/app/property/${u.id}" aria-label="View property details for ${esc(u.name)}">
-        <span class="d4-prop-t"><em><i class="db-live" aria-hidden="true"></i>${esc(u.community.toUpperCase())} · ${esc(u.code)}</em><b>${esc(u.type)}</b><small>${icon("pin", 13, "#F2C6B4")} ${esc(u.address)}</small></span>
-        ${st0}<span class="d4-prop-go">${icon("arrowUR", 16)}</span>
-      </a>`;
-    const cards = [cta ? `<div class="d4-c">${cta}</div>` : "", active ? `<div class="d4-c">${active}</div>` : ""].filter(Boolean);
-
     c.innerHTML = `
-      <div class="d4">
-        <section class="d4-hero db-in" style="--d:0">
-          <span class="d4-hero-bg" aria-hidden="true"><img src="${st.unitImg(u, 1600)}" alt="" onerror="this.remove()"></span>
-          <div class="d4-hero-in">
-            <span class="d4-kicker"><i></i>${greeting()}, ${esc(first)}</span>
-            <h1 class="d4-h1">Welcome back to, <span>Bloom <i>Holding</i></span></h1>
-          </div>
-          <div class="d4-hero-foot">${prop4}${us.length > 1 ? `<span class="d4-more">+ ${us.length - 1} more propert${us.length > 2 ? "ies" : "y"}</span>` : ""}</div>
-        </section>
-        ${cards.length ? `<div class="d4-cards d4-cards--${cards.length} db-in" style="--d:1">${cards.join("")}</div>` : ""}
-        <section class="d3-help db-in" style="--d:2" aria-labelledby="db-help-h">
-          <div class="d3-sec-h"><h2 id="db-help-h" class="d3-h2">How can we <i>help?</i></h2><p>Do you need help with your unit or the common areas?</p></div>
-          <div class="d3-scopes">
-            ${scope("#/app/requests/new?scope=unit", "home", "#922A22", "My unit", us.length > 1 ? `${us.length} properties` : u.name)}
-            ${scope("#/app/requests/new?scope=common", "community", "#2F6F73", "Common areas", u.community)}
-          </div>
-        </section>
+      <div class="pf d5">
+        <aside class="pf-side">
+          <a class="pf-card d5-card" data-tilt href="#/app/property/${u.id}" aria-label="View property details for ${esc(u.name)}">
+            <div class="pf-card-glow" aria-hidden="true"></div>
+            <div class="pf-card-top"><span class="d5-comm"><i class="db-live" aria-hidden="true"></i>${esc(u.community.toUpperCase())}</span><span class="pf-card-role">${esc(u.code)}</span></div>
+            <div class="pf-card-mid"><span class="d5-ic">${icon(unitIcon(u), 28, "#922A22")}</span><span><b class="pf-card-name">${esc(u.type)}</b></span></div>
+            <div class="pf-card-bot"><span><small>${us.length > 1 ? `+ ${us.length - 1} MORE PROPERT${us.length > 2 ? "IES" : "Y"}` : "MY PROPERTY"}</small><b class="d5-addr">${esc(u.address)}</b></span>${s0 ? `<span class="pf-card-ver d5-st">${esc(st.ST_LABEL[s0])}</span>` : ""}<span class="d5-go">${icon("arrowUR", 16, "#1A1A1A")}</span></div>
+          </a>
+          ${cta ? `<div class="d5-act">${cta}</div>` : ""}
+        </aside>
+        <div class="pf-main d5-main">
+          <div class="pf-head"><p class="ap-muted d5-hi">${greeting()}, ${esc(first)}</p><h1 class="ap-h1 d5-h1">Welcome back to, Bloom <i>Holding</i></h1></div>
+          ${lead ? `
+          <section class="ap-card pf-panel">
+            <div class="ap-card-h"><p class="ap-eyebrow">ACTIVE REQUEST</p></div>
+            <a class="d5-req" href="#/app/requests/${lead.id}" aria-label="${esc(lead.title)}, request ${lead.id}, ${esc(lead.status)}. View details">
+              ${tile("wrench")}
+              <span class="d5-req-t"><b>${esc(lead.title)}</b><small>Ref #${lead.id} · ${esc(lead.category)}</small></span>
+              ${pill(lead.status, st.REQ_STATUS[lead.status])}
+              ${icon("chev", 16, "#8A847A")}
+            </a>
+            <div class="d5-prog"><span class="db-bar"><i style="--w:${lead.progress}%"></i></span><em>${lead.progress}%</em></div>
+          </section>` : ""}
+          <section class="ap-card pf-panel" aria-labelledby="db-help-h">
+            <div class="ap-card-h d5-help-h"><h2 id="db-help-h" class="db-h2 d5-h2">How can we <i>help?</i></h2></div>
+            <p class="ap-muted d5-help-p">Do you need help with your unit or the common areas?</p>
+            <div class="d5-scopes">
+              <a class="d5-scope" style="--c:#922A22" href="#/app/requests/new?scope=unit"><span class="d5-scope-i">${icon("home", 22, "#fff")}</span><span class="d5-scope-t"><b>My unit</b><small>${esc(us.length > 1 ? `${us.length} properties` : u.name)}</small></span>${icon("arrowUR", 16, "#922A22")}</a>
+              <a class="d5-scope" style="--c:#2F6F73" href="#/app/requests/new?scope=common"><span class="d5-scope-i">${icon("community", 22, "#fff")}</span><span class="d5-scope-t"><b>Common areas</b><small>${esc(u.community)}</small></span>${icon("arrowUR", 16, "#2F6F73")}</a>
+            </div>
+          </section>
+        </div>
       </div>`;
+    tiltCard(c.querySelector("[data-tilt]"));
   }
   draw();
 
