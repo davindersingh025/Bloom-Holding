@@ -66,6 +66,14 @@ export function page({ shell }) {
         <div class="d6-tech"><span class="ap-av">DM</span><span class="d6-tech-t"><b>David M.</b><small>Lead HVAC Specialist · Bloom FM Team</small></span><a class="d6-btn d6-btn--ghost" href="#/app/requests/${lead.id}">Reschedule</a><a class="d6-btn d6-btn--red" href="#/app/gpt">Live Chat</a></div>
       </div>` : "";
 
+    const mu = st.moveInUnits()[0], mr = mu && st.movein(mu.id);
+    const moveIn = mu ? `
+      <div class="d6-card d6-mi">
+        <div class="d6-mi-h"><span class="d6-mi-i">${icon("enter", 22, "#2E7D5B")}</span><span><p class="d6-eye">${mr ? "MOVE-IN REQUEST" : "UPCOMING MOVE-IN"}</p><b class="d6-mi-t">${esc(mu.name)} · ${esc(mu.community)}</b></span>${mr ? pill(st.MI_ST[mr.status].pill, st.MI_ST[mr.status].tone) : ""}</div>
+        <p class="d6-mi-p">${mr ? `Ref #${esc(mr.id)} · moving in on <b>${esc(st.fmtS(mr.date))}</b>. ${esc(st.MI_ST[mr.status].note.t)}.` : st.isOwner() ? "Villa 22 is handed over and vacant. Book your move-in, service lift and access cards with Bloom GPT." : `Your new tenancy starts on <b>${esc(st.fmt(mu.contract.start))}</b>. Book your move-in, service lift and access cards with Bloom GPT.`}</p>
+        <div class="d6-mi-f">${mr ? `<a class="d6-btn d6-btn--red" href="#/app/movein/${mu.id}">Track Move-in</a>` : `<button type="button" class="d6-btn d6-btn--red" data-movein>Start Move-in</button><a class="d6-btn d6-btn--ghost" href="#/app/property/${mu.id}">View Property</a>`}</div>
+      </div>` : "";
+
     const help = [
       ["#/app/requests/new?scope=unit", "home", "#922A22", "My Unit", "Plumbing, Electrical, AC & Repairs"],
       ["#/app/requests/new?scope=common", "building", "#2F6F73", "Common Areas", "Parks, Streetlights & Walkways"],
@@ -87,6 +95,7 @@ export function page({ shell }) {
         <div class="d6-row1 ${notice ? "" : "d6-row1--one"} db-in" style="--d:1">${propCard}${notice}</div>
         <div class="d6-grid">
           <div class="d6-col">
+            ${moveIn ? `<div class="db-in" style="--d:2">${moveIn}</div>` : ""}
             ${request ? `<div class="db-in" style="--d:2">${request}</div>` : ""}
             <section class="d6-help db-in" style="--d:3" aria-labelledby="db-help-h">
               <div class="d6-help-h"><h2 id="db-help-h" class="d6-h2">How can we <i>help?</i></h2><a class="d6-link" href="#/app/requests/new">View all 14 services →</a></div>
@@ -107,11 +116,12 @@ export function page({ shell }) {
 
   c.addEventListener("click", (e) => {
     if (e.target.closest("[data-renew]")) { st.setIntent({ type: "renew", src: "dashboard", unit: st.units()[0].id }); location.hash = "/app/gpt"; }
+    if (e.target.closest("[data-movein]")) { st.setIntent({ type: "movein", unit: st.moveInUnits()[0].id }); location.hash = "/app/gpt"; }
     if (e.target.closest("[data-checkin]")) { st.setIntent({ type: "checkin" }); location.hash = "/app/gpt"; }
     const q = e.target.closest("[data-q]"); if (q) { try { sessionStorage.setItem("bloom-gpt-q", q.dataset.q); } catch (x) {} }
     if (e.target.closest("[data-bylaws]")) toast("Prototype: the Community By-Laws (PDF) open here.");
   });
   c.addEventListener("submit", (e) => { const f = e.target.closest("[data-ask]"); if (!f) return; e.preventDefault(); const v = f.querySelector("input").value.trim(); try { if (v) sessionStorage.setItem("bloom-gpt-q", v); } catch (x) {} location.hash = "/app/gpt"; });
-  const off = st.on((w) => { if (w === "bookings" || w === "requests") draw(); });
+  const off = st.on((w) => { if (w === "bookings" || w === "requests" || w === "movein") draw(); });
   return { title: "Home", cleanup: () => { off(); sh.cleanup(); } };
 }

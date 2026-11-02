@@ -59,7 +59,7 @@ export function page({ shell, b }) {
     return card(eyebrow("TENANCY CONTRACT", pill(k.status, k.tone)) +
       rows([["Contract no.", k.no], ["Ejari no.", k.ejari], ["Start date", st.fmt(k.start)], ["End date", endTxt(k.end), true]]) +
       (k.status === "Expiring soon" ? btn("Renew contract", { attrs: "data-renew" }) : "") +
-      `<div class="pd-docs"><p class="ap-eyebrow">DOCUMENTS</p><div class="ap-docs">${docRows([["Tenancy contract", `PDF · signed ${st.fmt(k.start)}`]])}</div></div>`);
+      `<div class="pd-docs"><p class="ap-eyebrow">DOCUMENTS</p><div class="ap-docs">${docRows([["Tenancy contract", `PDF · signed ${st.fmt(u.upcoming ? st.addDays(st.TODAY, -6) : k.start)}`]])}</div></div>`);
   }
   function moveoutCard(u) {
     if (!st.canMoveOut(u)) return "";
@@ -76,6 +76,21 @@ export function page({ shell, b }) {
     return card(h);
   }
 
+  function moveinCard(u) {
+    if (!st.canMoveIn(u)) return "";
+    const r = st.movein(u.id), t = (x) => tile("enter", "#2E7D5B", "rgba(46,125,91,.1)");
+    let h = eyebrow("MOVE-IN");
+    if (!r) {
+      const sub = st.isOwner() ? "Book your move-in with Bloom GPT. Upload your title deed and Emirates ID, then BCM confirms your slot and access cards." : `Your tenancy starts on ${st.fmt(u.contract.start)}. Book your move-in with Bloom GPT — you’ll need your Ejari certificate and Emirates ID.`;
+      h += `<div class="pd-mo-h">${t()}<span class="pd-ot"><b class="ap-h3">Moving in to ${esc(u.name)}?</b><small>${sub}</small></span></div>` + hint("Pick a date at least 3 days from today.") + btn("Request move-in", { attrs: "data-mi-start" });
+    } else {
+      const s = st.MI_ST[r.status], closed = ["docsRejected", "bcmRejected"].includes(r.status);
+      h += `<div class="pd-mo-h">${t()}<span class="pd-ot"><b class="ap-h3">Move-in request · ${esc(r.id)}</b><small>Move-in on ${esc(st.fmtS(r.date))}</small>${pill(s.pill, s.tone)}</span></div>` +
+        (closed ? `<div class="ap-btns">${btn("Track request", { kind: "ghost", href: `#/app/movein/${u.id}` })}${btn("New request", { attrs: "data-mi-new" })}</div>` : btn("Track request", { href: `#/app/movein/${u.id}` }));
+    }
+    return card(h);
+  }
+
   function draw(fade) {
     const list = st.units(), u = st.unit(cur), s = st.unitStatus(u);
     const switcher = list.length > 1 ? `<div class="pd-units" role="group" aria-label="Your properties">${list.map((x) => { const xs = st.unitStatus(x); return `<button type="button" class="pd-unit" data-u="${x.id}" aria-pressed="${x.id === u.id}"${xs ? ` aria-label="${esc(x.name + ", " + st.ST_LABEL[xs])}"` : ""}><i>${icon(unitIcon(x), 15)}</i>${esc(x.name)}${xs ? `<b class="pd-dot" data-tone="${st.ST_TONE[xs]}" aria-hidden="true"></b>` : ""}</button>`; }).join("")}</div>` : "";
@@ -88,7 +103,7 @@ export function page({ shell, b }) {
     if (st.isOwner()) side = statusCards(u) + ownerCard(u) + payments(u);
     else if (st.isAgent()) side = ownerCard(u) + docs([["Agreement with owner", `PDF · signed ${st.fmt(u.agreement)}`], ["Holiday home permit", `PDF · ${u.permit.no} · valid until ${st.fmt(u.permit.until)}`]]);
     else side = tenantContract(u) + ownerCard(u);
-    c.innerHTML = `${switcher}<div class="pd-grid ${fade ? "is-fade" : ""}"><div class="pd-col">${header}${prop}</div><div class="pd-col">${side}${moveoutCard(u)}</div></div>`;
+    c.innerHTML = `${switcher}<div class="pd-grid ${fade ? "is-fade" : ""}"><div class="pd-col">${header}${prop}</div><div class="pd-col">${side}${moveinCard(u)}${moveoutCard(u)}</div></div>`;
   }
   draw(false);
 
@@ -98,9 +113,11 @@ export function page({ shell, b }) {
     const pt = e.target.closest("[data-ptab]"); if (pt) { payTab = pt.dataset.ptab; draw(false); return; }
     if (e.target.closest("[data-renew]")) { st.setIntent({ type: "renew", src: "property", unit: cur }); location.hash = "/app/gpt"; return; }
     if (e.target.closest("[data-mo-start]")) { st.setIntent({ type: "moveout", unit: cur }); location.hash = "/app/gpt"; return; }
+    if (e.target.closest("[data-mi-start]")) { st.setIntent({ type: "movein", unit: cur }); location.hash = "/app/gpt"; return; }
+    if (e.target.closest("[data-mi-new]")) { st.setMovein(cur, null); st.setIntent({ type: "movein", unit: cur }); location.hash = "/app/gpt"; return; }
     if (e.target.closest("[data-mo-new]")) { st.setMoveout(cur, null); st.setIntent({ type: "moveout", unit: cur }); location.hash = "/app/gpt"; return; }
     const d = e.target.closest("[data-doc]"); if (d) toast(`Prototype: ${d.dataset.doc} (PDF) opens here.`);
   });
-  const off = st.on((w) => { if (w === "bookings" || w === "moveout") draw(false); });
+  const off = st.on((w) => { if (w === "bookings" || w === "moveout" || w === "movein") draw(false); });
   return { title: "Property details", cleanup: () => { off(); sh.cleanup(); } };
 }

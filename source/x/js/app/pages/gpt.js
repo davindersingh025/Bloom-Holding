@@ -17,11 +17,13 @@ const MENU = () => [
   ] : []),
   { k: "repair", t: "Home repair", s: "Plumbing, AC, electrical", ic: "wrench", c: "#922A22", go: { flow: "sr", scope: "unit", cat: "maintenance" } },
   { k: "common", t: "Common area issue", s: "Leaks, cleaning, waste", ic: "community", c: "#2F6F73", go: { flow: "sr", scope: "common" } },
+  ...(st.moveInUnits().length ? [{ k: "movein", t: "Request move-in", s: "Date, documents & access", ic: "enter", c: "#2E7D5B", go: { flow: "movein" } }] : []),
   { k: "moveout", t: "Request move-out", s: "Date, owner NOC & review", ic: "truck", c: "#8F5A1C", go: { flow: "moveout" } },
   { k: "access", t: "Access card or visitor pass", s: "Cards & guest passes", ic: "pass", c: "#34506B", go: { flow: "sr", scope: "common", cat: "access" } },
   { k: "pay", t: "Payments & receipts", s: "Receipts, payment issues", ic: "receipt", c: "#5B6B3A", go: { flow: "sr", scope: "unit", cat: "payments" } },
   { k: "track", t: "Track my requests", s: "See status & updates", ic: "track", c: "#64748B", go: { flow: "track" } },
 ];
+const pTxt = (n) => `${n} ${n === 1 ? "person" : "people"}`;
 const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 
 function understand(v) {
@@ -32,6 +34,7 @@ function understand(v) {
     if (/booking|reservation|stay/.test(s)) return { flow: "bookings" };
   }
   if (/move[\s-]?out|moving out|vacat/.test(s)) return { flow: "moveout" };
+  if (/move[\s-]?in|moving in|access card for my new/.test(s)) return { flow: "movein" };
   if (/track|status|my request|update on/.test(s)) return { flow: "track" };
   if (/renew|tenancy|contract|lease/.test(s) && st.isTenant()) return { flow: "renewp" };
   if (/leak|drip|water/.test(s)) return { flow: "sr", scope: "unit", cat: "maintenance", sub: "Plumbing" };
@@ -54,7 +57,7 @@ export function page({ shell }) {
     <div class="gx">
       <div class="gx-scroll" data-scroll>
         <div class="gx-col">
-          <div class="gx-hero">${orb("gx-orb")}<h2 class="gx-h">Bloom GPT</h2><p>Your Bloom assistant · requests, move-out &amp; more</p></div>
+          <div class="gx-hero">${orb("gx-orb")}<h2 class="gx-h">Bloom GPT</h2><p>Your Bloom assistant · requests, move-in, move-out &amp; more</p></div>
           <div class="gx-log" data-log role="log" aria-live="polite"></div>
         </div>
       </div>
@@ -120,11 +123,11 @@ export function page({ shell }) {
       dock.innerHTML = h + "</div>";
       dock.onclick = (e) => { const b = e.target.closest("[data-d]"); if (!b) return; dock.innerHTML = ""; dock.onclick = null; res(new Date(+b.dataset.d)); };
     }); };
-    const pickCount = (lead) => { alive(); return new Promise((res) => {
+    const pickCount = (lead, cap = "Number of people staying", fmtN = st.gTxt) => { alive(); return new Promise((res) => {
       let n = 2;
-      dock.innerHTML = `<p class="gx-cap">Number of people staying</p><div class="gx-step"><button type="button" data-m aria-label="Fewer">−</button><output aria-live="polite"></output><button type="button" data-p aria-label="More">+</button></div><button type="button" class="ap-btn ap-btn--primary gx-wide" data-ok>Continue</button>`;
+      dock.innerHTML = `<p class="gx-cap">${esc(cap)}</p><div class="gx-step"><button type="button" data-m aria-label="Fewer">−</button><output aria-live="polite"></output><button type="button" data-p aria-label="More">+</button></div><button type="button" class="ap-btn ap-btn--primary gx-wide" data-ok>Continue</button>`;
       const out = dock.querySelector("output"), m = dock.querySelector("[data-m]"), p = dock.querySelector("[data-p]");
-      const draw = () => { out.innerHTML = `${st.gTxt(n)}<small>including ${esc(lead.split(" ")[0])}</small>`; m.disabled = n <= 1; p.disabled = n >= 10; };
+      const draw = () => { out.innerHTML = `${fmtN(n)}<small>including ${esc(lead.split(" ")[0])}</small>`; m.disabled = n <= 1; p.disabled = n >= 10; };
       m.onclick = () => { if (n > 1) { n--; draw(); } }; p.onclick = () => { if (n < 10) { n++; draw(); } };
       dock.querySelector("[data-ok]").onclick = () => { dock.innerHTML = ""; res(n); };
       draw();
@@ -151,6 +154,7 @@ export function page({ shell }) {
       if (g.flow === "again") return menu("Here’s what I can help with:");
       if (g.flow === "track") return track();
       if (g.flow === "moveout") return moveout(g.unit);
+      if (g.flow === "movein") return movein(g.unit);
       if (g.flow === "checkin") return st.isAgent() ? checkin(g) : menu("Here’s what I can help with:");
       if (g.flow === "bookings") return say("Opening your bookings…").then(() => wait(300)).then(() => go("/app/bookings"));
       if (g.flow === "renewp") return renewProperty(st.units()[0].id);
@@ -251,6 +255,63 @@ export function page({ shell }) {
           })
           .then(() => choose([["track", "Track request", "primary"], ["prop", "Property details"]], true))
           .then((v) => go(v === "track" ? `/app/moveout/${u.id}` : `/app/property/${u.id}`));
+      });
+    }
+
+    /* ---------- move-in ---------- */
+    function movein(unitId) {
+      const us = st.moveInUnits();
+      if (!us.length) return say("You don’t have a property waiting for move-in right now. Contact the community team if you need help.").then(more);
+      const OWNER = st.isOwner();
+      let u = unitId ? st.unit(unitId) : null, date, deed = "", eid = "", people = 2, movers = false, company = "", dewa = "", notes = "";
+      let p = Promise.resolve();
+      if (!u || !st.canMoveIn(u)) p = us.length > 1
+        ? say("Welcome home! Which property are you moving in to?").then(() => choose(us.map((x) => [x.id, x.name, "", x.community]))).then((id) => { u = st.unit(id); })
+        : Promise.resolve().then(() => { u = us[0]; });
+      return p.then(() => {
+        const r = st.movein(u.id);
+        if (r && !["docsRejected", "bcmRejected"].includes(r.status)) {
+          return say("You already have an active move-in request. Here’s where it stands:", card([["Request ID", r.id], ["Unit", `${u.name} · ${u.community}`], ["Move-in date", st.fmt(r.date)], ["Status", pill(st.MI_ST[r.status].pill, st.MI_ST[r.status].tone), true]]))
+            .then(() => choose([["track", "Track request", "primary"], ["more", "Something else"]], true)).then((v) => (v === "track" ? go(`/app/movein/${u.id}`) : menu("Sure — what else can I help you with?")));
+        }
+        const from = OWNER || !u.contract ? st.addDays(st.TODAY, 3) : (u.contract.start > st.addDays(st.TODAY, 3) ? u.contract.start : st.addDays(st.TODAY, 3));
+        const docName = OWNER ? "Title deed" : "Ejari certificate";
+        return say(`Hi ${first} 👋 Let’s get you moving in to ${u.name}. It takes a few quick steps.`, card([["Unit type", u.type], ["Unit", u.name], ["Community", u.community]].concat(!OWNER && u.contract ? [["Tenancy starts", st.fmt(u.contract.start)], ["Ejari no.", u.contract.ejari]] : [])))
+          .then(() => choose([["yes", "Continue", "primary"], ["no", "Not now"]], true))
+          .then((v) => { if (v === "no") go(`/app/property/${u.id}`); })
+          .then(() => say(OWNER ? "When would you like to move in? Pick a date at least 3 days from today." : `When would you like to move in? Pick a date on or after your tenancy starts (${st.fmtS(u.contract.start)}).`))
+          .then(() => pickDay(from, 14, "Move-in date"))
+          .then((d) => { date = d; me(st.fmtS(d)); return say(OWNER ? `Got it — ${st.fmtS(d)}. Please upload your title deed so BCM can confirm ownership.` : `Got it — ${st.fmtS(d)}. Please upload your Ejari certificate for ${u.name}. BCM needs it to approve your move-in.`); })
+          .then(() => uploadDoc(`${docName} · PDF or photo`, OWNER ? "Title-Deed-Villa22.pdf" : "Ejari-Apt1204.pdf"))
+          .then((f) => { deed = f; return say(`Thanks, your ${docName.toLowerCase()} is attached. Now your Emirates ID, front and back.`); })
+          .then(() => uploadDoc("Emirates ID · front & back", "Emirates-ID.pdf"))
+          .then((f) => { eid = f; return progress(["Reading your documents", "Matching names and unit"]); })
+          .then(() => say("Both documents look good. How many people are moving in? I’ll request an access card for each adult."))
+          .then(() => pickCount(st.journey().user.name, "Number of people moving in", pTxt))
+          .then((n) => { people = n; me(pTxt(n)); return say("Will you be using movers & packers?"); })
+          .then(() => choose([["yes", "Yes"], ["no", "No"]], true))
+          .then((v) => { movers = v === "yes"; if (!movers) return; return say("Great. What’s the name of the moving company?").then(() => askLoop({ ph: "e.g. Emirates Movers LLC" }, (x) => x.length >= 2, "Could you share the full company name?")).then((x) => { company = x; }); })
+          .then(() => say("Is your DEWA (electricity & water) account already active for this unit?"))
+          .then(() => choose([["done", "Already active"], ["help", "Help me activate"]], true))
+          .then((v) => { dewa = v === "done" ? "Already active" : "Activation requested"; if (v === "help") return say("No problem — I’ll add a DEWA activation request so it’s ready before you arrive."); })
+          .then(() => say("Any special needs for your move-in? For example a service lift booking or parking for the moving truck."))
+          .then(() => askText({ ph: "Type your special needs", skip: "No special needs", max: 300 }))
+          .then((v) => { notes = v; return say("Here’s a summary of your move-in request. Does everything look right?", card([["Unit", `${u.name} · ${u.community}`], ["Move-in date", st.fmt(date)], [docName, "📎 " + deed], ["Emirates ID", "📎 " + eid], ["People moving in", String(people)], ["Movers & packers", movers ? `Yes · ${company}` : "No"], ["DEWA", dewa], ["Special needs", notes || "—"]])); })
+          .then(() => choose([["edit", "Edit"], ["ok", "Looks good", "primary"]], true))
+          .then((v) => {
+            if (v === "edit") return say("No problem, let’s start again.").then(() => movein(u.id)).then(() => { throw new Stale(); });
+            return say("Before I submit, please confirm the terms:", `<ol class="gx-terms"><li>Moves happen between 8 am and 6 pm, using the service lift only.</li><li>The moving company is responsible for any damage to common areas.</li><li>Access cards are collected from the community office with your Emirates ID.</li></ol>`)
+              .then(() => choose([["ok", "I agree, submit", "primary"]]));
+          })
+          .then(() => progress(["Creating your request", `Attaching your ${docName.toLowerCase()} and Emirates ID`, "Generating request ID"]))
+          .then(() => {
+            const rec = { id: "MI-" + (31400 + Math.floor(Math.random() * 190)), date, deed, deedLabel: docName, eid, people, movers, company, dewa, notes, submitted: st.TODAY, status: "submitted" };
+            st.setMovein(u.id, rec);
+            return say("Your move-in request has been submitted. BCM will verify your documents and confirm your slot. You’ll get updates in the app and by email.",
+              done() + card([["Request ID", rec.id], ["Unit", `${u.name} · ${u.community}`], ["Move-in date", st.fmt(date)], ["Status", pill("Submitted", "blue"), true]]));
+          })
+          .then(() => choose([["track", "Track request", "primary"], ["prop", "Property details"]], true))
+          .then((v) => go(v === "track" ? `/app/movein/${u.id}` : `/app/property/${u.id}`));
       });
     }
 
@@ -373,6 +434,7 @@ export function page({ shell }) {
       const i = intent;
       if (i && i.type === "renew") return i.src === "dashboard" ? renewUpload(i.unit) : renewProperty(i.unit);
       if (i && i.type === "moveout") return moveout(i.unit);
+      if (i && i.type === "movein") return movein(i.unit);
       if (i && i.type === "checkin" && st.isAgent()) return checkin(i);
       if (i && i.type === "checkout" && st.isAgent()) return checkout(i.id);
       let q = null; try { q = sessionStorage.getItem("bloom-gpt-q"); sessionStorage.removeItem("bloom-gpt-q"); } catch (x) {}

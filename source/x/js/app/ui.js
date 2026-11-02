@@ -19,6 +19,7 @@ const P = {
   pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
   key: '<circle cx="8" cy="15" r="4" fill="F" fill-opacity=".16"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
   doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" fill="F" fill-opacity=".1"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  enter: '<path d="M11 3h7a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-7" fill="F" fill-opacity=".16"/><path d="M14 12h.01M3 12h6M6 9l3 3-3 3"/>',
   exit: '<path d="M13 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h7" fill="F" fill-opacity=".16"/><path d="M10 12h.01M15 12h6M18 9l3 3-3 3"/>',
   wrench: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4Z"/>',
   card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/>',

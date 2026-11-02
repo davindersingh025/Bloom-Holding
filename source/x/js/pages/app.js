@@ -10,6 +10,7 @@ const PAGES = {
   property: () => import("bloom:/js/app/pages/property.js"),
   requests: () => import("bloom:/js/app/pages/requests.js"),
   moveout: () => import("bloom:/js/app/pages/moveout.js"),
+  movein: () => import("bloom:/js/app/pages/movein.js"),
   gpt: () => import("bloom:/js/app/pages/gpt.js"),
   bookings: () => import("bloom:/js/app/pages/bookings.js"),
   profile: () => import("bloom:/js/app/pages/account.js"),

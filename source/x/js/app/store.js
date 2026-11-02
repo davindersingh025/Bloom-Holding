@@ -75,7 +75,14 @@ function baseUnits() {
 }
 function unitsFor(id) {
   const [v138, a1204, a305] = baseUnits();
-  if (id === "tenant") { v138.ownerName = OMAR; return [v138]; }
+  if (id === "tenant") {
+    v138.ownerName = OMAR; a1204.ownerName = "Fatima Al Suwaidi";
+    /* new tenancy that starts soon — the move-in flow */
+    const st0 = addDays(TODAY, 10);
+    a1204.upcoming = true;
+    a1204.contract = { no: "TC-2026-03204", ejari: "0012026-067341", start: st0, end: addDays(st0, 364), status: "Starts soon", tone: "blue" };
+    return [v138, a1204];
+  }
   if (id === "holiday") {
     v138.ownerName = OMAR; a1204.ownerName = "Fatima Al Suwaidi"; a305.ownerName = "Khalid Rahman";
     [v138, a1204, a305].forEach((u, i) => { u.permit = { no: "HH-" + (20431 + i * 517), until: D(2027, 3 + i, 31) }; u.agreement = D(2025, 4 + i * 2, 1); });
@@ -91,7 +98,7 @@ function unitsFor(id) {
     own: { status: "pending", owners: [[OMAR, 100, true]], spa: D(2024, 5, 30), paidPct: 70, outstanding: "AED 289,500", next: D(2026, 11, 15) } };
   return [v138, a1204, a305, v22, o1810];
 }
-export const S = { units: [], requests: [], moveouts: {}, bookings: [], notifs: [], bookingSeq: 2047, lastUnit: null, lastCommunity: null };
+export const S = { units: [], requests: [], moveouts: {}, moveins: {}, bookings: [], notifs: [], bookingSeq: 2047, lastUnit: null, lastCommunity: null };
 export const units = () => S.units;
 export const unit = (id) => S.units.find((u) => u.id === id) || S.units[0];
 
@@ -102,7 +109,9 @@ export function unitStatus(u) {
   if (isAgent()) return S.bookings.some((b) => b.unit === u.id && b.status === "Checked in") ? "guest" : "noguest";
   return null;
 }
-export const canMoveOut = (u) => isTenant() || isAgent() || (isOwner() && u.own && u.own.status === "resident");
+export const canMoveOut = (u) => !u.upcoming && (isTenant() || isAgent() || (isOwner() && u.own && u.own.status === "resident"));
+export const canMoveIn = (u) => (isTenant() && !!u.upcoming) || (isOwner() && u.own && u.own.status === "vacant");
+export const moveInUnits = () => S.units.filter(canMoveIn);
 
 /* ---- service requests ---------------------------------------------------------- */
 const OWN = ["owner"], TEN = ["tenant", "agent"];
@@ -177,6 +186,25 @@ export const MO_ORDER = ["submitted", "nocApproved", "nocRejected", "needInfo", 
 export const moveout = (unitId) => S.moveouts[unitId] || null;
 export function setMoveout(unitId, rec) { if (rec) S.moveouts[unitId] = rec; else delete S.moveouts[unitId]; emit("moveout"); }
 
+/* ---- move-in -------------------------------------------------------------------- */
+export const MI_ST = {
+  submitted: { pill: "Submitted", tone: "blue", steps: ["d", "c", ""], sub: ["", "Documents uploaded · being verified", ""],
+    note: { t: "Move-in request submitted", p: "BCM is verifying your documents. Once they’re verified, BCM reviews your request and books your move-in." } },
+  docsVerified: { pill: "Docs Verified", tone: "green", steps: ["d", "d", "c"], sub: ["", "Documents verified", "Waiting for BCM approval"],
+    note: { t: "Documents verified", p: "Your documents are verified. BCM is now confirming your move-in slot, service lift and access cards." } },
+  docsRejected: { pill: "Docs Rejected", tone: "red", steps: ["d", "x", ""], sub: ["", "Documents not accepted", ""],
+    note: { t: "Your documents couldn’t be verified", p: "One of your documents couldn’t be verified. Submit a new move-in request with clear, valid copies, or contact support." } },
+  needInfo: { pill: "Need info", tone: "amber", steps: ["d", "d", "c"], sub: ["", "Documents verified", "BCM needs more information"],
+    note: { t: "BCM needs more information", p: "Please share your DEWA premise number and the names of everyone moving in so BCM can issue access cards." } },
+  bcmApproved: { pill: "Approved", tone: "green", steps: ["d", "d", "d"], sub: ["", "Documents verified", "Approved by BCM"],
+    note: { t: "Move-in approved", p: "BCM approved your move-in. Security has your date and your access cards are ready to collect from the community office." } },
+  bcmRejected: { pill: "Rejected", tone: "red", steps: ["d", "d", "x"], sub: ["", "Documents verified", "Rejected by BCM"],
+    note: { t: "Move-in rejected", p: "BCM couldn’t approve this request for the date you chose. Pick another date and submit a new request." } },
+};
+export const MI_ORDER = ["submitted", "docsVerified", "docsRejected", "needInfo", "bcmApproved", "bcmRejected"];
+export const movein = (unitId) => S.moveins[unitId] || null;
+export function setMovein(unitId, rec) { if (rec) S.moveins[unitId] = rec; else delete S.moveins[unitId]; emit("movein"); }
+
 /* ---- bookings (holiday home agent) ------------------------------------------------ */
 const NAMES = [["Sara Khan", "Pakistan"], ["Daniel Moore", "United Kingdom"], ["Lina Haddad", "Lebanon"], ["Arjun Mehta", "India"], ["Mia Schneider", "Germany"], ["Omar Farouk", "Egypt"], ["Chloe Martin", "France"], ["Yusuf Ali", "UAE"], ["Hana Sato", "Japan"]];
 export function docFor(name, nat, i) {
@@ -210,6 +238,7 @@ function seedNotifs() {
   ];
   if (isTenant()) base.unshift(
     { id: 1, g: "Today", t: "10:24 am", cat: "tenancy", ic: "exit", unread: true, title: "Move-out made simple", body: "You can now raise a move-out request with Bloom GPT from Property details.", go: "#/app/property/v138" },
+    { id: 9, g: "Today", t: "10:30 am", cat: "tenancy", ic: "enter", unread: true, title: "Get ready to move in to Apt 1204", body: "Your new tenancy at Bloom Towers starts soon. Book your move-in with Bloom GPT.", go: "#/app/property/a1204" },
     { id: 3, g: "Today", t: "8:00 am", cat: "payment", ic: "card", unread: true, title: "Rent cheque due in 5 days", body: "Cheque 3 of 4 · AED 71,250 for Villa 138 will be presented on 28 Oct." },
     { id: 4, g: "Yesterday", t: "6:40 pm", cat: "tenancy", ic: "doc", title: "Tenancy contract expiring soon", body: "Renew Villa 138 before 10 Oct 2026 to keep your access active.", go: "#/app/property/v138" });
   if (isAgent()) base.unshift(
@@ -217,6 +246,7 @@ function seedNotifs() {
     { id: 12, g: "Today", t: "8:40 am", cat: "booking", ic: "calendar", unread: true, title: "Upcoming arrival in 3 days", body: "Elena Petrova (BK-2046) arrives at Apt 1204.", go: "#/app/bookings/BK-2046" });
   if (isOwner()) base.unshift(
     { id: 21, g: "Today", t: "9:30 am", cat: "payment", ic: "card", unread: true, title: "Instalment 8 due on 15 Nov", body: "AED 96,500 for Apt 1810 · Bloom Marina.", go: "#/app/property/o1810" },
+    { id: 23, g: "Today", t: "8:15 am", cat: "tenancy", ic: "enter", title: "Moving in to Villa 22?", body: "Book your move-in for Villa 22 with Bloom GPT.", go: "#/app/property/v22" },
     { id: 22, g: "Yesterday", t: "4:10 pm", cat: "tenancy", ic: "doc", title: "Tenancy for Apt 1204 expiring soon", body: "Rahul Verma’s contract ends on 28 Nov 2026.", go: "#/app/property/a1204" });
   return base;
 }
@@ -231,6 +261,7 @@ export function reset() {
   reqSeq = 9043;
   S.requests = seedRequests();
   S.moveouts = {};
+  S.moveins = {};
   S.bookingSeq = 2047;
   S.bookings = isAgent() ? [
     mk("BK-2041", "v138", "Ahmed Khan", "Pakistan", -2, 2, 3, "Checked in", "+971 50 412 7781"),
