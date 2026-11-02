@@ -324,3 +324,8 @@ body:not(.is-focus) .t-h2 { line-height: 1.08; }
 .qs:hover .qs__dots { opacity: 0.35 !important; background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1.2px, transparent 1.6px) !important; }
 @keyframes qsHalo { from { opacity: 0.9; scale: 1; } to { opacity: 0; scale: 1.5; } }
 @media (prefers-reduced-motion: reduce) { .qs:hover::before { transition: none; } .qs:hover .qs__halo { animation: none; } }
+
+/* Button labels always centred: the orb/arrow icons are hidden, so drop the
+   asymmetric start padding that used to make room for them. */
+.portal-teaser__register { padding-inline: var(--space-lg) !important; }
+:is(.btn, .nav__signin, .nav__register, .login__primary, .rg__btn, .qs-portal__cta, .dv-slide__cta, .portal-teaser__register, .d6-btn, .ap-btn) { justify-content: center; text-align: center; }
