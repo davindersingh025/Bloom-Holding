@@ -2488,11 +2488,11 @@ var DASHES = ['252:23836','195:7859'];
 var RAISE_SR = '295:25495';
 var NOTICE_DAYS = 3, CHIPS = 14;
 var UNITS = [
-  { id:'v138', type:'4-Bedroom Villa', name:'Villa 138', community:'Bloom Gardens', code:'BG-P2-T-138', icon:'home', address:'Villa 138, Royal Palm Avenue',
+  { id:'v138', type:'4-Bedroom Villa', name:'Villa 138', community:'Bloom Gardens', code:'BG-P2-T-138', icon:'home', address:'Villa 138, Royal Palm Avenue', beds:'4', baths:'5', area:'4,850 sq ft',
     contract:{ no:'TC-2025-01138', ejari:'0012025-048120', start:new Date(2025,9,11), end:new Date(2026,9,10), rent:'AED 285,000 / year', pay:'4 cheques', deposit:'AED 14,250', status:'Expiring soon', tone:'amber' } },
-  { id:'a1204', type:'2-Bedroom Apartment', name:'Apt 1204', community:'Bloom Towers', code:'BT-A-1204', icon:'building', address:'Apt 1204, Tower A, Bloom Towers',
+  { id:'a1204', type:'2-Bedroom Apartment', name:'Apt 1204', community:'Bloom Towers', code:'BT-A-1204', icon:'building', address:'Apt 1204, Tower A, Bloom Towers', beds:'2', baths:'3', area:'1,420 sq ft',
     contract:{ no:'TC-2026-02204', ejari:'0012026-031877', start:new Date(2026,2,1), end:new Date(2027,1,28), rent:'AED 118,000 / year', pay:'2 cheques', deposit:'AED 5,900', status:'Active', tone:'green' } },
-  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building', address:'Apt 305, Building C, Bloom Living', moveOut:false,
+  { id:'a305', type:'Studio Apartment', name:'Apt 305', community:'Bloom Living', code:'BL-C-305', icon:'building', address:'Apt 305, Building C, Bloom Living', beds:'Studio', baths:'1', area:'480 sq ft', moveOut:false,
     contract:{ no:'TC-2026-00305', ejari:'0012026-052463', start:new Date(2026,5,15), end:new Date(2027,5,14), rent:'AED 62,000 / year', pay:'1 cheque', deposit:'AED 3,100', status:'Active', tone:'green' } }
 ];
 function unitLabel(u){ return u.name+' · '+u.community; }
@@ -2841,7 +2841,9 @@ var I = {
   calok:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4M9 14.5l2 2 4-4"/>',
   tag:'<path d="M3 12V4h8l10 10-8 8Z"/><circle cx="7.5" cy="8.5" r="1.5"/>', hash:'<path d="M5 9h14M5 15h14M10 3 8 21M16 3l-2 18"/>',
   check:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>', brief:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18"/>',
-  villa:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'
+  villa:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  door:'<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16"/><path d="M14.5 12h.01"/>',
+  community:'<path d="M3 21h18"/><path d="M5 21V10l5-3v14"/><path d="M10 21V4l9 4v13"/><path d="M13 10h3M13 13h3M13 16h3"/>'
 };
 function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I[n]||'')+'</svg>'; }
 
@@ -2861,6 +2863,7 @@ function icon(n, s, c){ s = s||18; return '<svg width="'+s+'" height="'+s+'" vie
       '<div class="pd-sw" data-pprop></div>'+
       '<div class="ud-stack" data-pcards></div>'+
       '<div class="pd-sw" data-pmo></div>'+
+      '<div data-pstate></div>'+
       '<div class="mox-demo"><p class="mox-eyebrow">PROTOTYPE · PROPERTIES ON THIS ACCOUNT</p><div class="mox-demo-c" data-pdemo>'+
         '<button type="button" class="mox-chip" data-multi="1">Multiple properties</button><button type="button" class="mox-chip" data-multi="0">Single property</button></div></div>'+
     '</div><div class="ud-bar" data-ubar></div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
@@ -2905,17 +2908,19 @@ if(J==='owner'){
   v138.own = { status:'resident', moveIn:dt(2024,3,12), owners:[[OMAR,100,true]], spa:dt(2022,6,14) };
   a1204.own = { status:'rented', owners:[[OMAR,60,true],['Fatima Al Suwaidi',40,false]], spa:dt(2021,9,2),
     tenancy:{ tenant:'Rahul Verma', no:'TC-2025-11204', start:dt(2025,11,29), end:dt(2026,11,28), status:'Expiring soon', tone:'amber' } };
-  a305.own = { status:'holiday', owners:[[OMAR,100,true]], spa:dt(2023,1,19), agent:'Layla Haddad', company:'Haven Holiday Homes LLC', hhContract:dt(2025,4,1) };
-  var v22 = mk({ id:'v22', type:'3-Bedroom Villa', name:'Villa 22', community:'Bloom Gardens', code:'BG-P1-V-022', icon:'home', address:'Villa 22, Palm Grove Street',
+  a305.own = { status:'holiday', owners:[[OMAR,100,true]], spa:dt(2023,1,19), agent:'Layla Haddad', company:'Haven Holiday Homes LLC', permit:'HH-21465', hhContract:dt(2025,4,1) };
+  var v22 = mk({ id:'v22', type:'3-Bedroom Villa', name:'Villa 22', community:'Bloom Gardens', code:'BG-P1-V-022', icon:'home', address:'Villa 22, Palm Grove Street', beds:'3', baths:'4', area:'3,600 sq ft',
     own:{ status:'vacant', owners:[[OMAR,100,true]], spa:dt(2022,2,8), handover:dt(2024,11,20) } });
-  var o1810 = mk({ id:'o1810', type:'1-Bedroom Apartment', name:'Apt 1810', community:'Bloom Marina', code:'BM-B-1810', icon:'building', address:'Apt 1810, Tower B, Bloom Marina',
+  var o1810 = mk({ id:'o1810', type:'1-Bedroom Apartment', name:'Apt 1810', community:'Bloom Marina', code:'BM-B-1810', icon:'building', address:'Apt 1810, Tower B, Bloom Marina', beds:'1', baths:'2', area:'860 sq ft',
     own:{ status:'pending', owners:[[OMAR,100,true]], spa:dt(2024,5,30), paidPct:70, outstanding:'AED 289,500', next:dt(2026,11,15) } });
-  LISTS.owner = [v138, a1204, a305, v22, o1810];
+  LISTS.owner = [v138, o1810, a1204, a305, v22];   // Resident · Payment Pending · Rented · Holiday Home · Vacant
   LISTS.owner.forEach(function(u){ u.moveOut = u.own.status==='resident'; });
 }
 var allUnits = MO.units;
-MO.units = function(){ var L = LISTS[J] || ALL; return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
-var ST_LABEL = { pending:'Payment pending', vacant:'Vacant', resident:'Resident', rented:'Rented', holiday:'Holiday home', guest:'Guest checked in', noguest:'No guest' };
+MO.units = function(){ var L = (LISTS[J] || ALL).slice();
+  if(J==='holiday') L.sort(function(a,b){ return (unitStatus(a)==='guest' ? 0 : 1) - (unitStatus(b)==='guest' ? 0 : 1); });   // guests checked in first
+  return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
+var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Resident', rented:'Rented', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest' };
 var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey' };
 function unitStatus(u){
   if(J==='owner') return u.own ? u.own.status : null;
@@ -2992,48 +2997,125 @@ function initPD(sec){
       '<div class="pd-docs"><p class="mox-eyebrow">DOCUMENTS</p>'+docRows([['Tenancy contract','PDF · signed '+D8(c.start)]])+'</div></div>';
   }
 
-  /* ===== Unit details layout (hero · title · key card · accordions · sticky actions) ===== */
-  var openS = { about:1, contract:1, owner:1, paysum:1, occ:1, tenancy:1, hh:1, pay:1, docs:1, mo:1 };
+  /* ===== Unit details by persona (spec 03 Nov 2026) =====
+     Tenant : header · property · tenancy contract (+ contract PDF) · owner name · move-out
+     Owner  : header · property · status cards · documents · owners · payments (+ move-out when resident)
+     Agent  : header · property · guest details · owner name · tenancy contract · move-out
+     No contact details for any role. Status always shown as text. */
+  var openS = { about:1, contract:1, owner:1, paysum:1, occ:1, tenancy:1, hh:1, pay:1, docs:1, mo:1, guest:1, tmo:1 };
   var PHOTOS = (function(){ var a = []; $$('.arch-frame img, .fmedia img', D).forEach(function(i){ if(i.src && a.indexOf(i.src) < 0) a.push(i.src); }); return a; })();
-  function acc(id, ic, title, pill, body){
+  function today(){ var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function addD(d, n){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate()+n); return x; }
+  function acc(id, ic, title, pill, body, cls){
     var on = !!openS[id];
-    return '<section class="mox-card ud-acc pd-sw'+(on?' is-open':'')+'" data-acc="'+id+'">'+
+    return '<section class="mox-card ud-acc pd-sw'+(on?' is-open':'')+(cls?' '+cls:'')+'" data-acc="'+id+'">'+
       '<button type="button" class="ud-acc-h" aria-expanded="'+on+'" data-acct="'+id+'"><span class="ud-acc-i">'+icon(ic,22,'#1c1c19')+'</span><span class="ud-acc-t"><b>'+esc(title)+'</b>'+(pill||'')+'</span><span class="ud-acc-c">'+icon('up',18)+'</span></button>'+
       '<div class="ud-acc-b"><div class="ud-acc-in">'+body+'</div></div></section>';
   }
   function dlRows(list){ return '<div class="ud-dl">'+list.map(function(d){ return '<button type="button" class="ud-doc" data-pact="contract" data-doc="'+esc(d[0])+'"><span class="ud-doc-i">'+icon('doc',20)+'</span><span class="ud-doc-t"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span><span class="ud-doc-d">'+icon('dl',20)+'</span></button>'; }).join('')+'</div>'; }
-  function docsFor(u){
-    if(J==='owner'){ var o = u.own, L = [['Sales and Purchase Agreement', 'PDF · signed '+D8(o.spa)]];
-      if(o.status==='vacant') L.push(['Handover documents', 'PDF · '+D8(o.handover)]);
-      if(o.status==='rented') L.push(['Tenancy contract', 'PDF · signed '+D8(o.tenancy.start)]);
-      if(o.status==='holiday') L.push(['Tenancy contract', 'PDF · signed '+D8(o.hhContract)]);
-      return L; }
-    if(J==='holiday') return [['Agreement with owner', 'PDF · signed '+D8(u.agreement)], ['Holiday home permit', 'PDF · '+u.permit.no+' · valid until '+D8(u.permit.until)]];
-    return [['Tenancy contract', 'PDF · signed '+D8(u.contract.start)]];
+  function tiles(list){ return '<div class="ud-tl">'+list.map(function(x){ return '<div class="ud-tile"><span class="ud-tile-v">'+icon(x[0],20,'#1c1c19')+'<b>'+esc(x[2])+'</b></span><small>'+esc(x[1])+'</small></div>'; }).join('')+'</div>'; }
+  function irows(list){ return '<div class="ud-ir">'+list.filter(Boolean).map(function(x){ return '<div class="ud-ir-r"><span class="ud-ir-i">'+icon(x[0],20,'#1c1c19')+'</span><span class="ud-ir-t"><small>'+esc(x[1])+'</small><b>'+(x[3] ? x[2] : esc(x[2]))+'</b></span></div>'; }).join('')+'</div>'; }
+  function person(name, sub){ var ini = name.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2); return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(name)+'</b><small>'+esc(sub)+'</small></span></div>'; }
+  function note(text){ return '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>'+esc(text)+'</span></div>'; }
+  function btnH(label, act, kind, dis){ return '<button type="button" class="mox-btn mox-btn--'+(kind||'dark')+' ud-mo-b"'+(act?' data-pact="'+act+'"':'')+(dis?' disabled aria-disabled="true"':'')+'><span class="mox-btn-t">'+esc(label)+'</span></button>'; }
+
+  /* ---------- prototype state (what the backend would send) ---------- */
+  var CS = {};    // tenant contract state per unit: active · expiring · renewal
+  var TMO = {};   // owner · rented unit: tenant's move-out request { st, date, submitted }
+  var GST = {};   // owner · holiday home unit: guest status in / none
+  function cState(u){ if(!CS[u.id]) CS[u.id] = (u.contract && u.contract.status==='Expiring soon') ? 'expiring' : 'active'; return CS[u.id]; }
+  var MOS = { submitted:['Submitted','blue'], nocApproved:['In Review','amber'], needInfo:['In Review','amber'], bcmApproved:['Approved','green'], nocRejected:['Rejected','red'], bcmRejected:['Rejected','red'] };
+  var MO_KEY = { submitted:'submitted', review:'nocApproved', approved:'bcmApproved', rejected:'bcmRejected' };
+  var TMS = { submitted:['Submitted','blue'], review:['In Review','amber'], approved:['Approved','green'], rejected:['Rejected','red'] };
+
+  /* ---------- cards ---------- */
+  function propCard(u){
+    return acc('about', 'building', 'Property', '', tiles([
+      [u.icon==='home'?'villa':'building', 'Property type', u.type], ['door', 'Unit', u.name], ['community', 'Community', u.community], ['tag', 'Unit code', u.code],
+      ['bed', 'Bedrooms', u.beds || '—'], ['bath', 'Bathrooms', u.baths || '—'], ['area', 'Area', u.area || '—']]));
   }
-  function heroChip(u){ var st = unitStatus(u); return st ? [ST_LABEL[st], ST_TONE[st]] : null; }
-  function about(u){ return acc('about', 'building', 'About unit', '', tiles([[u.icon==='home'?'villa':'building', 'Property type', u.type], ['tag', 'Unit code', u.code]])); }
-  function ownersAcc(u){
-    if(J!=='owner') return acc('owner', 'user', 'Owner details', '', '<div class="pd-owners">'+person(u.ownerName || OMAR, 'Owner')+'</div>');
+  function ownerNameCard(u){ return acc('owner', 'user', 'Owner details', '', '<div class="pd-owners">'+person(u.ownerName || OMAR, 'Owner')+'</div>'); }
+  function ownersCard(u){
     return acc('owner', 'user', u.own.owners.length > 1 ? 'Owners' : 'Owner details', '', '<div class="pd-owners">'+u.own.owners.map(function(o){
       var ini = o[0].split(' ').map(function(w){ return w[0]; }).join('').slice(0,2);
       return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(o[0])+'</b><small>Ownership share '+o[1]+'%</small></span>'+(o[2]?'<span class="pd-prim">Primary</span>':'')+'</div>'; }).join('')+'</div>');
   }
-  function statusAcc(u){
-    var o = u.own;
-    if(o.status==='rented'){ var t = o.tenancy, ex = t.status ? [t.status, t.tone] : expiry(t.end);
-      return acc('tenancy', 'doc', 'Tenancy contract', pillH(ex[0], ex[1]), irows([['hash', 'Contract no.', t.no], ['cal', 'Start date', D8(t.start)]])); }
+  function payCard(u){ var h = payments(u); h = h.replace(/^<div class="mox-card pd-sec pd-sw pd-pay"><p class="mox-eyebrow">PAYMENTS<\/p>/, '').replace(/<\/div>$/, ''); return acc('pay', 'card', 'Payments', '', h); }
+  function docsCard2(list){ return acc('docs', 'folder', 'Documents', '', dlRows(list)); }
+  function expChip(on){ return on ? pillH('Expiring Soon', 'amber') : ''; }
+  function soon(end){ var l = daysTo(end); return l >= 0 && l <= 30; }
+
+  // tenant
+  function tenantContractCard(u){
+    var c = u.contract, s = cState(u), act;
+    if(s==='renewal') act = '<div class="ud-st ud-st--amber">'+icon('track',18,'#8f5a1c')+'<span><b>Renewal in Progress</b><small>We’ll let you know once the new contract is ready to sign.</small></span></div>';
+    else act = btnH('Renew Contract', 'renew', 'dark');
+    return acc('contract', 'doc', 'Tenancy contract', expChip(s==='expiring'),
+      irows([['hash', 'Contract no.', c.no], ['cal', 'Start date', D8(c.start)], ['calok', 'End date', D8(c.end)]]) + act +
+      '<div class="ud-sub"><p class="mox-eyebrow">DOCUMENTS</p>'+dlRows([['Tenancy contract', 'PDF · signed '+D8(c.start)]])+'</div>');
+  }
+  // owner
+  function ownerStatusCards(u){
+    var o = u.own, spa = ['Sales and Purchase Agreement', 'PDF · signed '+D8(o.spa)];
+    if(o.status==='pending') return acc('paysum', 'card', 'Payment summary', pillH('Payment Pending','amber'),
+        '<div class="pd-prog"><div class="pd-prog-h"><span>Payment completed</span><b>'+o.paidPct+'%</b></div><div class="pd-bar"><i style="width:'+o.paidPct+'%"></i></div></div>'+
+        irows([['card', 'Amount outstanding', o.outstanding], ['cal', 'Next due date', D8(o.next)]]) + note('Handover after payment is complete.')) + docsCard2([spa]);
+    if(o.status==='vacant') return acc('occ', 'villa', 'Occupancy', '',
+        '<div class="ud-occ"><b>Unit is vacant</b><small>Handed over '+esc(D8(o.handover))+'</small></div>'+
+        irows([['check', 'Payment status', pillH('Fully Paid','green'), true]])) + docsCard2([spa, ['Handover documents', 'PDF · '+D8(o.handover)]]);
+    if(o.status==='resident') return acc('occ', 'villa', 'Occupancy', '',
+        '<div class="ud-occ"><b>You live here</b></div>'+irows([['calok', 'Move-in date', D8(o.moveIn)]])) + docsCard2([spa]);
+    if(o.status==='rented'){ var t = o.tenancy;
+      return tenantMoveOutNudge(u) + acc('tenancy', 'doc', 'Tenancy contract', expChip(soon(t.end)),
+        irows([['user', 'Tenant name', t.tenant], ['hash', 'Contract no.', t.no], ['cal', 'Start date', D8(t.start)], ['calok', 'End date', D8(t.end)]])) +
+        docsCard2([spa, ['Tenancy contract', 'PDF · signed '+D8(t.start)]]); }
+    if(o.status==='holiday'){
+      var g = GST[u.id] || 'in', gs = g==='in'
+        ? '<div class="ud-st ud-st--green">'+icon('key',18,'#2e7d5b')+'<span><b>Guest Checked In</b><small>'+esc(MO.fmtS(addD(today(),-1)))+' → '+esc(MO.fmtS(addD(today(),4)))+'</small></span></div>'
+        : '<div class="ud-st">'+icon('villa',18,'#6b665c')+'<span><b>No Guest Right Now</b><small>The unit is ready for the next booking.</small></span></div>';
+      return acc('hh', 'key', 'Holiday Home', '', irows([['brief', 'Agent', o.company || o.agent], ['hash', 'Permit no.', o.permit || 'HH-21465']]) + '<div class="ud-sub"><p class="mox-eyebrow">GUEST STATUS</p>'+gs+'</div>') +
+        docsCard2([spa, ['Tenancy contract', 'PDF · signed '+D8(o.hhContract)]]); }
     return '';
   }
-  function payAcc(u){ var h = payments(u); h = h.replace(/^<div class="mox-card pd-sec pd-sw pd-pay"><p class="mox-eyebrow">PAYMENTS<\/p>/, '').replace(/<\/div>$/, ''); return acc('pay', 'card', 'Payments', '', h); }
-  function contractAcc(u){
-    var c = u.contract, ex = c.status ? [c.status, c.tone] : expiry(c.end);
-    return acc('contract', 'doc', 'Tenancy contract', pillH(ex[0], ex[1]), irows([['hash', 'Contract no.', c.no], ['doc', 'Ejari no.', c.ejari]]));
+  function tenantMoveOutNudge(u){
+    var r = TMO[u.id]; if(!r) return '';
+    var s = TMS[r.st], open = r.st==='submitted' || r.st==='review';
+    return '<section class="mox-card ud-nudge pd-sw" data-tone="'+s[1]+'">'+
+      '<div class="ud-nudge-h"><span class="ud-nudge-i">'+icon('exit',22,'#922a22')+'</span><span class="ud-nudge-t"><b>Your tenant has requested to move out</b>'+pillH(s[0], s[1])+'</span></div>'+
+      irows([['user', 'Tenant name', u.own.tenancy.tenant], ['cal', 'Requested move-out date', D8(r.date)], ['calok', 'Request submitted', D8(r.submitted)]])+
+      '<div class="ud-sub"><p class="mox-eyebrow">DOCUMENTS UPLOADED BY THE TENANT</p>'+dlRows([['Move-out request form', 'PDF · uploaded '+D8(r.submitted)], ['Final DEWA bill', 'PDF · uploaded '+D8(r.submitted)]])+'</div>'+
+      (open ? '<div class="ud-mo-acts">'+btnH('Reject', 'tmo-reject', 'ghost')+btnH('Approve', 'tmo-approve', 'dark')+'</div>' : '')+
+      '</section>';
   }
-  function barFor(u){
-    var B = [];
-    if(J==='tenant' && daysTo(u.contract.end) < 0) B.push(['Renew contract','renew']);   // only once the contract has ended
-    return B.map(function(b, i){ return '<button type="button" class="mox-btn '+(i===B.length-1 ? 'mox-btn--dark' : 'mox-btn--ghost')+' ud-b" data-ubact="'+b[1]+'"><span class="mox-btn-t">'+b[0]+'</span></button>'; }).join('');
+  // holiday home agent
+  function guestCard(u){
+    var bk = window.__bk, inn = bk ? bk.list.filter(function(b){ return b.unit===u.id && b.status==='Checked in'; })[0] : null, body;
+    if(inn) body = irows([['user', 'Guest name', inn.guests[0].name], ['cal', 'Check-in date', D8(inn.checkIn)], ['calok', 'Check-out date', D8(inn.checkOut)], ['hash', 'Booking ID', inn.id]]);
+    else {
+      var nx = bk ? bk.list.filter(function(b){ return b.unit===u.id && b.status==='Upcoming'; }).sort(function(a,b){ return a.checkIn-b.checkIn; })[0] : null;
+      body = '<div class="ud-occ"><b>No guest checked in</b>'+(nx ? '' : '<small>No upcoming bookings yet.</small>')+'</div>'+
+        (nx ? irows([['cal', 'Next booking', esc(MO.fmtS(nx.checkIn))+' → '+esc(MO.fmtS(nx.checkOut)), true]]) : '');
+    }
+    return acc('guest', 'key', 'Guest details', pillH(inn ? 'Guest Checked In' : 'No Guest', inn ? 'green' : 'grey'), body);
+  }
+  function moveOutCard(u){
+    var r = MO.reqs[u.id], m;
+    if(!r){
+      var sub = J==='owner' ? 'Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date.' : 'Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.';
+      m = '<div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p><p class="mox-muted">'+sub+'</p></div>'+
+          note('Pick a date at least 3 days from today.') + btnH('Request Move-out', 'start', 'ghost');
+    } else {
+      var s = MOS[r.status] || ['Submitted','blue'], closed = s[0]==='Rejected';
+      m = '<div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out Requested</p><p class="mox-muted">Request '+esc(r.id)+' · '+esc(u.name)+'</p></div>'+
+          irows([['cal', 'Move-out date', D8(r.date)], ['track', 'Request status', pillH(s[0], s[1]), true]]) +
+          note(closed ? 'This request was rejected. You can submit a new one.' : 'The date can’t be changed after submission.') +
+          (closed ? '<div class="ud-mo-acts">'+btnH('Track request', 'track', 'ghost')+btnH('New request', 'new', 'dark')+'</div>' : btnH('Track request', 'track', 'ghost'));
+    }
+    return acc('mo', 'exit', 'Move-out', '', m);
+  }
+  function heroChip(u){
+    if(J==='tenant') return cState(u)==='expiring' ? ['Expiring Soon','amber'] : null;
+    var st = unitStatus(u); return st ? [ST_LABEL[st], ST_TONE[st]] : null;
   }
   var heroIdx = 0;
   function heroHTML(u, list){
@@ -3043,74 +3125,66 @@ function initPD(sec){
       (chip ? '<span class="ud-chip"'+(chip[1]?' data-tone="'+chip[1]+'"':'')+'>'+esc(chip[0])+'</span>' : '')+
       '<div class="ud-dots" aria-hidden="true">'+(ph.length ? ph : [0,0,0]).map(function(_, i){ return '<i'+(i===0?' class="is-on"':'')+'></i>'; }).join('')+'</div>';
   }
-
-  function tiles(list){ return '<div class="ud-tl">'+list.map(function(x){ return '<div class="ud-tile"><span class="ud-tile-v">'+icon(x[0],20,'#1c1c19')+'<b>'+esc(x[2])+'</b></span><small>'+esc(x[1])+'</small></div>'; }).join('')+'</div>'; }
-  function irows(list){ return '<div class="ud-ir">'+list.map(function(x){ return '<div class="ud-ir-r"><span class="ud-ir-i">'+icon(x[0],20,'#1c1c19')+'</span><span class="ud-ir-t"><small>'+esc(x[1])+'</small><b>'+(x[3] ? x[2] : esc(x[2]))+'</b></span></div>'; }).join('')+'</div>'; }
-  function person(name, sub){ var ini = name.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2); return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(name)+'</b><small>'+esc(sub)+'</small></span></div>'; }
-  function kItem(ic, k, v, tone){ return '<div class="ud-ki"><span class="ud-ki-t"><small>'+esc(k)+'</small><b'+(tone?' data-tone="'+tone+'"':'')+'>'+v+'</b></span></div>'; }
-  function keyCard(u){
-    var a, b;
-    if(J==='owner'){ var o = u.own;
-      if(o.status==='pending') return '<div class="mox-card ud-kc ud-kc--prog"><div class="pd-prog"><div class="pd-prog-h"><span>Payment completed</span><b>'+o.paidPct+'%</b></div><div class="pd-bar"><i style="width:'+o.paidPct+'%"></i></div></div>'+
-        '<div class="ud-kr">'+kItem('card','Amount outstanding', esc(o.outstanding))+kItem('cal','Next due date', esc(D8(o.next)), 'amber')+'</div>'+
-        '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Handover after payment is complete.</span></div></div>';
-      if(o.status==='vacant'){ a = kItem('key','Handed over', esc(D8(o.handover))); b = kItem('check','Payment', 'Fully paid', 'green'); }
-      else if(o.status==='resident'){ a = kItem('villa','Moved in', esc(D8(o.moveIn))); }
-      else if(o.status==='rented'){ var t = o.tenancy; a = kItem('user','Tenant', esc(t.tenant)); b = kItem('calok','Contract ends', endTxt(t.end)); }
-      else { a = kItem('user','Agent', esc(o.agent)); b = kItem('brief','Company', esc(o.company)); }
-    } else if(J==='holiday'){ a = kItem('user','Owner', esc(u.ownerName || OMAR)); }
-    else { var c = u.contract; a = kItem('cal','Start date', esc(D8(c.start))); b = kItem('calok','End date', endTxt(c.end), (c.tone==='amber' || (c.status==='Expiring soon')) ? 'amber' : null); }
-    return '<div class="mox-card ud-kc"><div class="ud-kr'+(b?'':' ud-kr--one')+'">'+a+(b||'')+'</div></div>';
-  }
   function renderUD(list, u){
     hero.innerHTML = heroHTML(u, list);
     headEl.innerHTML = '<div class="ud-head-t"><h2 class="ud-title">'+esc(u.address)+'</h2>'+(u.address.indexOf(u.community) < 0 ? '<p class="ud-subl">'+esc(u.community)+'</p>' : '')+'</div>';
-    keyEl.innerHTML = keyCard(u);
-    barEl.innerHTML = barFor(u); barEl.hidden = !barEl.innerHTML;
+    keyEl.innerHTML = ''; keyEl.hidden = true;
+    barEl.innerHTML = ''; barEl.hidden = true;
     var g = $('[data-ugal]', hero), dots = $$('.ud-dots i', hero);
     if(g) g.addEventListener('scroll', function(){ var i = Math.round(g.scrollLeft / Math.max(1, g.clientWidth)); dots.forEach(function(d, j){ d.classList.toggle('is-on', j===i); }); }, { passive:true });
   }
+  /* prototype strip: preview the states the spec describes */
+  function stateStrip(u){
+    var rows = [], r = MO.reqs[u.id], cur = r ? (MOS[r.status]||['Submitted'])[0] : 'None';
+    var moRow = ['MOVE-OUT REQUEST', [['mo:none','None'],['mo:submitted','Submitted'],['mo:review','In Review'],['mo:approved','Approved'],['mo:rejected','Rejected']], 'mo:'+({None:'none',Submitted:'submitted','In Review':'review',Approved:'approved',Rejected:'rejected'}[cur])];
+    if(J==='tenant'){ rows.push(['CONTRACT', [['cs:active','Active'],['cs:expiring','Expiring soon'],['cs:renewal','Renewal in progress']], 'cs:'+cState(u)]); rows.push(moRow); }
+    else if(J==='holiday') rows.push(moRow);
+    else { var s = u.own.status;
+      if(s==='resident') rows.push(moRow);
+      if(s==='rented'){ var t = TMO[u.id]; rows.push(['TENANT MOVE-OUT REQUEST', [['tm:none','None'],['tm:submitted','Submitted'],['tm:review','In Review'],['tm:approved','Approved'],['tm:rejected','Rejected']], 'tm:'+(t ? t.st : 'none')]); }
+      if(s==='holiday') rows.push(['GUEST STATUS', [['gs:in','Guest checked in'],['gs:none','No guest']], 'gs:'+(GST[u.id]||'in')]);
+    }
+    if(!rows.length) return '';
+    return '<div class="mox-demo ud-demo">'+rows.map(function(rw){ return '<p class="mox-eyebrow">PROTOTYPE · '+rw[0]+'</p><div class="mox-demo-c">'+rw[1].map(function(c){ return '<button type="button" class="mox-chip" data-pst="'+c[0]+'" aria-pressed="'+(c[0]===rw[2])+'">'+esc(c[1])+'</button>'; }).join('')+'</div>'; }).join('')+'</div>';
+  }
   function render(fade){
     var list = MO.units(), u = MO.unit(); MO.cur = u.id;
-    // property switcher (2+ units), dot = status colour
+    // switcher (2+ units): status text on the selected unit, dot on the others
     units.hidden = list.length < 2;
-    units.innerHTML = list.map(function(x){ var st = unitStatus(x);
-      return '<button type="button" class="pd-unit" data-u="'+x.id+'" aria-pressed="'+(x.id===u.id)+'"'+(st?' aria-label="'+esc(x.name+', '+ST_LABEL[st])+'"':'')+'><i>'+icon(x.icon,15)+'</i>'+esc(x.name)+(st?'<b class="pd-dot" data-tone="'+ST_TONE[st]+'" aria-hidden="true"></b>':'')+'</button>'; }).join('');
-    // header card (+ status chip for owners and agents; none for tenants)
+    units.innerHTML = list.map(function(x){ var st = unitStatus(x), on = x.id===u.id;
+      return '<button type="button" class="pd-unit'+(on && st ? ' has-st' : '')+'" data-u="'+x.id+'" aria-pressed="'+on+'"'+(st?' aria-label="'+esc(x.name+', '+ST_LABEL[st])+'"':'')+'><i>'+icon(x.icon,15)+'</i>'+esc(x.name)+
+        (st ? (on ? '<small class="pd-ust" data-tone="'+ST_TONE[st]+'">'+esc(ST_LABEL[st])+'</small>' : '<b class="pd-dot" data-tone="'+ST_TONE[st]+'" aria-hidden="true"></b>') : '')+'</button>'; }).join('');
     if(rf.comm) rf.comm.textContent = u.community.toUpperCase();
     if(rf.code) rf.code.textContent = u.code;
     if(rf.type) rf.type.textContent = u.type;
     if(rf.addr) rf.addr.textContent = u.address;
-    var st = unitStatus(u), chip = res && res.querySelector('.pd-chip');
-    if(res && !chip && rf.addr){ chip = D.createElement('span'); chip.className = 'mox-pill pd-chip'; var ut = res.querySelector('[data-name="Unit text"]') || rf.addr.parentNode.parentNode; ut.appendChild(chip); }
-    if(chip){ chip.hidden = !st; if(st){ chip.textContent = ST_LABEL[st]; if(ST_TONE[st]==='blue') chip.removeAttribute('data-tone'); else chip.setAttribute('data-tone', ST_TONE[st]); } }
     renderUD(list, u);
-    prop.innerHTML = about(u);
+    prop.innerHTML = propCard(u);
     var h = '';
-    if(J==='owner') h = statusAcc(u) + ownersAcc(u) + payAcc(u);
-    else if(J==='holiday') h = '';
-    else h = contractAcc(u) + ownersAcc(u);
-    cards.innerHTML = h + acc('docs', 'folder', 'Documents', '', dlRows(docsFor(u)));
-    // move-out (tenant, owner living in the unit, holiday home agent)
-    var r = MO.reqs[u.id], ST = MO.ST, m = '';
+    if(J==='owner') h = ownerStatusCards(u) + ownersCard(u) + payCard(u);
+    else if(J==='holiday') h = guestCard(u) + ownerNameCard(u) + docsCard2([['Tenancy contract', 'PDF · signed '+D8(u.agreement || u.contract.start)]]);
+    else h = tenantContractCard(u) + ownerNameCard(u);
+    cards.innerHTML = h;
     mo.hidden = !canMoveOut(u);
-    if(!r){
-      var sub = J==='owner' ? 'Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date.' : 'Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.';
-      m += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p>'+
-           '<p class="mox-muted">'+sub+'</p></div></div>'+
-           '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>Pick a date at least 3 days from today.</span></div>'+
-           '<button type="button" class="mox-btn mox-btn--ghost ud-mo-b" data-pact="start"><span class="mox-btn-t">Request move-out</span></button>';
-    } else {
-      var s2 = ST[r.status], closed = ['nocRejected','bcmRejected'].indexOf(r.status) >= 0;
-      m += '<div class="pd-mo-h"><span class="mox-tile">'+icon('exit',22,'#922a22')+'</span><div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Move-out request · '+esc(r.id)+'</p>'+
-           '<p class="mox-muted">Move-out on '+esc(MO.fmtS(r.date))+'</p><span class="mox-pill" data-tone="'+s2.tone+'">'+esc(s2.pill)+'</span></div></div>'+
-           (closed ? '<div class="ud-mo-acts"><button type="button" class="mox-btn mox-btn--ghost ud-mo-b" data-pact="track"><span class="mox-btn-t">Track request</span></button><button type="button" class="mox-btn mox-btn--dark ud-mo-b" data-pact="new"><span class="mox-btn-t">New request</span></button></div>'
-                   : '<button type="button" class="mox-btn mox-btn--ghost ud-mo-b" data-pact="track"><span class="mox-btn-t">Track request</span></button>');
-    }
-    mo.innerHTML = canMoveOut(u) ? acc('mo', 'exit', 'Move-out', '', m) : '';
+    mo.innerHTML = canMoveOut(u) ? moveOutCard(u) : '';
+    if(stateEl) stateEl.innerHTML = stateStrip(u);
     $$('[data-multi]', demo).forEach(function(b){ b.setAttribute('aria-pressed', (b.dataset.multi==='1')===MO.multi ? 'true' : 'false'); });
     if(fade) $$('.pd-sw', root).forEach(function(el, i){ A(el, [{opacity:0, translate:'0 8px'}, {opacity:1, translate:'0 0'}], {duration:340, delay:i*40, easing:'cubic-bezier(.16,1,.3,1)', fill:'backwards'}); });
   }
+  var stateEl = $('[data-pstate]', root);
+  if(stateEl) stateEl.addEventListener('click', function(e){
+    var b = e.target.closest('[data-pst]'); if(!b) return;
+    var k = b.dataset.pst.split(':'), u = MO.unit();
+    if(k[0]==='cs') CS[u.id] = k[1];
+    else if(k[0]==='gs') GST[u.id] = k[1];
+    else if(k[0]==='tm'){ if(k[1]==='none') delete TMO[u.id]; else TMO[u.id] = { st:k[1], date: (TMO[u.id] && TMO[u.id].date) || addD(today(), 21), submitted: (TMO[u.id] && TMO[u.id].submitted) || addD(today(), -1) }; }
+    else if(k[0]==='mo'){
+      if(k[1]==='none') delete MO.reqs[u.id];
+      else { var r = MO.reqs[u.id] || { id:'MO-'+(24800 + (u.id.charCodeAt(1)*7) % 190), unit:u, date:addD(today(), 9), movers:false, company:'', notes:'', noc: J==='owner' ? '' : 'Owner-NOC.pdf', submitted:today() };
+        r.status = MO_KEY[k[1]]; MO.reqs[u.id] = r; }
+    }
+    render(false);
+  });
   units.addEventListener('click', function(e){
     var b = e.target.closest('[data-u]'); if(!b || b.dataset.u===MO.cur) return;
     MO.cur = b.dataset.u; payTab = 'up'; render(true);
@@ -3134,6 +3208,12 @@ function initPD(sec){
     else if(a==='track') n.navigate('mo:details', 'SLIDE_IN/350/EASE_OUT/LEFT');
     else if(a==='contact'){ toast('Our community team will call you back within 24 hours.'); return; }
     else if(a==='new'){ MO.req = null; render(false); n.navigate('mo:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+  });
+  cards.addEventListener('click', function(e){
+    var b = e.target.closest('[data-pact^="tmo-"]'); if(!b) return;
+    var u = MO.unit(), r = TMO[u.id]; if(!r) return;
+    r.st = b.dataset.pact==='tmo-approve' ? 'approved' : 'rejected';
+    toast(r.st==='approved' ? 'Move-out approved. Your tenant has been notified.' : 'Move-out rejected. Your tenant has been notified.'); render(false);
   });
   cards.addEventListener('click', function(e){
     var pt = e.target.closest('[data-ptab]'); if(pt){ payTab = pt.dataset.ptab; render(false); return; }
@@ -6160,6 +6240,36 @@ window.__initScreen[DET] = initDetail;
 .pdx [data-acc="mo"] .pd-hint{margin-top:8px}
 </style>
 
+<style id="ud-persona">
+/* Unit details by persona: status rows, tenant move-out alert, selected-unit status text */
+.pdx .pd-unit.has-st{padding-right:12px}
+.pdx .pd-ust{font-size:12px;font-weight:600;line-height:16px;padding:2px 8px;border-radius:999px;background:rgba(77,94,190,.12);color:#3d4ca3}
+.pdx .pd-unit[aria-pressed="true"] .pd-ust{background:rgba(255,255,255,.16);color:#fff}
+.pdx .ud-sub{margin-top:14px;padding-top:12px;border-top:1px solid #f3ede9}
+.pdx .ud-sub .mox-eyebrow{margin-bottom:6px}
+.pdx .ud-occ{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}
+.pdx .ud-occ b{font-size:16px;line-height:22px;font-weight:600;color:#1c1c19}
+.pdx .ud-occ small{font-size:13px;line-height:18px;color:#6b665c}
+.pdx .ud-st{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:12px 14px;border-radius:14px;background:#f6f3ef}
+.pdx .ud-st svg{flex:none;margin-top:2px}
+.pdx .ud-st span{display:flex;flex-direction:column;gap:2px}
+.pdx .ud-st b{font-size:14.5px;line-height:20px;font-weight:600;color:#1c1c19}
+.pdx .ud-st small{font-size:12.5px;line-height:17px;color:#6b665c}
+.pdx .ud-st--amber{background:rgba(183,134,63,.12)}.pdx .ud-st--amber b{color:#8f5a1c}
+.pdx .ud-st--green{background:rgba(46,125,91,.1)}.pdx .ud-st--green b{color:#2e7d5b}
+.pdx .ud-sub .ud-st{margin-top:0}
+.pdx [data-acc="contract"] .ud-mo-b{margin-top:14px;width:100%}
+.pdx .ud-nudge{padding:16px;border:1.5px solid rgba(146,42,34,.28);background:#fffaf8}
+.pdx .ud-nudge-h{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.pdx .ud-nudge-i{flex:none;width:40px;height:40px;border-radius:12px;background:rgba(146,42,34,.08);display:grid;place-items:center}
+.pdx .ud-nudge-t{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.pdx .ud-nudge-t b{font-size:15.5px;line-height:21px;font-weight:600;color:#1c1c19}
+.pdx .ud-nudge .ud-mo-acts{margin-top:14px}
+.pdx .ud-demo{margin-top:12px}
+.pdx .ud-demo .mox-eyebrow + .mox-demo-c{margin-bottom:10px}
+.pdx [data-acc="mo"] .ud-ir{margin:10px 0 2px}
+.pdx .ud-mo-b[disabled]{opacity:.5}
+</style>
 <style id="hero-uline-off">
 /* Home hero: no underline under "Place"; even rhythm between headline and subtext */
 .hh-place .uline{display:none!important}
