@@ -6266,6 +6266,9 @@ window.__initScreen[DET] = initDetail;
 .pdx .ud-nudge-t b{font-size:15.5px;line-height:21px;font-weight:600;color:#1c1c19}
 .pdx .ud-nudge .ud-mo-acts{margin-top:14px}
 .pdx .ud-demo{margin-top:12px}
+/* Dashboard: collapse the notice slot when it has nothing to show (owner / agent without a renewal notice) */
+[data-node-id="252:23871"]:not(:has(> :not([style*="display: none"]):not([hidden]))),
+[data-node-id="195:7894"]:not(:has(> :not([style*="display: none"]):not([hidden]))){display:none!important}
 /* Property facts: every item left-aligned in its column, icons on one line, label under the value */
 .pdx .ud-tl{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;row-gap:16px;padding:4px 0}
 .pdx .ud-tile{align-items:flex-start;text-align:left;padding:0;gap:2px}
