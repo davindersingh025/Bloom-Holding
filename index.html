@@ -5840,6 +5840,43 @@ paint(dev);
 .bkh-note i{flex:none;width:6px;height:6px;border-radius:50%;background:#a39d94}
 .bkh-note[data-tone="green"] i{background:#2e7d5b}.bkh-note[data-tone="amber"] i{background:#b7863f}.bkh-note[data-tone="blue"] i{background:#3d4ca3}
 .bkl .bkl-seg{margin:0 0 16px}
+/* booking detail v2 — matches Unit details */
+.bkd .mox-body>.bkd2-hero{margin:0 0 14px}
+.bkd2-hero{position:relative;flex:none;height:184px;border-radius:20px;overflow:hidden;background:#efe7e3}
+.bkd2-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.bkd2-pill{position:absolute;left:12px;top:12px}.bkd2-pill .mox-pill{box-shadow:0 2px 8px rgba(28,28,25,.12)}
+.bkd2-pill .mox-pill:not([data-tone]){background:#eef0fa}
+.bkd2-title,.bkd2-stl,.bkd2-sec{flex:none}.bkd2-title{padding:0 4px}.bkd2-title h2{margin:0;font:600 24px/30px 'Matter','Figtree',sans-serif;letter-spacing:-.4px;color:#1c1c19}
+.bkd2-title p{margin:2px 0 0;font-size:14px;line-height:20px;color:#6b665c}
+.bkd2-title .bkd2-id{display:flex;align-items:center;gap:4px;font-size:12.5px;margin-top:6px;color:#8a847a}
+.bkd2-stl{display:grid;gap:12px;padding:4px 4px 6px}
+.bkd2-st{display:flex;gap:12px;align-items:flex-start}
+.bkd2-sti{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(61,76,163,.1)}
+.bkd2-st[data-tone="green"] .bkd2-sti{background:rgba(46,125,91,.12)}.bkd2-st[data-tone="red"] .bkd2-sti{background:rgba(146,42,34,.1)}.bkd2-st[data-tone="grey"] .bkd2-sti{background:#efebe6}.bkd2-st[data-tone="amber"] .bkd2-sti{background:rgba(183,134,63,.16)}
+.bkd2-st b{display:block;font-size:14.5px;line-height:20px;font-weight:600;color:#1c1c19}
+.bkd2-st small{display:block;font-size:13px;line-height:18px;color:#6b665c;margin-top:1px}
+.bkd2-sec{padding:16px}
+.bkd2-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.bkd2-h>b{flex:1;font:600 17px/22px 'Matter','Figtree',sans-serif;color:#1c1c19}
+.bkd2-h .mox-pill{margin:0!important;font-size:11.5px;padding:2px 9px}
+.bkd2-cnt{min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#54504a;background:#f3eee9}
+.bkd2-tl{display:grid;grid-template-columns:1fr 1fr;row-gap:18px;column-gap:12px}
+.bkd2-tile{display:grid;gap:2px;min-width:0}
+.bkd2-tv{display:grid;grid-template-columns:20px minmax(0,1fr);align-items:center;column-gap:10px}
+.bkd2-tv b{font-size:14.5px;line-height:20px;font-weight:600;color:#1c1c19;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bkd2-tile small{padding-left:30px;font-size:12.5px;line-height:16px;color:#54504a}
+.bkd2-gl{display:grid}
+.bkd2-g{display:flex;gap:12px;align-items:flex-start;padding:12px 0}
+.bkd2-g+.bkd2-g{border-top:1px solid #f1ece7}.bkd2-g:first-child{padding-top:0}.bkd2-g:last-child{padding-bottom:0}
+.bkd2-av{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#922a22;background:#f6efec}
+.bkd2-gt{flex:1;min-width:0;display:grid;gap:1px}
+.bkd2-gt b{font-size:15px;line-height:20px;font-weight:600;color:#1c1c19}
+.bkd2-gt small{font-size:12.5px;line-height:17px;color:#6b665c}
+.bkd2-docs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.bkd2-doc{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:6px 10px 6px 8px;border-radius:10px;background:#faf7f4;font-size:12.5px;font-weight:500;color:#1c1c19}
+.bkd2-doc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bkd2-sn{display:flex;gap:10px;align-items:flex-start}.bkd2-sn svg{flex:none}.bkd2-sn p{margin:0;font-size:14px;line-height:20px;color:#1c1c19}
+.bkd2-none{margin:0;font-size:13.5px;color:#6b665c}
 /* unit detail guest card */
 .ud-gst{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:14px;background:#faf7f4;margin-bottom:6px}
 .ud-gst-t{flex:1;min-width:0;display:grid}.ud-gst-t b{font-size:14.5px;font-weight:600;color:#1c1c19}.ud-gst-t small{font-size:12px;color:#6b665c}
@@ -6149,16 +6186,21 @@ function initDetail(sec){
     var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut), bn = BANNER[b.status];
     var sub = b.status==='Rejected' ? b.reason : b.status==='Checked Out' ? 'Checked out on '+fS(b.checkedOutAt)+' at '+fT(b.checkedOutAt) : bn[3];
     var ext = b.ext;
+    var ph = photo(b.unit), tc = {blue:'#3d4ca3',green:'#2e7d5b',red:'#922a22',grey:'#54504a',amber:'#8f5a1c'};
+    function sec(icon, title, inner, extra){ return '<section class="mox-card bkd2-sec"><div class="bkd2-h">'+ic(icon,'#1c1c19',22)+'<b>'+title+'</b>'+(extra||'')+'</div>'+inner+'</section>'; }
+    function tile(icon, label, val){ return '<div class="bkd2-tile"><span class="bkd2-tv">'+ic(icon,'#1c1c19',20)+'<b>'+val+'</b></span><small>'+label+'</small></div>'; }
+    function line(tone, icon, t, sub){ return '<div class="bkd2-st" data-tone="'+tone+'"><span class="bkd2-sti">'+ic(icon, tc[tone], 18)+'</span><span><b>'+t+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</span></div>'; }
     body.innerHTML =
-      '<div class="mox-card bkd-head"><div class="bkd-h-top"><span class="mox-tile mox-tile--lg">'+ic(u.icon==='building'?P.building:P.home,'#922A22',24)+'</span><div class="bkd-h-t"><small>'+b.id+'</small><b>'+esc(u.name)+'</b><span>'+esc(u.code||'')+' · '+esc(u.community)+'</span></div>'+pill(b.status)+'</div></div>'+
-      '<div class="bkd-ban" data-tone="'+bn[0]+'">'+ic(bn[1], {blue:'#3d4ca3',green:'#2e7d5b',red:'#922a22',grey:'#54504a'}[bn[0]], 22)+'<span><b>'+bn[2]+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</span></div>'+
-      (ext && ext.st==='pending' ? '<div class="bkd-ban" data-tone="amber">'+ic(P.clock,'#8f5a1c',22)+'<span><b>Extension Submitted</b><small>Requested new end date '+fS(ext.date)+'. Check-out stays '+fS(b.checkOut)+' until BCM approves.</small></span></div>' : '')+
-      (ext && ext.st==='rejected' ? '<div class="bkd-ban" data-tone="red">'+ic(P.no,'#922a22',22)+'<span><b>Extension rejected</b><small>'+esc(ext.reason)+' Check-out stays '+fS(b.checkOut)+'.</small></span></div>' : '')+
-      '<div class="mox-card"><p class="mox-eyebrow">BOOKING DETAILS</p><div class="bkd-stay"><div><small>Check-in</small><b>'+fS(b.checkIn)+'</b></div><span class="bkc-n">'+ic(P.moon,'#8a847a',14)+nTxt(n)+'</span><div class="bkc-r"><small>Check-out</small><b>'+fS(b.checkOut)+'</b></div></div>'+
-        '<div class="bkd-g">'+ic(P.users,'#6b665c',18)+'<span>'+gTxt(b.guests.length)+'</span></div></div>'+
-      '<div class="mox-card"><p class="mox-eyebrow">GUESTS</p><div class="bkd-gl">'+b.guests.map(function(g, i){
-        return '<div class="bkd-gu"><span class="bk-av">'+initials(g.name)+'</span><span class="bkd-gu-t"><b>'+esc(g.name)+(i===0?'<em>Main guest</em>':'')+'</b><span class="bkd-docs">'+g.docs.map(function(d){ return '<span class="bkd-doc">'+ic(P.img,'#922a22',14)+esc(d.name)+'</span>'; }).join('')+'</span></span></div>'; }).join('')+'</div></div>'+
-      '<div class="mox-card"><p class="mox-eyebrow">SPECIAL NEEDS</p><div class="bkd-sn"><span class="bkd-sn-v" data-on="'+(b.special?'1':'0')+'">'+(b.special?'Yes':'No')+'</span>'+(b.special ? '<p>'+esc(b.comments)+'</p>' : '<p class="mox-muted">No special requests for this stay.</p>')+'</div></div>'+
+      '<div class="bkd2-hero">'+(ph?'<img src="'+ph+'" alt="'+esc(u.name)+'">':'')+'<span class="bkd2-pill">'+pill(b.status)+'</span></div>'+
+      '<div class="bkd2-title"><h2>'+esc(u.name)+'</h2><p>'+esc(u.community)+' · '+esc(u.code||'')+'</p><p class="bkd2-id">'+ic(P.hash,'#8a847a',14)+'Booking '+b.id+'</p></div>'+
+      '<div class="bkd2-stl">'+line(bn[0], bn[1], bn[2], sub)+
+        (ext && ext.st==='pending' ? line('amber', P.clock, 'Extension Submitted', 'Requested '+fS(ext.date)+'. Check-out stays '+fS(b.checkOut)+' until BCM approves.') : '')+
+        (ext && ext.st==='rejected' ? line('red', P.no, 'Extension rejected', ext.reason+' Check-out stays '+fS(b.checkOut)+'.') : '')+'</div>'+
+      sec(P.cal, 'Stay details', '<div class="bkd2-tl">'+tile(P.calin,'Check-in',fS(b.checkIn))+tile(P.out,'Check-out',fS(b.checkOut))+tile(P.moon,'Duration',nTxt(n))+tile(P.users,'Guests',gTxt(b.guests.length))+'</div>')+
+      sec(P.users, 'Guests', '<div class="bkd2-gl">'+b.guests.map(function(g, i){
+        return '<div class="bkd2-g"><span class="bkd2-av">'+initials(g.name)+'</span><span class="bkd2-gt"><b>'+esc(g.name)+'</b><small>'+(i===0?'Main guest · ':'')+g.docs.length+' ID document'+(g.docs.length>1?'s':'')+'</small>'+
+          '<span class="bkd2-docs">'+g.docs.map(function(d){ return '<span class="bkd2-doc">'+ic(P.id,'#922a22',16)+'<span>'+esc(d.name)+'</span></span>'; }).join('')+'</span></span></div>'; }).join('')+'</div>', '<span class="bkd2-cnt">'+b.guests.length+'</span>')+
+      sec(P.heart, 'Special needs', b.special ? '<div class="bkd2-sn">'+ic(P.note,'#8f5a1c',20)+'<p>'+esc(b.comments)+'</p></div>' : '<p class="bkd2-none">No special requests for this stay.</p>', '<span class="mox-pill"'+(b.special?' data-tone="amber"':' data-tone="grey"')+'>'+(b.special?'Yes':'No')+'</span>')+
       '<div class="mox-demo"><p class="mox-eyebrow">PROTOTYPE · BCM</p><div class="mox-demo-c">'+
         (b.status==='Submitted' ? '<button type="button" class="mox-chip" data-bcm="approve">Approve booking</button><button type="button" class="mox-chip" data-bcm="reject">Reject booking</button>' : '')+
         (ext && ext.st==='pending' ? '<button type="button" class="mox-chip" data-bcm="ext-ok">Approve extension</button><button type="button" class="mox-chip" data-bcm="ext-no">Reject extension</button>' : '')+
