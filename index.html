@@ -4726,6 +4726,12 @@ new MutationObserver(function(ms){
 }).observe(dev, { childList:true });
 })();</script>
 
+<style id="sr-unit-cats">
+.sr-scope-cats{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.sr-scope-cat{display:inline-flex;align-items:center;gap:4px;padding:3px 7px 3px 5px;border-radius:999px;background:color-mix(in srgb,var(--cc) 9%,#fff)}
+.sr-scope-cat svg{flex:none}
+.sr-scope-cat b{font-size:11px;line-height:14px;font-weight:600;color:var(--cc)}
+</style>
 <script id="sr2-js">(function(){
 'use strict';
 /* ==========================================================================
@@ -4812,7 +4818,7 @@ function hexA(h,a){ var n=parseInt(h.slice(1),16); return 'rgba('+(n>>16)+','+((
 var OWN = ['owner'], TEN = ['tenant','agent'];   // persona rules: Service Charge → owners only; tenancy items → tenants & holiday home agents
 var SC = {n:'Service Charge',i:'coins',c:'#8F5A1C',roles:OWN};
 var SCOPES = {
-  unit:{ key:'unit', title:'My unit', sub:'Repairs, payments & documents for your home', icon:'home', color:'#922A22', team:'CRM Team', cats:[
+  unit:{ key:'unit', title:'In Unit', sub:'Repairs, payments & documents for your home', icon:'home', color:'#922A22', team:'CRM Team', cats:[
     { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:[{n:'Plumbing',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
     { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},SC,{n:'Payment Receipt',i:'receipt',c:'#2F6F73'},{n:'Statement of Account',i:'statement',c:'#34506B'}] },
     { id:'documents', name:'Property & Documents', tag:'Contracts & tenancy', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc',c:'#2F6F73'},{n:'Update Property Documents',i:'refresh',c:'#8F5A1C'},{n:'Tenancy Renewal',i:'refresh',c:'#5B6B3A',roles:TEN},{n:'Tenant / Occupant Update',i:'people',c:'#7A4F6D',roles:TEN},{n:'NOC / Clearance',i:'stamp',c:'#922A22',roles:TEN}] } ]},
@@ -4853,9 +4859,12 @@ function toaster(root){ var el=$('[data-mtoast]',root), tt=null; return function
 /* scope cards — Home and (when opened without a scope) the New request screen */
 function scopeCards(){
   return '<div class="sr-scopes">'+['unit','common'].map(function(k){ var s=SCOPES[k], cur=current(k);
-    var tag = cur ? cur.name : s.sub;
+    var tag = cur ? cur.name : s.sub, foot;
+    if(k==='unit'){ var cs = catsFor('unit'), short = { maintenance:'Maintenance', payments:'Payments', documents:'Documents' };
+      foot = '<span class="sr-scope-cats" aria-label="Includes '+esc(cs.map(function(c){ return short[c.id]||c.name; }).join(', '))+'">'+cs.map(function(c){ return '<span class="sr-scope-cat" style="--cc:'+c.color+'">'+icon(c.icon,13,c.color)+'<b>'+esc(short[c.id]||c.name)+'</b></span>'; }).join('')+'</span>'; }
+    else foot = '<span class="sr-scope-s">'+esc(tag)+'</span>';
     return '<button type="button" class="sr-scope" data-scope="'+k+'" style="--c:'+s.color+';border-color:'+hexA(s.color,.22)+'"><span class="sr-gi">'+icon(s.icon,20,'#fff')+'</span>'+
-      '<span class="sr-go">'+icon('arrow',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span><span class="sr-scope-s">'+esc(tag)+'</span></button>'; }).join('')+'</div>';
+      '<span class="sr-go">'+icon('arrow',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span>'+foot+'</button>'; }).join('')+'</div>';
 }
 function stagger(root, sel){ $$(sel, root).forEach(function(el,i){ el.style.setProperty('--i', i); el.classList.remove('sr-in'); void el.offsetWidth; el.classList.add('sr-in'); }); }
 function openScope(k){ SR.scope = k; SR.place = (current(k)||{}).id; var n=nav(); if(n) n.navigate('sr:new','SLIDE_IN/350/EASE_OUT/LEFT'); }
@@ -5268,7 +5277,7 @@ function initGpt(sec){
       var scope = g.scope, place, cat, sub, desc = '', photo = '';
       var p = Promise.resolve();
       if(!scope) p = p.then(function(){ return say('Is this about your unit or the common areas?'); })
-        .then(function(){ return choose([['unit','My unit','home'],['common','Common areas','community']], '1fr 1fr'); })
+        .then(function(){ return choose([['unit','In Unit','home'],['common','Common areas','community']], '1fr 1fr'); })
         .then(function(c){ scope = c; });
       return p.then(function(){
         var list = SR.places(scope);
@@ -5299,7 +5308,7 @@ function initGpt(sec){
         if(c==='add'){ photo = 'IMG_'+(2400+Math.floor(Math.random()*500))+'.jpg';
           return say('Photo attached.', '<span class="gpt-file">'+icon('file',14)+esc(photo)+' · 1.8 MB</span>'); }
       }).then(function(){
-        var rows = [['Area', scope==='unit'?'My unit':'Common areas'],['Location', place ? (scope==='unit' ? place.name+' · '+(place.u?place.u.community:place.meta) : place.name) : '—'],['Category', cat.name],['Issue', sub.n],['Description', desc || '—'],['Photo', photo || '—']];
+        var rows = [['Area', scope==='unit'?'In Unit':'Common areas'],['Location', place ? (scope==='unit' ? place.name+' · '+(place.u?place.u.community:place.meta) : place.name) : '—'],['Category', cat.name],['Issue', sub.n],['Description', desc || '—'],['Photo', photo || '—']];
         return say('Here’s your request. Shall I submit it?', card(rows));
       }).then(function(){ return choose([['edit','Edit','edit'],['ok','Submit request','check','primary']], '1fr 1fr'); })
       .then(function(c){
