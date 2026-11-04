@@ -5817,25 +5817,28 @@ paint(dev);
 .bkx-ov .mox-btn--ghost,.bkd .mox-btn--ghost{background:#fff;color:#1a1a1a;border:1.5px solid #1a1a1a}
 .bkx-ov .mox-btn--dark:disabled,.bkn .mox-btn--dark:disabled{background:#c9c4bd!important;color:#f3f1ea!important}
 .bkn .bk-av,.ud-gst .bk-av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#922a22;font-size:12.5px;font-weight:700;box-shadow:inset 0 0 0 1px #efe7e3}
-/* bookings list v3: compact, scannable cards */
-.bkc2{all:unset;box-sizing:border-box;display:flex;gap:14px;align-items:flex-start;width:100%;background:#fff;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(28,28,25,.04),inset 0 0 0 1px #efe7e3;cursor:pointer;animation:bkUp .4s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms);transition:transform .2s;--t:#3d4ca3;--tb:rgba(61,76,163,.09)}
-.bkc2:active{transform:scale(.98)}.bkc2:focus-visible{outline:2px solid #922a22;outline-offset:2px}
-.bkc2[data-tone="green"]{--t:#2e7d5b;--tb:rgba(46,125,91,.1)}.bkc2[data-tone="red"]{--t:#922a22;--tb:rgba(146,42,34,.08)}.bkc2[data-tone="grey"]{--t:#6b665c;--tb:#f1ede8}
-.bkc2-d{flex:none;width:52px;height:56px;border-radius:14px;background:var(--tb);display:grid;place-content:center;text-align:center;color:var(--t)}
-.bkc2-d small{font-size:10.5px;font-weight:700;letter-spacing:.8px;line-height:12px}.bkc2-d b{font:600 22px/24px 'Matter','Figtree',sans-serif}
-.bkc2-m{flex:1;min-width:0;display:grid;gap:5px}
-.bkc2-r1{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.bkc2-r1 b{font:600 16px/22px 'Matter','Figtree',sans-serif;color:#1c1c19;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bkc2-r1 .mox-pill{flex:none}
-.bkc2-r2{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1c1c19}
-.bkc2-r3{display:flex;align-items:center;gap:12px;font-size:12.5px;font-weight:600;color:#6b665c}
-.bkc2-r3>span{display:inline-flex;align-items:center;gap:4px}
-.bkc2-ext{color:#8f5a1c;background:rgba(183,134,63,.14);border-radius:999px;padding:2px 8px;font-size:11px}
-.bkc2-p{display:block;height:4px;border-radius:2px;background:#f1ede8;margin-top:4px;overflow:hidden}
-.bkc2-p i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#2e7d5b,#6fb08f)}
-.bkc2-pt{font-size:11px;font-weight:600;color:#2e7d5b}
-.bkl .bkl-seg{margin:0 0 14px}
-.bkl-list>.bkc2{margin-bottom:0}
+/* bookings list v4: hotel-style trip cards */
+.bkh{all:unset;box-sizing:border-box;display:block;width:100%;background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(28,28,25,.05),0 8px 24px -16px rgba(28,28,25,.25),inset 0 0 0 1px #eee8e3;cursor:pointer;overflow:hidden;animation:bkUp .4s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms);transition:transform .2s,box-shadow .2s}
+.bkh:active{transform:scale(.985)}.bkh:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+.bkh-top{display:flex;gap:14px;align-items:center;padding:12px 12px 12px 12px}
+.bkh-img{flex:none;width:76px;height:76px;border-radius:12px;overflow:hidden;background:#f6f1ef;display:grid;place-items:center}
+.bkh-img img{width:100%;height:100%;object-fit:cover;display:block}
+.bkh.is-past .bkh-img img{filter:saturate(.35) brightness(1.03)}
+.bkh-t{flex:1;min-width:0;display:grid;justify-items:start;gap:1px}
+.bkh-t b{font:600 16.5px/22px 'Matter','Figtree',sans-serif;color:#1c1c19;letter-spacing:-.1px}
+.bkh-t small{font-size:12.5px;line-height:17px;color:#6b665c;margin-bottom:6px}
+.bkh-go{flex:none;align-self:center;display:grid}
+.bkh-dates{display:grid;grid-template-columns:1fr 1fr auto;border-top:1px solid #f1ece7}
+.bkh-dates>span{display:grid;gap:2px;padding:10px 14px}
+.bkh-dates>span+span{border-left:1px solid #f1ece7}
+.bkh-dates small{font-size:11px;line-height:14px;color:#8a847a;font-weight:500}
+.bkh-dates b{font-size:13.5px;line-height:18px;font-weight:600;color:#1c1c19;white-space:nowrap}
+.bkh-foot{display:block;border-top:1px solid #f1ece7;padding:9px 14px;background:#fcfaf8}
+.bkh-note{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:#54504a}
+.bkh-note{max-width:100%}.bkh-note>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bkh-note[data-tone="red"] i{background:#922a22}
+.bkh-note i{flex:none;width:6px;height:6px;border-radius:50%;background:#a39d94}
+.bkh-note[data-tone="green"] i{background:#2e7d5b}.bkh-note[data-tone="amber"] i{background:#b7863f}.bkh-note[data-tone="blue"] i{background:#3d4ca3}
+.bkl .bkl-seg{margin:0 0 16px}
 /* unit detail guest card */
 .ud-gst{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:14px;background:#faf7f4;margin-bottom:6px}
 .ud-gst-t{flex:1;min-width:0;display:grid}.ud-gst-t b{font-size:14.5px;font-weight:600;color:#1c1c19}.ud-gst-t small{font-size:12px;color:#6b665c}
@@ -6080,17 +6083,24 @@ function tabItem(label, svg, active){
    Bookings tab (agent only): every booking, newest first
    ========================================================================== */
 function range(a, b){ return a.getMonth()===b.getMonth() ? a.getDate()+' – '+b.getDate()+' '+MON[b.getMonth()] : a.getDate()+' '+MON[a.getMonth()]+' – '+b.getDate()+' '+MON[b.getMonth()]; }
+var PHOTOS = null, PIDX = { v138:0, a1204:1, a305:2 };
+function photo(uid){ if(!PHOTOS){ PHOTOS = []; Array.prototype.forEach.call(D.querySelectorAll('.arch-frame img, .fmedia img'), function(im){ if(im.src && PHOTOS.indexOf(im.src) < 0) PHOTOS.push(im.src); }); }
+  return PHOTOS.length ? PHOTOS[(PIDX[uid]||0) % PHOTOS.length] : null; }
 function cardHtml(b, i){
-  var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut), tone = TONE[b.status] || 'blue';
-  var inH = b.status==='Approved' && day0(b.checkIn) <= TODAY, day = inH ? Math.min(n, nights(b.checkIn, TODAY)+1) : 0;
-  var pend = b.ext && b.ext.st==='pending';
-  return '<button type="button" class="bkc2" data-bk="'+b.id+'" data-tone="'+tone+'" style="--i:'+i+'" aria-label="'+esc(u.name+', '+range(b.checkIn,b.checkOut)+', '+b.status)+'">'+
-    '<span class="bkc2-d"><small>'+MON[b.checkIn.getMonth()].toUpperCase()+'</small><b>'+b.checkIn.getDate()+'</b></span>'+
-    '<span class="bkc2-m"><span class="bkc2-r1"><b>'+esc(u.name)+'</b>'+pill(b.status)+'</span>'+
-      '<span class="bkc2-r2">'+ic(P.cal,'#8a847a',14)+range(b.checkIn, b.checkOut)+'</span>'+
-      '<span class="bkc2-r3"><span>'+ic(P.moon,'#8a847a',14)+n+'</span><span>'+ic(P.users,'#8a847a',14)+b.guests.length+'</span>'+(pend?'<span class="bkc2-ext">Extension pending</span>':'')+'</span>'+
-      (inH ? '<span class="bkc2-p"><i style="width:'+Math.round(day/n*100)+'%"></i></span><span class="bkc2-pt">Day '+day+' of '+n+'</span>' : '')+
-    '</span></button>';
+  var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut), ph = photo(b.unit);
+  var inH = b.status==='Approved' && day0(b.checkIn) <= TODAY, night = inH ? Math.min(n, nights(b.checkIn, TODAY)+1) : 0, pend = b.ext && b.ext.st==='pending';
+  var note = inH ? '<span class="bkh-note" data-tone="green"><i></i>Guest in-house · night '+night+' of '+n+'</span>'
+    : pend ? '<span class="bkh-note" data-tone="amber"><i></i>Extension requested to '+fS(b.ext.date)+'</span>'
+    : b.status==='Submitted' ? '<span class="bkh-note" data-tone="blue"><i></i>Awaiting BCM approval</span>'
+    : b.status==='Rejected' && b.reason ? '<span class="bkh-note" data-tone="red"><i></i><span>'+esc(b.reason)+'</span></span>'
+    : b.status==='Checked Out' && b.checkedOutAt ? '<span class="bkh-note"><i></i>Checked out '+fS(b.checkedOutAt)+', '+fT(b.checkedOutAt)+'</span>' : '';
+  return '<button type="button" class="bkh'+(BK.isPast(b)?' is-past':'')+'" data-bk="'+b.id+'" style="--i:'+i+'">'+
+    '<span class="bkh-top"><span class="bkh-img">'+(ph?'<img src="'+ph+'" alt="" loading="lazy">':ic(u.icon==='building'?P.building:P.home,'#922A22',26))+'</span>'+
+      '<span class="bkh-t"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+'</small>'+pill(b.status)+'</span>'+
+      '<span class="bkh-go">'+ic(P.chev,'#b3aca3',18)+'</span></span>'+
+    '<span class="bkh-dates"><span><small>Check-in</small><b>'+fS(b.checkIn)+'</b></span><span><small>Check-out</small><b>'+fS(b.checkOut)+'</b></span><span><small>Guests</small><b>'+b.guests.length+'</b></span></span>'+
+    (note ? '<span class="bkh-foot">'+note+'</span>' : '')+
+  '</button>';
 }
 var PAST = { 'Checked Out':1, Rejected:1 };
 BK.isPast = function(b){ return !!PAST[b.status]; };
