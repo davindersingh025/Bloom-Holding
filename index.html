@@ -4727,6 +4727,7 @@ new MutationObserver(function(ms){
 })();</script>
 
 <style id="sr-unit-cats">
+.sr-scope-1l{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sr-scope-cats{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .sr-scope-cat{display:inline-flex;align-items:center;gap:4px;padding:3px 7px 3px 5px;border-radius:999px;background:color-mix(in srgb,var(--cc) 9%,#fff)}
 .sr-scope-cat svg{flex:none}
@@ -4860,8 +4861,7 @@ function toaster(root){ var el=$('[data-mtoast]',root), tt=null; return function
 function scopeCards(){
   return '<div class="sr-scopes">'+['unit','common'].map(function(k){ var s=SCOPES[k], cur=current(k);
     var tag = cur ? cur.name : s.sub, foot;
-    if(k==='unit'){ var cs = catsFor('unit'), short = { maintenance:'Maintenance', payments:'Payments', documents:'Documents' };
-      foot = '<span class="sr-scope-cats" aria-label="Includes '+esc(cs.map(function(c){ return short[c.id]||c.name; }).join(', '))+'">'+cs.map(function(c){ return '<span class="sr-scope-cat" style="--cc:'+c.color+'">'+icon(c.icon,13,c.color)+'<b>'+esc(short[c.id]||c.name)+'</b></span>'; }).join('')+'</span>'; }
+    if(k==='unit') foot = '<span class="sr-scope-s sr-scope-1l" title="Maintenance, payments &amp; documents">Repairs, bills &amp; docs</span>';
     else foot = '<span class="sr-scope-s">'+esc(tag)+'</span>';
     return '<button type="button" class="sr-scope" data-scope="'+k+'" style="--c:'+s.color+';border-color:'+hexA(s.color,.22)+'"><span class="sr-gi">'+icon(s.icon,20,'#fff')+'</span>'+
       '<span class="sr-go">'+icon('arrow',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span>'+foot+'</button>'; }).join('')+'</div>';
