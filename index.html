@@ -5817,6 +5817,25 @@ paint(dev);
 .bkx-ov .mox-btn--ghost,.bkd .mox-btn--ghost{background:#fff;color:#1a1a1a;border:1.5px solid #1a1a1a}
 .bkx-ov .mox-btn--dark:disabled,.bkn .mox-btn--dark:disabled{background:#c9c4bd!important;color:#f3f1ea!important}
 .bkn .bk-av,.ud-gst .bk-av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#922a22;font-size:12.5px;font-weight:700;box-shadow:inset 0 0 0 1px #efe7e3}
+/* bookings list v3: compact, scannable cards */
+.bkc2{all:unset;box-sizing:border-box;display:flex;gap:14px;align-items:flex-start;width:100%;background:#fff;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(28,28,25,.04),inset 0 0 0 1px #efe7e3;cursor:pointer;animation:bkUp .4s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms);transition:transform .2s;--t:#3d4ca3;--tb:rgba(61,76,163,.09)}
+.bkc2:active{transform:scale(.98)}.bkc2:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+.bkc2[data-tone="green"]{--t:#2e7d5b;--tb:rgba(46,125,91,.1)}.bkc2[data-tone="red"]{--t:#922a22;--tb:rgba(146,42,34,.08)}.bkc2[data-tone="grey"]{--t:#6b665c;--tb:#f1ede8}
+.bkc2-d{flex:none;width:52px;height:56px;border-radius:14px;background:var(--tb);display:grid;place-content:center;text-align:center;color:var(--t)}
+.bkc2-d small{font-size:10.5px;font-weight:700;letter-spacing:.8px;line-height:12px}.bkc2-d b{font:600 22px/24px 'Matter','Figtree',sans-serif}
+.bkc2-m{flex:1;min-width:0;display:grid;gap:5px}
+.bkc2-r1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bkc2-r1 b{font:600 16px/22px 'Matter','Figtree',sans-serif;color:#1c1c19;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bkc2-r1 .mox-pill{flex:none}
+.bkc2-r2{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1c1c19}
+.bkc2-r3{display:flex;align-items:center;gap:12px;font-size:12.5px;font-weight:600;color:#6b665c}
+.bkc2-r3>span{display:inline-flex;align-items:center;gap:4px}
+.bkc2-ext{color:#8f5a1c;background:rgba(183,134,63,.14);border-radius:999px;padding:2px 8px;font-size:11px}
+.bkc2-p{display:block;height:4px;border-radius:2px;background:#f1ede8;margin-top:4px;overflow:hidden}
+.bkc2-p i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#2e7d5b,#6fb08f)}
+.bkc2-pt{font-size:11px;font-weight:600;color:#2e7d5b}
+.bkl .bkl-seg{margin:0 0 14px}
+.bkl-list>.bkc2{margin-bottom:0}
 /* unit detail guest card */
 .ud-gst{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:14px;background:#faf7f4;margin-bottom:6px}
 .ud-gst-t{flex:1;min-width:0;display:grid}.ud-gst-t b{font-size:14.5px;font-weight:600;color:#1c1c19}.ud-gst-t small{font-size:12px;color:#6b665c}
@@ -6044,7 +6063,7 @@ function tabItem(label, svg, active){
   }
   var t = D.createElement('template'); t.id = 'tpl-bk-list';
   t.innerHTML = '<div class="mox bkl">'+sb.outerHTML+'<div class="bkl-scroll" data-bscroll><div class="bkl-head"><h1 class="bkl-title">My <i>bookings</i></h1><button type="button" class="bkl-new" data-bnew>New check-in</button></div>'+
-    '<div class="bkl-sum" data-bsum></div><div class="bkl-list" data-blist></div></div>'+tb+'<div class="mox-ind"></div></div>';
+    '<div class="bkl-seg" role="tablist" aria-label="Bookings" data-bseg></div><div class="bkl-list" data-blist role="tabpanel"></div></div>'+tb+'<div class="mox-ind"></div></div>';
   src.parentNode.insertBefore(t, src.nextSibling);
   var t2 = D.createElement('template'); t2.id = 'tpl-bk-detail';
   t2.innerHTML = '<div class="mox mox--det bkd">'+sb.outerHTML+bar.outerHTML.replace(/data-mback/, 'data-bback')+
@@ -6060,23 +6079,33 @@ function tabItem(label, svg, active){
 /* ==========================================================================
    Bookings tab (agent only): every booking, newest first
    ========================================================================== */
+function range(a, b){ return a.getMonth()===b.getMonth() ? a.getDate()+' – '+b.getDate()+' '+MON[b.getMonth()] : a.getDate()+' '+MON[a.getMonth()]+' – '+b.getDate()+' '+MON[b.getMonth()]; }
 function cardHtml(b, i){
-  var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut);
-  return '<button type="button" class="bk-card bkc" data-bk="'+b.id+'" style="--i:'+i+'">'+
-    '<div class="bkc-top"><span class="bk-tile">'+ic(u.icon==='building'?P.building:P.home,'#922A22',20)+'</span><span class="bkc-tt"><b>'+esc(u.name)+'</b><small>'+esc(u.code||u.community)+'</small></span>'+pill(b.status)+'</div>'+
-    '<div class="bkc-dates"><div><small>Check-in</small><b>'+fS(b.checkIn)+'</b></div><span class="bkc-n">'+ic(P.moon,'#8a847a',14)+nTxt(n)+'</span><div class="bkc-r"><small>Check-out</small><b>'+fS(b.ext && b.ext.st==='approved' ? b.checkOut : b.checkOut)+'</b></div></div>'+
-    '<div class="bkc-foot"><span>'+ic(P.users,'#6b665c',16)+gTxt(b.guests.length)+'</span><span class="bkc-id">'+b.id+'</span></div></button>';
+  var u = unitById(b.unit), n = nights(b.checkIn, b.checkOut), tone = TONE[b.status] || 'blue';
+  var inH = b.status==='Approved' && day0(b.checkIn) <= TODAY, day = inH ? Math.min(n, nights(b.checkIn, TODAY)+1) : 0;
+  var pend = b.ext && b.ext.st==='pending';
+  return '<button type="button" class="bkc2" data-bk="'+b.id+'" data-tone="'+tone+'" style="--i:'+i+'" aria-label="'+esc(u.name+', '+range(b.checkIn,b.checkOut)+', '+b.status)+'">'+
+    '<span class="bkc2-d"><small>'+MON[b.checkIn.getMonth()].toUpperCase()+'</small><b>'+b.checkIn.getDate()+'</b></span>'+
+    '<span class="bkc2-m"><span class="bkc2-r1"><b>'+esc(u.name)+'</b>'+pill(b.status)+'</span>'+
+      '<span class="bkc2-r2">'+ic(P.cal,'#8a847a',14)+range(b.checkIn, b.checkOut)+'</span>'+
+      '<span class="bkc2-r3"><span>'+ic(P.moon,'#8a847a',14)+n+'</span><span>'+ic(P.users,'#8a847a',14)+b.guests.length+'</span>'+(pend?'<span class="bkc2-ext">Extension pending</span>':'')+'</span>'+
+      (inH ? '<span class="bkc2-p"><i style="width:'+Math.round(day/n*100)+'%"></i></span><span class="bkc2-pt">Day '+day+' of '+n+'</span>' : '')+
+    '</span></button>';
 }
+var PAST = { 'Checked Out':1, Rejected:1 };
+BK.isPast = function(b){ return !!PAST[b.status]; };
 function initList(sec){
   var root = sec.querySelector('.bkl'); if(!root) return;
-  var list = root.querySelector('[data-blist]'), sum = root.querySelector('[data-bsum]');
+  var list = root.querySelector('[data-blist]'), seg = root.querySelector('[data-bseg]'), tab = 'ongoing';
   function render(){
-    var rows = BK.sorted();
-    var c = { Submitted:0, Approved:0 }; rows.forEach(function(b){ if(c[b.status]!=null) c[b.status]++; });
-    sum.innerHTML = rows.length ? '<span class="bkl-chip"><i data-tone="blue"></i>'+c.Submitted+' awaiting approval</span><span class="bkl-chip"><i data-tone="green"></i>'+c.Approved+' approved</span>' : '';
-    list.innerHTML = rows.length ? rows.map(cardHtml).join('') :
-      '<div class="bkx-empty bkl-empty2">'+illus('in')+'<b>No bookings yet.</b><span>Check in your first guest and the booking will show up here.</span><button type="button" class="mox-btn mox-btn--dark" data-bnew><span class="mox-btn-t">New check-in</span></button></div>';
+    var all = BK.sorted(), on = all.filter(function(b){ return !BK.isPast(b); }), past = all.filter(BK.isPast), rows = tab==='past' ? past : on;
+    seg.innerHTML = [['ongoing','Ongoing',on.length],['past','Past',past.length]].map(function(t){ var a = tab===t[0];
+      return '<button type="button" role="tab" data-btab="'+t[0]+'" aria-selected="'+a+'" class="'+(a?'is-on':'')+'">'+t[1]+' <em>'+t[2]+'</em></button>'; }).join('');
+    list.innerHTML = rows.length ? rows.map(cardHtml).join('') : (tab==='past'
+      ? '<div class="bkx-empty bkl-empty2">'+illus('out')+'<b>No past bookings</b><span>Finished and rejected stays land here.</span></div>'
+      : '<div class="bkx-empty bkl-empty2">'+illus('in')+'<b>'+(all.length ? 'No ongoing bookings' : 'No bookings yet.')+'</b><span>Check in a guest to get started.</span><button type="button" class="mox-btn mox-btn--dark" data-bnew><span class="mox-btn-t">New check-in</span></button></div>');
   }
+  seg.addEventListener('click', function(e){ var t = e.target.closest('[data-btab]'); if(!t || t.dataset.btab===tab) return; tab = t.dataset.btab; render(); var sc = root.querySelector('[data-bscroll]'); if(sc) sc.scrollTop = 0; });
   root.addEventListener('click', function(e){
     var cd = e.target.closest('[data-bk]'); if(cd){ setTimeout(function(){ openBooking(cd.dataset.bk); }, REDUCED?0:120); return; }
     if(e.target.closest('[data-bnew]')){ openNew(null); return; }
@@ -6086,7 +6115,7 @@ function initList(sec){
       else n.navigate(GPT,'SLIDE_IN/350/EASE_OUT/LEFT'); }
   }, true);
   D.addEventListener('bloom:bk-changed', render);
-  sec.__onEnter = function(){ render(); var s = root.querySelector('[data-bscroll]'); if(s) s.scrollTop = 0; };
+  sec.__onEnter = function(){ tab = 'ongoing'; render(); var s = root.querySelector('[data-bscroll]'); if(s) s.scrollTop = 0; };
   render();
 }
 
