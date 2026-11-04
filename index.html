@@ -5826,7 +5826,8 @@ paint(dev);
 .bkh.is-past .bkh-img img{filter:saturate(.35) brightness(1.03)}
 .bkh-t{flex:1;min-width:0;display:grid;justify-items:start;gap:1px}
 .bkh-t b{font:600 16.5px/22px 'Matter','Figtree',sans-serif;color:#1c1c19;letter-spacing:-.1px}
-.bkh-t small{font-size:12.5px;line-height:17px;color:#6b665c;margin-bottom:6px}
+.bkh-t small{font-size:12.5px;line-height:17px;color:#6b665c}
+.bkh-st{flex:none;align-self:flex-start;padding-top:2px}
 .bkh-go{flex:none;align-self:center;display:grid}
 .bkh-dates{display:grid;grid-template-columns:1fr 1fr auto;border-top:1px solid #f1ece7}
 .bkh-dates>span{display:grid;gap:2px;padding:10px 14px}
@@ -6096,10 +6097,9 @@ function cardHtml(b, i){
     : b.status==='Checked Out' && b.checkedOutAt ? '<span class="bkh-note"><i></i>Checked out '+fS(b.checkedOutAt)+', '+fT(b.checkedOutAt)+'</span>' : '';
   return '<button type="button" class="bkh'+(BK.isPast(b)?' is-past':'')+'" data-bk="'+b.id+'" style="--i:'+i+'">'+
     '<span class="bkh-top"><span class="bkh-img">'+(ph?'<img src="'+ph+'" alt="" loading="lazy">':ic(u.icon==='building'?P.building:P.home,'#922A22',26))+'</span>'+
-      '<span class="bkh-t"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+'</small>'+pill(b.status)+'</span>'+
-      '<span class="bkh-go">'+ic(P.chev,'#b3aca3',18)+'</span></span>'+
+      '<span class="bkh-t"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+'</small></span>'+
+      '<span class="bkh-st">'+pill(b.status)+'</span></span>'+
     '<span class="bkh-dates"><span><small>Check-in</small><b>'+fS(b.checkIn)+'</b></span><span><small>Check-out</small><b>'+fS(b.checkOut)+'</b></span><span><small>Guests</small><b>'+b.guests.length+'</b></span></span>'+
-    (note ? '<span class="bkh-foot">'+note+'</span>' : '')+
   '</button>';
 }
 var PAST = { 'Checked Out':1, Rejected:1 };
