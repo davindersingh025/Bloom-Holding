@@ -5934,6 +5934,21 @@ paint(dev);
 .bkn .mox-foot>.bkn3-sum{flex:1;display:grid;min-width:0}
 .bkn .mox-foot>.mox-btn{flex:none;width:auto;min-width:150px;padding:0 28px}
 .bkn3-sum b{font:700 17px/22px 'Matter','Figtree',sans-serif;color:#1c1c19}.bkn3-sum small{font-size:12px;color:#6b665c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bkn3-idb{all:unset;box-sizing:border-box;flex:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border-radius:16px;font-size:12.5px;font-weight:600;color:#922a22;background:rgba(146,42,34,.07);transition:background .2s}
+.bkn3-idb.has{color:#2e7d5b;background:rgba(46,125,91,.1)}.bkn3-idb.is-err{box-shadow:inset 0 0 0 1.5px #b3261e}
+.bkn3-idb:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+.bkn3-in input{border-bottom:0!important;padding:8px 0!important}
+.bkn3-g{padding:8px 0!important}
+.bkn3-sl{display:grid;gap:8px;margin-bottom:12px}
+.bkn3-sf{display:flex;align-items:center;gap:12px;padding:8px;border-radius:14px;background:#faf7f4}
+.bkn3-sf img,.bkn3-sfi{flex:none;width:44px;height:44px;border-radius:10px;object-fit:cover;display:grid;place-items:center;background:#fff}
+.bkn3-sft{flex:1;min-width:0;display:grid}.bkn3-sft b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bkn3-sft small{font-size:12px;color:#8a847a}
+.bkn3-sf button{all:unset;cursor:pointer;display:grid;padding:8px;border-radius:50%}
+.bkn3-sup{position:relative;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1.5px dashed rgba(146,42,34,.35)}
+.bkn3-sup b{display:block;font-size:14px;font-weight:600;color:#922a22}.bkn3-sup small{font-size:12px;color:#8a847a}
+.bkn3-sup input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.bkn3-sb{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px}
+.bkn3-sb .mox-btn{flex:none;width:auto;min-width:120px;padding:0 24px}
 .bkn3-pu .bkn3-pimg{flex:none;width:52px;height:52px;border-radius:12px;overflow:hidden;background:#f6efec}.bkn3-pimg img{width:100%;height:100%;object-fit:cover;display:block}
 .bkn3-pu.is-on{box-shadow:inset 0 0 0 2px #922a22}
 /* unit detail guest card */
@@ -6322,16 +6337,13 @@ function initNew(sec){
         '<div class="bkn3-row bkn3-gr"><span><span class="bkn3-l">GUESTS</span><span class="bkn3-gv"><b>'+F.guests.length+'</b> '+(F.guests.length===1?'Guest':'Guests')+'</span></span>'+
           '<div class="bkn-step"><button type="button" data-gm aria-label="Fewer guests"'+(F.guests.length<=1?' disabled':'')+'>−</button><output>'+F.guests.length+'</output><button type="button" data-gp aria-label="More guests"'+(F.guests.length>=10?' disabled':'')+'>+</button></div></div>'+
       '</section>'+
-      '<section class="bkn3-card bkn3-pad"><div class="bkn3-h"><b>Guest details</b><small>Name as on ID · Passport or Emirates ID</small></div>'+
+      '<section class="bkn3-card bkn3-pad"><div class="bkn3-h"><b>Guest details</b><small>Names exactly as on each guest’s ID</small></div>'+
         F.guests.map(function(g, i){
-          var e = F.err['g'+i], ok = g.name.trim() && g.docs.length;
+          var nd = g.docs.length, ok = g.name.trim() && nd;
           return '<div class="bkn-guest bkn3-g'+(ok?' is-ok':'')+'"><div class="bkn-gh"><span class="bk-av">'+(g.name.trim()?initials(g.name):(i+1))+'</span>'+
-              '<label class="bkn3-in"><span class="sr-only">Guest '+(i+1)+' name</span><input type="text" data-gname="'+i+'" value="'+esc(g.name)+'" placeholder="'+(i===0?'Main guest full name':'Guest '+(i+1)+' full name')+'" maxlength="60" autocomplete="off"></label>'+
-              (ok?'<span class="bkn-tick">'+ic(P.ok,'#2e7d5b',18)+'</span>':'')+'</div>'+
-            '<div class="bkn3-ids">'+g.docs.map(function(d, j){ return '<span class="bkn3-id">'+ic(P.id,'#922a22',14)+'<span>'+esc(d.name)+'</span><button type="button" data-rm="'+i+':'+j+'" aria-label="Remove '+esc(d.name)+'">'+ic(P.x,'#6b665c',12)+'</button></span>'; }).join('')+
-              (g.docs.length < 2 ? '<label class="bkn3-add">'+ic('<path d="M12 5v14M5 12h14"/>','#922a22',14)+(g.docs.length?'Add back side':'Add ID')+'<input type="file" accept="image/jpeg,image/png" data-file="'+i+'"></label>'+(g.docs.length?'':'<button type="button" class="bkn-sample" data-sample="'+i+'">sample</button>') : '')+
-            '</div>'+(e?'<p class="bkn-err">'+esc(e)+'</p>':'')+'</div>'; }).join('')+
-        '<p class="bkn3-fine">JPG or PNG · up to 2 files per guest · 5 MB each</p>'+
+              '<label class="bkn3-in"><span class="sr-only">Guest '+(i+1)+' name</span><input type="text" data-gname="'+i+'" value="'+esc(g.name)+'" placeholder="'+(i===0?'Main guest name':'Guest '+(i+1)+' name')+'" maxlength="60" autocomplete="off"></label>'+
+              '<button type="button" class="bkn3-idb'+(nd?' has':'')+(F.err['g'+i]?' is-err':'')+'" data-idsheet="'+i+'" aria-label="'+(nd?nd+' ID uploaded for guest '+(i+1):'Add ID for guest '+(i+1))+'">'+
+                (nd ? ic(P.id,'#2e7d5b',16)+'<span>'+nd+' ID</span>' : ic('<path d="M12 5v14M5 12h14"/>','#922a22',14)+'<span>Add ID</span>')+'</button></div></div>'; }).join('')+
       '</section>'+
       '<section class="bkn3-card bkn3-pad"><button type="button" class="bkn3-chk" role="checkbox" aria-checked="'+F.special+'" data-sn="'+(F.special?'0':'1')+'"><span class="bkn3-box">'+(F.special?ic('<path d="m6 12 4 4 8-8"/>','#fff',14):'')+'</span><span><b>Guests have special needs</b><small>Accessibility, baby cot, medical needs…</small></span></button>'+
         (F.special ? '<label class="bkn-ta bkn3-ta"><span class="sr-only">Comments</span><textarea data-cm maxlength="500" rows="3" placeholder="Tell the community team what’s needed">'+esc(F.comments)+'</textarea><small data-cc>'+F.comments.length+' / 500</small></label>' : '')+
@@ -6340,6 +6352,22 @@ function initNew(sec){
     foot.innerHTML = '<div class="bkn3-sum">'+(n!=null ? '<b>'+nTxt(n)+'</b><small>'+gTxt(F.guests.length)+(u?' · '+esc(u.name):'')+'</small>' : '<b>'+gTxt(F.guests.length)+'</b><small>'+(u?esc(u.name):'Add unit & dates')+'</small>')+'</div>'+
       '<button type="button" class="mox-btn mox-btn--dark" data-save'+(valid()?'':' disabled')+'><span class="mox-btn-t">Submit</span></button>';
     if(keepScroll) body.scrollTop = y;
+    if(IDS && IDS.o.isConnected) IDS.o.querySelector('[data-ids]').innerHTML = idSheetHtml(IDS.i);
+  }
+  var IDS = null;
+  function idSheetHtml(i){
+    var g = F.guests[i], e = F.err['g'+i];
+    return '<span class="bkx-grab"></span><div class="bkx-sh"><b>'+(g.name.trim()?esc(g.name.trim()):(i===0?'Main guest':'Guest '+(i+1)))+' · ID</b><button type="button" class="bkx-close" data-x aria-label="Close">'+ic(P.x,'#1c1c19',20)+'</button></div>'+
+      '<p class="bkx-hint">Passport or Emirates ID · JPG or PNG · up to 2 files, 5 MB each</p>'+
+      '<div class="bkn3-sl">'+g.docs.map(function(d, j){ return '<div class="bkn3-sf">'+(d.url?'<img src="'+d.url+'" alt="">':'<span class="bkn3-sfi">'+ic(P.id,'#922a22',22)+'</span>')+'<span class="bkn3-sft"><b>'+esc(d.name)+'</b><small>'+esc(d.size||'')+'</small></span><button type="button" data-rm="'+i+':'+j+'" aria-label="Remove '+esc(d.name)+'">'+ic(P.x,'#54504a',16)+'</button></div>'; }).join('')+
+      (g.docs.length < 2 ? '<label class="bkn3-sup">'+ic(P.up,'#922a22',20)+'<span><b>'+(g.docs.length?'Upload back side':'Upload ID')+'</b><small>JPG or PNG, max 5 MB</small></span><input type="file" accept="image/jpeg,image/png" data-file="'+i+'"></label>' : '')+'</div>'+
+      (e?'<p class="bkn-err">'+esc(e)+'</p>':'')+
+      '<div class="bkn3-sb">'+(g.docs.length < 2 ? '<button type="button" class="bkn-sample" data-sample="'+i+'">Use a sample ID</button>' : '<span></span>')+'<button type="button" class="mox-btn mox-btn--dark" data-x><span class="mox-btn-t">Done</span></button></div>';
+  }
+  function openIds(i){
+    var o = overlay(root, 'bkx-sheet-ov', '<div class="bkx-sheet" role="dialog" aria-modal="true" aria-label="Guest ID" data-ids></div>');
+    IDS = { o:o, i:i }; o.querySelector('[data-ids]').innerHTML = idSheetHtml(i);
+    o.addEventListener('click', function(e){ if(e.target.closest('[data-x]')){ o.close(); IDS = null; F.err['g'+i] = ''; render(true); } });
   }
   function pickUnit(){
     return new Promise(function(res){
@@ -6362,6 +6390,7 @@ function initNew(sec){
   root.addEventListener('click', function(e){
     if(e.target.closest('[data-nback]')){ setTimeout(function(){ var n = nav(); if(n) n.back(); }, 90); return; }
     var u = e.target.closest('[data-unit]'); if(u){ F.unit = u.dataset.unit; render(true); return; }
+    var idb = e.target.closest('[data-idsheet]'); if(idb){ openIds(+idb.dataset.idsheet); return; }
     if(e.target.closest('[data-unitpick]')){ pickUnit().then(function(id){ if(id){ F.unit = id; render(true); } }); return; }
     if(e.target.closest('[data-unlock]')){ F.locked = false; render(true); return; }
     var pk = e.target.closest('[data-pick]');
@@ -6385,7 +6414,7 @@ function initNew(sec){
   });
   root.addEventListener('input', function(e){
     var nm = e.target.closest('[data-gname]'); if(nm){ var i = +nm.dataset.gname; F.guests[i].name = nm.value; var card = nm.closest('.bkn-guest'), ok = nm.value.trim() && F.guests[i].docs.length;
-      card.classList.toggle('is-ok', !!ok); var tk = card.querySelector('.bkn-tick'); if(ok && !tk) card.querySelector('.bkn-gh').insertAdjacentHTML('beforeend','<span class="bkn-tick">'+ic(P.ok,'#2e7d5b',18)+'</span>'); else if(!ok && tk) tk.remove(); var av = card.querySelector('.bk-av'); if(av) av.textContent = nm.value.trim() ? initials(nm.value) : (i+1); refreshSave(); return; }
+      card.classList.toggle('is-ok', !!ok); var av = card.querySelector('.bk-av'); if(av) av.textContent = nm.value.trim() ? initials(nm.value) : (i+1); refreshSave(); return; }
     var cm = e.target.closest('[data-cm]'); if(cm){ F.comments = cm.value; var cc = root.querySelector('[data-cc]'); if(cc) cc.textContent = cm.value.length+' / 500'; refreshSave(); }
   });
   root.addEventListener('change', function(e){
