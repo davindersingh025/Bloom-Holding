@@ -5877,6 +5877,46 @@ paint(dev);
 .bkd2-doc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bkd2-sn{display:flex;gap:10px;align-items:flex-start}.bkd2-sn svg{flex:none}.bkd2-sn p{margin:0;font-size:14px;line-height:20px;color:#1c1c19}
 .bkd2-none{margin:0;font-size:13.5px;color:#6b665c}
+/* new check-in v2 */
+.bkd2-sec>*{flex:none}
+.bkn .bkd2-sec{animation:bkUp .4s both}
+.bkn .mox-body>.bkn2-intro{flex:none;display:flex;align-items:center;gap:8px;margin:2px 4px 14px;font-size:13px;line-height:18px;color:#6b665c}
+.bkn2-intro svg{flex:none}
+.bkn2-ul{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 4px;scroll-snap-type:x mandatory}
+.bkn2-ul::-webkit-scrollbar{display:none}
+.bkn2-u{all:unset;box-sizing:border-box;flex:none;width:132px;cursor:pointer;scroll-snap-align:start;display:grid;gap:8px;-webkit-tap-highlight-color:transparent}
+.bkn2-uimg{position:relative;height:88px;border-radius:14px;overflow:hidden;background:#f6efec;display:grid;place-items:center;box-shadow:inset 0 0 0 1px #efe7e3;transition:box-shadow .2s}
+.bkn2-uimg img{width:100%;height:100%;object-fit:cover;display:block}
+.bkn2-u.is-on .bkn2-uimg{box-shadow:0 0 0 2px #fff,0 0 0 4px #922a22}
+.bkn2-uck{position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;background:#922a22;display:grid;place-items:center;animation:bkPop .3s both}
+.bkn2-ut{display:grid;padding:0 2px}.bkn2-ut b{font-size:14px;line-height:19px;font-weight:600;color:#1c1c19}.bkn2-ut small{font-size:12px;line-height:16px;color:#6b665c}
+.bkn2-u:focus-visible .bkn2-uimg{outline:2px solid #922a22;outline-offset:3px}
+.bkn2-ul.is-one{margin:0;padding:0;overflow:visible}
+.bkn2-ul.is-one .bkn2-u{width:100%;grid-template-columns:64px 1fr auto;align-items:center;gap:12px}
+.bkn2-ul.is-one .bkn2-uimg{height:64px;box-shadow:none}.bkn2-ul.is-one .bkn2-uck{display:none}
+.bkn2-chg{font-size:13px;font-weight:600;color:#922a22;padding-right:2px}
+.bkn2-dates{display:grid;grid-template-columns:1fr 1fr;border-radius:14px;box-shadow:inset 0 0 0 1px #e8dfd9;overflow:hidden}
+.bkn2-d{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 14px;transition:background .2s}
+.bkn2-d+.bkn2-d{border-left:1px solid #e8dfd9}
+.bkn2-d span{display:grid;min-width:0}.bkn2-d small{font-size:11.5px;line-height:15px;color:#8a847a}.bkn2-d b{font-size:14.5px;line-height:20px;font-weight:600;color:#a39d94;white-space:nowrap}
+.bkn2-d.is-set b{color:#1c1c19}.bkn2-d:active{background:#faf7f4}.bkn2-d:disabled{cursor:not-allowed;opacity:.55}
+.bkn2-d:focus-visible{outline:2px solid #922a22;outline-offset:-2px}
+.bkn2-help{margin:-6px 0 16px!important;padding-bottom:14px!important;border-bottom:1px solid #f1ece7;font-size:12px;line-height:17px;color:#8a847a}
+.bkn2-gl{display:grid}
+.bkn2-g{background:none!important;border-radius:0;padding:14px 0!important;margin:0!important;box-shadow:none!important}
+.bkn2-g+.bkn2-g{border-top:1px solid #f1ece7}.bkn2-g:first-child{padding-top:0!important}.bkn2-g:last-child{padding-bottom:0!important}
+.bkn2-g .bkn-gh{margin-bottom:10px}
+.bkn2-g .bkn-in input{background:#faf7f4;box-shadow:none}
+.bkn2-g .bkn-in input:focus{background:#fff;box-shadow:inset 0 0 0 2px #922a22}
+.bkn2-files{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.bkn2-f{padding-right:4px}.bkn2-f button{all:unset;cursor:pointer;display:grid;padding:4px;border-radius:50%}
+.bkn2-up{position:relative;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1.5px dashed rgba(146,42,34,.35);font-size:12.5px}
+.bkn2-up b{font-weight:600;color:#922a22}.bkn2-up input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.bkn2-sw{all:unset;cursor:pointer;flex:none;width:46px;height:28px;border-radius:14px;background:#ddd5ce;position:relative;transition:background .2s}
+.bkn2-sw i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(28,28,25,.25);transition:transform .22s cubic-bezier(.34,1.56,.64,1)}
+.bkn2-sw[aria-checked="true"]{background:#922a22}.bkn2-sw[aria-checked="true"] i{transform:translateX(18px)}
+.bkn2-sw:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+.bkn .bkn-ta textarea{background:#faf7f4;box-shadow:none}.bkn .bkn-ta textarea:focus{background:#fff;box-shadow:inset 0 0 0 2px #922a22}
 /* unit detail guest card */
 .ud-gst{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:14px;background:#faf7f4;margin-bottom:6px}
 .ud-gst-t{flex:1;min-width:0;display:grid}.ud-gst-t b{font-size:14.5px;font-weight:600;color:#1c1c19}.ud-gst-t small{font-size:12px;color:#6b665c}
@@ -6248,32 +6288,38 @@ function initNew(sec){
     if(F.special && (!F.comments.trim() || F.comments.length > 500)) return false;
     return true;
   }
+  function hd(icon, title, extra){ return '<div class="bkd2-h">'+ic(icon,'#1c1c19',22)+'<b>'+title+'</b>'+(extra||'')+'</div>'; }
   function unitBlock(){
     var us = units();
-    if(F.locked){ var u = unitById(F.unit); return '<div class="bkn-unit is-on is-locked"><span class="bk-tile">'+ic(u.icon==='building'?P.building:P.home,'#922A22',20)+'</span><span class="bkn-unit-t"><b>'+esc(u.name)+'</b><small>'+esc(u.code||'')+' · '+esc(u.community)+'</small></span><button type="button" class="bkn-link" data-unlock>Change</button></div>'; }
-    return '<div class="bkn-units">'+us.map(function(u){ var on = F.unit===u.id; return '<button type="button" class="bkn-unit'+(on?' is-on':'')+'" data-unit="'+u.id+'" aria-pressed="'+on+'"><span class="bk-tile">'+ic(u.icon==='building'?P.building:P.home,'#922A22',20)+'</span><span class="bkn-unit-t"><b>'+esc(u.name)+'</b><small>'+esc(u.code||u.community)+'</small></span><span class="bkn-radio"></span></button>'; }).join('')+'</div>';
+    function uc(u, on, locked){ var ph = photo(u.id);
+      return '<button type="button" class="bkn2-u'+(on?' is-on':'')+(locked?' is-locked':'')+'" '+(locked?'data-unlock':'data-unit="'+u.id+'"')+' aria-pressed="'+on+'">'+
+        '<span class="bkn2-uimg">'+(ph?'<img src="'+ph+'" alt="">':ic(u.icon==='building'?P.building:P.home,'#922A22',24))+(on?'<span class="bkn2-uck">'+ic('<path d="m6 12 4 4 8-8"/>','#fff',14)+'</span>':'')+'</span>'+
+        '<span class="bkn2-ut"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+'</small></span>'+(locked?'<span class="bkn2-chg">Change</span>':'')+'</button>'; }
+    if(F.locked) return '<div class="bkn2-ul is-one">'+uc(unitById(F.unit), true, true)+'</div>';
+    return '<div class="bkn2-ul">'+us.map(function(u){ return uc(u, F.unit===u.id, false); }).join('')+'</div>';
   }
   function render(keepScroll){
     var y = body.scrollTop, n = F.from && F.to ? nights(F.from, F.to) : null;
     body.innerHTML =
-      '<div class="bkn-hero"><span class="bkn-hero-i">'+ic(P.key,'#f8f5eb',26)+'</span><span><b>Check in a guest</b><small>Add the stay and guest IDs. BCM approves it, then security is informed.</small></span></div>'+
-      '<section class="mox-card bkn-sec"><div class="bkn-h"><span class="bkn-n">1</span><b>Unit</b></div>'+unitBlock()+'</section>'+
-      '<section class="mox-card bkn-sec"><div class="bkn-h"><span class="bkn-n">2</span><b>Booking dates</b>'+(n!=null?'<span class="bkn-nights">'+ic(P.moon,'#8f5a1c',14)+nTxt(n)+'</span>':'')+'</div>'+
-        '<div class="bkn-dates"><button type="button" class="bkn-date'+(F.from?' is-set':'')+'" data-pick="from"><small>From</small><b>'+(F.from?fS(F.from):'Select date')+'</b></button><span class="bkn-arrow">'+ic('<path d="M5 12h14M13 6l6 6-6 6"/>','#8a847a',18)+'</span><button type="button" class="bkn-date'+(F.to?' is-set':'')+'" data-pick="to"'+(F.from?'':' disabled')+'><small>To</small><b>'+(F.to?fS(F.to):'Select date')+'</b></button></div></section>'+
-      '<section class="mox-card bkn-sec"><div class="bkn-h"><span class="bkn-n">3</span><b>Guests</b><div class="bkn-step"><button type="button" data-gm aria-label="Fewer guests"'+(F.guests.length<=1?' disabled':'')+'>−</button><output>'+F.guests.length+'</output><button type="button" data-gp aria-label="More guests"'+(F.guests.length>=10?' disabled':'')+'>+</button></div></div>'+
-        '<p class="bkn-help">Enter each name exactly as on the ID. Passport or Emirates ID · JPG or PNG · up to 2 files, 5 MB each.</p>'+
-        F.guests.map(function(g, i){
-          var e = F.err['g'+i];
-          return '<div class="bkn-guest'+(g.name.trim() && g.docs.length ? ' is-ok' : '')+'"><div class="bkn-gh"><span class="bk-av">'+(g.name.trim()?initials(g.name):(i+1))+'</span><b>'+(i===0?'Main guest':'Guest '+(i+1))+'</b>'+(g.name.trim() && g.docs.length ? '<span class="bkn-tick">'+ic(P.ok,'#2e7d5b',18)+'</span>' : '')+'</div>'+
-            '<label class="bkn-in"><span class="sr-only">Guest name</span><input type="text" data-gname="'+i+'" value="'+esc(g.name)+'" placeholder="Full name as on ID" maxlength="60" autocomplete="off"></label>'+
-            '<div class="bkn-files">'+g.docs.map(function(d, j){ return '<span class="bkn-file">'+(d.url?'<img src="'+d.url+'" alt="">':'<span class="bkn-file-ph">'+ic(P.id,'#922a22',22)+'</span>')+'<span class="bkn-file-t"><b>'+esc(d.name)+'</b><small>'+esc(d.size)+'</small></span><button type="button" data-rm="'+i+':'+j+'" aria-label="Remove '+esc(d.name)+'">'+ic(P.x,'#54504a',16)+'</button></span>'; }).join('')+
-              (g.docs.length < 2 ? '<label class="bkn-up">'+ic(P.up,'#922a22',20)+'<span><b>'+(g.docs.length?'Add back side':'Upload ID')+'</b><small>Passport or Emirates ID</small></span><input type="file" accept="image/jpeg,image/png" data-file="'+i+'"></label><button type="button" class="bkn-sample" data-sample="'+i+'">Use sample</button>' : '')+
-            '</div>'+(e?'<p class="bkn-err">'+esc(e)+'</p>':'')+'</div>'; }).join('')+
+      '<p class="bkn2-intro">'+ic(P.info,'#6b665c',16)+'<span>BCM approves every check-in before the guests arrive.</span></p>'+
+      '<section class="mox-card bkd2-sec">'+hd(P.home, 'Unit')+unitBlock()+'</section>'+
+      '<section class="mox-card bkd2-sec">'+hd(P.cal, 'Stay dates', n!=null?'<span class="bkn-nights">'+ic(P.moon,'#8f5a1c',14)+nTxt(n)+'</span>':'')+
+        '<div class="bkn2-dates"><button type="button" class="bkn2-d'+(F.from?' is-set':'')+'" data-pick="from">'+ic(P.calin, F.from?'#922a22':'#8a847a',20)+'<span><small>Check-in</small><b>'+(F.from?fS(F.from):'Add date')+'</b></span></button>'+
+        '<button type="button" class="bkn2-d'+(F.to?' is-set':'')+'" data-pick="to"'+(F.from?'':' disabled')+'>'+ic(P.out, F.to?'#922a22':'#8a847a',20)+'<span><small>Check-out</small><b>'+(F.to?fS(F.to):'Add date')+'</b></span></button></div></section>'+
+      '<section class="mox-card bkd2-sec">'+hd(P.users, 'Guests', '<div class="bkn-step"><button type="button" data-gm aria-label="Fewer guests"'+(F.guests.length<=1?' disabled':'')+'>−</button><output>'+F.guests.length+'</output><button type="button" data-gp aria-label="More guests"'+(F.guests.length>=10?' disabled':'')+'>+</button></div>')+
+        '<p class="bkn2-help">Name as on the ID · Passport or Emirates ID · JPG or PNG, up to 2 files, 5 MB each</p>'+
+        '<div class="bkn2-gl">'+F.guests.map(function(g, i){
+          var e = F.err['g'+i], ok = g.name.trim() && g.docs.length;
+          return '<div class="bkn-guest bkn2-g'+(ok ? ' is-ok' : '')+'"><div class="bkn-gh"><span class="bk-av">'+(g.name.trim()?initials(g.name):(i+1))+'</span><b>'+(i===0?'Main guest':'Guest '+(i+1))+'</b>'+(ok ? '<span class="bkn-tick">'+ic(P.ok,'#2e7d5b',18)+'</span>' : (g.docs.length < 2 ? '<button type="button" class="bkn-sample" data-sample="'+i+'">Use sample ID</button>' : ''))+'</div>'+
+            '<label class="bkn-in"><span class="sr-only">Guest name</span><input type="text" data-gname="'+i+'" value="'+esc(g.name)+'" placeholder="Full name" maxlength="60" autocomplete="off"></label>'+
+            '<div class="bkn2-files">'+g.docs.map(function(d, j){ return '<span class="bkd2-doc bkn2-f">'+ic(P.id,'#922a22',16)+'<span>'+esc(d.name)+'</span><button type="button" data-rm="'+i+':'+j+'" aria-label="Remove '+esc(d.name)+'">'+ic(P.x,'#54504a',14)+'</button></span>'; }).join('')+
+              (g.docs.length < 2 ? '<label class="bkn2-up">'+ic(P.up,'#922a22',16)+'<b>'+(g.docs.length?'Add another':'Upload ID')+'</b><input type="file" accept="image/jpeg,image/png" data-file="'+i+'"></label>' : '')+
+            '</div>'+(e?'<p class="bkn-err">'+esc(e)+'</p>':'')+'</div>'; }).join('')+'</div>'+
       '</section>'+
-      '<section class="mox-card bkn-sec"><div class="bkn-h"><span class="bkn-n">4</span><b>Special needs</b><div class="bkn-seg" role="radiogroup" aria-label="Special needs"><button type="button" role="radio" data-sn="0" aria-checked="'+(!F.special)+'">No</button><button type="button" role="radio" data-sn="1" aria-checked="'+F.special+'">Yes</button></div></div>'+
-        (F.special ? '<label class="bkn-ta"><span class="sr-only">Comments</span><textarea data-cm maxlength="500" rows="3" placeholder="Tell us what the guests need">'+esc(F.comments)+'</textarea><small data-cc>'+F.comments.length+' / 500</small></label>' : '<p class="bkn-help" style="margin:0">Switch to Yes to add a note for the community team.</p>')+
+      '<section class="mox-card bkd2-sec">'+hd(P.heart, 'Special needs', '<button type="button" class="bkn2-sw" role="switch" aria-checked="'+F.special+'" aria-label="Special needs" data-sn="'+(F.special?'0':'1')+'"><i></i></button>')+
+        (F.special ? '<label class="bkn-ta"><span class="sr-only">Comments</span><textarea data-cm maxlength="500" rows="3" placeholder="What do the guests need?">'+esc(F.comments)+'</textarea><small data-cc>'+F.comments.length+' / 500</small></label>' : '<p class="bkd2-none" style="margin-top:-6px">Turn on to add a note, like accessibility or a baby cot.</p>')+
       '</section>';
-    foot.innerHTML = '<button type="button" class="mox-btn mox-btn--dark" data-save'+(valid()?'':' disabled')+'><span class="mox-btn-t">Save</span></button>';
+    foot.innerHTML = '<button type="button" class="mox-btn mox-btn--dark" data-save'+(valid()?'':' disabled')+'><span class="mox-btn-t">Submit check-in</span></button>';
     if(keepScroll) body.scrollTop = y;
   }
   function refreshSave(){ var s = foot.querySelector('[data-save]'); if(s) s.disabled = !valid(); }
