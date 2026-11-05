@@ -3252,9 +3252,35 @@ function wireDash(sec){
     res.classList.add('pd-tap'); res.setAttribute('role','button'); res.tabIndex = 0; res.setAttribute('aria-label','View unit details');
     var tile = $('[data-name="Unit tile"]', res);
     if(tile && !$('.pd-go', tile)) tile.insertAdjacentHTML('beforeend', '<span class="pd-go" aria-hidden="true">'+icon('chev',16)+'</span>');
-    function open(e){ if(e){ e.preventDefault(); e.stopPropagation(); } MO.cur = MO.units()[0].id; var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
-    res.addEventListener('click', open);
-    res.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') open(e); });
+    var US = MO.units(), cards = [res];
+    function openU(id){ return function(e){ if(e){ e.preventDefault(); e.stopPropagation(); } MO.cur = id; var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }; }
+    /* several properties → swipeable carousel, one card per property, with pager dots */
+    if(US.length > 1){
+      var wrap = D.createElement('div'); wrap.className = 'rcar';
+      var track = D.createElement('div'); track.className = 'rcar-track'; track.setAttribute('role','group'); track.setAttribute('aria-label','Your properties');
+      res.parentNode.insertBefore(wrap, res); wrap.appendChild(track); track.appendChild(res);
+      US.forEach(function(u, i){
+        var c = res;
+        if(i){ c = res.cloneNode(true); [c].concat($$('[data-node-id]', c)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-motion'); });
+          c.setAttribute('data-name','Card / Residence · '+u.name); track.appendChild(c); cards.push(c);
+          var f = resFields(c);
+          if(f.comm) f.comm.textContent = String(u.community).toUpperCase();
+          if(f.code) f.code.textContent = u.code; if(f.type) f.type.textContent = u.type; if(f.addr) f.addr.textContent = u.address; }
+        var PH = []; $$('.arch-frame img, .fmedia img', D).forEach(function(x){ if(x.src && PH.indexOf(x.src) < 0) PH.push(x.src); });
+        var im = i && $('[data-name^="Image"] img', c); if(im && PH.length){ im.src = PH[i % PH.length]; im.alt = u.name; }
+        c.setAttribute('aria-label', 'View details of '+u.name+' ('+(i+1)+' of '+US.length+')');
+      });
+      var dots = D.createElement('div'); dots.className = 'rcar-dots'; dots.setAttribute('aria-hidden','true');
+      dots.innerHTML = US.map(function(_, i){ return '<i'+(i?'':' class="is-on"')+'></i>'; }).join(''); wrap.appendChild(dots);
+      track.addEventListener('scroll', function(){ var w = res.offsetWidth + 12, k = Math.round(track.scrollLeft / w);
+        $$('i', dots).forEach(function(d, j){ d.classList.toggle('is-on', j===k); }); }, { passive:true });
+    }
+    cards.forEach(function(c, i){
+      if(i){ c.classList.add('pd-tap'); c.setAttribute('role','button'); c.tabIndex = 0; }
+      var o = openU(US[i] ? US[i].id : US[0].id);
+      c.addEventListener('click', o);
+      c.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') o(e); });
+    });
   }
   var mc = $('[data-name="Card / Move-Out Notice"]', sec), canvas = $('.canvas', sec);
   if(mc){
@@ -3316,7 +3342,7 @@ function wireAvatar(sec){
   if(!av || av.__pf) return; av.__pf = true;
   av.classList.add('pf-tap');
   if(getComputedStyle(av).position==='static') av.style.position='relative';
-  av.insertAdjacentHTML('beforeend','<span class="pf-badge" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#922a22" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></span>'); av.style.overflow='visible'; av.setAttribute('role','button'); av.tabIndex = 0; av.setAttribute('aria-label','Open profile');
+  av.setAttribute('role','button'); av.tabIndex = 0; av.setAttribute('aria-label','Open profile');
   function open(e){ if(e){ e.preventDefault(); e.stopPropagation(); } var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }
   av.addEventListener('click', open);
   av.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') open(e); });
@@ -5584,6 +5610,17 @@ var dev=document.getElementById('device'); var busy=false;
 new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFrame(function(){ paint(dev); busy=false; }); }).observe(dev||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-name']});
 paint(dev);
 })();</script>
+<style id="rcar-css">
+/* Dashboard: several properties → swipeable cards with pager dots */
+.rcar{position:relative;width:390px;flex:none}
+.rcar-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:14px 20px 22px;margin:-14px 0 -22px;scroll-padding:0 20px;overscroll-behavior-x:contain}
+.rcar-track::-webkit-scrollbar{display:none}
+.rcar-track>[data-name^="Card / Residence"]{display:flex!important;scroll-snap-align:start;flex:none}
+.rcar-dots{position:absolute;left:0;right:0;bottom:-14px;display:flex;justify-content:center;gap:6px;pointer-events:none}
+.rcar-dots i{width:6px;height:6px;border-radius:3px;background:rgba(28,28,25,.18);transition:width .25s,background .25s}
+.rcar-dots i.is-on{width:18px;background:#922a22}
+@media (prefers-reduced-motion:reduce){.rcar-dots i{transition:none}}
+</style>
 <style id="bk-css">
 /* ==== Holiday Home agent: Check-in + My bookings (extends the Bloom/mox system) ==== */
 /* dashboard check-in entry (same surface as the tenancy card) */
