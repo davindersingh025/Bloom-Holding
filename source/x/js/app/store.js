@@ -99,7 +99,7 @@ function unitsFor(id) {
     own: { status: "pending", owners: [[OMAR, 100, true]], spa: D(2024, 5, 30), paidPct: 70, outstanding: "AED 289,500", next: D(2026, 11, 15) } };
   return [v138, a1204, a305, v22, o1810];
 }
-export const S = { units: [], requests: [], moveouts: {}, moveins: {}, bookings: [], notifs: [], bookingSeq: 2047, lastUnit: null, lastCommunity: null };
+export const S = { units: [], requests: [], moveouts: {}, moveins: {}, bookings: [], notifs: [], bookingSeq: 2050, lastUnit: null, lastCommunity: null };
 export const units = () => S.units;
 export const unit = (id) => S.units.find((u) => u.id === id) || S.units[0];
 
@@ -107,7 +107,7 @@ export const ST_LABEL = { pending: "Payment pending", vacant: "Vacant", resident
 export const ST_TONE = { pending: "amber", vacant: "grey", resident: "green", rented: "blue", holiday: "teal", guest: "green", noguest: "grey" };
 export function unitStatus(u) {
   if (isOwner()) return u.own ? u.own.status : null;
-  if (isAgent()) return S.bookings.some((b) => b.unit === u.id && b.status === "Checked in") ? "guest" : "noguest";
+  if (isAgent()) return inHouse(u.id) ? "guest" : "noguest";
   return null;
 }
 export const canMoveOut = (u) => !u.upcoming && (isTenant() || isAgent() || (isOwner() && u.own && u.own.status === "resident"));
@@ -118,7 +118,7 @@ export const moveInUnits = () => S.units.filter(canMoveIn);
 const OWN = ["owner"], TEN = ["tenant", "agent"];
 const SC = { n: "Service Charge", i: "coins", roles: OWN };
 export const SCOPES = {
-  unit: { key: "unit", title: "My unit", team: "CRM Team", cats: [
+  unit: { key: "unit", title: "In Unit", team: "CRM Team", cats: [
     { id: "maintenance", name: "Maintenance", tag: "Repairs & fixes", icon: "wrench", color: "#922A22", subs: [{ n: "Plumbing", i: "drop" }, { n: "Electrical", i: "bolt" }, { n: "AC / HVAC", i: "snow" }, { n: "Pest Control", i: "bug" }] },
     { id: "payments", name: "Payments & Finance", tag: "Report a concern", icon: "card", color: "#8F5A1C", subs: [{ n: "Payment Issue", i: "warn" }, SC, { n: "Payment Receipt", i: "receipt" }, { n: "Statement of Account", i: "statement" }] },
     { id: "documents", name: "Property & Documents", tag: "Contracts & tenancy", icon: "doc", color: "#2F6F73", subs: [{ n: "Property Documents", i: "doc" }, { n: "Update Property Documents", i: "refresh" }, { n: "Tenancy Renewal", i: "refresh", roles: TEN }, { n: "Tenant / Occupant Update", i: "people", roles: TEN }, { n: "NOC / Clearance", i: "stamp", roles: TEN }] } ] },
@@ -219,19 +219,29 @@ export function docFor(name, nat, i) {
   return { name, nat, type: eid ? "Emirates ID" : "Passport", no: eid ? `784-••••-•••${(4210 + i * 37) % 10000}-${(i % 9) + 1}` : `${nat[0].toUpperCase()}••••${String(5821 + i * 913).slice(-4)}`, exp: addDays(TODAY, 400 + i * 97) };
 }
 export function party(lead, nat, n, seed = 0) { const g = [docFor(lead, nat || "United Kingdom", seed)]; for (let i = 1; i < n; i++) { const x = NAMES[(i + seed) % NAMES.length]; g.push(docFor(x[0], x[1], i + seed)); } return g; }
-function mk(id, unitId, lead, nat, inO, outO, n, status, phone) {
-  const cin = addDays(TODAY, inO), cout = addDays(TODAY, outO);
-  return { id, unit: unitId, guests: party(lead, nat, n, id.charCodeAt(5) % 5), checkIn: cin, checkOut: cout, status, phone: phone || `+971 50 ${300 + (id.charCodeAt(4) % 600)} ${1000 + ((id.charCodeAt(5) * 7) % 9000)}`,
-    submitted: addDays(cin, inO > 0 ? -inO : -2), checkedOutAt: status === "Checked out" ? cout : null };
+/* Bookings follow the Nov 2026 spec: Submitted (awaiting BCM) → Approved /
+   Rejected (reason) → Checked Out (actual date & time). One extension request
+   at a time: ext = { st: "pending" | "rejected", date, reason }. */
+const at = (d, h, m) => { const x = new Date(d); x.setHours(h, m, 0, 0); return x; };
+function mk(o) {
+  return { id: o.id, unit: o.unit, guests: o.g.map(([name, doc]) => ({ name, docs: [{ name: doc }] })), checkIn: addDays(TODAY, o.i), checkOut: addDays(TODAY, o.o),
+    special: !!o.c, comments: o.c || "", status: o.s, submitted: at(addDays(TODAY, o.sub), 10, 15), reason: o.r || "", checkedOutAt: o.co != null ? at(addDays(TODAY, o.co), 11, 20) : null, ext: null };
 }
-export const BK_TONE = { "Checked in": "green", Upcoming: "blue", "Checked out": "grey", Cancelled: "red" };
+export const BK_TONE = { Submitted: "blue", Approved: "green", Rejected: "red", "Checked Out": "grey" };
+const PAST = { "Checked Out": 1, Rejected: 1 };
+export const isPast = (b) => !!PAST[b.status];
 export const bookings = () => S.bookings;
 export const booking = (id) => S.bookings.find((b) => b.id === id);
-export const ongoing = () => S.bookings.filter((b) => b.status === "Checked in" || b.status === "Upcoming").sort((a, b) => a.checkIn - b.checkIn);
-export const past = () => S.bookings.filter((b) => b.status === "Checked out" || b.status === "Cancelled").sort((a, b) => b.checkOut - a.checkOut);
-export const byGuest = (name) => { const k = String(name).trim().toLowerCase(); return S.bookings.filter((b) => b.guests[0].name.toLowerCase() === k).sort((a, b) => b.checkIn - a.checkIn); };
-export function addBooking(b) { const rec = { id: "BK-" + S.bookingSeq++, submitted: TODAY, ...b }; S.bookings.unshift(rec); emit("bookings"); return rec; }
+const newest = (a, b) => b.submitted - a.submitted;
+export const ongoing = () => S.bookings.filter((b) => !isPast(b)).sort(newest);
+export const past = () => S.bookings.filter(isPast).sort(newest);
+export const approvedOngoing = () => S.bookings.filter((b) => b.status === "Approved" && day0(b.checkOut) >= TODAY).sort((a, b) => a.checkIn - b.checkIn);
+export const activeFor = (uid) => approvedOngoing().find((b) => b.unit === uid) || null;
+export const inHouse = (uid) => { const a = activeFor(uid); return !!(a && day0(a.checkIn) <= TODAY); };
+export const nextFor = (uid) => S.bookings.filter((b) => b.unit === uid && (b.status === "Submitted" || b.status === "Approved") && day0(b.checkIn) > TODAY).sort((a, b) => a.checkIn - b.checkIn)[0] || null;
+export function addBooking(b) { const rec = { id: "BK-" + S.bookingSeq++, submitted: new Date(), status: "Submitted", reason: "", checkedOutAt: null, ext: null, ...b }; S.bookings.unshift(rec); emit("bookings"); return rec; }
 export const bookingsChanged = () => emit("bookings");
+export const fmtT = (d) => { const h = d.getHours(), m = d.getMinutes(); return `${h % 12 || 12}:${m < 10 ? "0" : ""}${m} ${h < 12 ? "am" : "pm"}`; };
 
 /* ---- notifications ------------------------------------------------------------------ */
 function seedNotifs() {
@@ -247,8 +257,8 @@ function seedNotifs() {
     { id: 3, g: "Today", t: "8:00 am", cat: "payment", ic: "card", unread: true, title: "Service charge due in 5 days", body: "AED 4,250 for Q4 2026 · Villa 138. Pay before 26 Oct to avoid a late fee." },
     { id: 4, g: "Yesterday", t: "6:40 pm", cat: "tenancy", ic: "doc", title: "Tenancy contract expiring soon", body: "Renew Villa 138 before 10 Oct 2026 to keep your access active.", go: "#/app/property/v138" });
   if (isAgent()) base.unshift(
-    { id: 11, g: "Today", t: "10:02 am", cat: "booking", ic: "key", unread: true, title: "Guest checked in · BK-2041", body: "Ahmed Khan’s party of 3 checked in to Villa 138. Security has the guest list.", go: "#/app/bookings/BK-2041" },
-    { id: 12, g: "Today", t: "8:40 am", cat: "booking", ic: "calendar", unread: true, title: "Upcoming arrival in 3 days", body: "Elena Petrova (BK-2046) arrives at Apt 1204.", go: "#/app/bookings/BK-2046" });
+    { id: 11, g: "Today", t: "10:15 am", cat: "booking", ic: "calendar", unread: true, title: "Check-in submitted · BK-2049", body: "Elena Petrova’s stay at Apt 1204 is awaiting BCM approval.", go: "#/app/bookings/BK-2049" },
+    { id: 12, g: "Yesterday", t: "4:30 pm", cat: "booking", ic: "key", unread: true, title: "Check-in rejected · BK-2047", body: "BCM couldn’t approve James Walker’s stay at Apt 305. See the reason.", go: "#/app/bookings/BK-2047" });
   if (isOwner()) base.unshift(
     { id: 21, g: "Today", t: "9:30 am", cat: "payment", ic: "card", unread: true, title: "Instalment 8 due on 15 Nov", body: "AED 96,500 for Apt 1810 · Bloom Marina.", go: "#/app/property/o1810" },
     { id: 23, g: "Today", t: "8:15 am", cat: "tenancy", ic: "enter", title: "Moving in to Villa 22?", body: "Book your move-in for Villa 22 with Bloom GPT.", go: "#/app/property/v22" },
@@ -267,14 +277,13 @@ export function reset() {
   S.requests = seedRequests();
   S.moveouts = isTenant() ? { a1204: { id: "MO-24934", date: addDays(TODAY, -4), movers: true, company: "Emirates Movers LLC", notes: "Service lift booking in the morning", noc: "Owner-NOC.pdf", submitted: addDays(TODAY, -18), status: "bcmRejected" } } : {};
   S.moveins = {};
-  S.bookingSeq = 2047;
+  S.bookingSeq = 2050;
   S.bookings = isAgent() ? [
-    mk("BK-2041", "v138", "Ahmed Khan", "Pakistan", -2, 2, 3, "Checked in", "+971 50 412 7781"),
-    mk("BK-2046", "a1204", "Elena Petrova", "Russia", 3, 7, 2, "Upcoming", "+971 55 903 1146"),
-    mk("BK-2038", "a305", "James Walker", "United Kingdom", -11, -8, 1, "Checked out"),
-    mk("BK-2029", "v138", "Priya Nair", "India", -25, -20, 4, "Checked out"),
-    mk("BK-2023", "a305", "Tom Becker", "Germany", -40, -38, 1, "Cancelled"),
-    mk("BK-2017", "a1204", "Ahmed Khan", "Pakistan", -62, -58, 2, "Checked out"),
+    mk({ id: "BK-2049", unit: "a1204", i: 3, o: 7, s: "Submitted", sub: 0, g: [["Elena Petrova", "Passport_Elena.jpg"], ["Ivan Petrov", "Passport_Ivan.jpg"]] }),
+    mk({ id: "BK-2048", unit: "v138", i: -2, o: 2, s: "Approved", sub: -4, c: "Baby cot in the master bedroom, please.", g: [["Ahmed Khan", "Emirates_ID_Ahmed.jpg"], ["Sara Khan", "Passport_Sara.jpg"], ["Daniel Moore", "Passport_Daniel.jpg"]] }),
+    mk({ id: "BK-2047", unit: "a305", i: 1, o: 4, s: "Rejected", sub: -5, r: "The holiday home permit for Apt 305 needs renewing before new guests can check in.", g: [["James Walker", "Passport_James.jpg"]] }),
+    mk({ id: "BK-2038", unit: "a305", i: -11, o: -8, s: "Checked Out", sub: -13, co: -8, g: [["Mia Schneider", "Passport_Mia.jpg"]] }),
+    mk({ id: "BK-2029", unit: "v138", i: -25, o: -20, s: "Checked Out", sub: -27, co: -20, g: [["Priya Nair", "Passport_Priya.jpg"], ["Arjun Mehta", "Passport_Arjun.jpg"]] }),
   ] : [];
   S.notifs = seedNotifs();
   S.lastUnit = S.units[0].id;

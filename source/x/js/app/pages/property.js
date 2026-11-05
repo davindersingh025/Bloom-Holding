@@ -9,6 +9,7 @@
 import * as st from "bloom:/js/app/store.js";
 import { icon, esc, pill, rows, eyebrow, docRows, hint, btn, segmented, unitIcon, avatar, tile, secH, irows, ikv, facts, tip } from "bloom:/js/app/ui.js";
 import { toast } from "bloom:/js/app/shell.js";
+import { doCheckout, doExtend } from "bloom:/js/app/pages/bookings.js";
 
 const OMAR = "Omar Al Suwaidi";
 
@@ -106,6 +107,21 @@ export function page({ shell, b }) {
     return `<section class="ap-card ud-key"><div><small>${esc(a[0])}</small><b>${esc(a[1])}</b></div><div><small>${esc(b[0])}</small><b class="${b[2] || ""}">${esc(b[1])}</b></div></section>`;
   }
 
+  function guestCard(u) {
+    const act = st.activeFor(u.id);
+    if (!act) {
+      const nx = st.nextFor(u.id);
+      return card(secH("key", "Guest details", pill("No Guest", "grey")) + `<p class="ud-occ"><b>No guest checked in</b><small>${nx ? `Next: ${esc(st.fmtS(nx.checkIn))} → ${esc(st.fmtS(nx.checkOut))} · ${esc(nx.status)}` : "The unit is free for a new stay."}</small></p>` + btn("Check-in a guest", { attrs: "data-g-in" }));
+    }
+    const inH = st.day0(act.checkIn) <= st.TODAY, ext = act.ext, pend = ext && ext.st === "pending";
+    return card(secH("key", "Guest details", pill(inH ? "Guest Checked In" : `Arriving ${st.fmtS(act.checkIn)}`, inH ? "green" : "blue")) +
+      `<a class="ud-gst" href="#/app/bookings/${act.id}">${avatar(act.guests[0].name)}<span><b>${esc(act.guests[0].name)}</b><small>${act.id} · ${st.gTxt(act.guests.length)}</small></span>${icon("chev", 18, "#8A847A")}</a>` +
+      ikv([["calendar", "Check-in date", st.fmt(act.checkIn)], ["logout", "Check-out date", st.fmt(act.checkOut)]], "ud-kv--2") +
+      (pend ? `<p class="ud-gext" data-tone="amber"><b>Extension Submitted</b><small>Requested ${esc(st.fmtS(ext.date))} · awaiting BCM</small></p>` : "") +
+      (ext && ext.st === "rejected" ? `<p class="ud-gext" data-tone="red"><b>Extension rejected</b><small>${esc(ext.reason)}</small></p>` : "") +
+      `<div class="ap-btns">${pend ? "" : btn("Extend Stay", { kind: "ghost", attrs: "data-g-ext" })}${btn("Check-out", { attrs: "data-g-out" })}</div>`);
+  }
+
   function draw(fade) {
     const list = st.units(), u = st.unit(cur), s = st.unitStatus(u);
     const switcher = list.length > 1 ? `<div class="pd-units" role="group" aria-label="Your properties">${list.map((x) => { const xs = st.unitStatus(x); return `<button type="button" class="pd-unit" data-u="${x.id}" aria-pressed="${x.id === u.id}"${xs ? ` aria-label="${esc(x.name + ", " + st.ST_LABEL[xs])}"` : ""}><i>${icon(unitIcon(x), 15)}</i>${esc(x.name)}${xs ? `<b class="pd-dot" data-tone="${st.ST_TONE[xs]}" aria-hidden="true"></b>` : ""}</button>`; }).join("")}</div>` : "";
@@ -120,7 +136,7 @@ export function page({ shell, b }) {
     const prop = card(secH("building", "About unit") + facts([[u.icon === "building" ? "apt" : "house", u.type, "Property type"], ["tag", u.code, "Unit code"]]));
     let side;
     if (st.isOwner()) side = statusCards(u) + ownerCard(u) + payments(u);
-    else if (st.isAgent()) side = ownerCard(u) + docs([["Agreement with owner", `PDF · signed ${st.fmt(u.agreement)}`], ["Holiday home permit", `PDF · ${u.permit.no} · valid until ${st.fmt(u.permit.until)}`]]);
+    else if (st.isAgent()) side = guestCard(u) + ownerCard(u) + docs([["Agreement with owner", `PDF · signed ${st.fmt(u.agreement)}`], ["Holiday home permit", `PDF · ${u.permit.no} · valid until ${st.fmt(u.permit.until)}`]]);
     else side = tenantContract(u) + ownerCard(u) + docs([["Tenancy contract", `PDF · signed ${st.fmt(u.upcoming ? st.addDays(st.TODAY, -6) : u.contract.start)}`]]);
     c.innerHTML = `${switcher}<div class="pd-grid ud ${fade ? "is-fade" : ""}"><div class="pd-col">${header}${key}${prop}</div><div class="pd-col">${side}${moveinCard(u)}${moveoutCard(u)}</div></div>`;
   }
@@ -136,6 +152,9 @@ export function page({ shell, b }) {
     if (e.target.closest("[data-mi-start]")) { st.setIntent({ type: "movein", unit: cur }); location.hash = "/app/gpt"; return; }
     if (e.target.closest("[data-mi-new]")) { st.setMovein(cur, null); st.setIntent({ type: "movein", unit: cur }); location.hash = "/app/gpt"; return; }
     if (e.target.closest("[data-mo-new]")) { st.setMoveout(cur, null); st.setIntent({ type: "moveout", unit: cur }); location.hash = "/app/gpt"; return; }
+    if (e.target.closest("[data-g-in]")) { location.hash = `/app/bookings/new?unit=${cur}`; return; }
+    if (e.target.closest("[data-g-ext]")) { doExtend(st.activeFor(cur)); return; }
+    if (e.target.closest("[data-g-out]")) { doCheckout(st.activeFor(cur)); return; }
     const d = e.target.closest("[data-doc]"); if (d) toast(`Prototype: ${d.dataset.doc} (PDF) opens here.`);
   });
   const off = st.on((w) => { if (w === "bookings" || w === "moveout" || w === "movein") draw(false); });

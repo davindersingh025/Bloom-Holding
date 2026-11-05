@@ -13,7 +13,7 @@ function Stale() {}
 const MENU = () => [
   ...(st.isAgent() ? [
     { k: "checkin", t: "Guest check-in", s: "Guests, dates & IDs", ic: "key", c: "#2F6F73", go: { flow: "checkin" } },
-    { k: "bookings", t: "My bookings", s: "Ongoing & past stays", ic: "calendar", c: "#922A22", go: { flow: "bookings" } },
+    { k: "bookings", t: "My bookings", s: "Status of every stay", ic: "calendar", c: "#922A22", go: { flow: "bookings" } },
   ] : []),
   { k: "repair", t: "Home repair", s: "Plumbing, AC, electrical", ic: "wrench", c: "#922A22", go: { flow: "sr", scope: "unit", cat: "maintenance" } },
   { k: "common", t: "Common area issue", s: "Leaks, cleaning, waste", ic: "community", c: "#2F6F73", go: { flow: "sr", scope: "common" } },
@@ -186,7 +186,7 @@ export function page({ shell }) {
     function raise(g) {
       let scope = g.scope, place, cat, sub, desc = "", photo = "";
       let p = Promise.resolve();
-      if (!scope) p = p.then(() => say("Is this about your unit or the common areas?")).then(() => choose([["unit", "My unit"], ["common", "Common areas"]], true)).then((v) => { scope = v; });
+      if (!scope) p = p.then(() => say("Is this about your unit or the common areas?")).then(() => choose([["unit", "In Unit"], ["common", "Common areas"]], true)).then((v) => { scope = v; });
       return p.then(() => {
         const l = st.places(scope);
         if (l.length <= 1) { place = l[0]; return; }
@@ -208,7 +208,7 @@ export function page({ shell }) {
         .then((v) => { desc = v; return say("Would you like to add a photo? It helps the team understand the issue."); })
         .then(() => choose([["add", "Add a photo"], ["no", "No photo"]], true))
         .then((v) => { if (v === "add") { photo = `IMG_${2400 + Math.floor(Math.random() * 500)}.jpg`; return say("Photo attached.", `<span class="gx-file">${icon("file", 14)}${esc(photo)} · 1.8 MB</span>`); } })
-        .then(() => say("Here’s your request. Shall I submit it?", card([["Area", scope === "unit" ? "My unit" : "Common areas"], ["Location", scope === "unit" ? `${place.name} · ${place.u.community}` : place.name], ["Category", cat.name], ["Issue", sub.n], ["Description", desc || "—"], ["Photo", photo || "—"]])))
+        .then(() => say("Here’s your request. Shall I submit it?", card([["Area", scope === "unit" ? "In Unit" : "Common areas"], ["Location", scope === "unit" ? `${place.name} · ${place.u.community}` : place.name], ["Category", cat.name], ["Issue", sub.n], ["Description", desc || "—"], ["Photo", photo || "—"]])))
         .then(() => choose([["edit", "Edit"], ["ok", "Submit request", "primary"]], true))
         .then((v) => {
           if (v === "edit") return say("No problem, let’s go through it again.").then(() => raise({ flow: "sr", scope: g.scope, cat: g.cat }));
@@ -371,76 +371,12 @@ export function page({ shell }) {
         });
     }
 
-    /* ---------- guest check-in (holiday home agent) ---------- */
+    /* ---------- guest check-in / check-out (holiday home agent) — the dedicated screens handle these ---------- */
     function checkin(g = {}) {
-      let u = g.unit ? st.unit(g.unit) : null, lead = g.guest || "", cin, cout, n, docs = [];
-      let p = Promise.resolve();
-      if (!u) p = p.then(() => say("Let’s check in your guest. Which property are they staying at?")).then(() => choose(st.units().map((x) => [x.id, x.name, "", x.community]))).then((id) => { u = st.unit(id); });
-      p = p.then(() => {
-        if (lead) return say(`Checking in ${lead} again at ${u.name}.`);
-        return say("What’s the main guest’s full name, as shown on their ID?")
-          .then(() => askLoop({ ph: "Guest full name", max: 60 }, (v) => v.trim().split(/\s+/).length >= 2, "Please enter their first and last name."))
-          .then((v) => { lead = v.trim().replace(/\b\w/g, (ch) => ch.toUpperCase()); });
-      });
-      p = p.then(() => progress(["Checking past bookings"])).then(() => {
-        const pastB = st.byGuest(lead).filter((b) => b.status === "Checked out");
-        if (!pastB.length) return say(`No past bookings found for ${lead}. This will be their first stay with you.`);
-        return say(`Welcome back! ${lead} has ${pastB.length} past booking${pastB.length > 1 ? "s" : ""} with you:`, card(pastB.slice(0, 3).map((b) => [st.unit(b.unit).name, `${st.fmtDM(b.checkIn)} – ${st.fmt(b.checkOut)} · ${st.nTxt(st.nights(b.checkIn, b.checkOut))}`])));
-      });
-      const clash = () => {
-        const hit = st.ongoing().find((b) => b.unit === u.id && b.checkIn < cout && b.checkOut > cin);
-        if (!hit) return;
-        return say(`Heads up: ${u.name} already has ${hit.guests[0].name} (${hit.id}) from ${st.fmtS(hit.checkIn)} to ${st.fmtS(hit.checkOut)}. Would you like to pick other dates?`)
-          .then(() => choose([["go", "Continue anyway"], ["re", "Pick other dates", "primary"]], true))
-          .then((v) => (v === "go" ? null : dates()));
-      };
-      const dates = () => say(`When is ${lead.split(" ")[0]} checking in?`)
-        .then(() => pickDay(st.TODAY, 21, "Check-in date"))
-        .then((d) => { cin = d; me(st.fmtS(d)); return say("And the check-out date?"); })
-        .then(() => pickDay(st.addDays(cin, 1), 30, "Check-out date", (d) => st.nTxt(st.nights(cin, d))))
-        .then((d) => { cout = d; me(`${st.fmtS(d)} · ${st.nTxt(st.nights(cin, d))}`); return clash(); });
-      return p.then(dates)
-        .then(() => say(`How many people are staying, including ${lead.split(" ")[0]}?`))
-        .then(() => pickCount(lead)).then((v) => { n = v; me(st.gTxt(v)); })
-        .then(() => say(n > 1 ? `Please upload the Emirates ID or passport for each of the ${n} guests. I’ll read the details and check they’re valid for the whole stay.` : `Please upload ${lead.split(" ")[0]}’s Emirates ID or passport. I’ll read the details and check it’s valid for the whole stay.`))
-        .then(() => {
-          const prev = st.byGuest(lead)[0];
-          const guests = st.party(lead, prev ? prev.guests[0].nat : "United Kingdom", n, st.S.bookingSeq % 5);
-          let q = Promise.resolve();
-          guests.forEach((gu, i) => {
-            q = q.then(() => uploadDoc(`Guest ${i + 1} of ${n} · Emirates ID or passport`, `${gu.type === "Passport" ? "Passport_" : "Emirates_ID_"}${gu.name.split(" ")[0]}.jpg`))
-              .then(() => progress(["Reading document", `Checking validity until ${st.fmtS(cout)}`]))
-              .then(() => { docs.push(gu); return say(`${i === 0 ? "Main guest" : `Guest ${i + 1}`} verified ✓`, card([["Name", gu.name], ["Document", gu.type], ["Number", gu.no], ["Nationality", gu.nat], ["Expiry", st.fmt(gu.exp)], ["Status", pill("Valid for stay", "green"), true]])); });
-          });
-          return q;
-        })
-        .then(() => say("Here’s the check-in summary. Shall I submit it?", card([["Property", `${u.name} · ${u.community}`], ["Main guest", lead], ["Check-in", st.fmtS(cin)], ["Check-out", `${st.fmtS(cout)} · ${st.nTxt(st.nights(cin, cout))}`], ["Guests", st.gTxt(n)], ["Documents", `${docs.length} of ${n} verified`], ["Approval", "Not required"]])))
-        .then(() => choose([["edit", "Start over"], ["ok", "Submit check-in", "primary"]], true))
-        .then((v) => {
-          if (v === "edit") return say("No problem, let’s go through it again.").then(() => checkin({ unit: u.id })).then(() => { throw new Stale(); });
-          return progress(["Submitting to Bloom", "Generating booking ID", `Informing ${u.community} security`]);
-        })
-        .then(() => {
-          const b = st.addBooking({ unit: u.id, guests: docs, checkIn: cin, checkOut: cout, status: +cin === +st.TODAY ? "Checked in" : "Upcoming", phone: `+971 50 ${200 + Math.floor(Math.random() * 700)} ${1000 + Math.floor(Math.random() * 8999)}`, via: "Bloom GPT" });
-          return say(`Check-in submitted successfully! No approval is needed. ${u.community} security has been informed and will expect ${lead.split(" ")[0]}${n > 1 ? `’s party of ${n}` : ""} on ${st.fmtS(cin)}.`,
-            done() + card([["Booking ID", b.id], ["Property", `${u.name} · ${u.community}`], ["Main guest", lead], ["Stay", `${st.fmtS(cin)} → ${st.fmtS(cout)}`], ["Status", pill(b.status, st.BK_TONE[b.status]), true]])).then(() => b);
-        })
-        .then((b) => choose([["view", "View booking", "primary"], ["home", "Back to dashboard"]], true).then((v) => go(v === "view" ? `/app/bookings/${b.id}` : "/app")));
+      return say("Opening a new check-in…").then(() => wait(300)).then(() => go(`/app/bookings/new${g.unit ? `?unit=${g.unit}` : ""}`));
     }
-
-    /* ---------- guest check-out ---------- */
     function checkout(id) {
-      const b = st.booking(id); if (!b) return menu(`Hi ${first}! How can I help you today?`);
-      const u = st.unit(b.unit), lead = b.guests[0].name;
-      return say(`Ready to check out ${lead}${b.guests.length > 1 ? "’s party" : ""} from ${u.name}?`, card([["Booking ID", b.id], ["Property", `${u.name} · ${u.community}`], ["Main guest", lead], ["Stay", `${st.fmtS(b.checkIn)} → ${st.fmtS(b.checkOut)}`], ["Status", pill(b.status, st.BK_TONE[b.status]), true]]))
-        .then(() => choose([["no", "Not now"], ["ok", "Confirm check-out", "primary"]], true))
-        .then((v) => { if (v === "no") go(`/app/bookings/${b.id}`); return progress(["Updating booking", `Informing ${u.community} security`, "Ending guest access"]); })
-        .then(() => {
-          b.status = "Checked out"; b.checkedOutAt = st.TODAY; if (b.checkOut > st.TODAY) b.checkOut = st.TODAY; st.bookingsChanged();
-          return say(`${lead} has been checked out. ${u.community} security has been informed and guest access has ended.`, done() + card([["Booking ID", b.id], ["Property", `${u.name} · ${u.community}`], ["Stay", `${st.fmtS(b.checkIn)} → ${st.fmtS(b.checkOut)}`], ["Status", pill("Checked out", "grey"), true]]));
-        })
-        .then(() => choose([["view", "View booking", "primary"], ["list", "My bookings"]], true))
-        .then((v) => go(v === "view" ? `/app/bookings/${b.id}` : "/app/bookings"));
+      return say("Opening the booking…").then(() => wait(300)).then(() => go(id ? `/app/bookings/${id}` : "/app/bookings"));
     }
 
     wait(300).then(() => {

@@ -1,4 +1,4 @@
-/* Requests — My requests (Active / History) · New request (My unit or Common
+/* Requests — My requests (Active / History) · New request (In Unit or Common
    areas → place → category → issue type, optional description and photos)
    · Request details (progress, details, attachments). */
 
@@ -90,7 +90,7 @@ function newRequest({ shell, query }) {
         <div class="nr-main">
           <section class="ap-card">
             <p class="nr-q">Do you need help with your unit or the common areas?</p>
-            ${segmented([["unit", "My unit"], ["common", "Common areas"]], scope, "data-scope")}
+            ${segmented([["unit", "In Unit"], ["common", "Common areas"]], scope, "data-scope")}
             ${pl.length > 1 ? `<p class="nr-lab">${scope === "unit" ? "Which property?" : "Which community?"}</p><div class="nr-places" role="radiogroup">${pl.map((x) => `<button type="button" class="nr-place" role="radio" aria-checked="${x.id === p.id}" data-place="${esc(x.id)}">${icon(x.icon, 20, "#922A22")}<span class="nr-pt"><b>${esc(x.name)}</b><small>${esc(x.meta)}</small></span><span class="nr-radio">${icon("check", 12, "#fff")}</span></button>`).join("")}</div>` : `<div class="nr-one">${icon(p.icon, 20, "#922A22")}<span class="nr-pt"><b>${esc(p.name)}</b><small>${esc(p.meta)}</small></span></div>`}
           </section>
           <section class="ap-card">
@@ -111,7 +111,7 @@ function newRequest({ shell, query }) {
         <aside class="nr-side">
           <section class="ap-card nr-sum">
             ${eyebrow("SUMMARY")}
-            ${rows([["Area", scope === "unit" ? "My unit" : "Common areas"], ["Location", p.name], ["Category", cat ? cat.name : "—"], ["Issue type", sub || "—"], ["Photos", photos.length ? String(photos.length) : "—"]])}
+            ${rows([["Area", scope === "unit" ? "In Unit" : "Common areas"], ["Location", p.name], ["Category", cat ? cat.name : "—"], ["Issue type", sub || "—"], ["Photos", photos.length ? String(photos.length) : "—"]])}
             <p class="nr-team">Goes to the ${esc(st.SCOPES[scope].team)}</p>
             <button type="button" class="ap-btn ap-btn--primary" data-submit ${sub ? "" : 'aria-disabled="true"'}>Submit request</button>
           </section>

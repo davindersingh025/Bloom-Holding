@@ -6,6 +6,7 @@
 import * as st from "bloom:/js/app/store.js";
 import { toast } from "bloom:/js/app/shell.js";
 import { icon, esc, pill, tile, unitIcon, orb } from "bloom:/js/app/ui.js";
+import { pickOngoing, doCheckout } from "bloom:/js/app/pages/bookings.js";
 
 function greeting() { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; }
 
@@ -26,7 +27,7 @@ export function page({ shell }) {
 
   function draw() {
     const us = st.units(), u = us[0], act = st.activeRequests(), lead = act.find((r) => r.id === "SR-9042") || act[0];
-    const on = st.ongoing(), inn = on.filter((b) => b.status === "Checked in").length;
+    const inn = st.approvedOngoing().filter((b) => st.day0(b.checkIn) <= st.TODAY).length, wait = st.bookings().filter((b) => b.status === "Submitted").length;
     const s0 = st.unitStatus(u);
 
     const plural = (n, w) => `${n} ${w}${n === 1 ? "" : (w.endsWith("y") ? "" : "s")}`;
@@ -48,11 +49,11 @@ export function page({ shell }) {
         <p>Renew before <b>10 Oct 2026</b> to secure your existing rate and keep uninterrupted smart gate access.</p>
         <div class="d6-notice-f"><span>Annual Rent: <b>AED 285,000</b></span><button type="button" class="d6-btn d6-btn--red" data-renew>Renew Tenancy</button></div>
       </div>` : st.isAgent() ? `
-      <div class="d6-card d6-notice">
-        <div class="d6-notice-h"><span class="d6-tag">NOTICE: GUEST ARRIVALS</span>${ring(on.length - inn, "UPCOMING")}</div>
-        <h3>Guest check-in</h3>
-        <p><b>${inn} in-house</b> · ${on.length - inn} upcoming. Check guests in with Bloom GPT and share their access passes.</p>
-        <div class="d6-notice-f"><span>Ongoing stays: <b>${on.length}</b></span><button type="button" class="d6-btn d6-btn--red" data-checkin>Start Check-in</button></div>
+      <div class="d6-card d6-notice d6-hh">
+        <div class="d6-notice-h"><span class="d6-tag">HOLIDAY HOME</span><span class="d6-hh-st"><span>${inn} in-house</span><span>${wait} awaiting approval</span></span></div>
+        <h3>Guest check-in &amp; check-out</h3>
+        <p>Add a stay with guest IDs for BCM approval, or end a stay when guests leave.</p>
+        <div class="d6-hh-acts"><button type="button" class="d6-hh-a" data-checkin><span class="d6-hh-i">${icon("key", 22, "#922A22")}</span><span><b>Check-in</b><small>New guest stay</small></span></button><button type="button" class="d6-hh-a" data-checkout><span class="d6-hh-i">${icon("logout", 22, "#922A22")}</span><span><b>Check-out</b><small>End a stay</small></span></button></div>
       </div>` : "";
 
     const STEPS = ["Logged", "Dispatched", "On Site", "Completed"];
@@ -75,7 +76,7 @@ export function page({ shell }) {
       </div>` : "";
 
     const help = [
-      ["#/app/requests/new?scope=unit", "home", "#922A22", "My Unit", "Plumbing, Electrical, AC & Repairs"],
+      ["#/app/requests/new?scope=unit", "home", "#922A22", "In Unit", "Repairs, bills & docs"],
       ["#/app/requests/new?scope=common", "building", "#2F6F73", "Common Areas", "Parks, Streetlights & Walkways"],
       ["#/app/gpt", "amen", "#B7863F", "Amenities", "Tennis Court, BBQ Lawn & Clubhouse"],
       ["#/app/gpt", "qr", "#4B5563", "Visitor Access", "Instant QR codes for guests & delivery"],
@@ -117,7 +118,8 @@ export function page({ shell }) {
   c.addEventListener("click", (e) => {
     if (e.target.closest("[data-renew]")) { st.setIntent({ type: "renew", src: "dashboard", unit: st.units()[0].id }); location.hash = "/app/gpt"; }
     if (e.target.closest("[data-movein]")) { st.setIntent({ type: "movein", unit: st.moveInUnits()[0].id }); location.hash = "/app/gpt"; }
-    if (e.target.closest("[data-checkin]")) { st.setIntent({ type: "checkin" }); location.hash = "/app/gpt"; }
+    if (e.target.closest("[data-checkin]")) { location.hash = "/app/bookings/new"; return; }
+    if (e.target.closest("[data-checkout]")) { pickOngoing().then((b) => b && doCheckout(b)); return; }
     const q = e.target.closest("[data-q]"); if (q) { try { sessionStorage.setItem("bloom-gpt-q", q.dataset.q); } catch (x) {} }
     if (e.target.closest("[data-bylaws]")) toast("Prototype: the Community By-Laws (PDF) open here.");
   });
