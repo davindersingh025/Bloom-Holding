@@ -3031,7 +3031,7 @@ function initPD(sec){
   /* ---------- cards ---------- */
   function propCard(u){
     return acc('about', 'building', 'Property', '', tiles([
-      [u.icon==='home'?'villa':'building', 'Property type', u.type], ['door', 'Unit', u.name], ['community', 'Community', u.community], ['tag', 'Unit code', u.code],
+      [u.icon==='home'?'villa':'building', 'Property type', u.type], ['tag', 'Unit code', u.code],
       ['bed', 'Bedrooms', u.beds || '—'], ['bath', 'Bathrooms', u.baths || '—'], ['area', 'Area', u.area || '—']]));
   }
   function ownerNameCard(u){ return acc('owner', 'user', 'Owner details', '', '<div class="pd-owners">'+person(u.ownerName || OMAR, 'Owner')+'</div>'); }
