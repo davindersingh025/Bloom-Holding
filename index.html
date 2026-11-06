@@ -6799,6 +6799,14 @@ window.__initScreen[NEW] = initNew;
 .ow-ok b{font-size:20px;font-weight:600}.ow-ok small{font-size:13px;color:#6b665c;margin-bottom:14px;max-width:290px}
 @media (prefers-reduced-motion: reduce){.ow-sh,.ow-ov{transition:none}}
 
+.owd-wrap{gap:22px!important}
+.owd-sec{display:flex;flex-direction:column;gap:10px}
+.owd-sh{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:0 4px}
+.owd-sh-t{display:grid;gap:1px;min-width:0}
+.owd-sh h3{margin:0;font-family:'Instrument Serif','Times New Roman',serif;font-weight:400;font-size:24px;line-height:28px;letter-spacing:-.2px;color:#1c1c19}
+.owd-sh small{font-size:12.5px;line-height:17px;color:#6b665c}
+.owd-sh .owd-link{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:600;color:#922a22;padding:4px 0}
+.owd-sh .mox-pill{margin-bottom:4px}
 /* help cards: title + subtext read as one group */
 button.sr-scope{gap:0!important}
 button.sr-scope .sr-gi{margin-bottom:22px!important}
@@ -7307,6 +7315,20 @@ function dashHH(list){
     '<div class="owd-stats"><span><small>Permit</small><b>HH-21465</b></span><span><small>Occupancy · Oct</small><b>78%</b></span><span><small>Operator</small><b>Haven HH</b></span></div>'+
     '<div class="owd-rows">'+list.map(function(u){ var g = (u.own.guest||'in')==='in'; return '<button type="button" class="owd-row" data-o="unit" data-id="'+u.id+'"><span class="owd-lv-img sm">'+thumb(u)+'</span><span class="owd-rt"><b>'+esc(u.name+' · '+u.community)+'</b><small>'+(g ? 'Guest in · checks out '+fds(T(4)) : 'Free · next stay '+fds(T(6)))+'</small></span>'+pill(g?'Guest in':'No guest', g?'green':'grey')+'</button>'; }).join('')+'</div>'+quick()+'</div>';
 }
+/* section heading sits outside the card: category reads as a title, the card holds only items */
+function sectionize(host){
+  $$('.owd', host).forEach(function(card){
+    var hd = $('.owd-h', card); if(!hd) return;
+    var tb = $('.owd-t b', hd), sub = $('.owd-tt small', hd) || $('.owd-sub', hd), act = $('.owd-link', hd) || $('.mox-pill', hd);
+    var sec = D.createElement('section'); sec.className = 'owd-sec';
+    var h = D.createElement('div'); h.className = 'owd-sh';
+    h.innerHTML = '<span class="owd-sh-t"><h3>'+(tb ? tb.innerHTML : '')+'</h3>'+(sub ? '<small>'+sub.innerHTML+'</small>' : '')+'</span>';
+    if(act) h.appendChild(act);
+    hd.remove();
+    card.parentNode.insertBefore(sec, card); sec.appendChild(h);
+    if(card.children.length) sec.appendChild(card); else card.remove();
+  });
+}
 function dashHTML(){
   var us = units(), h = dashSummary() + dashPay();
   var homeU = us.filter(function(u){ return u.group==='home'; })[0], rentU = us.filter(function(u){ return u.group==='renting'; })[0], inv = us.filter(function(u){ return u.group==='invest'; });
@@ -7321,7 +7343,7 @@ function wireDashboard(sec){
   var ref = sec.querySelector('[data-node-id="'+nid+'"]'); if(!ref || ref.__ow) return; ref.__ow = true;
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
-  function paint(){ el.innerHTML = dashHTML(); }
+  function paint(){ el.innerHTML = dashHTML(); sectionize(el); }
   paint();
   D.addEventListener('bloom:own-changed', paint);
   el.addEventListener('click', function(e){
