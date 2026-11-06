@@ -124,7 +124,7 @@ export function page({ shell, b }) {
 
   function draw(fade) {
     const list = st.units(), u = st.unit(cur), s = st.unitStatus(u);
-    const switcher = list.length > 1 ? `<div class="pd-units" role="group" aria-label="Your properties">${list.map((x) => { const xs = st.unitStatus(x); return `<button type="button" class="pd-unit" data-u="${x.id}" aria-pressed="${x.id === u.id}"${xs ? ` aria-label="${esc(x.name + ", " + st.ST_LABEL[xs])}"` : ""}><i>${icon(unitIcon(x), 15)}</i>${esc(x.name)}${xs ? `<b class="pd-dot" data-tone="${st.ST_TONE[xs]}" aria-hidden="true"></b>` : ""}</button>`; }).join("")}</div>` : "";
+    const switcher = false ? `<div class="pd-units" role="group" aria-label="Your properties">${list.map((x) => { const xs = st.unitStatus(x); return `<button type="button" class="pd-unit" data-u="${x.id}" aria-pressed="${x.id === u.id}"${xs ? ` aria-label="${esc(x.name + ", " + st.ST_LABEL[xs])}"` : ""}><i>${icon(unitIcon(x), 15)}</i>${esc(x.name)}${xs ? `<b class="pd-dot" data-tone="${st.ST_TONE[xs]}" aria-hidden="true"></b>` : ""}</button>`; }).join("")}</div>` : "";
     const imgs = st.unitImgs(u, 1400); if (shot >= imgs.length) shot = 0;
     const header = `<section class="ud-hero" aria-label="Photos of ${esc(u.name)}">
         <div class="ud-shots" style="--i:${shot}">${imgs.map((src, i) => `<span class="ud-shot">${icon(unitIcon(u), 40, "#922A22")}<img src="${src}" alt="" loading="${i ? "lazy" : "eager"}" onerror="this.remove()"></span>`).join("")}</div>

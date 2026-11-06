@@ -36,7 +36,7 @@ export function page({ shell }) {
 
     const propCard = `
       <a class="d6-prop" href="#/app/property/${u.id}" aria-label="View property details for ${esc(u.name)}">
-        <span class="d6-prop-top"><span class="d6-comm"><i></i>${esc(u.community.toUpperCase())}</span><span class="d6-code">${esc(u.code)}</span></span>
+        <span class="d6-prop-top"><span class="d6-comm">${esc(u.community.toUpperCase())}</span><span class="d6-code">${esc(u.code)}</span></span>
         <span class="d6-prop-mid"><span class="d6-prop-ic">${icon(unitIcon(u), 26, "#F8F5EB")}</span><span><b>${esc(u.type)}</b><small>${esc(sub)}</small></span></span>
         <span class="d6-prop-bot"><span><small>${us.length > 1 ? `MY PROPERTIES · +${us.length - 1} MORE` : "MY PROPERTY"}</small><b>${esc(u.address)}</b></span><span class="d6-prop-go">${icon("arrowUR", 18, "#922A22")}</span></span>
       </a>`;
