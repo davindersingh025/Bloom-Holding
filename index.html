@@ -6653,17 +6653,16 @@ window.__initScreen[NEW] = initNew;
 .owd-half small{font-size:10.5px;font-weight:600;letter-spacing:1.2px;color:#6b665c}
 .owd-half b{font-size:15px;font-weight:600;line-height:20px}
 .owd-half span:last-child{font-size:12px;line-height:16px;color:#6b665c}
-.owd .owd-tot{display:flex;align-items:center;gap:12px}
-.owd-tot>b{font-family:'Instrument Serif','Times New Roman',serif;font-weight:400;font-size:44px;line-height:44px;color:#922a22;min-width:30px}
-.owd-tot>span{display:grid;gap:1px}.owd-tot strong{font-size:16px;font-weight:600;line-height:21px}.owd-tot small{font-size:12px;color:#6b665c}
-.owd-sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.owd-sg.is-one{grid-template-columns:1fr}
-.owd .owd-st{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:#faf7f4;transition:transform 160ms}
-.owd .owd-st:active{transform:scale(.97)}
-.owd-st-i{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(28,28,25,.06)}
-.owd-st[data-tone="green"] .owd-st-i{background:rgba(46,125,91,.12)}.owd-st[data-tone="blue"] .owd-st-i{background:rgba(77,94,190,.1)}
-.owd-st[data-tone="amber"] .owd-st-i{background:rgba(183,134,63,.14)}.owd-st[data-tone="violet"] .owd-st-i{background:rgba(107,79,160,.12)}.owd-st[data-tone="teal"] .owd-st-i{background:rgba(47,111,115,.12)}
-.owd-st-t{display:grid;min-width:0}.owd-st-t b{font-size:16px;font-weight:700;line-height:20px}.owd-st-t small{font-size:11.5px;line-height:14px;color:#54504a}
+.owd-tt{display:grid;gap:1px;min-width:0}.owd-tt small{font-size:12px;line-height:16px;color:#6b665c}
+.owd-seg{display:flex;gap:3px;height:8px;border-radius:4px;overflow:hidden}
+.owd-seg i{display:block;height:100%;border-radius:2px}
+.owd-lg{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
+.owd .owd-lgi{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid #f3ece8;font-size:13px;line-height:18px;color:#3a3732}
+.owd .owd-lgi:nth-child(-n+2){border-top:0}
+.owd-lg.is-one{grid-template-columns:1fr}
+.owd-lgi i{flex:none;width:8px;height:8px;border-radius:50%}
+.owd-lgi span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.owd-lgi b{font-size:14px;font-weight:600;color:#1c1c19}
 .owd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .owd-stats span{display:grid;gap:2px;padding:10px;border-radius:14px;background:#faf7f4}
 .owd-stats small{font-size:11px;color:#6b665c}.owd-stats b{font-size:14px;font-weight:600}
@@ -7175,15 +7174,19 @@ function quick(list){ var inc = INC.filter(function(x){ return days(x.date) <= 0
   return '<div class="owd-q"><button type="button" data-o="docs">'+ic('folder','#922a22',20)+'<span>Documents</span></button><button type="button" data-o="stmt">'+ic('stmt','#922a22',20)+'<span>Statements</span></button>'+
     (INC.length ? '<button type="button" data-o="inc">'+ic('coins','#922a22',20)+'<span>Income<small>'+esc(aed(sum(inc)).replace('AED ','AED '))+'</small></span></button>' : '<button type="button" data-o="contact">'+ic('phone','#922a22',20)+'<span>Contact Bloom</span></button>')+'</div>';
 }
-var SUMI = { resident:['home','#2e7d5b','green'], rented:['key','#4d5ebe','blue'], construction:['crane','#8f5a1c','amber'], resale:['tag','#6b4fa0','violet'], vacant:['home','#54504a','grey'], holiday:['key','#2f6f73','teal'], renting:['user','#4d5ebe','blue'] };
+var SUMI = { resident:['home','#2e7d5b','green'], rented:['key','#4d5ebe','blue'], construction:['crane','#8f5a1c','amber'], resale:['tag','#6b4fa0','violet'], vacant:['home','#54504a','grey'], holiday:['key','#2f6f73','teal'], renting:['user','#4d5ebe','slate'] };
 var SUMO = ['resident','rented','holiday','construction','vacant','resale','renting'];
+var SUMC = { green:'#2e7d5b', blue:'#4d5ebe', amber:'#b7863f', violet:'#6b4fa0', grey:'#a19b92', teal:'#2f6f73', slate:'#6f7f8f' };
 function dashSummary(){
   var us = units(), owned = us.filter(function(u){ return u.own && u.own.status!=='renting'; }), c = {};
   us.forEach(function(u){ if(u.own) c[u.own.status] = (c[u.own.status]||0) + 1; });
-  var S = window.__ownst, keys = SUMO.filter(function(k){ return c[k]; });
-  return '<div class="owd owd-sum"><div class="owd-h"><button type="button" class="owd-tot" data-o="port"><b>'+owned.length+'</b><span><strong>Propert'+(owned.length===1?'y':'ies')+' owned</strong><small>'+(c.renting ? '+ 1 home you rent as a tenant' : 'Across '+uniq(owned.map(function(u){ return u.community; })).length+' communit'+(uniq(owned.map(function(u){ return u.community; })).length===1?'y':'ies'))+'</small></span></button><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
-    '<div class="owd-sg'+(keys.length===1?' is-one':'')+'">'+keys.map(function(k){ var m = SUMI[k];
-      return '<button type="button" class="owd-st" data-o="portst" data-st="'+k+'" data-tone="'+m[2]+'"><span class="owd-st-i">'+ic(m[0], m[1], 18)+'</span><span class="owd-st-t"><b>'+c[k]+'</b><small>'+esc(k==='renting' ? 'Renting (tenant)' : S.label[k])+'</small></span></button>'; }).join('')+'</div></div>';
+  var S = window.__ownst, keys = SUMO.filter(function(k){ return c[k]; }), tot = keys.reduce(function(t,k){ return t + c[k]; }, 0);
+  var nC = uniq(owned.map(function(u){ return u.community; })).length;
+  var sub = c.renting ? owned.length+' owned · 1 rented home' : owned.length+' owned · '+nC+' communit'+(nC===1?'y':'ies');
+  function lab(k){ return k==='renting' ? 'Renting (tenant)' : S.label[k]; }
+  return '<div class="owd owd-sum"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('building','#922a22',20)+'</span><span class="owd-tt"><b>My properties</b><small>'+esc(sub)+'</small></span></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
+    (keys.length > 1 ? '<div class="owd-seg" aria-hidden="true">'+keys.map(function(k){ return '<i style="flex:'+c[k]+';background:'+SUMC[SUMI[k][2]]+'"></i>'; }).join('')+'</div>' : '')+
+    '<div class="owd-lg'+(keys.length===1?' is-one':'')+'">'+keys.map(function(k){ return '<button type="button" class="owd-lgi" data-o="portst" data-st="'+k+'" aria-label="'+c[k]+' '+esc(lab(k))+'"><i style="background:'+SUMC[SUMI[k][2]]+'"></i><span>'+esc(lab(k))+'</span><b>'+c[k]+'</b></button>'; }).join('')+'</div></div>';
 }
 function uniq(a){ return a.filter(function(x,i){ return a.indexOf(x)===i; }); }
 function dashPort(title, list){
