@@ -6716,6 +6716,7 @@ window.__initScreen[NEW] = initNew;
 .ow-incs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ow-incs span{display:grid;gap:2px}.ow-incs small{font-size:12px;color:#6b665c}.ow-incs b{font-size:20px;font-weight:600}
 .ow-incs span:first-child b{color:#2e7d5b}
+.ow-ptot{margin:2px 2px 0;font-size:15px;line-height:20px;color:#6b665c}.ow-ptot b{font-size:20px;font-weight:600;color:#1c1c19;letter-spacing:-.2px}
 .ow-phero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px;background:#fff;border:1px solid #efe7e3}
 .ow-phero>span:first-child{display:grid;gap:0}
 .ow-phero small{font-size:12px;color:#6b665c}
@@ -7052,7 +7053,8 @@ function initPort(sec){
     var us = units(), N = GN(), h = '';
     var counts = {}; us.forEach(function(u){ var s = stOf(u); if(s) counts[s.k] = (counts[s.k]||0) + 1; });
     var owned = us.filter(function(u){ return u.own && u.own.status!=='renting'; });
-    h += '<div class="ow-phero"><span><small>Properties owned</small><b>'+owned.length+'</b></span><span class="ow-pchips">'+Object.keys(counts).filter(function(k){ return k!=='renting'; }).map(function(k){ var S = window.__ownst; return pill(counts[k]+' '+S.label[k], S.tone[k]); }).join('')+'</span></div>';
+    var rentN = us.length - owned.length;
+    h += '<p class="ow-ptot"><b>'+owned.length+' propert'+(owned.length===1?'y':'ies')+'</b> owned'+(rentN ? ' · '+rentN+' rented home' : '')+'</p>';
     h += seg('Properties', [['props','Properties'],['docs','Documents']], portState.tab);
     if(portState.st && portState.tab==='props'){ var S2 = window.__ownst; us = us.filter(function(u){ return u.own && u.own.status===portState.st; });
       h += '<button type="button" class="ow-clear" data-stclear>Showing '+esc(portState.st==='renting' ? 'Renting (tenant)' : S2.label[portState.st])+' only · <u>Show all</u></button>'; }
