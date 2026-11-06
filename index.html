@@ -7220,11 +7220,10 @@ function dashHH(list){
 function dashHTML(){
   var us = units(), h = dashSummary() + dashPay();
   var homeU = us.filter(function(u){ return u.group==='home'; })[0], rentU = us.filter(function(u){ return u.group==='renting'; })[0], inv = us.filter(function(u){ return u.group==='invest'; });
-  if(OK==='investor') h += dashPort('My portfolio', inv);
   else if(OK==='owner') h += dashCommunity(homeU, 'My community');
-  else if(OK==='ownerinv') h += dashPort('Investments', inv) + dashCommunity(homeU, 'My community');
+  else if(OK==='ownerinv') h += dashCommunity(homeU, 'My community');
   else if(OK==='ownerhh') h += dashHH(inv);
-  else if(OK==='ownertenant') h = dashSummary() + dashRented(rentU) + dashPay() + dashPort('What I own', inv) + dashCommunity(rentU, 'My community');
+  else if(OK==='ownertenant') h = dashSummary() + dashRented(rentU) + dashPay() + dashCommunity(rentU, 'My community');
   return h;
 }
 function wireDashboard(sec){
