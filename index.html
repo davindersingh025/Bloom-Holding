@@ -1154,7 +1154,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
 /* dashboard: the property card opens its details */
 .pd-tap{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 260ms cubic-bezier(.34,1.56,.64,1)}
 .pd-tap:active{transform:scale(.985)}
-.pd-go{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#54504a;margin-left:auto;box-shadow:0 1px 0 rgba(28,28,25,.04)}
+.pd-go{display:none!important;flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#54504a;margin-left:auto;box-shadow:0 1px 0 rgba(28,28,25,.04)}
 .pd-more{font-family:'Instrument Sans',system-ui,sans-serif;font-size:11.5px;font-weight:600;line-height:16px;color:#6b665c}
 .pdx .pd-tile-off{background:rgba(28,28,25,.06)!important}
 .pdx .pd-mo--off{background:#faf7f4!important}
@@ -3119,13 +3119,13 @@ function initPD(sec){
         '<div class="ud-occ"><b>You live here</b></div>'+irows([['calok', 'Move-in date', D8(o.moveIn)]])) + docsCard2([spa]);
     if(o.status==='rented'){ var t = o.tenancy;
       return tenantMoveOutNudge(u) + acc('tenancy', 'doc', 'Tenancy contract', expChip(soon(t.end)),
-        irows([['user', 'Tenant name', t.tenant], ['hash', 'Contract no.', t.no], ['cal', 'Start date', D8(t.start)], ['calok', 'End date', D8(t.end)], ['card', 'Rental income', o.rent], ['doc', 'Cheques', o.cheques]])) +
+        irows([['user', 'Tenant name', t.tenant], ['hash', 'Contract no.', t.no], ['cal', 'Start date', D8(t.start)], ['calok', 'End date', D8(t.end)]])) +
         docsCard2([spa, ['Tenancy contract', 'PDF · signed '+D8(t.start)]]); }
     if(o.status==='holiday'){
       var g = GST[u.id] || o.guest || 'in', gs = g==='in'
         ? '<div class="ud-st ud-st--green">'+icon('key',18,'#2e7d5b')+'<span><b>Guest Checked In</b><small>'+esc(MO.fmtS(addD(today(),-1)))+' → '+esc(MO.fmtS(addD(today(),4)))+'</small></span></div>'
         : '<div class="ud-st">'+icon('villa',18,'#6b665c')+'<span><b>No Guest Right Now</b><small>The unit is ready for the next booking.</small></span></div>';
-      return acc('hh', 'key', 'Holiday Home', '', irows([['brief', 'Agent', o.company || o.agent], ['hash', 'Permit no.', o.permit || 'HH-21465'], o.payout ? ['card', 'Last payout', o.payout] : null]) + '<div class="ud-sub"><p class="mox-eyebrow">GUEST STATUS</p>'+gs+'</div>') +
+      return acc('hh', 'key', 'Holiday Home', '', irows([['brief', 'Agent', o.company || o.agent], ['hash', 'Permit no.', o.permit || 'HH-21465']]) + '<div class="ud-sub"><p class="mox-eyebrow">GUEST STATUS</p>'+gs+'</div>') +
         docsCard2([spa, ['Tenancy contract', 'PDF · signed '+D8(o.hhContract)]]); }
     return '';
   }
@@ -3311,7 +3311,6 @@ function wireDash(sec){
   if(res){
     res.classList.add('pd-tap'); res.setAttribute('role','button'); res.tabIndex = 0; res.setAttribute('aria-label','View unit details');
     var tile = $('[data-name="Unit tile"]', res);
-    if(tile && !$('.pd-go', tile)) tile.insertAdjacentHTML('beforeend', '<span class="pd-go" aria-hidden="true">'+icon('chev',16)+'</span>');
     var US = MO.units(), cards = [res], F0 = resFields(res);
     function fillRes(c, u){
       var f = c===res ? F0 : resFields(c);
@@ -6799,7 +6798,7 @@ window.__initScreen[NEW] = initNew;
    ownerhh     : owns holiday-home units run by an operator
    ownertenant : owns units but lives elsewhere as a tenant → "Where I live" + "What I own"
    Dashboard: payments first (overdue in red + Pay now), then the persona card(s).
-   Screens: ow:pay (To pay · Paid · Income, receipts, statements) · ow:port (properties · documents)
+   Screens: ow:pay (To pay · Paid, receipts, statements) · ow:port (properties · documents)
             ow:feat (access card · amenities · parking & ANPR · family · events · notices)
    ========================================================================== */
 var DATA = window.__BLOOM; if(!DATA) return;
@@ -6893,7 +6892,7 @@ function items(){ L.forEach(function(x){ x.st = status(x); }); return L.slice().
 function meta(x){
   var n = days(x.due);
   if(x.st==='paid') return { label:'Paid', tone:'green', when:'Paid '+fd(x.paid) };
-  if(x.st==='missed') return { label:'Overdue', tone:'red', when:'Due '+fds(x.due)+' · '+(-n)+' day'+(n===-1?'':'s')+' late' };
+  if(x.st==='missed') return { label:'Overdue', tone:'red', when:(-n)+' day'+(n===-1?'':'s')+' late' };
   if(x.st==='due') return { label: n===0 ? 'Due today' : 'Due in '+n+'d', tone:'amber', when:'Due '+fd(x.due) };
   return { label:'Scheduled', tone:'grey', when:'Due '+fd(x.due) };
 }
@@ -6973,7 +6972,7 @@ function initPay(sec){
     var due = pick.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; });
     var paid = pick.filter(function(x){ return x.st==='paid'; });
     var inc = INC.filter(function(x){ return (g==='all' || groupOf(x)===g) && (!uf || x.u===uf); });
-    var tabs = [['due','To pay'+(miss.length?' <i class="ow-cnt">'+miss.length+'</i>':'')],['paid','Paid']]; if(INC.length) tabs.push(['inc','Income']);
+    var tabs = [['due','To pay'+(miss.length?' <i class="ow-cnt">'+miss.length+'</i>':'')],['paid','Paid']]; 
     var h = '';
     var tot = sum(due), ov = sum(miss);
     h += '<div class="ow-hero'+(miss.length?' is-miss':'')+'"><small>'+(uf ? esc(U(uf).name)+' · ' : '')+'Total to pay</small><b>'+esc(aed(tot))+'</b>'+
@@ -7028,7 +7027,7 @@ function line(u){
   if(o.status==='construction') return o.progress+'% built · handover '+fd(o.handover);
   if(o.status==='resale') return 'Listed '+o.price+' · '+o.enquiries+' enquiries';
   if(o.status==='vacant') return 'Handed over '+fd(o.handover)+' · vacant';
-  if(o.status==='rented') return 'Tenant '+o.tenancy.tenant+' · '+o.rent;
+  if(o.status==='rented') return 'Tenant '+o.tenancy.tenant+' · until '+fd(o.tenancy.end);
   if(o.status==='holiday') return (o.company||'Holiday home')+' · '+((o.guest||'in')==='in' ? 'guest in' : 'no guest');
   if(o.status==='resident') return 'You live here · since '+fd(o.moveIn);
   if(o.status==='renting') return 'Rented from '+o.landlord+' · ends '+fd(u.contract.end);
@@ -7174,7 +7173,7 @@ function highlights(list){
 }
 function quick(list){ var inc = INC.filter(function(x){ return days(x.date) <= 0 && (!list || list.indexOf(x.u) >= 0); });
   return '<div class="owd-q"><button type="button" data-o="docs">'+ic('folder','#922a22',20)+'<span>Documents</span></button><button type="button" data-o="stmt">'+ic('stmt','#922a22',20)+'<span>Statements</span></button>'+
-    (INC.length ? '<button type="button" data-o="inc">'+ic('coins','#922a22',20)+'<span>Income<small>'+esc(aed(sum(inc)).replace('AED ','AED '))+'</small></span></button>' : '<button type="button" data-o="contact">'+ic('phone','#922a22',20)+'<span>Contact Bloom</span></button>')+'</div>';
+    (false ? '<button type="button" data-o="inc">'+ic('coins','#922a22',20)+'<span>Income<small>'+esc(aed(sum(inc)).replace('AED ','AED '))+'</small></span></button>' : '<button type="button" data-o="contact">'+ic('phone','#922a22',20)+'<span>Contact Bloom</span></button>')+'</div>';
 }
 var SUMI = { resident:['home','#2e7d5b','green'], rented:['key','#4d5ebe','blue'], construction:['crane','#8f5a1c','amber'], resale:['tag','#6b4fa0','violet'], vacant:['home','#54504a','grey'], holiday:['key','#2f6f73','teal'], renting:['user','#4d5ebe','slate'] };
 var SUMO = ['resident','rented','holiday','construction','vacant','resale','renting'];
@@ -7213,8 +7212,8 @@ function dashSplit(homeU, inv){
 }
 function dashHH(list){
   var incA = sum(INC.filter(function(x){ return days(x.date) <= 0 && days(x.date) > -30; }));
-  return '<div class="owd owd-hh"><div class="owd-h"><span class="owd-t"><span class="owd-ti" data-tone="teal">'+ic('key','#2f6f73',20)+'</span><b>Holiday homes</b></span><button type="button" class="owd-link" data-o="inc">Payouts'+ic('chev','#922a22',14)+'</button></div>'+
-    '<div class="owd-stats"><span><small>Last payout</small><b>'+esc(aed(incA))+'</b></span><span><small>Occupancy · Oct</small><b>78%</b></span><span><small>Operator</small><b>Haven HH</b></span></div>'+
+  return '<div class="owd owd-hh"><div class="owd-h"><span class="owd-t"><span class="owd-ti" data-tone="teal">'+ic('key','#2f6f73',20)+'</span><b>Holiday homes</b></span></div>'+
+    '<div class="owd-stats"><span><small>Permit</small><b>HH-21465</b></span><span><small>Occupancy · Oct</small><b>78%</b></span><span><small>Operator</small><b>Haven HH</b></span></div>'+
     '<div class="owd-rows">'+list.map(function(u){ var g = (u.own.guest||'in')==='in'; return '<button type="button" class="owd-row" data-o="unit" data-id="'+u.id+'"><span class="owd-lv-img sm">'+thumb(u)+'</span><span class="owd-rt"><b>'+esc(u.name+' · '+u.community)+'</b><small>'+(g ? 'Guest in · checks out '+fds(T(4)) : 'Free · next stay '+fds(T(6)))+'</small></span>'+pill(g?'Guest in':'No guest', g?'green':'grey')+'</button>'; }).join('')+'</div>'+quick()+'</div>';
 }
 function dashHTML(){
