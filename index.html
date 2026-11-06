@@ -6654,6 +6654,7 @@ window.__initScreen[NEW] = initNew;
 .owd-half span:last-child{font-size:12px;line-height:16px;color:#6b665c}
 .owd-tt{display:grid;gap:1px;min-width:0}.owd-tt small{font-size:12px;line-height:16px;color:#6b665c}
 .owd-tl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.owd-tl:has(> :only-child){grid-template-columns:1fr}
 .owd .owd-tlc{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 10px;border-radius:14px;border:1px solid #f1ebe6;background:#fff;transition:background-color 160ms,transform 160ms}
 .owd .owd-tlc:active{transform:scale(.97);background:#faf7f4}
 .owd-tlc-i{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#faf4f1}
@@ -6799,11 +6800,12 @@ window.__initScreen[NEW] = initNew;
 .ow-ok b{font-size:20px;font-weight:600}.ow-ok small{font-size:13px;color:#6b665c;margin-bottom:14px;max-width:290px}
 @media (prefers-reduced-motion: reduce){.ow-sh,.ow-ov{transition:none}}
 
-.owd-wrap{gap:22px!important}
-.owd-sec{display:flex;flex-direction:column;gap:10px}
-.owd-sh{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:0 4px}
+.owd-wrap{gap:28px!important;margin-top:14px}
+.owd-sec{display:flex;flex-direction:column;gap:12px}
+.owd-sh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
+.owd-sh:has(small){align-items:flex-end}
 .owd-sh-t{display:grid;gap:0;min-width:0}
-.owd-sh h3{margin:0;font-family:"Orpheus Pro","Instrument Serif",Georgia,serif!important;font-weight:500;font-style:normal;font-size:26px;line-height:27.6px;letter-spacing:-.4px;color:#1c1c19}
+.owd-sh h3{margin:0;font-family:"Orpheus Pro","Instrument Serif",Georgia,serif!important;font-weight:500;font-style:normal;font-size:26px;line-height:27.6px;letter-spacing:-.4px;color:var(--color\/text-primary,#1c1c19);font-variation-settings:"opsz" 14,"wdth" 100;-webkit-font-smoothing:antialiased}
 .owd-sh small{font-family:Matter,Figtree,Arial,sans-serif;font-size:14px;font-weight:400;line-height:21.7px;color:#6b665c;margin-top:6px}
 .owd-sh .owd-link{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:600;color:#922a22;padding:4px 0}
 .owd-sh .mox-pill{margin-bottom:4px}
@@ -7294,7 +7296,7 @@ function dashSummary(){
   if(tot <= 1) return '';   // one property: the property card above already says it all
   if(keys.length===1) sub = owned.length+' owned · all '+lab(keys[0]);
   return '<div class="owd owd-sum"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('building','#922a22',20)+'</span><span class="owd-tt"><b>My properties</b><small>'+esc(sub)+'</small></span></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
-    (keys.length > 1 ? '<div class="owd-tl">'+keys.map(function(k){ return '<button type="button" class="owd-tlc" data-o="portst" data-st="'+k+'" aria-label="'+c[k]+' '+esc(lab(k))+'"><span class="owd-tlc-i">'+ic(SUMI[k][0],'#922a22',18)+'</span><span class="owd-tlc-l">'+esc(lab(k))+'</span><b>'+c[k]+'</b></button>'; }).join('')+'</div>' : '')+
+    (keys.length ? '<div class="owd-tl">'+keys.map(function(k){ return '<button type="button" class="owd-tlc" data-o="portst" data-st="'+k+'" aria-label="'+c[k]+' '+esc(lab(k))+'"><span class="owd-tlc-i">'+ic(SUMI[k][0],'#922a22',18)+'</span><span class="owd-tlc-l">'+esc(lab(k))+'</span><b>'+c[k]+'</b></button>'; }).join('')+'</div>' : '')+
     '</div>';
 }
 function uniq(a){ return a.filter(function(x,i){ return a.indexOf(x)===i; }); }
@@ -7328,7 +7330,7 @@ function dashHH(list){
 function sectionize(host){
   $$('.owd', host).forEach(function(card){
     var hd = $('.owd-h', card); if(!hd) return;
-    var tb = $('.owd-t b', hd), sub = $('.owd-tt small', hd) || $('.owd-sub', hd), act = $('.owd-link', hd) || $('.mox-pill', hd);
+    var tb = $('.owd-t b', hd), sub = (card.classList.contains('owd-sum') || card.classList.contains('owd-pay')) ? null : ($('.owd-tt small', hd) || $('.owd-sub', hd)), act = $('.owd-link', hd) || $('.mox-pill', hd);
     var sec = D.createElement('section'); sec.className = 'owd-sec';
     var h = D.createElement('div'); h.className = 'owd-sh';
     h.innerHTML = '<span class="owd-sh-t"><h3>'+(tb ? tb.innerHTML : '')+'</h3>'+(sub ? '<small>'+sub.innerHTML+'</small>' : '')+'</span>';
