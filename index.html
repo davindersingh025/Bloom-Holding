@@ -6838,6 +6838,7 @@ var P = {
   exit:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
   bank:'<path d="M3 9.5 12 4l9 5.5M4.5 10v8M9 10v8M15 10v8M19.5 10v8M3 20h18"/>',
   chq:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 14.5c1-1.5 2-1.5 3 0s2 1.5 3 0M15 10h3.5M15 13h3.5"/>',
+  qr:'<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.2"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.2"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.2"/><path d="M14 14h2.5v2.5H14zM18.5 14h2M14 18.5v2M17 18.5h3.5v2"/>',
   plus:'<path d="M12 5v14M5 12h14"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>',
   pin:'<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
@@ -7088,12 +7089,13 @@ function initPort(sec){
 /* ---------- ow:feat (resident community features) ---------- */
 var FEATS = {
   access:{ t:'Access card', ic:'idc' }, amen:{ t:'Amenities', ic:'pool' }, park:{ t:'Parking & ANPR', ic:'car' }, family:{ t:'Family access', ic:'family' },
-  events:{ t:'Events', ic:'event' }, notices:{ t:'Notices', ic:'bell' }
+  events:{ t:'Events', ic:'event' }, visitor:{ t:'Visitor Access', ic:'qr' }, notices:{ t:'Notices', ic:'bell' }
 };
 var featKey = 'access';
 var FAM = [['Mariam '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Spouse', 'Full access', 'Active'], ['Ahmed '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Son', 'Gate & lobby', 'Active']];
 var CARS = [['Dubai · P 48213', 'Toyota Land Cruiser · White', 'Bay B-138-1'], ['Dubai · K 10275', 'Tesla Model Y · Grey', 'Bay B-138-2']];
 var RSVP = {};
+var VIS = [['Khalid Rahman', 'Guest · car P 22918', 0, 'Active today'], ['Sparkle Cleaning Services', 'Service provider · 2 people', 2, 'Scheduled']];
 var EVENTS = [[12, 'Family movie night', 'Community lawn · 7:30 PM', 'Free · 64 going'], [19, 'Padel social', 'Courts 1–2 · 6:00 PM', 'Free · 18 going'], [27, 'National Day celebration', 'Central park · 4:00 PM', 'Free · 210 going']];
 var NOTICES = [['Maintenance', 'amber', 'Pool closed for cleaning', 'Main pool closed '+fds(T(3))+', 8 AM – 2 PM. The kids’ pool stays open.', 0, true], ['Community', 'blue', 'New ANPR cameras at Gate 2', 'Registered vehicles enter without a card from '+fds(T(7))+'.', -1, true], ['Water', 'grey', 'Planned water shutdown', 'Clusters 4–6 · '+fds(T(10))+', 10 AM – 1 PM.', -4, false], ['Security', 'grey', 'Visitor passes now in the app', 'Share a QR pass with guests before they arrive.', -9, false]];
 function home(){ var us = units(); for(var i=0;i<us.length;i++) if(us[i].group==='home' || us[i].group==='renting') return us[i]; return us[0]; }
@@ -7121,6 +7123,11 @@ function initFeat(sec){
     } else if(featKey==='events'){
       h += '<div class="ow-list">'+EVENTS.map(function(ev, i){ var on = !!RSVP[i], d = new Date(T(0).getFullYear(), T(0).getMonth() + (ev[0] < T(0).getDate() ? 1 : 0), ev[0]);
         return '<div class="ow-row ow-ev"><span class="ow-date"><b>'+d.getDate()+'</b><small>'+MON[d.getMonth()].toUpperCase()+'</small></span><span class="ow-rt"><b>'+esc(ev[1])+'</b><small>'+esc(ev[2])+'</small><small>'+esc(ev[3])+'</small></span><button type="button" class="ow-payb'+(on?' is-on':'')+'" data-rsvp="'+i+'" aria-pressed="'+on+'">'+(on?'Going':'RSVP')+'</button></div>'; }).join('')+'</div>';
+    } else if(featKey==='visitor'){
+      h += '<p class="ow-note">Create a pass and share it. Visitors show the QR code at the gate; registered cars enter by ANPR.</p>';
+      h += '<div class="ow-sec"><p class="mox-eyebrow">VISITOR PASSES</p><div class="ow-list">'+VIS.map(function(v){ var d = T(v[2]); var ini = v[0].split(' ').filter(function(w,i,a){ return i===0 || i===a.length-1; }).map(function(w){ return w[0]; }).join('');
+        return '<div class="ow-row"><span class="ow-av">'+esc(ini)+'</span><span class="ow-rt"><b>'+esc(v[0])+'</b><small>'+esc(v[1])+'</small><small>'+(v[2]===0 ? 'Today' : fd(d))+' · '+esc(u.name)+'</small></span>'+pill(v[3], v[3]==='Active today'?'green':'blue')+'</div>'; }).join('')+'</div></div>';
+      h += '<div class="ow-acts">'+btn('Share QR pass','sharevis','ghost')+btn('New visitor pass','addvis','dark')+'</div>';
     } else if(featKey==='notices'){
       h += '<div class="ow-list">'+NOTICES.map(function(n){ return '<div class="ow-row ow-nt'+(n[5]?' is-new':'')+'"><span class="ow-rt"><span class="ow-nt-h">'+pill(n[0], n[1])+'<small>'+(n[4]===0 ? 'Today' : (-n[4])+'d ago')+'</small></span><b>'+esc(n[2])+'</b><small>'+esc(n[3])+'</small></span></div>'; }).join('')+'</div>';
     }
@@ -7136,6 +7143,8 @@ function initFeat(sec){
     else if(k==='newcard') toast('Request sent. Collect your card at the community office.');
     else if(k==='visitor') toast('Visitor pass created and ready to share.');
     else if(k==='addcar'){ CARS.push(['Dubai · M 33190', 'Nissan Patrol · Black', 'Visitor bay V-12']); render(); toast('Vehicle added. ANPR active within 24 hours.'); }
+    else if(k==='sharevis') toast('QR pass link copied. Send it to your visitor.');
+    else if(k==='addvis'){ VIS.unshift(['Fatima Noor', 'Guest · 1 person', 1, 'Scheduled']); render(); toast('Visitor pass created for tomorrow.'); }
     else if(k==='addfam'){ FAM.push(['Sara '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Daughter', 'Gate & lobby', 'Invite sent']); render(); toast('Invite sent. Sara can sign in once she accepts.'); }
   });
   $('[data-oback]', root).addEventListener('click', back);
@@ -7197,7 +7206,7 @@ function dashPort(title, list){
     '<div class="owd-hls">'+highlights(list)+'</div>'+quick(list.map(function(u){ return u.id; }))+'</div>';
 }
 function dashCommunity(u, title){
-  var T8 = [['access','idc','Access card'],['amen','pool','Amenities'],['park','car','Parking'],['family','family','Family'],['events','event','Events',1],['notices','bell','Notices',2],['contact','phone','Contact']];
+  var T8 = [['access','idc','Access card'],['amen','pool','Amenities'],['park','car','Parking'],['family','family','Family'],['events','event','Events',1],['notices','bell','Notices',2],['visitor','qr','Visitor Access']];
   return '<div class="owd owd-com"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('home','#922a22',20)+'</span><b>'+esc(title)+'</b></span><small class="owd-sub">'+esc(u.name+' · '+u.community)+'</small></div>'+
     '<div class="owd-grid">'+T8.map(function(t){ return '<button type="button" class="owd-tile" data-o="'+(t[0]==='contact'||t[0]==='moveout' ? t[0] : 'feat')+'" data-k="'+t[0]+'"><span class="owd-tile-i">'+ic(t[1],'#922a22',22)+(t[3] ? '<i class="owd-badge">'+t[3]+'</i>' : '')+'</span><span>'+t[2]+'</span></button>'; }).join('')+'</div></div>';
 }
