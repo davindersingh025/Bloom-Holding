@@ -7265,8 +7265,7 @@ function dashPay(){
     if(x.st==='paid') return '<div class="owd-row is-paid"><span class="owd-date">'+ic('tick','#2e7d5b',20)+'</span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name)+' · paid just now</small></span><span class="owd-ra"><b class="owd-amt">'+esc(aed(x.amt))+'</b>'+pill('Paid','green')+'</span></div>';
     return '<button type="button" class="owd-row'+(late?' is-late':'')+'" data-o="payid" data-id="'+x.id+'"><span class="owd-date"><b>'+x.due.getDate()+'</b><small>'+MON[x.due.getMonth()].toUpperCase()+'</small></span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name)+' · '+(late ? '<em>'+(-n)+' day'+(n===-1?'':'s')+' overdue</em>' : (n===0?'due today':'in '+n+' day'+(n>1?'s':'')))+'</small></span><span class="owd-ra"><b class="owd-amt">'+esc(aed(x.amt))+'</b>'+(late ? pill('Overdue','red') : pill('Pending','amber'))+'</span></button>'; }).join('')+'</div>';
   if(miss.length) h += '<button type="button" class="owd-paycta" data-o="paymiss">Pay overdue · '+esc(aed(sum(miss)))+'</button>';
-  else if(due.length) h += '<button type="button" class="owd-paycta is-soft" data-o="paynext" data-id="'+rows[0].id+'">Pay next · '+esc(aed(rows[0].amt))+'</button>';
-  else h += '<div class="owd-ok">'+ic('check','#2e7d5b',18)+'<span>Nothing due. Receipts are in Payments.</span></div>';
+  else if(!due.length) h += '<div class="owd-ok">'+ic('check','#2e7d5b',18)+'<span>Nothing due. Receipts are in Payments.</span></div>';
   return '<div class="owd owd-pay">'+h+'</div>';
 }
 function statusChips(list){ var S = window.__ownst, c = {}; list.forEach(function(u){ if(u.own) c[u.own.status] = (c[u.own.status]||0) + 1; }); return '<div class="owd-chips">'+Object.keys(c).map(function(k){ return pill(c[k]+' '+S.label[k], S.tone[k]); }).join('')+'</div>'; }
