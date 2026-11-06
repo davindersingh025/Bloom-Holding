@@ -6815,6 +6815,11 @@ button.sr-scope .sr-scope-s{margin-top:2px!important}
 /* dashboard payments v2 — calm list, one clear CTA */
 .owd .owd-row.is-late .owd-date{background:rgba(146,42,34,.07)}
 .owd .owd-row.is-late .owd-date b,.owd .owd-row.is-late .owd-date small{color:#922a22}
+.owd-ra{flex:none;display:grid;justify-items:end;gap:4px}
+.owd-ra .mox-pill{font-size:11px;padding:2px 8px}
+.owd-row.is-paid .owd-date{background:rgba(46,125,91,.1);display:grid;place-items:center}
+.owd-row.is-paid{animation:owpaid .9s ease}
+@keyframes owpaid{0%{background:rgba(46,125,91,.14)}100%{background:transparent}}
 .owd-rt em{font-style:normal;color:#922a22;font-weight:500}
 .owd .owd-paycta{display:flex;align-items:center;justify-content:center;height:46px;border-radius:999px;background:#1c1c19;color:#fff;font-size:14px;font-weight:600;transition:transform 160ms}
 .owd .owd-paycta:active{transform:scale(.98)}
@@ -6962,7 +6967,9 @@ function meta(x){
   return { label:'Scheduled', tone:'grey', when:'Due '+fd(x.due) };
 }
 function sum(a){ return a.reduce(function(t,x){ return t + x.amt; }, 0); }
-function markPaid(ids){ ids.forEach(function(id){ L.forEach(function(x){ if(x.id===id && !x.paid){ x.paid = T(0); x.rc = 'RC-'+(261000 + Math.floor(Math.random()*8999)); } }); }); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }
+var JUST = {};
+function markPaid(ids){ ids.forEach(function(id){ JUST[id] = true; });
+  ids.forEach(function(id){ L.forEach(function(x){ if(x.id===id && !x.paid){ x.paid = T(0); x.rc = 'RC-'+(261000 + Math.floor(Math.random()*8999)); } }); }); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }
 window.__own = { items:items, forUnit:function(id){ return items().filter(function(x){ return x.u===id; }); }, meta:meta, aed:aed, income:function(){ return INC.slice(); } };
 
 /* group names per persona */
@@ -7028,17 +7035,17 @@ function payFlow(root, ids, done, direct){
         '<p class="ow-note" style="margin:10px 0 14px">Use the reference exactly so we can match your payment. We’ll confirm within 2–3 working days.</p>'+
         '<button type="button" class="ow-cta" data-banked><span>I’ve made the transfer</span></button>';
     } else if(step==='proc'){
-      b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>'+(m==='apple' ? 'Confirm with Face ID' : 'Processing payment…')+'</b><small>'+ic('lock','#6b665c',13)+' '+esc(aed(tot()))+' · Visa •••• 4417 · secure</small></div>';
+      b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>'+(m==='apple' ? 'Confirm with Face ID' : 'Payment processing…')+'</b><small style="margin-top:-4px">Please wait, don’t close the app</small><small>'+ic('lock','#6b665c',13)+' '+esc(aed(tot()))+' · Visa •••• 4417 · secure</small></div>';
     } else if(step==='ok'){
       var rc = 'RC-'+(261000 + Math.floor(Math.random()*8999));
-      b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>'+(m==='bank' ? 'Transfer noted' : 'Payment successful')+'</b><small>'+(m==='bank' ? 'We’ll confirm once '+esc(aed(tot()))+' reaches Bloom.' : esc(aed(tot()))+' paid · receipt '+rc+' sent to your email')+'</small>'+
+      b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>'+(m==='bank' ? 'Transfer noted' : 'Payment done')+'</b><small>'+(m==='bank' ? 'We’ll confirm once '+esc(aed(tot()))+' reaches Bloom.' : esc(aed(tot()))+' paid · receipt '+rc+' sent to your email')+'</small>'+
         (m==='bank' ? '' : '<button type="button" class="ow-rcb" data-rcd>'+ic('dl','#922a22',16)+'Download receipt</button>')+
         '<button type="button" class="ow-cta" data-shx><span>Done</span></button></div>';
     }
   }
   function pay(){ var ids2 = chosen().map(function(x){ return x.id; }); step = 'proc'; draw();
     setTimeout(function(){ markPaid(ids2); step = 'ok'; draw(); if(done) done(m); }, REDUCED ? 0 : 1600); }
-  if(direct){ m = 'card'; pay(); } else draw();
+  if(direct){ m = 'card'; var d0 = done; done = function(mm){ if(d0) d0(mm); setTimeout(sh.close, REDUCED ? 600 : 1500); }; pay(); } else draw();
   b.addEventListener('click', function(e){
     var c = e.target.closest('[data-sel]'); if(c){ sel[c.dataset.sel] = !sel[c.dataset.sel]; draw(); return; }
     var r = e.target.closest('[data-m]'); if(r){ m = r.dataset.m; draw(); return; }
@@ -7251,10 +7258,12 @@ window.__ownui = { openPay:openPay, openPort:openPort, openFeat:openFeat };
 /* ---------- dashboard ---------- */
 function dashPay(){
   var all = items(), due = all.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; });
-  var rows = miss.concat(due.filter(function(x){ return x.st!=='missed'; })).slice(0, 3);
+  var paidNow = all.filter(function(x){ return JUST[x.id] && x.st==='paid'; });
+  var rows = paidNow.concat(miss, due.filter(function(x){ return x.st!=='missed'; })).slice(0, Math.max(3, paidNow.length + 1));
   var h = '<div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('card','#922a22',20)+'</span><span class="owd-tt"><b>Payments</b><small>'+(due.length ? esc(aed(sum(due)))+' to pay' : 'All paid up')+'</small></span></span><button type="button" class="owd-link" data-o="pay">View all'+ic('chev','#922a22',14)+'</button></div>';
   if(rows.length) h += '<div class="owd-rows">'+rows.map(function(x){ var u = U(x.u), n = days(x.due), late = x.st==='missed';
-    return '<button type="button" class="owd-row'+(late?' is-late':'')+'" data-o="payid" data-id="'+x.id+'"><span class="owd-date"><b>'+x.due.getDate()+'</b><small>'+MON[x.due.getMonth()].toUpperCase()+'</small></span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name)+' · '+(late ? '<em>'+(-n)+' day'+(n===-1?'':'s')+' overdue</em>' : (n===0?'due today':'in '+n+' day'+(n>1?'s':'')))+'</small></span><b class="owd-amt">'+esc(aed(x.amt))+'</b></button>'; }).join('')+'</div>';
+    if(x.st==='paid') return '<div class="owd-row is-paid"><span class="owd-date">'+ic('tick','#2e7d5b',20)+'</span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name)+' · paid just now</small></span><span class="owd-ra"><b class="owd-amt">'+esc(aed(x.amt))+'</b>'+pill('Paid','green')+'</span></div>';
+    return '<button type="button" class="owd-row'+(late?' is-late':'')+'" data-o="payid" data-id="'+x.id+'"><span class="owd-date"><b>'+x.due.getDate()+'</b><small>'+MON[x.due.getMonth()].toUpperCase()+'</small></span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name)+' · '+(late ? '<em>'+(-n)+' day'+(n===-1?'':'s')+' overdue</em>' : (n===0?'due today':'in '+n+' day'+(n>1?'s':'')))+'</small></span><span class="owd-ra"><b class="owd-amt">'+esc(aed(x.amt))+'</b>'+(late ? pill('Overdue','red') : pill('Pending','amber'))+'</span></button>'; }).join('')+'</div>';
   if(miss.length) h += '<button type="button" class="owd-paycta" data-o="paymiss">Pay overdue · '+esc(aed(sum(miss)))+'</button>';
   else if(due.length) h += '<button type="button" class="owd-paycta is-soft" data-o="paynext" data-id="'+rows[0].id+'">Pay next · '+esc(aed(rows[0].amt))+'</button>';
   else h += '<div class="owd-ok">'+ic('check','#2e7d5b',18)+'<span>Nothing due. Receipts are in Payments.</span></div>';
