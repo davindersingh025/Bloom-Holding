@@ -5611,6 +5611,8 @@ new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFra
 paint(dev);
 })();</script>
 <style id="rcar-css">
+/* segmented controls: even 3px inset on every side so the selected pill sits centred */
+.mox-seg{padding:3px!important;align-items:center}
 /* no status dot before the community name on property cards */
 [data-name^="Card / Residence"] [data-name="Community row"] > div:has(> svg.pulse){display:none!important}
 /* Dashboard: several properties → swipeable cards with pager dots */
