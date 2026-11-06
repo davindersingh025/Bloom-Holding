@@ -1548,11 +1548,23 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     holiday: { id:'holiday', label:'Holiday Home', short:'Holiday Home',
                desc:'Operating a unit as a holiday home',
                user:{ name:'Layla Haddad', initials:'LH', email:'layla.haddad@example.com', phone:'+971 55 214 8890', role:'Holiday Home' } },
-    owner:   { id:'owner',   label:'Owner + Resident', short:'Owner + Resident',
+    investor:{ id:'investor', owner:true, label:'Owner · Investor', short:'Investor',
+               desc:'Owns units leased out, under construction or for resale',
+               user:{ name:'Rashid Al Mansoori', initials:'RM', email:'rashid.almansoori@example.com', phone:'+971 50 448 1290', role:'Owner · Investor' } },
+    owner:   { id:'owner', owner:true, label:'Owner · Resident', short:'Owner · Resident',
                desc:'Owns the unit and lives in it',
-               user:{ name:'Omar Al Suwaidi', initials:'OS', email:'omar.alsuwaidi@example.com', phone:'+971 52 377 6041', role:'Owner + Resident' } }
+               user:{ name:'Omar Al Suwaidi', initials:'OS', email:'omar.alsuwaidi@example.com', phone:'+971 52 377 6041', role:'Owner · Resident' } },
+    ownerinv:{ id:'ownerinv', owner:true, label:'Owner · Resident + Investor', short:'Resident + Investor',
+               desc:'Lives in one unit and owns others',
+               user:{ name:'Hessa Al Marri', initials:'HM', email:'hessa.almarri@example.com', phone:'+971 56 902 3317', role:'Owner · Resident + Investor' } },
+    ownerhh: { id:'ownerhh', owner:true, label:'Owner · Holiday Home', short:'Owner · Holiday Home',
+               desc:'Owns units run as holiday homes',
+               user:{ name:'Faisal Qassim', initials:'FQ', email:'faisal.qassim@example.com', phone:'+971 52 611 0458', role:'Owner · Holiday Home' } },
+    ownertenant:{ id:'ownertenant', owner:true, label:'Owner · Renting elsewhere', short:'Owner + Tenant',
+               desc:'Owns units and rents another Bloom home',
+               user:{ name:'Noura Bin Hamad', initials:'NB', email:'noura.binhamad@example.com', phone:'+971 54 730 2286', role:'Owner + Tenant' } }
   };
-  var ORDER = ['tenant','holiday','owner'];
+  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant'];
   var BASE = JOURNEYS.tenant.user;
 
   function pick(){
@@ -1565,6 +1577,8 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   try { sessionStorage.setItem('bloom-journey', cur.id); } catch(e){}
   window.__JOURNEYS = JOURNEYS;
   window.__journey = cur;
+  window.__sr = window.__sr || { requests:[], last:null, viewing:null };
+  window.__sr.role = cur.owner ? 'owner' : cur.id==='holiday' ? 'agent' : 'tenant';
   document.documentElement.classList.add('journey-'+cur.id);
   document.documentElement.setAttribute('data-journey', cur.id);
 
@@ -1620,7 +1634,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
           }).join('')+
         '</div>'+
         '<button type="button" class="jr-restart">Restart this journey</button>'+
-        '<p class="jr-note">Each journey opens fresh and keeps its own link. All three share the same screens for now.</p>'+
+        '<p class="jr-note">Each journey opens fresh and keeps its own link.</p>'+
       '</div>';
     document.body.appendChild(el);
     var fab = el.querySelector('.jr-fab');
@@ -2498,7 +2512,8 @@ var UNITS = [
 function unitLabel(u){ return u.name+' · '+u.community; }
 var MO = window.__mo = { reqs:{}, cur:'v138', origin:'pd:details', multi:!(window.__journey && window.__journey.id==='tenant') };   // tenants hold a single unit
 MO.units = function(){ return MO.multi ? UNITS : UNITS.slice(0,1); };
-var OWNER = !!(window.__journey && window.__journey.id==='owner');   // owner moving out of their own unit: no NOC
+var OWNER_J = !!(window.__journey && window.__journey.owner);
+function ownsCur(){ if(!OWNER_J) return false; var u = MO.unit(); return !(u && u.own && u.own.status==='renting'); }   // owner moving out of their own unit: no NOC (an owner renting elsewhere still needs the landlord's NOC)
 MO.unit = function(){ var us = MO.units(); for(var i=0;i<us.length;i++) if(us[i].id===MO.cur) return us[i]; return us[0]; };
 Object.defineProperty(MO, 'req', { get:function(){ return MO.reqs[MO.unit().id] || null; }, set:function(v){ var id = MO.unit().id; if(v) MO.reqs[id] = v; else delete MO.reqs[id]; } });
 MO.ST = null; // filled below
@@ -2682,7 +2697,7 @@ function initMoChat(sec){
       return say('When would you like to move out? Pick a date at least 3 days from today. Please note the date can’t be changed once you submit.');
     }).then(pickDate).then(function(d){
       date = d; step(2);
-      if(OWNER) return say('Got it — '+fmtS(d)+'. As the owner, you don’t need a NOC. Will you be using movers & packers?');
+      if(ownsCur()) return say('Got it — '+fmtS(d)+'. As the owner, you don’t need a NOC. Will you be using movers & packers?');
       return say('Got it — '+fmtS(d)+'. Next, please upload the No Objection Certificate (NOC) issued by the unit owner. BCM needs it to approve your move-out.')
         .then(askNoc).then(function(f){
           noc = f;
@@ -2701,7 +2716,7 @@ function initMoChat(sec){
     }).then(function(){ return askText({ ph:'Type your special needs', skip:'No special needs', max:300 }); })
     .then(function(v){
       notes = v;
-      var rows = [['Unit', unitLabel(unit)],['Move-out date', fmt(date)]].concat(OWNER ? [] : [['Owner NOC', '📎 '+noc]]).concat([['Movers & packers', movers?'Yes':'No']]);
+      var rows = [['Unit', unitLabel(unit)],['Move-out date', fmt(date)]].concat(ownsCur() ? [] : [['Owner NOC', '📎 '+noc]]).concat([['Movers & packers', movers?'Yes':'No']]);
       if(movers) rows.push(['Company', company]);
       rows.push(['Special needs', notes || '—']);
       return say('Here’s a summary of your move-out request. Does everything look right?', card(rows));
@@ -2711,12 +2726,12 @@ function initMoChat(sec){
       step(4);
       return say('Before I submit, please read the Terms & Conditions:', '<ol class="moc-terms">'+TERMS.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('')+'</ol>');
     }).then(terms).then(function(){
-      return progress(OWNER ? ['Creating your request','Generating request ID'] : ['Creating your request','Attaching the owner’s NOC','Generating request ID']);
+      return progress(ownsCur() ? ['Creating your request','Generating request ID'] : ['Creating your request','Attaching the owner’s NOC','Generating request ID']);
     }).then(function(){
       MO.reqs[unit.id] = { id:'MO-'+(24800+Math.floor(Math.random()*190)), unit:unit, date:date, movers:movers, company:company, notes:notes, noc:noc, submitted:new Date(), status:'submitted' };
       refreshCards(); step(5);
       var r = MO.reqs[unit.id];
-      return say(OWNER ? 'Your move-out request has been submitted. BCM will review it and confirm your date. You’ll get updates in the app and by email.' : 'Your move-out request has been submitted with the owner’s NOC. BCM will verify the NOC and review your request. You’ll get updates in the app and by email.',
+      return say(ownsCur() ? 'Your move-out request has been submitted. BCM will review it and confirm your date. You’ll get updates in the app and by email.' : 'Your move-out request has been submitted with the owner’s NOC. BCM will verify the NOC and review your request. You’ll get updates in the app and by email.',
         '<div class="done"><span class="done__icon">'+icon('check',26)+'</span></div>'+card([['Request ID', r.id],['Unit', unitLabel(r.unit)],['Move-out date', fmt(r.date)],['Status','<span class="mox-pill" data-tone="blue">Submitted</span>', true]]));
     }).then(finish);
     flow.catch(function(e){ if(!(e instanceof Stale)) throw e; });
@@ -2892,9 +2907,11 @@ var D8 = function(d){ return MO.fmt(d); };
    Tenant  : one unit (no switcher) · contract + owner name + move-out
    Owner   : 5 units, one per status (payment pending · vacant · resident · rented · holiday home)
    Holiday : agent's units; status comes from bookings (guest checked in / no guest) */
-var J = (window.__journey && window.__journey.id) || 'tenant';
+var J = (window.__journey && window.__journey.owner) ? 'owner' : ((window.__journey && window.__journey.id) || 'tenant');
+var OK = (window.__journey && window.__journey.owner) ? window.__journey.id : null;   // owner type
 var ALL = (function(){ var m = MO.multi; MO.multi = true; var a = MO.units().slice(); MO.multi = m; return a; })();
 function dt(y,m,d){ return new Date(y,m-1,d); }
+function rel(n){ var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+n); return d; }
 var OMAR = 'Omar Al Suwaidi';
 var LISTS = { tenant:[ALL[0]], holiday:ALL.slice(), owner:[] };
 ALL[0].ownerName = OMAR;
@@ -2903,31 +2920,44 @@ if(J==='holiday'){
   ALL.forEach(function(u,i){ u.moveOut = true; u.permit = { no:'HH-'+(20431+i*517), until:dt(2027,3+i,31) }; u.agreement = dt(2025,4+i*2,1); });
 }
 if(J==='owner'){
-  var mk = function(o){ return o; };
+  var ME = window.__journey.user.name;
+  var mine = function(p, co){ var o = [[ME, p||100, true]]; if(co) o.push([co, 100-(p||100), false]); return o; };
   var v138 = ALL[0], a1204 = ALL[1], a305 = ALL[2];
-  v138.own = { status:'resident', moveIn:dt(2024,3,12), owners:[[OMAR,100,true]], spa:dt(2022,6,14) };
-  a1204.own = { status:'rented', owners:[[OMAR,60,true],['Fatima Al Suwaidi',40,false]], spa:dt(2021,9,2),
-    tenancy:{ tenant:'Rahul Verma', no:'TC-2025-11204', start:dt(2025,11,29), end:dt(2026,11,28), status:'Expiring soon', tone:'amber' } };
-  a305.own = { status:'holiday', owners:[[OMAR,100,true]], spa:dt(2023,1,19), agent:'Layla Haddad', company:'Haven Holiday Homes LLC', permit:'HH-21465', hhContract:dt(2025,4,1) };
-  var v22 = mk({ id:'v22', type:'3-Bedroom Villa', name:'Villa 22', community:'Bloom Gardens', code:'BG-P1-V-022', icon:'home', address:'Villa 22, Palm Grove Street', beds:'3', baths:'4', area:'3,600 sq ft',
-    own:{ status:'vacant', owners:[[OMAR,100,true]], spa:dt(2022,2,8), handover:dt(2024,11,20) } });
-  var o1810 = mk({ id:'o1810', type:'1-Bedroom Apartment', name:'Apt 1810', community:'Bloom Marina', code:'BM-B-1810', icon:'building', address:'Apt 1810, Tower B, Bloom Marina', beds:'1', baths:'2', area:'860 sq ft',
-    own:{ status:'pending', owners:[[OMAR,100,true]], spa:dt(2024,5,30), paidPct:70, outstanding:'AED 289,500', next:dt(2026,11,15) } });
-  LISTS.owner = [v138, o1810, a1204, a305, v22];   // Resident · Payment Pending · Rented · Holiday Home · Vacant
-  LISTS.owner.forEach(function(u){ u.moveOut = u.own.status==='resident'; });
+  var v22 = { id:'v22', type:'3-Bedroom Villa', name:'Villa 22', community:'Bloom Gardens', code:'BG-P1-V-022', icon:'home', address:'Villa 22, Palm Grove Street', beds:'3', baths:'4', area:'3,600 sq ft' };
+  var o1810 = { id:'o1810', type:'1-Bedroom Apartment', name:'Apt 1810', community:'Bloom Marina', code:'BM-B-1810', icon:'building', address:'Apt 1810, Tower B, Bloom Marina', beds:'1', baths:'2', area:'860 sq ft' };
+  var a907 = { id:'a907', type:'2-Bedroom Apartment', name:'Apt 907', community:'Bloom Towers', code:'BT-A-0907', icon:'building', address:'Apt 907, Tower A, Bloom Towers', beds:'2', baths:'3', area:'1,280 sq ft' };
+  var S = {
+    resident:     function(u){ u.own = { status:'resident', moveIn:dt(2024,3,12), owners:mine(), spa:dt(2022,6,14) }; },
+    rented:       function(u){ u.own = { status:'rented', owners:mine(), spa:dt(2021,9,2), rent:'AED 95,000 / year', cheques:'4 cheques · 2 received',
+                     tenancy:{ tenant:'Rahul Verma', no:'TC-2025-11204', start:rel(-343), end:rel(22), status:'Expiring soon', tone:'amber' } }; },
+    holiday:      function(u, g){ u.own = { status:'holiday', owners:mine(), spa:dt(2023,1,19), agent:'Layla Haddad', company:'Haven Holiday Homes LLC', permit:'HH-21465', hhContract:dt(2025,4,1), guest:g||'in', payout:'AED 11,240 · Oct 2026' }; },
+    vacant:       function(u){ u.own = { status:'vacant', owners:mine(), spa:dt(2022,2,8), handover:dt(2024,11,20) }; },
+    construction: function(u){ u.own = { status:'construction', owners:mine(), spa:dt(2024,5,30), progress:68, handover:dt(2027,6,30), paidPct:40, outstanding:'AED 579,000', next:rel(9), nextAmt:'AED 96,500' }; },
+    resale:       function(u){ u.own = { status:'resale', owners:mine(), spa:dt(2020,10,4), handover:dt(2023,8,1), price:'AED 1,850,000', listed:dt(2026,10,12), broker:'Bloom Resale Team', enquiries:6, viewings:2 }; },
+    renting:      function(u){ u.own = { status:'renting', landlord:OMAR }; u.ownerName = OMAR; u.contract = Object.assign({}, u.contract, { start:rel(-327), end:rel(38), status:'Expiring soon', tone:'amber' }); }
+  };
+  var L;
+  if(OK==='investor'){ S.construction(o1810); S.rented(a1204); S.vacant(v22); S.resale(a907); L = [o1810, a1204, v22, a907]; }
+  else if(OK==='ownerinv'){ S.resident(v138); S.rented(a1204); S.construction(o1810); S.holiday(a305); L = [v138, a1204, o1810, a305]; }
+  else if(OK==='ownerhh'){ S.holiday(a305,'in'); S.holiday(v22,'none'); L = [a305, v22]; }
+  else if(OK==='ownertenant'){ S.renting(v138); S.rented(a1204); S.construction(o1810); L = [v138, a1204, o1810]; }
+  else { S.resident(v138); L = [v138]; }
+  LISTS.owner = L;
+  L.forEach(function(u){ u.moveOut = u.own.status==='resident' || u.own.status==='renting'; u.group = u.own.status==='resident' ? 'home' : u.own.status==='renting' ? 'renting' : 'invest'; });
 }
 var allUnits = MO.units;
 MO.units = function(){ var L = (LISTS[J] || ALL).slice();
   if(J==='holiday') L.sort(function(a,b){ return (unitStatus(a)==='guest' ? 0 : 1) - (unitStatus(b)==='guest' ? 0 : 1); });   // guests checked in first
   return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
-var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Resident', rented:'Rented', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest' };
-var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey' };
+var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Your Home', rented:'Rented', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest', construction:'Under Construction', resale:'For Resale', renting:'Renting' };
+var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey', construction:'amber', resale:'violet', renting:'blue' };
+window.__ownst = { label:ST_LABEL, tone:ST_TONE, status:function(u){ return unitStatus(u); } };
 function unitStatus(u){
   if(J==='owner') return u.own ? u.own.status : null;
   if(J==='holiday'){ var bk = window.__bk; var inn = bk && bk.inHouse && bk.inHouse(u.id); return inn ? 'guest' : 'noguest'; }
   return null;
 }
-function canMoveOut(u){ return J==='tenant' || J==='holiday' || (J==='owner' && u.own && u.own.status==='resident'); }
+function canMoveOut(u){ return J==='tenant' || J==='holiday' || (J==='owner' && u.own && (u.own.status==='resident' || u.own.status==='renting')); }
 function daysTo(d){ var n = new Date(); n = new Date(n.getFullYear(), n.getMonth(), n.getDate()); return Math.round((d - n) / 864e5); }
 function rows(list){ return list.map(function(x){ return '<div class="mox-row"><span class="mox-k">'+esc(x[0])+'</span><span class="mox-v">'+(x[2] ? x[1] : esc(x[1]))+'</span></div>'; }).join(''); }
 
@@ -2953,10 +2983,23 @@ function initPD(sec){
   function ownerCard(u){
     if(J!=='owner') return '<div class="mox-card pd-sec pd-sw">'+head('OWNER DETAILS')+rows([['Owner name', u.ownerName || OMAR]])+'</div>';
     return '<div class="mox-card pd-sec pd-sw">'+head('OWNER DETAILS')+'<div class="pd-owners">'+u.own.owners.map(function(o){
-      var ini = o[0].split(' ').map(function(w){ return w[0]; }).join('').slice(0,2);
+      var ini = o[0].split(' ').filter(function(w,i,a){ return i===0 || i===a.length-1; }).map(function(w){ return w[0]; }).join('');
       return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(o[0])+'</b><small>Ownership share '+o[1]+'%</small></span>'+(o[2]?'<span class="pd-prim">Primary</span>':'')+'</div>'; }).join('')+'</div></div>';
   }
   function payments(u){
+    var OW = window.__own;
+    if(OW && OW.forUnit){
+      var it = OW.forUnit(u.id), upL = it.filter(function(x){ return x.st!=='paid'; }), hiL = it.filter(function(x){ return x.st==='paid'; });
+      var L2 = payTab==='up' ? upL : hiL;
+      var rowsH = L2.length ? L2.map(function(x){ var m = OW.meta(x);
+        return '<div class="pd-pr'+(x.st==='missed'?' is-missed':'')+'"><span class="pd-pt"><b>'+esc(x.t)+'</b><small>'+esc(m.when)+'</small></span><span class="pd-pa"><b>'+esc(OW.aed(x.amt))+'</b>'+pillH(m.label, m.tone)+'</span></div>'; }).join('')
+        : '<p class="mox-muted" style="padding:10px 0 2px">'+(payTab==='up' ? 'Nothing to pay right now.' : 'No payments yet.')+'</p>';
+      var miss = upL.filter(function(x){ return x.st==='missed'; }).length;
+      return '<div class="mox-card pd-sec pd-sw pd-pay"><p class="mox-eyebrow">PAYMENTS</p>'+
+        '<div class="mox-seg pd-seg" role="tablist" aria-label="Payments"><button type="button" class="mox-seg-b'+(payTab==='up'?' is-on':'')+'" role="tab" aria-selected="'+(payTab==='up')+'" data-ptab="up">To pay'+(miss?' <i class="pd-mc">'+miss+'</i>':'')+'</button><button type="button" class="mox-seg-b'+(payTab==='hist'?' is-on':'')+'" role="tab" aria-selected="'+(payTab==='hist')+'" data-ptab="hist">Paid</button></div>'+
+        '<div class="pd-pl">'+rowsH+'</div>'+(upL.length && payTab==='up' ? btnH(miss ? 'Pay overdue now' : 'Pay now', 'ow-pay', 'dark') : '')+
+        (payTab==='hist' && hiL.length ? btnH('All receipts & statements', 'ow-pay', 'ghost') : '')+'</div>';
+    }
     var o = u.own, up, hist;
     if(o.status==='pending'){
       up = [['Instalment 8 of 10', 'Due '+D8(o.next), 'AED 96,500', 'Due', 'amber'], ['Instalment 9 of 10', 'Due 15 Feb 2027', 'AED 96,500', 'Scheduled', 'grey'], ['Instalment 10 of 10 · handover', 'Due 15 May 2027', 'AED 96,500', 'Scheduled', 'grey']];
@@ -3002,7 +3045,7 @@ function initPD(sec){
      Owner  : header · property · status cards · documents · owners · payments (+ move-out when resident)
      Agent  : header · property · guest details · owner name · tenancy contract · move-out
      No contact details for any role. Status always shown as text. */
-  var openS = { about:1, contract:1, owner:1, paysum:1, occ:1, tenancy:1, hh:1, pay:1, docs:1, mo:1, guest:1, tmo:1 };
+  var openS = { cons:1, resale:1, about:1, contract:1, owner:1, paysum:1, occ:1, tenancy:1, hh:1, pay:1, docs:1, mo:1, guest:1, tmo:1 };
   var PHOTOS = (function(){ var a = []; $$('.arch-frame img, .fmedia img', D).forEach(function(i){ if(i.src && a.indexOf(i.src) < 0) a.push(i.src); }); return a; })();
   function today(){ var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
   function addD(d, n){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate()+n); return x; }
@@ -3015,7 +3058,7 @@ function initPD(sec){
   function dlRows(list){ return '<div class="ud-dl">'+list.map(function(d){ return '<button type="button" class="ud-doc" data-pact="contract" data-doc="'+esc(d[0])+'"><span class="ud-doc-i">'+icon('doc',20)+'</span><span class="ud-doc-t"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span><span class="ud-doc-d">'+icon('dl',20)+'</span></button>'; }).join('')+'</div>'; }
   function tiles(list){ return '<div class="ud-tl">'+list.map(function(x){ return '<div class="ud-tile"><span class="ud-tile-v">'+icon(x[0],20,'#1c1c19')+'<b>'+esc(x[2])+'</b></span><small>'+esc(x[1])+'</small></div>'; }).join('')+'</div>'; }
   function irows(list){ return '<div class="ud-ir">'+list.filter(Boolean).map(function(x){ return '<div class="ud-ir-r"><span class="ud-ir-i">'+icon(x[0],20,'#1c1c19')+'</span><span class="ud-ir-t"><small>'+esc(x[1])+'</small><b>'+(x[3] ? x[2] : esc(x[2]))+'</b></span></div>'; }).join('')+'</div>'; }
-  function person(name, sub){ var ini = name.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2); return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(name)+'</b><small>'+esc(sub)+'</small></span></div>'; }
+  function person(name, sub){ var ini = name.split(' ').filter(function(w,i,a){ return i===0 || i===a.length-1; }).map(function(w){ return w[0]; }).join(''); return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(name)+'</b><small>'+esc(sub)+'</small></span></div>'; }
   function note(text){ return '<div class="pd-hint">'+icon('info',16,'#6b665c')+'<span>'+esc(text)+'</span></div>'; }
   function btnH(label, act, kind, dis){ return '<button type="button" class="mox-btn mox-btn--'+(kind||'dark')+' ud-mo-b"'+(act?' data-pact="'+act+'"':'')+(dis?' disabled aria-disabled="true"':'')+'><span class="mox-btn-t">'+esc(label)+'</span></button>'; }
 
@@ -3037,7 +3080,7 @@ function initPD(sec){
   function ownerNameCard(u){ return acc('owner', 'user', 'Owner details', '', '<div class="pd-owners">'+person(u.ownerName || OMAR, 'Owner')+'</div>'); }
   function ownersCard(u){
     return acc('owner', 'user', u.own.owners.length > 1 ? 'Owners' : 'Owner details', '', '<div class="pd-owners">'+u.own.owners.map(function(o){
-      var ini = o[0].split(' ').map(function(w){ return w[0]; }).join('').slice(0,2);
+      var ini = o[0].split(' ').filter(function(w,i,a){ return i===0 || i===a.length-1; }).map(function(w){ return w[0]; }).join('');
       return '<div class="pd-own"><span class="pd-av">'+esc(ini)+'</span><span class="pd-ot"><b>'+esc(o[0])+'</b><small>Ownership share '+o[1]+'%</small></span>'+(o[2]?'<span class="pd-prim">Primary</span>':'')+'</div>'; }).join('')+'</div>');
   }
   function payCard(u){ var h = payments(u); h = h.replace(/^<div class="mox-card pd-sec pd-sw pd-pay"><p class="mox-eyebrow">PAYMENTS<\/p>/, '').replace(/<\/div>$/, ''); return acc('pay', 'card', 'Payments', '', h); }
@@ -3060,20 +3103,29 @@ function initPD(sec){
     if(o.status==='pending') return acc('paysum', 'card', 'Payment summary', pillH('Payment Pending','amber'),
         '<div class="pd-prog"><div class="pd-prog-h"><span>Payment completed</span><b>'+o.paidPct+'%</b></div><div class="pd-bar"><i style="width:'+o.paidPct+'%"></i></div></div>'+
         irows([['card', 'Amount outstanding', o.outstanding], ['cal', 'Next due date', D8(o.next)]]) + note('Handover after payment is complete.')) + docsCard2([spa]);
+    if(o.status==='construction') return acc('cons', 'building', 'Construction', pillH('Under Construction','amber'),
+        '<div class="pd-prog"><div class="pd-prog-h"><span>Construction progress</span><b>'+o.progress+'%</b></div><div class="pd-bar"><i style="width:'+o.progress+'%"></i></div></div>'+
+        irows([['calok', 'Expected handover', D8(o.handover)], ['card', 'Paid so far', o.paidPct+'% · '+o.outstanding+' outstanding'], ['cal', 'Next instalment', o.nextAmt+' · '+D8(o.next)]]) +
+        note('Last site update: structure and façade complete, interiors in progress.')) +
+        docsCard2([spa, ['Payment plan', 'PDF · 10 instalments'], ['Construction update · Oct 2026', 'PDF · photos & progress report']]);
+    if(o.status==='resale') return acc('resale', 'tag', 'Resale', pillH('For Resale','violet'),
+        irows([['tag', 'Asking price', o.price], ['cal', 'Listed on', D8(o.listed)], ['brief', 'Handled by', o.broker], ['user', 'Interest so far', o.enquiries+' enquiries · '+o.viewings+' viewings']]) +
+        '<div class="ud-mo-acts">'+btnH('Withdraw', 'rs-withdraw', 'ghost')+btnH('Update price', 'rs-price', 'dark')+'</div>') +
+        docsCard2([spa, ['Title deed', 'PDF · issued '+D8(o.handover)], ['Listing agreement', 'PDF · signed '+D8(o.listed)]]);
     if(o.status==='vacant') return acc('occ', 'villa', 'Occupancy', '',
-        '<div class="ud-occ"><b>Unit is vacant</b><small>Handed over '+esc(D8(o.handover))+'</small></div>'+
-        irows([['check', 'Payment status', pillH('Fully Paid','green'), true]])) + docsCard2([spa, ['Handover documents', 'PDF · '+D8(o.handover)]]);
+        '<div class="ud-occ"><b>Handed over · vacant</b><small>Handed over '+esc(D8(o.handover))+'</small></div>'+
+        irows([['check', 'Payment status', pillH('Fully Paid','green'), true]]) + btnH('Let Bloom lease it for me', 'lease', 'ghost')) + docsCard2([spa, ['Handover documents', 'PDF · '+D8(o.handover)], ['Title deed', 'PDF · issued '+D8(o.handover)]]);
     if(o.status==='resident') return acc('occ', 'villa', 'Occupancy', '',
         '<div class="ud-occ"><b>You live here</b></div>'+irows([['calok', 'Move-in date', D8(o.moveIn)]])) + docsCard2([spa]);
     if(o.status==='rented'){ var t = o.tenancy;
       return tenantMoveOutNudge(u) + acc('tenancy', 'doc', 'Tenancy contract', expChip(soon(t.end)),
-        irows([['user', 'Tenant name', t.tenant], ['hash', 'Contract no.', t.no], ['cal', 'Start date', D8(t.start)], ['calok', 'End date', D8(t.end)]])) +
+        irows([['user', 'Tenant name', t.tenant], ['hash', 'Contract no.', t.no], ['cal', 'Start date', D8(t.start)], ['calok', 'End date', D8(t.end)], ['card', 'Rental income', o.rent], ['doc', 'Cheques', o.cheques]])) +
         docsCard2([spa, ['Tenancy contract', 'PDF · signed '+D8(t.start)]]); }
     if(o.status==='holiday'){
-      var g = GST[u.id] || 'in', gs = g==='in'
+      var g = GST[u.id] || o.guest || 'in', gs = g==='in'
         ? '<div class="ud-st ud-st--green">'+icon('key',18,'#2e7d5b')+'<span><b>Guest Checked In</b><small>'+esc(MO.fmtS(addD(today(),-1)))+' → '+esc(MO.fmtS(addD(today(),4)))+'</small></span></div>'
         : '<div class="ud-st">'+icon('villa',18,'#6b665c')+'<span><b>No Guest Right Now</b><small>The unit is ready for the next booking.</small></span></div>';
-      return acc('hh', 'key', 'Holiday Home', '', irows([['brief', 'Agent', o.company || o.agent], ['hash', 'Permit no.', o.permit || 'HH-21465']]) + '<div class="ud-sub"><p class="mox-eyebrow">GUEST STATUS</p>'+gs+'</div>') +
+      return acc('hh', 'key', 'Holiday Home', '', irows([['brief', 'Agent', o.company || o.agent], ['hash', 'Permit no.', o.permit || 'HH-21465'], o.payout ? ['card', 'Last payout', o.payout] : null]) + '<div class="ud-sub"><p class="mox-eyebrow">GUEST STATUS</p>'+gs+'</div>') +
         docsCard2([spa, ['Tenancy contract', 'PDF · signed '+D8(o.hhContract)]]); }
     return '';
   }
@@ -3109,7 +3161,7 @@ function initPD(sec){
   function moveOutCard(u){
     var r = MO.reqs[u.id], m;
     if(!r){
-      var sub = J==='owner' ? 'Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date.' : 'Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.';
+      var sub = (J==='owner' && u.own.status!=='renting') ? 'Submit a move-out request with Bloom GPT. BCM reviews it and confirms your date.' : 'Submit a move-out request with Bloom GPT. You’ll need the owner’s NOC to upload, then BCM reviews it.';
       m = '<div class="pd-mo-t"><p class="mox-h3" style="font-size:16px;line-height:22px">Moving out of '+esc(u.name)+'?</p><p class="mox-muted">'+sub+'</p></div>'+
           note('Pick a date at least 3 days from today.') + btnH('Request Move-out', 'start', 'ghost');
     } else {
@@ -3150,7 +3202,8 @@ function initPD(sec){
     else { var s = u.own.status;
       if(s==='resident') rows.push(moRow);
       if(s==='rented'){ var t = TMO[u.id]; rows.push(['TENANT MOVE-OUT REQUEST', [['tm:none','None'],['tm:submitted','Submitted'],['tm:review','In Review'],['tm:approved','Approved'],['tm:rejected','Rejected']], 'tm:'+(t ? t.st : 'none')]); }
-      if(s==='holiday') rows.push(['GUEST STATUS', [['gs:in','Guest checked in'],['gs:none','No guest']], 'gs:'+(GST[u.id]||'in')]);
+      if(s==='holiday') rows.push(['GUEST STATUS', [['gs:in','Guest checked in'],['gs:none','No guest']], 'gs:'+(GST[u.id]||u.own.guest||'in')]);
+      if(s==='renting'){ rows.push(['CONTRACT', [['cs:active','Active'],['cs:expiring','Expiring soon'],['cs:renewal','Renewal in progress']], 'cs:'+cState(u)]); rows.push(moRow); }
     }
     if(!rows.length) return '';
     return '<div class="mox-demo ud-demo">'+rows.map(function(rw){ return '<p class="mox-eyebrow">PROTOTYPE · '+rw[0]+'</p><div class="mox-demo-c">'+rw[1].map(function(c){ return '<button type="button" class="mox-chip" data-pst="'+c[0]+'" aria-pressed="'+(c[0]===rw[2])+'">'+esc(c[1])+'</button>'; }).join('')+'</div>'; }).join('')+'</div>';
@@ -3169,7 +3222,8 @@ function initPD(sec){
     renderUD(list, u);
     prop.innerHTML = propCard(u);
     var h = '';
-    if(J==='owner') h = ownerStatusCards(u) + ownersCard(u) + payCard(u);
+    if(J==='owner' && u.own.status==='renting') h = '<div class="ud-rent-note pd-sw">'+icon('info',16,'#4d5ebe')+'<span>You rent this home. Properties you own are on your Home screen.</span></div>' + tenantContractCard(u) + ownerNameCard(u) + payCard(u);
+    else if(J==='owner') h = ownerStatusCards(u) + ownersCard(u) + payCard(u);
     else if(J==='holiday') h = guestCard(u) + ownerNameCard(u) + docsCard2([['Tenancy contract', 'PDF · signed '+D8(u.agreement || u.contract.start)]]);
     else h = tenantContractCard(u) + ownerNameCard(u);
     cards.innerHTML = h;
@@ -3235,6 +3289,12 @@ function initPD(sec){
     var pt = e.target.closest('[data-ptab]'); if(pt){ payTab = pt.dataset.ptab; render(false); return; }
     var rn = e.target.closest('[data-pact="renew"]');
     if(rn){ window.__gptIntent = { type:'renew', unit:MO.unit().id }; var n = nav(); if(n) n.navigate('gpt:chat', 'SLIDE_IN/350/EASE_OUT/LEFT'); return; }
+    var oa = e.target.closest('[data-pact="ow-pay"],[data-pact="lease"],[data-pact^="rs-"]');
+    if(oa){ var k2 = oa.dataset.pact;
+      if(k2==='ow-pay'){ if(window.__ownui) window.__ownui.openPay(payTab==='hist' ? 'paid' : 'due', MO.unit().id); return; }
+      if(k2==='lease'){ toast('Request sent. Bloom Leasing will call you to list '+MO.unit().name+'.'); return; }
+      if(k2==='rs-price'){ toast('Our resale team will call you to agree the new price.'); return; }
+      if(k2==='rs-withdraw'){ toast('Withdrawal request sent to the Bloom Resale Team.'); return; } }
     var d=e.target.closest('[data-pact="contract"]'); if(d) toast('Prototype: '+(d.getAttribute('data-doc')||'the document')+' (PDF) opens here.'); });
   $('[data-pback]', root).addEventListener('click', function(){ setTimeout(function(){ var n = nav(); if(!n) return; var s = n.stack(); if(s.length > 1) n.back(); else n.navigate('252:23836', 'SMART_ANIMATE/300/EASE_OUT'); }, 90); });
   sec.__onEnter = function(){ render(false); var sc = $('[data-pscroll]', root); if(sc) sc.scrollTop = 0; };
@@ -3252,20 +3312,28 @@ function wireDash(sec){
     res.classList.add('pd-tap'); res.setAttribute('role','button'); res.tabIndex = 0; res.setAttribute('aria-label','View unit details');
     var tile = $('[data-name="Unit tile"]', res);
     if(tile && !$('.pd-go', tile)) tile.insertAdjacentHTML('beforeend', '<span class="pd-go" aria-hidden="true">'+icon('chev',16)+'</span>');
-    var US = MO.units(), cards = [res];
+    var US = MO.units(), cards = [res], F0 = resFields(res);
+    function fillRes(c, u){
+      var f = c===res ? F0 : resFields(c);
+      if(f.comm) f.comm.textContent = String(u.community).toUpperCase();
+      if(f.type) f.type.textContent = u.type; if(f.addr) f.addr.textContent = u.address;
+      if(f.code){ var st = J==='owner' && unitStatus(u);
+        if(st){ f.code.textContent = ST_LABEL[st]; var chip = f.code.parentNode; chip.classList.add('rc-st'); chip.setAttribute('data-tone', ST_TONE[st]); }
+        else f.code.textContent = u.code; }
+    }
+    if(US.length===1) fillRes(res, US[0]);
     function openU(id){ return function(e){ if(e){ e.preventDefault(); e.stopPropagation(); } MO.cur = id; var n = nav(); if(n) n.navigate(SID, 'SLIDE_IN/350/EASE_OUT/LEFT'); }; }
     /* several properties → swipeable carousel, one card per property, with pager dots */
     if(US.length > 1){
       var wrap = D.createElement('div'); wrap.className = 'rcar';
       var track = D.createElement('div'); track.className = 'rcar-track'; track.setAttribute('role','group'); track.setAttribute('aria-label','Your properties');
       res.parentNode.insertBefore(wrap, res); wrap.appendChild(track); track.appendChild(res);
+      var PR = res.cloneNode(true);
       US.forEach(function(u, i){
         var c = res;
-        if(i){ c = res.cloneNode(true); [c].concat($$('[data-node-id]', c)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-motion'); });
-          c.setAttribute('data-name','Card / Residence · '+u.name); track.appendChild(c); cards.push(c);
-          var f = resFields(c);
-          if(f.comm) f.comm.textContent = String(u.community).toUpperCase();
-          if(f.code) f.code.textContent = u.code; if(f.type) f.type.textContent = u.type; if(f.addr) f.addr.textContent = u.address; }
+        if(i){ c = PR.cloneNode(true); [c].concat($$('[data-node-id]', c)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-motion'); });
+          c.setAttribute('data-name','Card / Residence · '+u.name); track.appendChild(c); cards.push(c); }
+        fillRes(c, u);
         var PH = []; $$('.arch-frame img, .fmedia img', D).forEach(function(x){ if(x.src && PH.indexOf(x.src) < 0) PH.push(x.src); });
         var im = i && $('[data-name^="Image"] img', c); if(im && PH.length){ im.src = PH[i % PH.length]; im.alt = u.name; }
         c.setAttribute('aria-label', 'View details of '+u.name+' ('+(i+1)+' of '+US.length+')');
@@ -6503,6 +6571,663 @@ window.__initScreen = window.__initScreen || {};
 window.__initScreen[LIST] = initList;
 window.__initScreen[DET] = initDetail;
 window.__initScreen[NEW] = initNew;
+})();</script>
+<style id="owner-css">
+/* ===== Owner flow ===== */
+.mox-pill[data-tone="violet"]{background:rgba(107,79,160,.12);color:#6b4fa0}
+.mox-pill[data-tone="teal"]{background:rgba(47,111,115,.12);color:#2f6f73}
+/* carousel card: status instead of unit code */
+.rc-st{background:rgba(77,94,190,.1)!important}
+.rc-st p{color:#4d5ebe!important;letter-spacing:.2px}
+.rc-st[data-tone="green"]{background:rgba(46,125,91,.12)!important}.rc-st[data-tone="green"] p{color:#2e7d5b!important}
+.rc-st[data-tone="amber"]{background:rgba(183,134,63,.15)!important}.rc-st[data-tone="amber"] p{color:#8f5a1c!important}
+.rc-st[data-tone="grey"]{background:rgba(28,28,25,.07)!important}.rc-st[data-tone="grey"] p{color:#54504a!important}
+.rc-st[data-tone="teal"]{background:rgba(47,111,115,.12)!important}.rc-st[data-tone="teal"] p{color:#2f6f73!important}
+.rc-st[data-tone="violet"]{background:rgba(107,79,160,.12)!important}.rc-st[data-tone="violet"] p{color:#6b4fa0!important}
+/* unit details */
+.pdx .pd-pr.is-missed b{color:#922a22}
+.pdx .pd-mc{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:#922a22;color:#fff;font-style:normal;font-size:11px;font-weight:700}
+.pdx .pd-pay .mox-btn{margin-top:12px;height:48px}
+.pdx .ud-rent-note{display:flex;gap:8px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:rgba(77,94,190,.08);font-size:13px;line-height:18px;color:#3d4a96}
+.pdx .ud-rent-note svg{flex:none;margin-top:1px}
+
+/* ---------- dashboard ---------- */
+.owd-wrap{display:flex;flex-direction:column;gap:12px;width:100%;box-sizing:border-box;font-family:'Matter','Figtree',sans-serif;color:#1c1c19}
+.owd{background:#fff;border:1px solid #efe7e3;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 6px 20px -14px rgba(28,28,25,.25)}
+.owd button{all:unset;box-sizing:border-box;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.owd button:focus-visible{outline:2px solid #922a22;outline-offset:2px;border-radius:12px}
+.owd-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.owd-t{display:flex;align-items:center;gap:10px;min-width:0}
+.owd-t b{font-size:16px;font-weight:600;line-height:22px}
+.owd-ti{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(146,42,34,.08)}
+.owd-ti[data-tone="blue"]{background:rgba(77,94,190,.1)}.owd-ti[data-tone="teal"]{background:rgba(47,111,115,.1)}
+.owd-n{font-size:12px;font-weight:600;color:#6b665c;background:rgba(28,28,25,.06);border-radius:999px;padding:2px 8px}
+.owd-sub{font-size:12px;color:#6b665c;text-align:right}
+.owd .owd-link{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:600;color:#922a22;padding:6px 0}
+.owd .owd-miss{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:linear-gradient(135deg,#922a22,#b0402f);color:#fff;transition:transform 160ms}
+.owd .owd-miss:active{transform:scale(.98)}
+.owd-miss-i{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+.owd-miss-t{flex:1;min-width:0;display:grid;gap:1px}
+.owd-miss-t b{font-size:14px;font-weight:600;line-height:19px}
+.owd-miss-t small{font-size:12px;line-height:16px;color:#f6d9d3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.owd-miss-b{flex:none;background:#fff;color:#922a22;font-size:13px;font-weight:700;padding:8px 12px;border-radius:999px}
+.owd-rows{display:flex;flex-direction:column}
+.owd .owd-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #f3ece8}
+.owd .owd-row:first-child{border-top:0;padding-top:2px}
+.owd-date{flex:none;width:42px;height:44px;border-radius:12px;background:#f6f1ec;display:grid;place-content:center;text-align:center}
+.owd-date b{font-size:16px;font-weight:700;line-height:18px}.owd-date small{font-size:9.5px;font-weight:600;letter-spacing:.8px;color:#6b665c}
+.owd-rt{flex:1;min-width:0;display:grid;gap:1px}
+.owd-rt b{font-size:14px;font-weight:600;line-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.owd-rt small{font-size:12px;line-height:16px;color:#6b665c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.owd-amt{flex:none;font-size:14px;font-weight:600}
+.owd-ok{display:flex;align-items:center;gap:8px;font-size:13px;color:#2e7d5b;background:rgba(46,125,91,.08);padding:10px 12px;border-radius:14px}
+.owd-chips{display:flex;flex-wrap:wrap;gap:6px}
+.owd-chips .mox-pill{font-size:11.5px;padding:3px 9px}
+.owd-hls{display:flex;flex-direction:column;gap:8px}.owd-hls:empty{display:none}
+.owd .owd-hl{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:16px;background:#faf7f4}
+.owd-hl-i{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(183,134,63,.14)}
+.owd-hl-i[data-tone="violet"]{background:rgba(107,79,160,.12)}.owd-hl-i[data-tone="blue"]{background:rgba(77,94,190,.1)}.owd-hl-i[data-tone="grey"]{background:rgba(28,28,25,.06)}
+.owd-hl-t{flex:1;min-width:0;display:grid;gap:2px}
+.owd-hl-t b{font-size:13px;font-weight:600;line-height:18px}.owd-hl-t small{font-size:12px;line-height:16px;color:#6b665c}
+.owd-bar,.ow-pbar{display:block;height:5px;border-radius:3px;background:rgba(183,134,63,.18);margin-top:5px;overflow:hidden}
+.owd-bar i,.ow-pbar i{display:block;height:100%;border-radius:3px;background:#b7863f}
+.owd-q{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.owd .owd-q button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:10px;border-radius:14px;border:1px solid #efe7e3;font-size:12.5px;font-weight:600;line-height:16px}
+.owd-q small{display:block;font-size:11px;font-weight:500;color:#2e7d5b}
+.owd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px}
+.owd .owd-tile{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;font-weight:500;line-height:14px;color:#3a3732;text-align:center;transition:transform 160ms}
+.owd .owd-tile:active{transform:scale(.94)}
+.owd-tile-i{position:relative;width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:#faf4f1;border:1px solid #f1e6e1}
+.owd-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#922a22;color:#fff;font-style:normal;font-size:10.5px;font-weight:700;display:grid;place-items:center;border:2px solid #fff}
+.owd .owd-lv{display:flex;align-items:center;gap:12px}
+.owd-lv-img{flex:none;width:56px;height:56px;border-radius:14px;overflow:hidden;background:#eee6df}
+.owd-lv-img.sm{width:44px;height:44px;border-radius:12px}
+.owd-lv-img img{width:100%;height:100%;object-fit:cover;display:block}
+.owd-warn{color:#8f5a1c!important;font-weight:600}
+.owd-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.owd .owd-acts .mox-btn{height:44px;font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:999px}
+.owd .owd-acts .mox-btn--dark{background:#1c1c19;color:#fff}.owd .owd-acts .mox-btn--ghost{background:#fff;border:1px solid #ddd2cc}
+.owd-split{flex-direction:row;padding:6px;gap:6px}
+.owd .owd-half{flex:1;display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:18px;background:#faf7f4;min-width:0}
+.owd-half .owd-ti{width:32px;height:32px;border-radius:10px;background:rgba(46,125,91,.1);margin-bottom:6px}
+.owd-half small{font-size:10.5px;font-weight:600;letter-spacing:1.2px;color:#6b665c}
+.owd-half b{font-size:15px;font-weight:600;line-height:20px}
+.owd-half span:last-child{font-size:12px;line-height:16px;color:#6b665c}
+.owd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.owd-stats span{display:grid;gap:2px;padding:10px;border-radius:14px;background:#faf7f4}
+.owd-stats small{font-size:11px;color:#6b665c}.owd-stats b{font-size:14px;font-weight:600}
+
+/* ---------- owner screens ---------- */
+.owx{overflow:hidden}
+.owx .mox-btn--dark{background:#1a1a1a;color:#fff}
+.owx .mox-body{gap:14px}
+.ow-hero{border-radius:24px;padding:18px;background:#1c1c19;color:#f8f5eb;display:grid;gap:4px}
+.ow-hero.is-miss{background:linear-gradient(135deg,#7d221b,#a8392b)}
+.ow-hero small{font-size:12.5px;color:rgba(248,245,235,.75)}
+.ow-hero b{font-family:'Instrument Serif','Times New Roman',serif;font-weight:400;font-size:38px;line-height:44px;letter-spacing:-.5px}
+.ow-hero-m,.ow-hero-ok{display:inline-flex;align-items:center;gap:6px;justify-self:start;font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.16);margin-top:4px}
+.ow-hero-ok{background:rgba(46,125,91,.22);color:#bfe6d2}
+.ow-clear{font-size:12.5px;color:#54504a;text-align:left}
+.ow-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.ow-chips .mox-chip[aria-pressed="true"],.ow-yr .mox-chip[aria-pressed="true"]{background:#1c1c19;color:#fff;border-color:#1c1c19}
+.ow-cnt{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:#922a22;color:#fff;font-style:normal;font-size:11px;font-weight:700}
+.ow-sec{display:grid;gap:8px}
+.ow-sec-h{display:flex;justify-content:space-between;align-items:center}
+.ow-link{font-size:13px;font-weight:600;color:#922a22}
+.ow-list{background:#fff;border:1px solid #efe7e3;border-radius:22px;padding:4px 14px}
+.ow-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #f3ece8}
+.ow-row:first-child{border-top:0}
+.ow-ri{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:#f6f1ec}
+.ow-ri[data-tone="red"]{background:rgba(146,42,34,.1)}.ow-ri[data-tone="green"]{background:rgba(46,125,91,.1)}
+.ow-rt{flex:1;min-width:0;display:grid;gap:2px}
+.ow-rt b{font-size:14px;font-weight:600;line-height:19px}
+.ow-rt small{font-size:12px;line-height:16px;color:#6b665c}
+.ow-row.is-miss .ow-rt small{color:#922a22}
+.ow-ra{flex:none;display:grid;justify-items:end;gap:5px}
+.ow-ra b{font-size:14px;font-weight:600}
+.ow-payb{height:30px;padding:0 14px;border-radius:999px;border:1px solid #1c1c19;font-size:12.5px;font-weight:600;color:#1c1c19;background:#fff}
+.ow-payb.is-red{background:#922a22;border-color:#922a22;color:#fff}
+.ow-payb.is-on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}
+.ow-rc{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;color:#922a22}
+.ow-tag{font-size:12px;color:#6b665c;background:#f6f1ec;padding:4px 10px;border-radius:999px}
+.ow-how{display:grid;gap:12px}
+.ow-how-r,.ow-ir{display:flex;align-items:center;gap:12px}
+.ow-how-r b,.ow-ir b{display:block;font-size:13.5px;font-weight:600;line-height:18px}
+.ow-how-r small,.ow-ir small{display:block;font-size:12px;line-height:16px;color:#6b665c}
+.ow-m-i{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(146,42,34,.07)}
+.ow-empty{display:grid;justify-items:center;gap:6px;text-align:center;padding:24px 12px;background:#fff;border:1px solid #efe7e3;border-radius:22px}
+.ow-empty b{font-size:15px;font-weight:600}.ow-empty small{font-size:12.5px;color:#6b665c}
+.ow-stmt{display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:center}
+.ow-stmt-i{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(146,42,34,.07)}
+.ow-stmt b{display:block;font-size:14.5px;font-weight:600}.ow-stmt small{display:block;font-size:12px;color:#6b665c}
+.ow-yr{grid-column:1/-1;display:flex;gap:8px}
+.ow-stmt .mox-btn{grid-column:1/-1;height:46px;font-size:14px}
+.ow-stmt .mox-btn-t{display:inline-flex;align-items:center}
+.ow-incs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ow-incs span{display:grid;gap:2px}.ow-incs small{font-size:12px;color:#6b665c}.ow-incs b{font-size:20px;font-weight:600}
+.ow-incs span:first-child b{color:#2e7d5b}
+.ow-phero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px;background:#fff;border:1px solid #efe7e3}
+.ow-phero>span:first-child{display:grid;gap:0}
+.ow-phero small{font-size:12px;color:#6b665c}
+.ow-phero b{font-family:'Instrument Serif','Times New Roman',serif;font-weight:400;font-size:40px;line-height:44px}
+.ow-pchips{display:flex;flex-wrap:wrap;gap:6px}.ow-pchips .mox-pill{font-size:11.5px;padding:3px 9px}
+.ow-plist{display:grid;gap:10px}
+.ow-pc{display:flex;align-items:center;gap:12px;padding:10px;border-radius:20px;background:#fff;border:1px solid #efe7e3;text-align:left;width:100%}
+.ow-pc:active{transform:scale(.99)}
+.ow-pimg{flex:none;width:72px;height:72px;border-radius:14px;overflow:hidden;background:#eee6df}
+.ow-pimg img{width:100%;height:100%;object-fit:cover;display:block}
+.ow-pt{flex:1;min-width:0;display:grid;gap:2px}
+.ow-pt-h{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ow-pt-h b{font-size:15px;font-weight:600}
+.ow-pt-h .mox-pill{font-size:11px;padding:2px 8px}
+.ow-pt small{font-size:12px;line-height:16px;color:#6b665c}
+.ow-pt .ow-pcom{color:#3a3732}
+.ow-help{display:flex;align-items:center;gap:12px;padding:14px;border-radius:20px;background:#fff;border:1px solid #efe7e3;text-align:left;width:100%}
+.ow-help>span:nth-child(2){flex:1;display:grid}.ow-help b{font-size:14px;font-weight:600}.ow-help small{font-size:12px;color:#6b665c}
+.ow-note{font-size:13px;line-height:19px;color:#6b665c;margin:0}
+.ow-docs{display:grid;gap:4px;padding:14px 14px 6px}
+.ow-docs-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.ow-docs-h b{font-size:15px;font-weight:600}.ow-docs-h small{font-size:12px;color:#6b665c}
+.ow-doc{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #f3ece8;text-align:left;width:100%}
+.ow-doc>span:nth-child(2){flex:1;display:grid}.ow-doc b{font-size:13.5px;font-weight:600}.ow-doc small{font-size:12px;color:#6b665c}
+/* access card */
+.ow-acard{position:relative;border-radius:22px;padding:18px;min-height:190px;color:#f8f5eb;background:radial-gradient(120% 90% at 100% 0%,#b0402f 0%,#922a22 45%,#5e1712 100%);display:flex;flex-direction:column;gap:2px;box-shadow:0 18px 40px -22px rgba(94,23,18,.8);overflow:hidden}
+.ow-acard::after{content:"";position:absolute;right:-40px;bottom:-60px;width:200px;height:200px;border-radius:50%;border:28px solid rgba(248,245,235,.06)}
+.ow-acard-t{display:flex;justify-content:space-between;font-size:11px;font-weight:600;letter-spacing:1.6px;margin-bottom:auto}
+.ow-acard-s{letter-spacing:0;color:#bfe6d2}
+.ow-acard>b{font-size:20px;font-weight:600;margin-top:28px}
+.ow-acard>small{font-size:12.5px;color:rgba(248,245,235,.75)}
+.ow-acard-b{display:flex;gap:28px;margin-top:14px;font-size:13px;font-weight:600;letter-spacing:.6px}
+.ow-acard-b small{display:block;font-size:9.5px;letter-spacing:1.2px;color:rgba(248,245,235,.6);font-weight:600}
+.ow-nfc{position:absolute;right:16px;top:44px}
+.ow-irows{display:grid;gap:14px}
+.ow-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ow-acts .mox-btn{height:48px;font-size:14px}
+.ow-anpr{display:flex;gap:12px;align-items:center}
+.ow-anpr b{display:block;font-size:14px;font-weight:600}.ow-anpr small{display:block;font-size:12px;line-height:16px;color:#6b665c}
+.ow-plate{flex:none;min-width:64px;height:34px;padding:0 8px;border-radius:8px;border:1.5px solid #1c1c19;display:grid;place-items:center;font-size:13px;font-weight:700;letter-spacing:.5px;background:#fff}
+.ow-av{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#f3e7e3;color:#922a22;font-size:13px;font-weight:700}
+.ow-ev .ow-date{flex:none;width:46px;height:50px;border-radius:14px;background:#faf4f1;display:grid;place-content:center;text-align:center}
+.ow-ev .ow-date b{font-size:18px;font-weight:700;line-height:20px}.ow-ev .ow-date small{font-size:10px;font-weight:600;letter-spacing:.8px;color:#922a22}
+.ow-nt .ow-nt-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ow-nt.is-new{position:relative}
+.ow-nt.is-new .ow-rt>b::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#922a22;margin-left:6px;vertical-align:2px}
+/* sheet */
+.ow-ov{position:absolute;inset:0;z-index:60;background:rgba(28,28,25,0);display:flex;align-items:flex-end;transition:background-color 240ms}
+.ow-ov.is-in{background:rgba(28,28,25,.45)}
+.ow-sh{width:100%;max-height:88%;overflow-y:auto;background:#fbf8f4;border-radius:28px 28px 0 0;padding:10px 18px 28px;box-sizing:border-box;transform:translateY(100%);transition:transform 280ms cubic-bezier(.16,1,.3,1);font-family:'Matter','Figtree',sans-serif;color:#1c1c19}
+.ow-ov.is-in .ow-sh{transform:none}
+.ow-grab{display:block;width:40px;height:4px;border-radius:2px;background:#d9cfc8;margin:0 auto 10px}
+.ow-sh button{font:inherit;color:inherit;cursor:pointer}
+.ow-sh-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ow-sh-h b{font-size:20px;font-weight:600}
+.ow-x{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#f1ebe6}
+.ow-sh-l{background:#fff;border:1px solid #efe7e3;border-radius:18px;padding:2px 14px;margin-bottom:12px}
+.ow-li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #f3ece8;font-size:13.5px}
+.ow-li:first-child{border-top:0}.ow-li>b{white-space:nowrap}.ow-li span{display:grid}.ow-li b{font-weight:600}.ow-li small{font-size:12px;color:#6b665c}
+.ow-mth{display:grid;gap:8px;margin-bottom:14px}
+.ow-m{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#fff;border:1px solid #efe7e3}
+.ow-m[aria-checked="true"]{border-color:#922a22;box-shadow:inset 0 0 0 1px #922a22}
+.ow-m>span:nth-child(2){flex:1;display:grid}.ow-m b{font-size:14px;font-weight:600}.ow-m small{font-size:12px;color:#6b665c}
+.ow-rad{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid #cfc5bd;box-sizing:border-box}
+.ow-m[aria-checked="true"] .ow-rad{border:6px solid #922a22}
+.ow-sh .mox-btn{width:100%;height:52px;border-radius:999px;background:#1c1c19;color:#fff;border:0;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.ow-sh .mox-btn.is-busy{opacity:.7}
+.ow-ok{display:grid;justify-items:center;text-align:center;gap:6px;padding:16px 0 4px}
+.ow-ok-i{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:rgba(46,125,91,.12);margin-bottom:6px}
+.ow-ok b{font-size:20px;font-weight:600}.ow-ok small{font-size:13px;color:#6b665c;margin-bottom:14px;max-width:290px}
+@media (prefers-reduced-motion: reduce){.ow-sh,.ow-ov{transition:none}}
+</style>
+<script id="owner-js">(function(){
+'use strict';
+/* ==========================================================================
+   Owner flow (persona map, 05 Nov 2026) — five owner journeys
+   investor    : owns, lets Bloom / a tenant use it (rented · under construction · handed over · resale)
+   owner       : lives in the unit they own
+   ownerinv    : lives in one unit + investment units → "My home" vs "Investments" kept apart
+   ownerhh     : owns holiday-home units run by an operator
+   ownertenant : owns units but lives elsewhere as a tenant → "Where I live" + "What I own"
+   Dashboard: payments first (overdue in red + Pay now), then the persona card(s).
+   Screens: ow:pay (To pay · Paid · Income, receipts, statements) · ow:port (properties · documents)
+            ow:feat (access card · amenities · parking & ANPR · family · events · notices)
+   ========================================================================== */
+var DATA = window.__BLOOM; if(!DATA) return;
+var D = document, PAY = 'ow:pay', PORT = 'ow:port', FEAT = 'ow:feat', PD = 'pd:details', HOME = '252:23836';
+var DASH_CTA = { '252:23836':'252:23872', '195:7859':'203:8210' };
+var JR = window.__journey || {}, OK = JR.owner ? JR.id : null;
+function nav(){ return window.__bloomNav; }
+function go(sid, t){ var n = nav(); if(n) n.navigate(sid, t || 'SLIDE_IN/350/EASE_OUT/LEFT'); }
+function back(){ setTimeout(function(){ var n = nav(); if(n && n.stack().length > 1) n.back(); else if(n) n.navigate(HOME, 'SMART_ANIMATE/300/EASE_OUT'); }, 90); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function $(s,r){ return (r||D).querySelector(s); }
+function $$(s,r){ return Array.prototype.slice.call((r||D).querySelectorAll(s)); }
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var P = {
+  card:'<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/>',
+  alert:'<path d="M12 3.5 21.5 20h-19Z"/><path d="M12 10v4.5M12 17.2v.01"/>',
+  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  chev:'<path d="m9 6 6 6-6 6"/>', dl:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  doc:'<path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
+  stmt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  coins:'<ellipse cx="9" cy="7" rx="5.5" ry="2.5"/><path d="M3.5 7v4c0 1.4 2.5 2.5 5.5 2.5S14.5 12.4 14.5 11V7"/><path d="M9.5 16.4c.9.4 2 .6 3.5.6 3 0 5.5-1.1 5.5-2.5v-4c0-1.2-1.8-2.2-4.3-2.4"/>',
+  home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  building:'<path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M3 21h18"/><path d="M8 8h3M8 12h3M8 16h3"/>',
+  crane:'<path d="M4 21h8M7 21V5l12 3M7 5l-3 3h3M15 7v5"/><rect x="13" y="12" width="4" height="3"/>',
+  tag:'<path d="M3 12V4h8l10 10-8 8Z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
+  idc:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10h3.5M14.5 13.5h2.5"/>',
+  pool:'<path d="M3 17c1.5 1 3 1 4.5 0s3-1 4.5 0 3 1 4.5 0 3-1 4.5 0M3 20.5c1.5 1 3 1 4.5 0s3-1 4.5 0 3 1 4.5 0 3-1 4.5 0"/><path d="M8 14V6a2 2 0 0 1 4 0M16 14V6a2 2 0 0 0-2-2M8 9h8"/>',
+  car:'<path d="M5 16V11l2-5h10l2 5v5M3.5 16h17v3h-3v-1.5h-11V19h-3Z"/><path d="M5 11h14M7.5 13.5h.01M16.5 13.5h.01"/>',
+  family:'<circle cx="8" cy="7" r="2.6"/><circle cx="16.5" cy="8.5" r="2.1"/><path d="M3.5 20c0-3 2-5 4.5-5s4.5 2 4.5 5M13 20c0-2.4 1.5-4 3.5-4s3.5 1.6 3.5 4"/>',
+  event:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4M12 12.5l1.1 2.2 2.4.3-1.7 1.7.4 2.4-2.2-1.2-2.2 1.2.4-2.4-1.7-1.7 2.4-.3Z"/>',
+  bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
+  exit:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
+  bank:'<path d="M3 9.5 12 4l9 5.5M4.5 10v8M9 10v8M15 10v8M19.5 10v8M3 20h18"/>',
+  chq:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 14.5c1-1.5 2-1.5 3 0s2 1.5 3 0M15 10h3.5M15 13h3.5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  shield:'<path d="M12 3 4.5 6v6c0 4.5 3.2 7.8 7.5 9 4.3-1.2 7.5-4.5 7.5-9V6Z"/><path d="m9 12 2 2 4-4"/>',
+  gym:'<path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/>', grill:'<path d="M4 10h16a8 8 0 0 1-16 0ZM8 21l2-4M16 21l-2-4M9 3c-1 1.5 1 2.5 0 4M13 3c-1 1.5 1 2.5 0 4"/>',
+  padel:'<ellipse cx="10" cy="9" rx="5.5" ry="6" transform="rotate(-35 10 9)"/><path d="m13.5 13.5 6 6"/><circle cx="18" cy="5.5" r="1.6"/>',
+  kids:'<circle cx="12" cy="5.5" r="2.2"/><path d="M12 8v7M8 11l4-1.5 4 1.5M9 21l3-6 3 6"/>'
+};
+function ic(n, c, s){ s = s||20; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'')+'</svg>'; }
+
+/* ---------- dates & money ---------- */
+function T(n){ var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+n); return d; }
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fd(d){ return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); }
+function fds(d){ return d.getDate()+' '+MON[d.getMonth()]; }
+function days(d){ return Math.round((d - T(0)) / 864e5); }
+function aed(n){ return 'AED '+Math.round(n).toLocaleString('en-US'); }
+function mo(){ return window.__mo; }
+function units(){ var M = mo(); if(!M) return []; var m = M.multi; M.multi = true; var a = M.units().slice(); M.multi = m; return a; }
+function U(id){ var a = units(); for(var i=0;i<a.length;i++) if(a[i].id===id) return a[i]; return null; }
+function grp(u){ return u ? (u.group || 'invest') : 'invest'; }
+function stOf(u){ var S = window.__ownst; var st = u && u.own ? u.own.status : null; return st ? { k:st, label:S.label[st], tone:S.tone[st] } : null; }
+function pill(label, tone){ return '<span class="mox-pill"'+(tone && tone!=='blue' ? ' data-tone="'+tone+'"' : '')+'>'+esc(label)+'</span>'; }
+
+/* ---------- ledger (what the backend would send) ---------- */
+var L = [], INC = [];
+function it(u, t, k, d, amt, paid){ L.push({ id:'P'+(L.length+101), u:u, t:t, k:k, due:T(d), amt:amt, paid: paid==null ? null : T(paid), rc: paid==null ? null : 'RC-'+(260410 + L.length*37) }); }
+function inc(u, t, d, amt){ INC.push({ u:u, t:t, date:T(d), amt:amt }); }
+if(OK==='investor'){
+  it('o1810','Instalment 7 of 10','Instalment',-12,96500); it('v22','Service charge · Q4 2026','Service charge',-5,6980);
+  it('o1810','Instalment 8 of 10','Instalment',9,96500); it('a1204','Service charge · Q4 2026','Service charge',20,4120); it('o1810','Instalment 9 of 10','Instalment',101,96500);
+  it('o1810','Instalment 6 of 10','Instalment',-104,96500,-105); it('a907','Service charge · Q4 2026','Service charge',-30,5210,-31); it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a1204','Service charge · Q3 2026','Service charge',-72,4120,-74); it('o1810','Instalment 5 of 10','Instalment',-196,96500,-197);
+  inc('a1204','Rent · cheque 2 of 4',-25,23750); inc('a1204','Rent · cheque 1 of 4',-117,23750); inc('a1204','Rent · cheque 3 of 4',66,23750);
+} else if(OK==='owner'){
+  it('v138','Service charge · Q4 2026','Service charge',-8,7840); it('v138','District cooling · Oct 2026','Utilities',6,1240); it('v138','Service charge · Q1 2027','Service charge',56,7840);
+  it('v138','District cooling · Sep 2026','Utilities',-24,1180,-25); it('v138','Service charge · Q3 2026','Service charge',-100,7840,-101); it('v138','District cooling · Aug 2026','Utilities',-55,1320,-55);
+} else if(OK==='ownerinv'){
+  it('o1810','Instalment 7 of 10','Instalment',-12,96500); it('v138','District cooling · Oct 2026','Utilities',6,1240); it('o1810','Instalment 8 of 10','Instalment',9,96500); it('a305','Service charge · Q4 2026','Service charge',20,2360);
+  it('v138','Service charge · Q4 2026','Service charge',-15,7840,-16); it('a1204','Service charge · Q4 2026','Service charge',-28,4120,-30); it('o1810','Instalment 6 of 10','Instalment',-104,96500,-105);
+  inc('a305','Holiday home payout · Oct 2026',-6,11240); inc('a1204','Rent · cheque 2 of 4',-25,23750); inc('a305','Holiday home payout · Sep 2026',-36,9870); inc('a1204','Rent · cheque 3 of 4',66,23750);
+} else if(OK==='ownerhh'){
+  it('a305','Service charge · Q4 2026','Service charge',-4,2360); it('v22','Service charge · Q4 2026','Service charge',15,6980); it('a305','Holiday home permit','Permit',42,1520);
+  it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a305','Service charge · Q3 2026','Service charge',-92,2360,-93);
+  inc('a305','Payout · Oct 2026',-6,11240); inc('v22','Payout · Oct 2026',-6,4180); inc('a305','Payout · Sep 2026',-36,9870); inc('v22','Payout · Sep 2026',-36,13650);
+} else if(OK==='ownertenant'){
+  it('o1810','Instalment 7 of 10','Instalment',-12,96500); it('v138','Rent cheque 3 of 4','Rent',10,71250); it('o1810','Instalment 8 of 10','Instalment',9,96500); it('a1204','Service charge · Q4 2026','Service charge',20,4120);
+  it('v138','Rent cheque 2 of 4','Rent',-81,71250,-81); it('a1204','Service charge · Q3 2026','Service charge',-72,4120,-74);
+  inc('a1204','Rent · cheque 2 of 4',-25,23750); inc('a1204','Rent · cheque 3 of 4',66,23750);
+}
+function status(x){ if(x.paid) return 'paid'; var n = days(x.due); return n < 0 ? 'missed' : n <= 30 ? 'due' : 'upcoming'; }
+function items(){ L.forEach(function(x){ x.st = status(x); }); return L.slice().sort(function(a,b){ var o = { missed:0, due:1, upcoming:2, paid:3 }; return (o[a.st]-o[b.st]) || (a.st==='paid' ? b.paid - a.paid : a.due - b.due); }); }
+function meta(x){
+  var n = days(x.due);
+  if(x.st==='paid') return { label:'Paid', tone:'green', when:'Paid '+fd(x.paid) };
+  if(x.st==='missed') return { label:'Overdue', tone:'red', when:'Due '+fds(x.due)+' · '+(-n)+' day'+(n===-1?'':'s')+' late' };
+  if(x.st==='due') return { label: n===0 ? 'Due today' : 'Due in '+n+'d', tone:'amber', when:'Due '+fd(x.due) };
+  return { label:'Scheduled', tone:'grey', when:'Due '+fd(x.due) };
+}
+function sum(a){ return a.reduce(function(t,x){ return t + x.amt; }, 0); }
+function markPaid(ids){ ids.forEach(function(id){ L.forEach(function(x){ if(x.id===id && !x.paid){ x.paid = T(0); x.rc = 'RC-'+(261000 + Math.floor(Math.random()*8999)); } }); }); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }
+window.__own = { items:items, forUnit:function(id){ return items().filter(function(x){ return x.u===id; }); }, meta:meta, aed:aed, income:function(){ return INC.slice(); } };
+
+/* group names per persona */
+function GN(){ return OK==='ownertenant' ? { home:'Where I live', invest:'What I own' } : { home:'My home', invest:'Investments' }; }
+function mixed(){ return OK==='ownerinv' || OK==='ownertenant'; }
+function groupOf(x){ var u = U(x.u); return u && (u.group==='home' || u.group==='renting') ? 'home' : 'invest'; }
+
+/* ---------- screen templates ---------- */
+(function(){
+  var src = D.getElementById('tpl-mo-details'); if(!src || D.getElementById('tpl-ow-pay')) return;
+  var c = src.content, sb = c.querySelector('.mox-sb'), bar = c.querySelector('.mox-bar');
+  [[PAY,'tpl-ow-pay'],[PORT,'tpl-ow-port'],[FEAT,'tpl-ow-feat']].forEach(function(p){
+    var t = D.createElement('template'); t.id = p[1];
+    t.innerHTML = '<div class="mox mox--det owx">'+sb.outerHTML+bar.outerHTML.replace(/data-mback/, 'data-oback')+
+      '<div class="mox-body" data-oscroll></div><div class="mox-ind"></div><div class="mox-toast" data-mtoast role="status" aria-live="polite"></div></div>';
+    src.parentNode.insertBefore(t, src.nextSibling);
+    if(DATA.screens.indexOf(p[0]) < 0) DATA.screens.push(p[0]);
+  });
+})();
+
+/* ---------- shared bits ---------- */
+function toaster(root){ var el = $('[data-mtoast]', root), tt = null; return function(m){ if(!el) return; el.textContent = m; el.classList.add('is-in'); clearTimeout(tt); tt = setTimeout(function(){ el.classList.remove('is-in'); }, 2400); }; }
+function seg(name, tabs, cur){ return '<div class="mox-seg ow-seg" role="tablist" aria-label="'+esc(name)+'">'+tabs.map(function(t){ return '<button type="button" class="mox-seg-b'+(t[0]===cur?' is-on':'')+'" role="tab" aria-selected="'+(t[0]===cur)+'" data-tab="'+t[0]+'">'+t[1]+'</button>'; }).join('')+'</div>'; }
+function chips(list, cur){ return '<div class="ow-chips">'+list.map(function(c){ return '<button type="button" class="mox-chip" aria-pressed="'+(c[0]===cur)+'" data-flt="'+c[0]+'">'+esc(c[1])+'</button>'; }).join('')+'</div>'; }
+function thumb(u){ var a = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && a.indexOf(i.src) < 0) a.push(i.src); }); var k = units().indexOf(u); return a.length ? '<img src="'+a[Math.max(0,k) % a.length]+'" alt="">' : ''; }
+function sheet(root, html){
+  var ov = D.createElement('div'); ov.className = 'ow-ov'; ov.innerHTML = '<div class="ow-sh" role="dialog" aria-modal="true"><span class="ow-grab" aria-hidden="true"></span>'+html+'</div>';
+  root.appendChild(ov); requestAnimationFrame(function(){ ov.classList.add('is-in'); });
+  function close(){ ov.classList.remove('is-in'); setTimeout(function(){ ov.remove(); }, REDUCED ? 0 : 260); }
+  ov.addEventListener('click', function(e){ if(e.target===ov || e.target.closest('[data-shx]')) close(); });
+  return { el:ov, close:close };
+}
+
+/* ---------- pay flow ---------- */
+var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
+function payFlow(root, ids, done){
+  var list = items().filter(function(x){ return ids.indexOf(x.id) >= 0; }), m = 'card', total = sum(list);
+  var sh = sheet(root, '');
+  function body(){
+    return '<div class="ow-sh-h"><b>Pay '+esc(aed(total))+'</b><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'+
+      '<div class="ow-sh-l">'+list.map(function(x){ var u = U(x.u), mt = meta(x); return '<div class="ow-li"><span><b>'+esc(x.t)+'</b><small>'+esc((u?u.name+' · ':'')+mt.when)+'</small></span><b>'+esc(aed(x.amt))+'</b></div>'; }).join('')+'</div>'+
+      '<p class="mox-eyebrow" style="margin:6px 0 8px">HOW WOULD YOU LIKE TO PAY?</p>'+
+      '<div class="ow-mth" role="radiogroup">'+METHODS.map(function(k){ return '<button type="button" class="ow-m" role="radio" aria-checked="'+(k[0]===m)+'" data-m="'+k[0]+'"><span class="ow-m-i">'+ic(k[3],'#922a22',20)+'</span><span><b>'+k[1]+'</b><small>'+k[2]+'</small></span><i class="ow-rad"></i></button>'; }).join('')+'</div>'+
+      '<button type="button" class="mox-btn mox-btn--dark ow-go" data-pay><span class="mox-btn-t">'+(m==='card' ? 'Pay '+esc(aed(total)) : m==='bank' ? 'I’ve made the transfer' : 'Book cheque pickup')+'</span></button>';
+  }
+  var box = $('.ow-sh', sh.el); box.insertAdjacentHTML('beforeend', '<div data-shb>'+body()+'</div>');
+  var b = $('[data-shb]', box);
+  b.addEventListener('click', function(e){
+    var r = e.target.closest('[data-m]'); if(r){ m = r.dataset.m; b.innerHTML = body(); return; }
+    if(e.target.closest('[data-pay]')){
+      var btn = e.target.closest('[data-pay]'); btn.disabled = true; btn.classList.add('is-busy');
+      setTimeout(function(){
+        if(m==='card') markPaid(ids);
+        b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>'+(m==='card' ? 'Payment successful' : m==='bank' ? 'Transfer noted' : 'Pickup booked')+'</b><small>'+
+          (m==='card' ? esc(aed(total))+' paid · receipt sent to your email' : m==='bank' ? 'We’ll confirm once '+esc(aed(total))+' reaches Bloom’s account.' : 'A courier will collect the cheque within 2 working days.')+'</small>'+
+          '<button type="button" class="mox-btn mox-btn--dark" data-shx><span class="mox-btn-t">Done</span></button></div>';
+        if(done) done(m);
+      }, REDUCED ? 0 : 700);
+    }
+  });
+}
+
+/* ---------- ow:pay ---------- */
+var payState = { tab:'due', flt:'all', unit:null };
+function initPay(sec){
+  var root = $('.owx', sec); if(!root) return;
+  $('.mox-bar-t', root).textContent = 'Payments';
+  var body = $('[data-oscroll]', root), toast = toaster(root), year = 2026;
+  function render(){
+    var all = items(), g = payState.flt, uf = payState.unit;
+    var pick = all.filter(function(x){ return (g==='all' || groupOf(x)===g) && (!uf || x.u===uf); });
+    var due = pick.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; });
+    var paid = pick.filter(function(x){ return x.st==='paid'; });
+    var inc = INC.filter(function(x){ return (g==='all' || groupOf(x)===g) && (!uf || x.u===uf); });
+    var tabs = [['due','To pay'+(miss.length?' <i class="ow-cnt">'+miss.length+'</i>':'')],['paid','Paid']]; if(INC.length) tabs.push(['inc','Income']);
+    var h = '';
+    var tot = sum(due), ov = sum(miss);
+    h += '<div class="ow-hero'+(miss.length?' is-miss':'')+'"><small>'+(uf ? esc(U(uf).name)+' · ' : '')+'Total to pay</small><b>'+esc(aed(tot))+'</b>'+
+      (miss.length ? '<span class="ow-hero-m">'+ic('alert','#fff',16)+esc(aed(ov))+' overdue · '+miss.length+' payment'+(miss.length>1?'s':'')+'</span>' : '<span class="ow-hero-ok">'+ic('check','#2e7d5b',16)+'Nothing overdue</span>')+'</div>';
+    if(uf) h += '<button type="button" class="ow-clear" data-uclear>Showing '+esc(U(uf).name)+' only · <u>Show all properties</u></button>';
+    else if(mixed()){ var N = GN(); h += chips([['all','All'],['home',N.home],['invest',N.invest]], g); }
+    h += seg('Payments', tabs, payState.tab);
+    if(payState.tab==='due'){
+      if(!due.length) h += '<div class="ow-empty">'+ic('check','#2e7d5b',28)+'<b>You’re all paid up</b><small>New payments will show here before they’re due.</small></div>';
+      if(miss.length) h += '<div class="ow-sec"><div class="ow-sec-h"><p class="mox-eyebrow" style="color:#922a22">OVERDUE</p><button type="button" class="ow-link" data-payall>Pay all '+esc(aed(ov))+'</button></div>'+rowsH(miss, true)+'</div>';
+      var up = due.filter(function(x){ return x.st!=='missed'; });
+      if(up.length) h += '<div class="ow-sec"><p class="mox-eyebrow">UPCOMING</p>'+rowsH(up, true)+'</div>';
+      h += '<div class="mox-card ow-how"><p class="mox-eyebrow">WAYS TO PAY</p>'+METHODS.map(function(k){ return '<div class="ow-how-r"><span class="ow-m-i">'+ic(k[3],'#922a22',18)+'</span><span><b>'+k[1]+'</b><small>'+k[2]+'</small></span></div>'; }).join('')+'</div>';
+    } else if(payState.tab==='paid'){
+      h += '<div class="mox-card ow-stmt"><span class="ow-stmt-i">'+ic('stmt','#922a22',22)+'</span><span><b>Statement of account</b><small>All payments & receipts · '+(uf ? esc(U(uf).name) : 'every property')+'</small></span>'+
+        '<span class="ow-yr">'+[2026,2025,2024].map(function(y){ return '<button type="button" class="mox-chip" aria-pressed="'+(y===year)+'" data-yr="'+y+'">'+y+'</button>'; }).join('')+'</span>'+
+        '<button type="button" class="mox-btn mox-btn--ghost" data-stmt><span class="mox-btn-t">'+ic('dl','#1c1c19',18)+'&nbsp;Download '+year+' statement</span></button></div>';
+      h += paid.length ? '<div class="ow-sec"><p class="mox-eyebrow">RECEIPTS</p>'+rowsH(paid, false)+'</div>' : '<div class="ow-empty"><b>No payments yet</b></div>';
+    } else {
+      var rec = inc.filter(function(x){ return days(x.date) <= 0; }), exp = inc.filter(function(x){ return days(x.date) > 0; });
+      h += '<div class="mox-card ow-incs"><span><small>Received this year</small><b>'+esc(aed(sum(rec)))+'</b></span><span><small>Expected</small><b>'+esc(aed(sum(exp)))+'</b></span></div>';
+      h += '<div class="ow-sec"><p class="mox-eyebrow">RENTAL & PAYOUT INCOME</p><div class="ow-list">'+inc.sort(function(a,b){ return b.date - a.date; }).map(function(x){ var u = U(x.u), r = days(x.date) <= 0;
+        return '<div class="ow-row"><span class="ow-ri" data-tone="'+(r?'green':'grey')+'">'+ic('coins', r?'#2e7d5b':'#6b665c', 20)+'</span><span class="ow-rt"><b>'+esc(x.t)+'</b><small>'+esc((u?u.name+' · ':'')+(r ? 'Received '+fd(x.date) : 'Expected '+fd(x.date)))+'</small></span><span class="ow-ra"><b>'+esc(aed(x.amt))+'</b>'+pill(r?'Received':'Expected', r?'green':'grey')+'</span></div>'; }).join('')+'</div></div>';
+    }
+    body.innerHTML = h;
+  }
+  function rowsH(list, payable){
+    return '<div class="ow-list">'+list.map(function(x){ var u = U(x.u), m = meta(x), red = x.st==='missed';
+      return '<div class="ow-row'+(red?' is-miss':'')+'"><span class="ow-ri" data-tone="'+(red?'red':x.st==='paid'?'green':'grey')+'">'+ic(x.st==='paid'?'check':red?'alert':x.k==='Instalment'?'crane':x.k==='Rent'?'home':'card', red?'#922a22':x.st==='paid'?'#2e7d5b':'#54504a', 20)+'</span>'+
+        '<span class="ow-rt"><b>'+esc(x.t)+'</b><small>'+esc((u?u.name+' · ':'')+m.when)+'</small></span>'+
+        '<span class="ow-ra"><b>'+esc(aed(x.amt))+'</b>'+(payable ? '<button type="button" class="ow-payb'+(red?' is-red':'')+'" data-payid="'+x.id+'">Pay</button>' : '<button type="button" class="ow-rc" data-rc="'+x.rc+'" aria-label="Download receipt '+x.rc+'">'+ic('dl','#922a22',16)+'Receipt</button>')+'</span></div>'; }).join('')+'</div>';
+  }
+  body.addEventListener('click', function(e){
+    var t = e.target.closest('[data-tab]'); if(t){ payState.tab = t.dataset.tab; render(); return; }
+    var f = e.target.closest('[data-flt]'); if(f){ payState.flt = f.dataset.flt; render(); return; }
+    if(e.target.closest('[data-uclear]')){ payState.unit = null; render(); return; }
+    var y = e.target.closest('[data-yr]'); if(y){ year = +y.dataset.yr; render(); return; }
+    if(e.target.closest('[data-stmt]')){ toast('Statement '+year+' downloaded (PDF).'); return; }
+    var rc = e.target.closest('[data-rc]'); if(rc){ toast('Receipt '+rc.dataset.rc+' downloaded.'); return; }
+    var p = e.target.closest('[data-payid]'); if(p){ payFlow(root, [p.dataset.payid], render); return; }
+    if(e.target.closest('[data-payall]')){ payFlow(root, items().filter(function(x){ return x.st==='missed' && (payState.flt==='all' || groupOf(x)===payState.flt) && (!payState.unit || x.u===payState.unit); }).map(function(x){ return x.id; }), render); }
+  });
+  $('[data-oback]', root).addEventListener('click', back);
+  sec.__onEnter = function(){ render(); body.scrollTop = 0; };
+  render();
+}
+
+/* ---------- ow:port ---------- */
+var portState = { tab:'props' };
+function line(u){
+  var o = u.own; if(!o) return '';
+  if(o.status==='construction') return o.progress+'% built · handover '+fd(o.handover);
+  if(o.status==='resale') return 'Listed '+o.price+' · '+o.enquiries+' enquiries';
+  if(o.status==='vacant') return 'Handed over '+fd(o.handover)+' · vacant';
+  if(o.status==='rented') return 'Tenant '+o.tenancy.tenant+' · '+o.rent;
+  if(o.status==='holiday') return (o.company||'Holiday home')+' · '+((o.guest||'in')==='in' ? 'guest in' : 'no guest');
+  if(o.status==='resident') return 'You live here · since '+fd(o.moveIn);
+  if(o.status==='renting') return 'Rented from '+o.landlord+' · ends '+fd(u.contract.end);
+  return '';
+}
+function docsFor(u){
+  var o = u.own; if(!o) return [];
+  if(o.status==='renting') return [['Tenancy contract','PDF · signed '+fd(u.contract.start)], ['Ejari certificate','PDF']];
+  var d = [['Sales and Purchase Agreement','PDF · signed '+fd(o.spa)]];
+  if(o.status==='construction') d.push(['Payment plan','PDF · 10 instalments'], ['Construction update','PDF · latest progress report']);
+  else { d.push(['Title deed','PDF · issued '+fd(o.handover || o.spa)]); if(o.handover) d.push(['Handover documents','PDF · '+fd(o.handover)]); }
+  if(o.status==='rented') d.push(['Tenancy contract','PDF · '+o.tenancy.no]);
+  if(o.status==='holiday') d.push(['Holiday home agreement','PDF · '+(o.permit||'')]);
+  if(o.status==='resale') d.push(['Listing agreement','PDF · signed '+fd(o.listed)]);
+  return d;
+}
+function initPort(sec){
+  var root = $('.owx', sec); if(!root) return;
+  $('.mox-bar-t', root).textContent = 'My properties';
+  var body = $('[data-oscroll]', root), toast = toaster(root);
+  function render(){
+    var us = units(), N = GN(), h = '';
+    var counts = {}; us.forEach(function(u){ var s = stOf(u); if(s) counts[s.k] = (counts[s.k]||0) + 1; });
+    var owned = us.filter(function(u){ return u.own && u.own.status!=='renting'; });
+    h += '<div class="ow-phero"><span><small>Properties owned</small><b>'+owned.length+'</b></span><span class="ow-pchips">'+Object.keys(counts).filter(function(k){ return k!=='renting'; }).map(function(k){ var S = window.__ownst; return pill(counts[k]+' '+S.label[k], S.tone[k]); }).join('')+'</span></div>';
+    h += seg('Properties', [['props','Properties'],['docs','Documents']], portState.tab);
+    var groups = mixed() ? [[N.home, us.filter(function(u){ return u.group==='home' || u.group==='renting'; })], [N.invest, us.filter(function(u){ return u.group==='invest'; })]] : [[null, us]];
+    if(portState.tab==='props'){
+      groups.forEach(function(g){ if(!g[1].length) return;
+        h += '<div class="ow-sec">'+(g[0] ? '<p class="mox-eyebrow">'+esc(g[0].toUpperCase())+'</p>' : '')+'<div class="ow-plist">'+g[1].map(function(u){ var s = stOf(u), o = u.own;
+          var extra = o.status==='construction' ? '<div class="ow-pbar"><i style="width:'+o.progress+'%"></i></div>' : '';
+          return '<button type="button" class="ow-pc" data-u="'+u.id+'"><span class="ow-pimg">'+thumb(u)+'</span><span class="ow-pt"><span class="ow-pt-h"><b>'+esc(u.name)+'</b>'+(s?pill(s.label, s.tone):'')+'</span><small class="ow-pcom">'+esc(u.community+' · '+u.type)+'</small><small>'+esc(line(u))+'</small>'+extra+'</span>'+ic('chev','#8a847a',18)+'</button>'; }).join('')+'</div></div>'; });
+      h += '<button type="button" class="ow-help" data-contact><span class="ow-m-i">'+ic('phone','#922a22',18)+'</span><span><b>Questions about a property?</b><small>Contact Bloom · 800 BLOOM (25666)</small></span>'+ic('chev','#8a847a',18)+'</button>';
+    } else {
+      h += '<p class="ow-note">Every document for every property, in one place.</p>';
+      groups.forEach(function(g){ g[1].forEach(function(u){
+        h += '<div class="mox-card ow-docs"><div class="ow-docs-h"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+'</small></div>'+docsFor(u).map(function(d){ return '<button type="button" class="ow-doc" data-doc="'+esc(d[0])+'"><span class="ow-m-i">'+ic('doc','#922a22',18)+'</span><span><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span>'+ic('dl','#6b665c',18)+'</button>'; }).join('')+'</div>'; }); });
+      h += '<button type="button" class="ow-help" data-stmts><span class="ow-m-i">'+ic('stmt','#922a22',18)+'</span><span><b>Statements & receipts</b><small>Download yearly statements</small></span>'+ic('chev','#8a847a',18)+'</button>';
+    }
+    body.innerHTML = h;
+  }
+  body.addEventListener('click', function(e){
+    var t = e.target.closest('[data-tab]'); if(t){ portState.tab = t.dataset.tab; render(); return; }
+    var u = e.target.closest('[data-u]'); if(u){ var M = mo(); M.cur = u.dataset.u; go(PD); return; }
+    var d = e.target.closest('[data-doc]'); if(d){ toast(d.dataset.doc+' downloaded.'); return; }
+    if(e.target.closest('[data-contact]')){ if(window.__openContact) window.__openContact(); return; }
+    if(e.target.closest('[data-stmts]')){ openPay('paid'); }
+  });
+  $('[data-oback]', root).addEventListener('click', back);
+  sec.__onEnter = function(){ render(); body.scrollTop = 0; };
+  render();
+}
+
+/* ---------- ow:feat (resident community features) ---------- */
+var FEATS = {
+  access:{ t:'Access card', ic:'idc' }, amen:{ t:'Amenities', ic:'pool' }, park:{ t:'Parking & ANPR', ic:'car' }, family:{ t:'Family access', ic:'family' },
+  events:{ t:'Events', ic:'event' }, notices:{ t:'Notices', ic:'bell' }
+};
+var featKey = 'access';
+var FAM = [['Mariam '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Spouse', 'Full access', 'Active'], ['Ahmed '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Son', 'Gate & lobby', 'Active']];
+var CARS = [['Dubai · P 48213', 'Toyota Land Cruiser · White', 'Bay B-138-1'], ['Dubai · K 10275', 'Tesla Model Y · Grey', 'Bay B-138-2']];
+var RSVP = {};
+var EVENTS = [[12, 'Family movie night', 'Community lawn · 7:30 PM', 'Free · 64 going'], [19, 'Padel social', 'Courts 1–2 · 6:00 PM', 'Free · 18 going'], [27, 'National Day celebration', 'Central park · 4:00 PM', 'Free · 210 going']];
+var NOTICES = [['Maintenance', 'amber', 'Pool closed for cleaning', 'Main pool closed '+fds(T(3))+', 8 AM – 2 PM. The kids’ pool stays open.', 0, true], ['Community', 'blue', 'New ANPR cameras at Gate 2', 'Registered vehicles enter without a card from '+fds(T(7))+'.', -1, true], ['Water', 'grey', 'Planned water shutdown', 'Clusters 4–6 · '+fds(T(10))+', 10 AM – 1 PM.', -4, false], ['Security', 'grey', 'Visitor passes now in the app', 'Share a QR pass with guests before they arrive.', -9, false]];
+function home(){ var us = units(); for(var i=0;i<us.length;i++) if(us[i].group==='home' || us[i].group==='renting') return us[i]; return us[0]; }
+function initFeat(sec){
+  var root = $('.owx', sec); if(!root) return;
+  var body = $('[data-oscroll]', root), toast = toaster(root);
+  function render(){
+    var F = FEATS[featKey], u = home(), name = (JR.user && JR.user.name) || '', h = '';
+    $('.mox-bar-t', root).textContent = F.t;
+    if(featKey==='access'){
+      h += '<div class="ow-acard"><div class="ow-acard-t"><span>BLOOM '+esc(u.community.replace(/^Bloom /,'').toUpperCase())+'</span><span class="ow-acard-s">● Active</span></div><b>'+esc(name)+'</b><small>'+esc(u.name+' · Resident')+'</small><div class="ow-acard-b"><span><small>CARD NO.</small>0042 7781 '+esc(u.code.slice(-3))+'</span><span><small>VALID TILL</small>'+fd(T(240))+'</span></div><span class="ow-nfc">'+ic('key','rgba(248,245,235,.9)',22)+'</span></div>';
+      h += '<div class="mox-card ow-irows">'+[['shield','Access zones','Main gate · Lobby · Pool · Gym'],['clock','Last used','Main gate · today, 8:12 AM'],['phone','Phone as key','Tap your phone at any reader']].map(irow).join('')+'</div>';
+      h += '<div class="ow-acts">'+btn('Report lost','lost','ghost')+btn('Request new card','newcard','dark')+'</div>';
+    } else if(featKey==='amen'){
+      h += '<div class="ow-list ow-amen">'+[['pool','Swimming pool','Open now · 6 AM – 10 PM','Walk in'],['gym','Gym','Open 24 hours','Walk in'],['padel','Padel courts','2 slots free today','Book'],['grill','BBQ area','Book up to 7 days ahead','Book'],['kids','Kids’ play area','Open now · 7 AM – 8 PM','Walk in']].map(function(a){
+        return '<div class="ow-row"><span class="ow-ri" data-tone="grey">'+ic(a[0],'#922a22',20)+'</span><span class="ow-rt"><b>'+a[1]+'</b><small>'+a[2]+'</small></span>'+(a[3]==='Book' ? '<button type="button" class="ow-payb" data-book="'+a[1]+'">Book</button>' : '<span class="ow-tag">Walk in</span>')+'</div>'; }).join('')+'</div>';
+    } else if(featKey==='park'){
+      h += '<div class="mox-card ow-anpr"><span class="ow-ri" data-tone="green">'+ic('car','#2e7d5b',20)+'</span><span><b>ANPR is on</b><small>Registered cars open the barrier automatically at Gates 1 & 2.</small></span></div>';
+      h += '<div class="ow-sec"><p class="mox-eyebrow">MY VEHICLES · '+CARS.length+' OF 3</p><div class="ow-list">'+CARS.map(function(c){ return '<div class="ow-row"><span class="ow-plate">'+esc(c[0].split(' · ')[1])+'</span><span class="ow-rt"><b>'+esc(c[1])+'</b><small>'+esc(c[0].split(' · ')[0]+' · '+c[2])+'</small></span>'+pill('Active','green')+'</div>'; }).join('')+'</div></div>';
+      h += '<div class="ow-acts">'+btn('Visitor parking pass','visitor','ghost')+(CARS.length < 3 ? btn('Add vehicle','addcar','dark') : '')+'</div>';
+    } else if(featKey==='family'){
+      h += '<p class="ow-note">Family members get their own login, access card and visitor passes for '+esc(u.name)+'. You can remove access anytime.</p>';
+      h += '<div class="ow-list">'+FAM.map(function(f, i){ var ini = f[0].split(' ').filter(function(w,i,a){ return i===0 || i===a.length-1; }).map(function(w){ return w[0]; }).join(''); return '<div class="ow-row"><span class="ow-av">'+esc(ini)+'</span><span class="ow-rt"><b>'+esc(f[0])+'</b><small>'+esc(f[1]+' · '+f[2])+'</small></span>'+pill(f[3], f[3]==='Active'?'green':'amber')+'</div>'; }).join('')+'</div>';
+      h += btn('Add family member','addfam','dark');
+    } else if(featKey==='events'){
+      h += '<div class="ow-list">'+EVENTS.map(function(ev, i){ var on = !!RSVP[i], d = new Date(T(0).getFullYear(), T(0).getMonth() + (ev[0] < T(0).getDate() ? 1 : 0), ev[0]);
+        return '<div class="ow-row ow-ev"><span class="ow-date"><b>'+d.getDate()+'</b><small>'+MON[d.getMonth()].toUpperCase()+'</small></span><span class="ow-rt"><b>'+esc(ev[1])+'</b><small>'+esc(ev[2])+'</small><small>'+esc(ev[3])+'</small></span><button type="button" class="ow-payb'+(on?' is-on':'')+'" data-rsvp="'+i+'" aria-pressed="'+on+'">'+(on?'Going':'RSVP')+'</button></div>'; }).join('')+'</div>';
+    } else if(featKey==='notices'){
+      h += '<div class="ow-list">'+NOTICES.map(function(n){ return '<div class="ow-row ow-nt'+(n[5]?' is-new':'')+'"><span class="ow-rt"><span class="ow-nt-h">'+pill(n[0], n[1])+'<small>'+(n[4]===0 ? 'Today' : (-n[4])+'d ago')+'</small></span><b>'+esc(n[2])+'</b><small>'+esc(n[3])+'</small></span></div>'; }).join('')+'</div>';
+    }
+    body.innerHTML = h;
+  }
+  function irow(x){ return '<div class="ow-ir"><span class="ow-m-i">'+ic(x[0],'#922a22',18)+'</span><span><small>'+esc(x[1])+'</small><b>'+esc(x[2])+'</b></span></div>'; }
+  function btn(l, a, k){ return '<button type="button" class="mox-btn mox-btn--'+k+'" data-fa="'+a+'"><span class="mox-btn-t">'+esc(l)+'</span></button>'; }
+  body.addEventListener('click', function(e){
+    var r = e.target.closest('[data-rsvp]'); if(r){ var i = +r.dataset.rsvp; RSVP[i] = !RSVP[i]; render(); toast(RSVP[i] ? 'You’re going. We’ll remind you the day before.' : 'RSVP cancelled.'); return; }
+    var bk = e.target.closest('[data-book]'); if(bk){ toast(bk.dataset.book+' booked for tomorrow, 6:00 PM.'); return; }
+    var a = e.target.closest('[data-fa]'); if(!a) return; var k = a.dataset.fa;
+    if(k==='lost') toast('Card blocked. A replacement is on its way.');
+    else if(k==='newcard') toast('Request sent. Collect your card at the community office.');
+    else if(k==='visitor') toast('Visitor pass created and ready to share.');
+    else if(k==='addcar'){ CARS.push(['Dubai · M 33190', 'Nissan Patrol · Black', 'Visitor bay V-12']); render(); toast('Vehicle added. ANPR active within 24 hours.'); }
+    else if(k==='addfam'){ FAM.push(['Sara '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Daughter', 'Gate & lobby', 'Invite sent']); render(); toast('Invite sent. Sara can sign in once she accepts.'); }
+  });
+  $('[data-oback]', root).addEventListener('click', back);
+  sec.__onEnter = function(){ render(); body.scrollTop = 0; };
+  render();
+}
+
+function goOrRefresh(sid){ var cur = $('section[data-sid="'+sid+'"]'); if(cur && !cur.hidden && cur.offsetParent && cur.__onEnter){ cur.__onEnter(); return; } go(sid); }
+function openPay(tab, unit){ payState.tab = tab || 'due'; payState.unit = unit || null; payState.flt = 'all'; goOrRefresh(PAY); }
+function openPort(tab){ portState.tab = tab || 'props'; goOrRefresh(PORT); }
+function openFeat(k){ featKey = k; goOrRefresh(FEAT); }
+window.__ownui = { openPay:openPay, openPort:openPort, openFeat:openFeat };
+
+/* ---------- dashboard ---------- */
+function dashPay(){
+  var all = items(), due = all.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; }), next = due.filter(function(x){ return x.st!=='missed'; }).slice(0, 2);
+  var h = '<div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('card','#922a22',20)+'</span><b>Payments</b></span><button type="button" class="owd-link" data-o="pay">View all'+ic('chev','#922a22',14)+'</button></div>';
+  if(miss.length){
+    var old = Math.max.apply(null, miss.map(function(x){ return -days(x.due); }));
+    h += '<button type="button" class="owd-miss" data-o="paymiss"><span class="owd-miss-i">'+ic('alert','#fff',18)+'</span><span class="owd-miss-t"><b>'+esc(aed(sum(miss)))+' overdue</b><small>'+esc(miss.length===1 ? U(miss[0].u).name+' · '+old+' day'+(old>1?'s':'')+' late' : miss.length+' payments · oldest '+old+' days late')+'</small></span><span class="owd-miss-b">Pay now</span></button>';
+  }
+  if(next.length) h += '<div class="owd-rows">'+next.map(function(x){ var u = U(x.u), n = days(x.due);
+    return '<button type="button" class="owd-row" data-o="payid" data-id="'+x.id+'"><span class="owd-date"><b>'+x.due.getDate()+'</b><small>'+MON[x.due.getMonth()].toUpperCase()+'</small></span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name+(mixed() ? ' · '+GN()[groupOf(x)] : '')+' · '+(n===0?'due today':'in '+n+' day'+(n>1?'s':'')))+'</small></span><b class="owd-amt">'+esc(aed(x.amt))+'</b></button>'; }).join('')+'</div>';
+  if(!due.length) h += '<div class="owd-ok">'+ic('check','#2e7d5b',18)+'<span>All paid up. Receipts are in Payments.</span></div>';
+  return '<div class="owd owd-pay">'+h+'</div>';
+}
+function statusChips(list){ var S = window.__ownst, c = {}; list.forEach(function(u){ if(u.own) c[u.own.status] = (c[u.own.status]||0) + 1; }); return '<div class="owd-chips">'+Object.keys(c).map(function(k){ return pill(c[k]+' '+S.label[k], S.tone[k]); }).join('')+'</div>'; }
+function highlights(list){
+  return list.map(function(u){ var o = u.own;
+    if(o.status==='construction') return '<button type="button" class="owd-hl" data-o="unit" data-id="'+u.id+'"><span class="owd-hl-i">'+ic('crane','#8f5a1c',18)+'</span><span class="owd-hl-t"><b>'+esc(u.name)+' · handover '+fd(o.handover)+'</b><small>'+o.progress+'% built · next instalment '+fds(o.next)+'</small><span class="owd-bar"><i style="width:'+o.progress+'%"></i></span></span></button>';
+    if(o.status==='resale') return '<button type="button" class="owd-hl" data-o="unit" data-id="'+u.id+'"><span class="owd-hl-i" data-tone="violet">'+ic('tag','#6b4fa0',18)+'</span><span class="owd-hl-t"><b>'+esc(u.name)+' · listed for resale</b><small>'+esc(o.price)+' · '+o.enquiries+' enquiries · '+o.viewings+' viewings</small></span></button>';
+    if(o.status==='rented' && days(o.tenancy.end) <= 60) return '<button type="button" class="owd-hl" data-o="unit" data-id="'+u.id+'"><span class="owd-hl-i" data-tone="blue">'+ic('doc','#4d5ebe',18)+'</span><span class="owd-hl-t"><b>'+esc(u.name)+' · tenancy ends in '+days(o.tenancy.end)+' days</b><small>'+esc(o.tenancy.tenant)+' · renew or re-let with Bloom</small></span></button>';
+    if(o.status==='vacant') return '<button type="button" class="owd-hl" data-o="unit" data-id="'+u.id+'"><span class="owd-hl-i" data-tone="grey">'+ic('home','#54504a',18)+'</span><span class="owd-hl-t"><b>'+esc(u.name)+' · handed over, vacant</b><small>Handed over '+fd(o.handover)+' · let Bloom lease it</small></span></button>';
+    return ''; }).join('');
+}
+function quick(list){ var inc = INC.filter(function(x){ return days(x.date) <= 0 && (!list || list.indexOf(x.u) >= 0); });
+  return '<div class="owd-q"><button type="button" data-o="docs">'+ic('folder','#922a22',20)+'<span>Documents</span></button><button type="button" data-o="stmt">'+ic('stmt','#922a22',20)+'<span>Statements</span></button>'+
+    (INC.length ? '<button type="button" data-o="inc">'+ic('coins','#922a22',20)+'<span>Income<small>'+esc(aed(sum(inc)).replace('AED ','AED '))+'</small></span></button>' : '<button type="button" data-o="contact">'+ic('phone','#922a22',20)+'<span>Contact Bloom</span></button>')+'</div>';
+}
+function dashPort(title, list){
+  return '<div class="owd owd-port"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('building','#922a22',20)+'</span><b>'+esc(title)+'</b><span class="owd-n">'+list.length+'</span></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
+    statusChips(list)+'<div class="owd-hls">'+highlights(list)+'</div>'+quick(list.map(function(u){ return u.id; }))+'</div>';
+}
+function dashCommunity(u, title){
+  var T8 = [['access','idc','Access card'],['amen','pool','Amenities'],['park','car','Parking'],['family','family','Family'],['events','event','Events',1],['notices','bell','Notices',2],['contact','phone','Contact'],['moveout','exit','Move out']];
+  return '<div class="owd owd-com"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('home','#922a22',20)+'</span><b>'+esc(title)+'</b></span><small class="owd-sub">'+esc(u.name+' · '+u.community)+'</small></div>'+
+    '<div class="owd-grid">'+T8.map(function(t){ return '<button type="button" class="owd-tile" data-o="'+(t[0]==='contact'||t[0]==='moveout' ? t[0] : 'feat')+'" data-k="'+t[0]+'"><span class="owd-tile-i">'+ic(t[1],'#922a22',22)+(t[3] ? '<i class="owd-badge">'+t[3]+'</i>' : '')+'</span><span>'+t[2]+'</span></button>'; }).join('')+'</div></div>';
+}
+function dashRented(u){
+  var c = u.contract, n = days(c.end);
+  return '<div class="owd owd-live"><div class="owd-h"><span class="owd-t"><span class="owd-ti" data-tone="blue">'+ic('key','#4d5ebe',20)+'</span><b>Where I live</b></span>'+pill('Tenant','blue')+'</div>'+
+    '<button type="button" class="owd-lv" data-o="unit" data-id="'+u.id+'"><span class="owd-lv-img">'+thumb(u)+'</span><span class="owd-rt"><b>'+esc(u.name+' · '+u.community)+'</b><small>Rented from '+esc(u.own.landlord)+'</small><small class="owd-warn">Ends '+fd(c.end)+' · '+n+' days left</small></span>'+ic('chev','#8a847a',18)+'</button>'+
+    '<div class="owd-acts"><button type="button" class="mox-btn mox-btn--ghost" data-o="moveout"><span class="mox-btn-t">Move out</span></button><button type="button" class="mox-btn mox-btn--dark" data-o="renew" data-id="'+u.id+'"><span class="mox-btn-t">Renew contract</span></button></div></div>';
+}
+function dashSplit(homeU, inv){
+  var incA = sum(INC.filter(function(x){ return days(x.date) <= 0; }));
+  return '<div class="owd owd-split"><button type="button" class="owd-half" data-o="unit" data-id="'+homeU.id+'"><span class="owd-ti">'+ic('home','#2e7d5b',18)+'</span><small>MY HOME</small><b>'+esc(homeU.name)+'</b><span>'+esc(homeU.community)+' · you live here</span></button>'+
+    '<button type="button" class="owd-half" data-o="port"><span class="owd-ti" data-tone="blue">'+ic('building','#4d5ebe',18)+'</span><small>INVESTMENTS</small><b>'+inv.length+' properties</b><span>'+esc(aed(incA))+' income this year</span></button></div>';
+}
+function dashHH(list){
+  var incA = sum(INC.filter(function(x){ return days(x.date) <= 0 && days(x.date) > -30; }));
+  return '<div class="owd owd-hh"><div class="owd-h"><span class="owd-t"><span class="owd-ti" data-tone="teal">'+ic('key','#2f6f73',20)+'</span><b>Holiday homes</b></span><button type="button" class="owd-link" data-o="inc">Payouts'+ic('chev','#922a22',14)+'</button></div>'+
+    '<div class="owd-stats"><span><small>Last payout</small><b>'+esc(aed(incA))+'</b></span><span><small>Occupancy · Oct</small><b>78%</b></span><span><small>Operator</small><b>Haven HH</b></span></div>'+
+    '<div class="owd-rows">'+list.map(function(u){ var g = (u.own.guest||'in')==='in'; return '<button type="button" class="owd-row" data-o="unit" data-id="'+u.id+'"><span class="owd-lv-img sm">'+thumb(u)+'</span><span class="owd-rt"><b>'+esc(u.name+' · '+u.community)+'</b><small>'+(g ? 'Guest in · checks out '+fds(T(4)) : 'Free · next stay '+fds(T(6)))+'</small></span>'+pill(g?'Guest in':'No guest', g?'green':'grey')+'</button>'; }).join('')+'</div>'+quick()+'</div>';
+}
+function dashHTML(){
+  var us = units(), h = dashPay();
+  var homeU = us.filter(function(u){ return u.group==='home'; })[0], rentU = us.filter(function(u){ return u.group==='renting'; })[0], inv = us.filter(function(u){ return u.group==='invest'; });
+  if(OK==='investor') h += dashPort('My portfolio', inv);
+  else if(OK==='owner') h += dashCommunity(homeU, 'My community');
+  else if(OK==='ownerinv') h = dashSplit(homeU, inv) + h + dashPort('Investments', inv) + dashCommunity(homeU, 'My community');
+  else if(OK==='ownerhh') h += dashHH(inv);
+  else if(OK==='ownertenant') h = dashRented(rentU) + h + dashPort('What I own', inv) + dashCommunity(rentU, 'My community');
+  return h;
+}
+function wireDashboard(sec){
+  var nid = DASH_CTA[sec.dataset.sid]; if(!nid) return;
+  var ref = sec.querySelector('[data-node-id="'+nid+'"]'); if(!ref || ref.__ow) return; ref.__ow = true;
+  var el = D.createElement('div'); el.className = 'owd-wrap';
+  ref.parentNode.insertBefore(el, ref);
+  function paint(){ el.innerHTML = dashHTML(); }
+  paint();
+  D.addEventListener('bloom:own-changed', paint);
+  el.addEventListener('click', function(e){
+    var b = e.target.closest('[data-o]'); if(!b) return; e.preventDefault(); e.stopPropagation();
+    var o = b.dataset.o, M = mo();
+    if(o==='pay') openPay('due');
+    else if(o==='paymiss') openPay('due');
+    else if(o==='payid'){ var root = sec.querySelector('.canvas') || sec; payFlow(sec, [b.dataset.id]); }
+    else if(o==='port') openPort('props');
+    else if(o==='docs') openPort('docs');
+    else if(o==='stmt') openPay('paid');
+    else if(o==='inc') openPay('inc');
+    else if(o==='unit'){ M.cur = b.dataset.id; go(PD); }
+    else if(o==='feat') openFeat(b.dataset.k);
+    else if(o==='contact'){ if(window.__openContact) window.__openContact(); }
+    else if(o==='moveout'){ M.cur = home().id; go(PD); }
+    else if(o==='renew'){ window.__gptIntent = { type:'renew', unit:b.dataset.id }; go('gpt:chat'); }
+  });
+}
+var prev = window.__decorate;
+window.__decorate = function(sec){ if(prev) prev(sec); if(!OK) return; wireDashboard(sec); };
+window.__initScreen = window.__initScreen || {};
+window.__initScreen[PAY] = initPay;
+window.__initScreen[PORT] = initPort;
+window.__initScreen[FEAT] = initFeat;
 })();</script>
 <script id="active-request-js">
 /* Dashboard "Active request" card (AC Filter Check · SR-9042) → its service request details page */
