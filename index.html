@@ -3158,7 +3158,7 @@ function initPD(sec){
   function render(fade){
     var list = MO.units(), u = MO.unit(); MO.cur = u.id;
     // switcher (2+ units): status text on the selected unit, dot on the others
-    units.hidden = list.length < 2;
+    units.hidden = true; // the unit is chosen on Home (property cards); no switcher here
     units.innerHTML = list.map(function(x){ var st = unitStatus(x), on = x.id===u.id;
       return '<button type="button" class="pd-unit'+(on && st ? ' has-st' : '')+'" data-u="'+x.id+'" aria-pressed="'+on+'"'+(st?' aria-label="'+esc(x.name+', '+ST_LABEL[st])+'"':'')+'><i>'+icon(x.icon,15)+'</i>'+esc(x.name)+
         (st ? (on ? '<small class="pd-ust" data-tone="'+ST_TONE[st]+'">'+esc(ST_LABEL[st])+'</small>' : '<b class="pd-dot" data-tone="'+ST_TONE[st]+'" aria-hidden="true"></b>') : '')+'</button>'; }).join('');
@@ -5611,6 +5611,8 @@ new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFra
 paint(dev);
 })();</script>
 <style id="rcar-css">
+/* no status dot before the community name on property cards */
+[data-name^="Card / Residence"] [data-name="Community row"] > div:has(> svg.pulse){display:none!important}
 /* Dashboard: several properties → swipeable cards with pager dots */
 .rcar{position:relative;width:390px;flex:none}
 .rcar-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:14px 20px 22px;margin:-14px 0 -22px;scroll-padding:0 20px;overscroll-behavior-x:contain}
