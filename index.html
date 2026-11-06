@@ -6653,6 +6653,12 @@ window.__initScreen[NEW] = initNew;
 .owd-half b{font-size:15px;font-weight:600;line-height:20px}
 .owd-half span:last-child{font-size:12px;line-height:16px;color:#6b665c}
 .owd-tt{display:grid;gap:1px;min-width:0}.owd-tt small{font-size:12px;line-height:16px;color:#6b665c}
+.owd-tl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.owd .owd-tlc{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 10px;border-radius:14px;border:1px solid #f1ebe6;background:#fff;transition:background-color 160ms,transform 160ms}
+.owd .owd-tlc:active{transform:scale(.97);background:#faf7f4}
+.owd-tlc-i{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#faf4f1}
+.owd-tlc-l{flex:1;min-width:0;font-size:12.5px;line-height:16px;color:#3a3732}
+.owd-tlc b{flex:none;font-size:16px;font-weight:600;color:#1c1c19}
 .owd-kpi{display:grid;grid-template-columns:repeat(var(--n),1fr);border-top:1px solid #f1ebe6;margin:0 -16px -4px;padding:12px 0 0}
 .owd .owd-kp{display:flex;flex-direction:column;gap:2px;padding:2px 12px;border-left:1px solid #f1ebe6;min-width:0}
 .owd .owd-kp:first-child{border-left:0;padding-left:16px}
@@ -6792,6 +6798,47 @@ window.__initScreen[NEW] = initNew;
 .ow-ok-i{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:rgba(46,125,91,.12);margin-bottom:6px}
 .ow-ok b{font-size:20px;font-weight:600}.ow-ok small{font-size:13px;color:#6b665c;margin-bottom:14px;max-width:290px}
 @media (prefers-reduced-motion: reduce){.ow-sh,.ow-ov{transition:none}}
+
+/* help cards: title + subtext read as one group */
+button.sr-scope{gap:0!important}
+button.sr-scope .sr-gi{margin-bottom:22px!important}
+button.sr-scope .sr-scope-t{line-height:21px}
+button.sr-scope .sr-scope-s{margin-top:2px!important}
+/* dashboard payments v2 — calm list, one clear CTA */
+.owd .owd-row.is-late .owd-date{background:rgba(146,42,34,.07)}
+.owd .owd-row.is-late .owd-date b,.owd .owd-row.is-late .owd-date small{color:#922a22}
+.owd-rt em{font-style:normal;color:#922a22;font-weight:500}
+.owd .owd-paycta{display:flex;align-items:center;justify-content:center;height:46px;border-radius:999px;background:#1c1c19;color:#fff;font-size:14px;font-weight:600;transition:transform 160ms}
+.owd .owd-paycta:active{transform:scale(.98)}
+.owd .owd-paycta.is-soft{background:#fff;color:#1c1c19;border:1px solid #ddd2cc}
+/* checkout */
+.ow-co-h{display:grid;gap:2px}.ow-co-h small{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:#2e7d5b;font-weight:500}
+.ow-co-l{background:#fff;border:1px solid #efe7e3;border-radius:18px;padding:2px 12px}
+.ow-co-i{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border-top:1px solid #f3ece8}
+.ow-co-i:first-child{border-top:0}
+.ow-chk{flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid #cfc5bd;display:grid;place-items:center;box-sizing:border-box;transition:background-color 140ms,border-color 140ms}
+.ow-co-i.is-on .ow-chk{background:#1c1c19;border-color:#1c1c19}
+.ow-co-t{flex:1;min-width:0;display:grid}.ow-co-t b{font-size:13.5px;font-weight:600;line-height:18px}.ow-co-t small{font-size:12px;color:#6b665c}.ow-co-t small.is-late{color:#922a22}
+.ow-co-a{flex:none;font-size:13.5px;font-weight:600;white-space:nowrap}
+.ow-co-i:not(.is-on) .ow-co-t,.ow-co-i:not(.is-on) .ow-co-a{opacity:.55}
+.ow-co-tot{display:flex;justify-content:space-between;align-items:baseline;padding:12px 4px 0}
+.ow-co-tot span{font-size:13px;color:#6b665c}.ow-co-tot b{font-size:22px;font-weight:600;letter-spacing:-.3px}
+.ow-cta{all:unset;box-sizing:border-box;cursor:pointer;width:100%;height:52px;border-radius:999px;background:#922a22;color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 160ms,opacity 160ms}
+.ow-cta:active{transform:scale(.98)}.ow-cta[disabled]{opacity:.4;pointer-events:none}
+.ow-cta--apple{background:#000}
+.ow-sh .ow-cta,.ow-sh .ow-cta span{color:#fff}
+.ow-sh .ow-rcb{color:#922a22}
+.ow-bank{background:#fff;border:1px solid #efe7e3;border-radius:18px;padding:4px 14px}
+.ow-bank-r{display:grid;gap:1px;padding:10px 0;border-top:1px solid #f3ece8}.ow-bank-r:first-child{border-top:0}
+.ow-bank-r small{font-size:11.5px;color:#6b665c}.ow-bank-r b{font-size:14px;font-weight:600;letter-spacing:.2px}
+.ow-proc{display:grid;justify-items:center;gap:8px;padding:36px 0 30px;text-align:center}
+.ow-proc b{font-size:17px;font-weight:600}.ow-proc small{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:#6b665c}
+.ow-spin{width:44px;height:44px;border-radius:50%;border:3px solid #eee5df;border-top-color:#922a22;animation:owspin .8s linear infinite;margin-bottom:6px}
+@keyframes owspin{to{transform:rotate(360deg)}}
+.ow-ok .ow-ok-i{animation:owpop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes owpop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+.ow-rcb{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#922a22;margin:-6px 0 14px}
+@media (prefers-reduced-motion: reduce){.ow-spin,.ow-ok .ow-ok-i{animation:none}}
 </style>
 <script id="owner-js">(function(){
 'use strict';
@@ -6844,6 +6891,10 @@ var P = {
   bank:'<path d="M3 9.5 12 4l9 5.5M4.5 10v8M9 10v8M15 10v8M19.5 10v8M3 20h18"/>',
   chq:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 14.5c1-1.5 2-1.5 3 0s2 1.5 3 0M15 10h3.5M15 13h3.5"/>',
   qr:'<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.2"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.2"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.2"/><path d="M14 14h2.5v2.5H14zM18.5 14h2M14 18.5v2M17 18.5h3.5v2"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>',
+  door:'<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16"/><path d="M14.5 12h.01"/>',
+  lock:'<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>', tick:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  apple:'<path d="M16 3c-1.2.1-2.6.9-3.3 1.9-.7.8-1.2 2-1 3.2 1.3.1 2.6-.7 3.4-1.7.7-.9 1.1-2.1.9-3.4ZM19.6 16.6c-.5 1.2-.8 1.7-1.4 2.7-.9 1.4-2.2 3.1-3.8 3.1-1.4 0-1.8-.9-3.7-.9-1.9 0-2.3.9-3.7.9-1.6 0-2.8-1.6-3.7-3C1 15.6.8 11 2.4 8.6 3.5 6.9 5.3 5.9 7 5.9c1.7 0 2.8.9 4.2.9 1.4 0 2.2-.9 4.2-.9 1.5 0 3.1.8 4.2 2.2-3.7 2-3.1 7.3 0 8.5Z" fill="FILL" stroke="none"/>',
   plus:'<path d="M12 5v14M5 12h14"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>',
   pin:'<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
@@ -6852,7 +6903,7 @@ var P = {
   padel:'<ellipse cx="10" cy="9" rx="5.5" ry="6" transform="rotate(-35 10 9)"/><path d="m13.5 13.5 6 6"/><circle cx="18" cy="5.5" r="1.6"/>',
   kids:'<circle cx="12" cy="5.5" r="2.2"/><path d="M12 8v7M8 11l4-1.5 4 1.5M9 21l3-6 3 6"/>'
 };
-function ic(n, c, s){ s = s||20; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'')+'</svg>'; }
+function ic(n, c, s){ s = s||20; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'').replace(/FILL/g, c||'currentColor')+'</svg>'; }
 
 /* ---------- dates & money ---------- */
 function T(n){ var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+n); return d; }
@@ -6939,29 +6990,54 @@ function sheet(root, html){
 
 /* ---------- pay flow ---------- */
 var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
+/* checkout sheet (payment gateway): pick what to pay → method → secure processing → receipt */
 function payFlow(root, ids, done){
-  var list = items().filter(function(x){ return ids.indexOf(x.id) >= 0; }), m = 'card', total = sum(list);
-  var sh = sheet(root, '');
-  function body(){
-    return '<div class="ow-sh-h"><b>Pay '+esc(aed(total))+'</b><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'+
-      '<div class="ow-sh-l">'+list.map(function(x){ var u = U(x.u), mt = meta(x); return '<div class="ow-li"><span><b>'+esc(x.t)+'</b><small>'+esc((u?u.name+' · ':'')+mt.when)+'</small></span><b>'+esc(aed(x.amt))+'</b></div>'; }).join('')+'</div>'+
-      '<p class="mox-eyebrow" style="margin:6px 0 8px">HOW WOULD YOU LIKE TO PAY?</p>'+
-      '<div class="ow-mth" role="radiogroup">'+METHODS.map(function(k){ return '<button type="button" class="ow-m" role="radio" aria-checked="'+(k[0]===m)+'" data-m="'+k[0]+'"><span class="ow-m-i">'+ic(k[3],'#922a22',20)+'</span><span><b>'+k[1]+'</b><small>'+k[2]+'</small></span><i class="ow-rad"></i></button>'; }).join('')+'</div>'+
-      '<button type="button" class="mox-btn mox-btn--dark ow-go" data-pay><span class="mox-btn-t">'+(m==='card' ? 'Pay '+esc(aed(total)) : m==='bank' ? 'I’ve made the transfer' : 'Book cheque pickup')+'</span></button>';
+  var open = items().filter(function(x){ return x.st!=='paid'; });
+  var pool = open.filter(function(x){ return ids.indexOf(x.id) >= 0; }).concat(open.filter(function(x){ return ids.indexOf(x.id) < 0; })).slice(0, 5);
+  var sel = {}; ids.forEach(function(id){ sel[id] = true; });
+  var m = 'apple', step = 'pick';
+  var sh = sheet(root, ''), box = $('.ow-sh', sh.el); box.classList.add('ow-co');
+  box.insertAdjacentHTML('beforeend', '<div data-shb></div>'); var b = $('[data-shb]', box);
+  function chosen(){ return pool.filter(function(x){ return sel[x.id]; }); }
+  function tot(){ return sum(chosen()); }
+  var MTH = [['apple','Apple Pay','Face ID · instant','apple'], ['card','Visa •••• 4417','Saved card · expires 08/28','card'], ['bank','Bank transfer','2–3 working days','bank']];
+  function head(t){ return '<div class="ow-sh-h"><span class="ow-co-h"><b>'+t+'</b><small>'+ic('lock','#2e7d5b',13)+'Secure checkout · Bloom Pay</small></span><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'; }
+  function cta(){ var t = tot(), dis = !t;
+    if(m==='apple') return '<button type="button" class="ow-cta ow-cta--apple" data-pay'+(dis?' disabled':'')+'>'+ic('apple','#fff',18)+'<span>Pay '+esc(aed(t))+'</span></button>';
+    return '<button type="button" class="ow-cta" data-pay'+(dis?' disabled':'')+'><span>'+(m==='bank' ? 'Get transfer details' : 'Pay '+esc(aed(t)))+'</span></button>'; }
+  function draw(){
+    if(step==='pick'){
+      b.innerHTML = head('Checkout')+
+        '<div class="ow-co-l">'+pool.map(function(x){ var u = U(x.u), mt = meta(x), on = !!sel[x.id];
+          return '<button type="button" class="ow-co-i'+(on?' is-on':'')+'" role="checkbox" aria-checked="'+on+'" data-sel="'+x.id+'"><i class="ow-chk">'+(on?ic('tick','#fff',14):'')+'</i><span class="ow-co-t"><b>'+esc(x.t)+'</b><small'+(x.st==='missed'?' class="is-late"':'')+'>'+esc((u?u.name+' · ':'')+(x.st==='missed' ? mt.when : 'due '+fds(x.due)))+'</small></span><b class="ow-co-a">'+esc(aed(x.amt))+'</b></button>'; }).join('')+'</div>'+
+        '<div class="ow-co-tot"><span>Total</span><b>'+esc(aed(tot()))+'</b></div>'+
+        '<p class="mox-eyebrow" style="margin:14px 0 8px">PAY WITH</p>'+
+        '<div class="ow-mth" role="radiogroup">'+MTH.map(function(k){ return '<button type="button" class="ow-m" role="radio" aria-checked="'+(k[0]===m)+'" data-m="'+k[0]+'"><span class="ow-m-i">'+ic(k[3], k[0]==='apple'?'#1c1c19':'#922a22', 20)+'</span><span><b>'+k[1]+'</b><small>'+k[2]+'</small></span><i class="ow-rad"></i></button>'; }).join('')+'</div>'+
+        cta();
+    } else if(step==='bank'){
+      b.innerHTML = head('Bank transfer')+
+        '<div class="ow-bank">'+[['Beneficiary','Bloom Holding LLC · Escrow'],['Bank','Abu Dhabi Commercial Bank'],['IBAN','AE07 0030 0001 2345 6789 012'],['Reference',chosen().map(function(x){ return U(x.u).code; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).join(', ')],['Amount',aed(tot())]].map(function(r){ return '<div class="ow-bank-r"><small>'+r[0]+'</small><b>'+esc(r[1])+'</b></div>'; }).join('')+'</div>'+
+        '<p class="ow-note" style="margin:10px 0 14px">Use the reference exactly so we can match your payment. We’ll confirm within 2–3 working days.</p>'+
+        '<button type="button" class="ow-cta" data-banked><span>I’ve made the transfer</span></button>';
+    } else if(step==='proc'){
+      b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>'+(m==='apple' ? 'Confirm with Face ID' : 'Contacting your bank…')+'</b><small>'+ic('lock','#6b665c',13)+' '+esc(aed(tot()))+' · encrypted & secure</small></div>';
+    } else if(step==='ok'){
+      var rc = 'RC-'+(261000 + Math.floor(Math.random()*8999));
+      b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>'+(m==='bank' ? 'Transfer noted' : 'Payment successful')+'</b><small>'+(m==='bank' ? 'We’ll confirm once '+esc(aed(tot()))+' reaches Bloom.' : esc(aed(tot()))+' paid · receipt '+rc+' sent to your email')+'</small>'+
+        (m==='bank' ? '' : '<button type="button" class="ow-rcb" data-rcd>'+ic('dl','#922a22',16)+'Download receipt</button>')+
+        '<button type="button" class="ow-cta" data-shx><span>Done</span></button></div>';
+    }
   }
-  var box = $('.ow-sh', sh.el); box.insertAdjacentHTML('beforeend', '<div data-shb>'+body()+'</div>');
-  var b = $('[data-shb]', box);
+  draw();
   b.addEventListener('click', function(e){
-    var r = e.target.closest('[data-m]'); if(r){ m = r.dataset.m; b.innerHTML = body(); return; }
+    var c = e.target.closest('[data-sel]'); if(c){ sel[c.dataset.sel] = !sel[c.dataset.sel]; draw(); return; }
+    var r = e.target.closest('[data-m]'); if(r){ m = r.dataset.m; draw(); return; }
+    if(e.target.closest('[data-rcd]')){ var t = $('[data-rcd]', b); t.innerHTML = ic('check','#2e7d5b',16)+'Receipt saved'; return; }
+    if(e.target.closest('[data-banked]')){ step = 'ok'; draw(); if(done) done('bank'); return; }
     if(e.target.closest('[data-pay]')){
-      var btn = e.target.closest('[data-pay]'); btn.disabled = true; btn.classList.add('is-busy');
-      setTimeout(function(){
-        if(m==='card') markPaid(ids);
-        b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>'+(m==='card' ? 'Payment successful' : m==='bank' ? 'Transfer noted' : 'Pickup booked')+'</b><small>'+
-          (m==='card' ? esc(aed(total))+' paid · receipt sent to your email' : m==='bank' ? 'We’ll confirm once '+esc(aed(total))+' reaches Bloom’s account.' : 'A courier will collect the cheque within 2 working days.')+'</small>'+
-          '<button type="button" class="mox-btn mox-btn--dark" data-shx><span class="mox-btn-t">Done</span></button></div>';
-        if(done) done(m);
-      }, REDUCED ? 0 : 700);
+      if(m==='bank'){ step = 'bank'; draw(); return; }
+      var ids2 = chosen().map(function(x){ return x.id; }); step = 'proc'; draw();
+      setTimeout(function(){ markPaid(ids2); step = 'ok'; draw(); if(done) done(m); }, REDUCED ? 0 : 1500);
     }
   });
 }
@@ -7165,15 +7241,14 @@ window.__ownui = { openPay:openPay, openPort:openPort, openFeat:openFeat };
 
 /* ---------- dashboard ---------- */
 function dashPay(){
-  var all = items(), due = all.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; }), next = due.filter(function(x){ return x.st!=='missed'; }).slice(0, 2);
-  var h = '<div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('card','#922a22',20)+'</span><b>Payments</b></span><button type="button" class="owd-link" data-o="pay">View all'+ic('chev','#922a22',14)+'</button></div>';
-  if(miss.length){
-    var old = Math.max.apply(null, miss.map(function(x){ return -days(x.due); }));
-    h += '<button type="button" class="owd-miss" data-o="paymiss"><span class="owd-miss-i">'+ic('alert','#fff',18)+'</span><span class="owd-miss-t"><b>'+esc(aed(sum(miss)))+' overdue</b><small>'+esc(miss.length===1 ? U(miss[0].u).name+' · '+old+' day'+(old>1?'s':'')+' late' : miss.length+' payments · oldest '+old+' days late')+'</small></span><span class="owd-miss-b">Pay now</span></button>';
-  }
-  if(next.length) h += '<div class="owd-rows">'+next.map(function(x){ var u = U(x.u), n = days(x.due);
-    return '<button type="button" class="owd-row" data-o="payid" data-id="'+x.id+'"><span class="owd-date"><b>'+x.due.getDate()+'</b><small>'+MON[x.due.getMonth()].toUpperCase()+'</small></span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name+(mixed() ? ' · '+GN()[groupOf(x)] : '')+' · '+(n===0?'due today':'in '+n+' day'+(n>1?'s':'')))+'</small></span><b class="owd-amt">'+esc(aed(x.amt))+'</b></button>'; }).join('')+'</div>';
-  if(!due.length) h += '<div class="owd-ok">'+ic('check','#2e7d5b',18)+'<span>All paid up. Receipts are in Payments.</span></div>';
+  var all = items(), due = all.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; });
+  var rows = miss.concat(due.filter(function(x){ return x.st!=='missed'; })).slice(0, 3);
+  var h = '<div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('card','#922a22',20)+'</span><span class="owd-tt"><b>Payments</b><small>'+(due.length ? esc(aed(sum(due)))+' to pay' : 'All paid up')+'</small></span></span><button type="button" class="owd-link" data-o="pay">View all'+ic('chev','#922a22',14)+'</button></div>';
+  if(rows.length) h += '<div class="owd-rows">'+rows.map(function(x){ var u = U(x.u), n = days(x.due), late = x.st==='missed';
+    return '<button type="button" class="owd-row'+(late?' is-late':'')+'" data-o="payid" data-id="'+x.id+'"><span class="owd-date"><b>'+x.due.getDate()+'</b><small>'+MON[x.due.getMonth()].toUpperCase()+'</small></span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+esc(u.name)+' · '+(late ? '<em>'+(-n)+' day'+(n===-1?'':'s')+' overdue</em>' : (n===0?'due today':'in '+n+' day'+(n>1?'s':'')))+'</small></span><b class="owd-amt">'+esc(aed(x.amt))+'</b></button>'; }).join('')+'</div>';
+  if(miss.length) h += '<button type="button" class="owd-paycta" data-o="paymiss">Pay overdue · '+esc(aed(sum(miss)))+'</button>';
+  else if(due.length) h += '<button type="button" class="owd-paycta is-soft" data-o="paynext" data-id="'+rows[0].id+'">Pay next · '+esc(aed(rows[0].amt))+'</button>';
+  else h += '<div class="owd-ok">'+ic('check','#2e7d5b',18)+'<span>Nothing due. Receipts are in Payments.</span></div>';
   return '<div class="owd owd-pay">'+h+'</div>';
 }
 function statusChips(list){ var S = window.__ownst, c = {}; list.forEach(function(u){ if(u.own) c[u.own.status] = (c[u.own.status]||0) + 1; }); return '<div class="owd-chips">'+Object.keys(c).map(function(k){ return pill(c[k]+' '+S.label[k], S.tone[k]); }).join('')+'</div>'; }
@@ -7189,7 +7264,7 @@ function quick(list){ var inc = INC.filter(function(x){ return days(x.date) <= 0
   return '<div class="owd-q"><button type="button" data-o="docs">'+ic('folder','#922a22',20)+'<span>Documents</span></button><button type="button" data-o="stmt">'+ic('stmt','#922a22',20)+'<span>Statements</span></button>'+
     (false ? '<button type="button" data-o="inc">'+ic('coins','#922a22',20)+'<span>Income<small>'+esc(aed(sum(inc)).replace('AED ','AED '))+'</small></span></button>' : '<button type="button" data-o="contact">'+ic('phone','#922a22',20)+'<span>Contact Bloom</span></button>')+'</div>';
 }
-var SUMI = { resident:['home','#2e7d5b','green'], rented:['key','#4d5ebe','blue'], construction:['crane','#8f5a1c','amber'], resale:['tag','#6b4fa0','violet'], vacant:['home','#54504a','grey'], holiday:['key','#2f6f73','teal'], renting:['user','#4d5ebe','slate'] };
+var SUMI = { resident:['home','#2e7d5b','green'], rented:['key','#4d5ebe','blue'], construction:['crane','#8f5a1c','amber'], resale:['tag','#6b4fa0','violet'], vacant:['door','#54504a','grey'], holiday:['sun','#2f6f73','teal'], renting:['user','#4d5ebe','slate'] };
 var SUMO = ['resident','rented','holiday','construction','vacant','resale','renting'];
 var SUMC = { green:'#2e7d5b', blue:'#4d5ebe', amber:'#b7863f', violet:'#6b4fa0', grey:'#a19b92', teal:'#2f6f73', slate:'#6f7f8f' };
 function dashSummary(){
@@ -7202,7 +7277,7 @@ function dashSummary(){
   if(tot <= 1) return '';   // one property: the property card above already says it all
   if(keys.length===1) sub = owned.length+' owned · all '+lab(keys[0]);
   return '<div class="owd owd-sum"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('building','#922a22',20)+'</span><span class="owd-tt"><b>My properties</b><small>'+esc(sub)+'</small></span></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
-    (keys.length > 1 ? '<div class="owd-kpi" style="--n:'+keys.length+'">'+keys.map(function(k){ return '<button type="button" class="owd-kp" data-o="portst" data-st="'+k+'" aria-label="'+c[k]+' '+esc(lab(k))+'"><b>'+c[k]+'</b><small>'+esc(lab(k))+'</small></button>'; }).join('')+'</div>' : '')+
+    (keys.length > 1 ? '<div class="owd-tl">'+keys.map(function(k){ return '<button type="button" class="owd-tlc" data-o="portst" data-st="'+k+'" aria-label="'+c[k]+' '+esc(lab(k))+'"><span class="owd-tlc-i">'+ic(SUMI[k][0],'#922a22',18)+'</span><span class="owd-tlc-l">'+esc(lab(k))+'</span><b>'+c[k]+'</b></button>'; }).join('')+'</div>' : '')+
     '</div>';
 }
 function uniq(a){ return a.filter(function(x,i){ return a.indexOf(x)===i; }); }
@@ -7253,8 +7328,8 @@ function wireDashboard(sec){
     var b = e.target.closest('[data-o]'); if(!b) return; e.preventDefault(); e.stopPropagation();
     var o = b.dataset.o, M = mo();
     if(o==='pay') openPay('due');
-    else if(o==='paymiss') openPay('due');
-    else if(o==='payid'){ var root = sec.querySelector('.canvas') || sec; payFlow(sec, [b.dataset.id]); }
+    else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }));
+    else if(o==='payid' || o==='paynext') payFlow(sec, [b.dataset.id]);
     else if(o==='port') openPort('props');
     else if(o==='portst') openPort('props', b.dataset.st);
     else if(o==='docs') openPort('docs');
