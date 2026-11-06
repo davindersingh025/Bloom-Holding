@@ -2949,7 +2949,7 @@ var allUnits = MO.units;
 MO.units = function(){ var L = (LISTS[J] || ALL).slice();
   if(J==='holiday') L.sort(function(a,b){ return (unitStatus(a)==='guest' ? 0 : 1) - (unitStatus(b)==='guest' ? 0 : 1); });   // guests checked in first
   return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
-var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Living In', rented:'Rented Out', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest', construction:'Under Construction', resale:'For Resale', renting:'Renting' };
+var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Move In', rented:'Rented Out', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest', construction:'Under Construction', resale:'For Resale', renting:'Renting' };
 var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey', construction:'amber', resale:'violet', renting:'blue' };
 window.__ownst = { label:ST_LABEL, tone:ST_TONE, status:function(u){ return unitStatus(u); } };
 function unitStatus(u){
@@ -6643,7 +6643,7 @@ window.__initScreen[NEW] = initNew;
 .owd-lv-img.sm{width:44px;height:44px;border-radius:12px}
 .owd-lv-img img{width:100%;height:100%;object-fit:cover;display:block}
 .owd-warn{color:#8f5a1c!important;font-weight:600}
-.owd-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.owd-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.owd-acts.is-one{grid-template-columns:1fr}
 .owd .owd-acts .mox-btn{height:44px;font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:999px}
 .owd .owd-acts .mox-btn--dark{background:#1c1c19;color:#fff}.owd .owd-acts .mox-btn--ghost{background:#fff;border:1px solid #ddd2cc}
 .owd-split{flex-direction:row;padding:6px;gap:6px}
@@ -6658,7 +6658,7 @@ window.__initScreen[NEW] = initNew;
 .owd-lg{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
 .owd .owd-lgi{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid #f3ece8;font-size:13px;line-height:18px;color:#3a3732}
 .owd .owd-lgi:nth-child(-n+2){border-top:0}
-.owd-lg.is-one{grid-template-columns:1fr}
+.owd-lg.is-one{display:none}
 .owd-lgi i{flex:none;width:8px;height:8px;border-radius:50%}
 .owd-lgi span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .owd-lgi b{font-size:14px;font-weight:600;color:#1c1c19}
@@ -7185,8 +7185,10 @@ function dashSummary(){
   var nC = uniq(owned.map(function(u){ return u.community; })).length;
   var sub = c.renting ? owned.length+' owned · 1 rented home' : owned.length+' owned · '+nC+' communit'+(nC===1?'y':'ies');
   function lab(k){ return k==='renting' ? 'Renting (tenant)' : S.label[k]; }
+  if(tot <= 1) return '';   // one property: the property card above already says it all
+  if(keys.length===1) sub = owned.length+' owned · all '+lab(keys[0]);
   return '<div class="owd owd-sum"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('building','#922a22',20)+'</span><span class="owd-tt"><b>My properties</b><small>'+esc(sub)+'</small></span></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
-    (keys.length > 1 ? '<div class="owd-seg" aria-hidden="true">'+keys.map(function(k){ return '<i style="flex:'+c[k]+';background:'+SUMC[SUMI[k][2]]+'"></i>'; }).join('')+'</div>' : '')+
+    (keys.length === 1 ? '' : keys.length > 1 ? '<div class="owd-seg" aria-hidden="true">'+keys.map(function(k){ return '<i style="flex:'+c[k]+';background:'+SUMC[SUMI[k][2]]+'"></i>'; }).join('')+'</div>' : '')+
     '<div class="owd-lg'+(keys.length===1?' is-one':'')+'">'+keys.map(function(k){ return '<button type="button" class="owd-lgi" data-o="portst" data-st="'+k+'" aria-label="'+c[k]+' '+esc(lab(k))+'"><i style="background:'+SUMC[SUMI[k][2]]+'"></i><span>'+esc(lab(k))+'</span><b>'+c[k]+'</b></button>'; }).join('')+'</div></div>';
 }
 function uniq(a){ return a.filter(function(x,i){ return a.indexOf(x)===i; }); }
@@ -7195,7 +7197,7 @@ function dashPort(title, list){
     '<div class="owd-hls">'+highlights(list)+'</div>'+quick(list.map(function(u){ return u.id; }))+'</div>';
 }
 function dashCommunity(u, title){
-  var T8 = [['access','idc','Access card'],['amen','pool','Amenities'],['park','car','Parking'],['family','family','Family'],['events','event','Events',1],['notices','bell','Notices',2],['contact','phone','Contact'],['moveout','exit','Move out']];
+  var T8 = [['access','idc','Access card'],['amen','pool','Amenities'],['park','car','Parking'],['family','family','Family'],['events','event','Events',1],['notices','bell','Notices',2],['contact','phone','Contact']];
   return '<div class="owd owd-com"><div class="owd-h"><span class="owd-t"><span class="owd-ti">'+ic('home','#922a22',20)+'</span><b>'+esc(title)+'</b></span><small class="owd-sub">'+esc(u.name+' · '+u.community)+'</small></div>'+
     '<div class="owd-grid">'+T8.map(function(t){ return '<button type="button" class="owd-tile" data-o="'+(t[0]==='contact'||t[0]==='moveout' ? t[0] : 'feat')+'" data-k="'+t[0]+'"><span class="owd-tile-i">'+ic(t[1],'#922a22',22)+(t[3] ? '<i class="owd-badge">'+t[3]+'</i>' : '')+'</span><span>'+t[2]+'</span></button>'; }).join('')+'</div></div>';
 }
@@ -7203,7 +7205,7 @@ function dashRented(u){
   var c = u.contract, n = days(c.end);
   return '<div class="owd owd-live"><div class="owd-h"><span class="owd-t"><span class="owd-ti" data-tone="blue">'+ic('key','#4d5ebe',20)+'</span><b>Where I live</b></span>'+pill('Tenant','blue')+'</div>'+
     '<button type="button" class="owd-lv" data-o="unit" data-id="'+u.id+'"><span class="owd-lv-img">'+thumb(u)+'</span><span class="owd-rt"><b>'+esc(u.name+' · '+u.community)+'</b><small>Rented from '+esc(u.own.landlord)+'</small><small class="owd-warn">Ends '+fd(c.end)+' · '+n+' days left</small></span>'+ic('chev','#8a847a',18)+'</button>'+
-    '<div class="owd-acts"><button type="button" class="mox-btn mox-btn--ghost" data-o="moveout"><span class="mox-btn-t">Move out</span></button><button type="button" class="mox-btn mox-btn--dark" data-o="renew" data-id="'+u.id+'"><span class="mox-btn-t">Renew contract</span></button></div></div>';
+    '<div class="owd-acts is-one"><button type="button" class="mox-btn mox-btn--dark" data-o="renew" data-id="'+u.id+'"><span class="mox-btn-t">Renew contract</span></button></div></div>';
 }
 function dashSplit(homeU, inv){
   var incA = sum(INC.filter(function(x){ return days(x.date) <= 0; }));
