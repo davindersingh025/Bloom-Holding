@@ -7220,7 +7220,7 @@ function dashHH(list){
 function dashHTML(){
   var us = units(), h = dashSummary() + dashPay();
   var homeU = us.filter(function(u){ return u.group==='home'; })[0], rentU = us.filter(function(u){ return u.group==='renting'; })[0], inv = us.filter(function(u){ return u.group==='invest'; });
-  else if(OK==='owner') h += dashCommunity(homeU, 'My community');
+  if(OK==='owner') h += dashCommunity(homeU, 'My community');
   else if(OK==='ownerinv') h += dashCommunity(homeU, 'My community');
   else if(OK==='ownerhh') h += dashHH(inv);
   else if(OK==='ownertenant') h = dashSummary() + dashRented(rentU) + dashPay() + dashCommunity(rentU, 'My community');
