@@ -6999,7 +6999,7 @@ function sheet(root, html){
 /* ---------- pay flow ---------- */
 var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
 /* checkout sheet (payment gateway): pick what to pay → method → secure processing → receipt */
-function payFlow(root, ids, done){
+function payFlow(root, ids, done, direct){
   var open = items().filter(function(x){ return x.st!=='paid'; });
   var pool = open.filter(function(x){ return ids.indexOf(x.id) >= 0; }).concat(open.filter(function(x){ return ids.indexOf(x.id) < 0; })).slice(0, 5);
   var sel = {}; ids.forEach(function(id){ sel[id] = true; });
@@ -7028,7 +7028,7 @@ function payFlow(root, ids, done){
         '<p class="ow-note" style="margin:10px 0 14px">Use the reference exactly so we can match your payment. We’ll confirm within 2–3 working days.</p>'+
         '<button type="button" class="ow-cta" data-banked><span>I’ve made the transfer</span></button>';
     } else if(step==='proc'){
-      b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>'+(m==='apple' ? 'Confirm with Face ID' : 'Contacting your bank…')+'</b><small>'+ic('lock','#6b665c',13)+' '+esc(aed(tot()))+' · encrypted & secure</small></div>';
+      b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>'+(m==='apple' ? 'Confirm with Face ID' : 'Processing payment…')+'</b><small>'+ic('lock','#6b665c',13)+' '+esc(aed(tot()))+' · Visa •••• 4417 · secure</small></div>';
     } else if(step==='ok'){
       var rc = 'RC-'+(261000 + Math.floor(Math.random()*8999));
       b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>'+(m==='bank' ? 'Transfer noted' : 'Payment successful')+'</b><small>'+(m==='bank' ? 'We’ll confirm once '+esc(aed(tot()))+' reaches Bloom.' : esc(aed(tot()))+' paid · receipt '+rc+' sent to your email')+'</small>'+
@@ -7036,7 +7036,9 @@ function payFlow(root, ids, done){
         '<button type="button" class="ow-cta" data-shx><span>Done</span></button></div>';
     }
   }
-  draw();
+  function pay(){ var ids2 = chosen().map(function(x){ return x.id; }); step = 'proc'; draw();
+    setTimeout(function(){ markPaid(ids2); step = 'ok'; draw(); if(done) done(m); }, REDUCED ? 0 : 1600); }
+  if(direct){ m = 'card'; pay(); } else draw();
   b.addEventListener('click', function(e){
     var c = e.target.closest('[data-sel]'); if(c){ sel[c.dataset.sel] = !sel[c.dataset.sel]; draw(); return; }
     var r = e.target.closest('[data-m]'); if(r){ m = r.dataset.m; draw(); return; }
@@ -7044,8 +7046,7 @@ function payFlow(root, ids, done){
     if(e.target.closest('[data-banked]')){ step = 'ok'; draw(); if(done) done('bank'); return; }
     if(e.target.closest('[data-pay]')){
       if(m==='bank'){ step = 'bank'; draw(); return; }
-      var ids2 = chosen().map(function(x){ return x.id; }); step = 'proc'; draw();
-      setTimeout(function(){ markPaid(ids2); step = 'ok'; draw(); if(done) done(m); }, REDUCED ? 0 : 1500);
+      pay();
     }
   });
 }
@@ -7350,8 +7351,9 @@ function wireDashboard(sec){
     var b = e.target.closest('[data-o]'); if(!b) return; e.preventDefault(); e.stopPropagation();
     var o = b.dataset.o, M = mo();
     if(o==='pay') openPay('due');
-    else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }));
-    else if(o==='payid' || o==='paynext') payFlow(sec, [b.dataset.id]);
+    else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }), null, true);
+    else if(o==='paynext') payFlow(sec, [b.dataset.id], null, true);
+    else if(o==='payid') payFlow(sec, [b.dataset.id]);
     else if(o==='port') openPort('props');
     else if(o==='portst') openPort('props', b.dataset.st);
     else if(o==='docs') openPort('docs');
