@@ -4917,7 +4917,7 @@ var SCOPES = {
     { id:'maintenance', name:'Maintenance', tag:'Repairs & fixes', icon:'wrench', color:'#922A22', subs:[{n:'Plumbing',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Pest Control',i:'bug',c:'#5B6B3A'}] },
     { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},SC,{n:'Payment Receipt',i:'receipt',c:'#2F6F73'},{n:'Statement of Account',i:'statement',c:'#34506B'}] },
     { id:'documents', name:'Property & Documents', tag:'Contracts & tenancy', icon:'doc', color:'#2F6F73', subs:[{n:'Property Documents',i:'doc',c:'#2F6F73'},{n:'Update Property Documents',i:'refresh',c:'#8F5A1C'},{n:'Tenancy Renewal',i:'refresh',c:'#5B6B3A',roles:TEN},{n:'Tenant / Occupant Update',i:'people',c:'#7A4F6D',roles:TEN},{n:'NOC / Clearance',i:'stamp',c:'#922A22',roles:TEN}] } ]},
-  common:{ key:'common', title:'Common areas', sub:'Access, shared spaces & community payments', icon:'community', color:'#2F6F73', team:'Community Team', cats:[
+  common:{ key:'common', title:'Common Areas', sub:'Access, shared spaces & community payments', icon:'community', color:'#2F6F73', team:'Community Team', cats:[
     { id:'access', name:'Access & Visitors', tag:'Cards & visitor passes', icon:'pass', color:'#64748B', subs:[{n:'Access Card',i:'card',c:'#2F6F73'},{n:'Visitor Access',i:'pass',c:'#34506B'}] },
     { id:'maintenance', name:'Cleaning & Maintenance', tag:'Repairs & cleaning', icon:'wrench', color:'#922A22', subs:[{n:'Water Leakage',i:'drop',c:'#34506B'},{n:'Electrical',i:'bolt',c:'#B7863F'},{n:'AC / HVAC',i:'snow',c:'#2F6F73'},{n:'Pest Control',i:'bug',c:'#5B6B3A'},{n:'Cleaning',i:'broom',c:'#2F6F73'},{n:'Waste Management',i:'trash',c:'#5B6B3A'}] },
     { id:'payments', name:'Payments & Finance', tag:'Report a concern', icon:'card', color:'#8F5A1C', subs:[{n:'Payment Issue',i:'warn',c:'#922A22'},SC,{n:'Community Fines',i:'fine',c:'#7A4F6D'},{n:'Payment Receipt',i:'receipt',c:'#2F6F73'}] } ]}
@@ -4956,7 +4956,7 @@ function scopeCards(){
   return '<div class="sr-scopes">'+['unit','common'].map(function(k){ var s=SCOPES[k], cur=current(k);
     var tag = cur ? cur.name : s.sub, foot;
     if(k==='unit') foot = '<span class="sr-scope-s sr-scope-1l" title="Maintenance, payments &amp; documents">Repairs, bills &amp; docs</span>';
-    else foot = '<span class="sr-scope-s">'+esc(tag)+'</span>';
+    else foot = '<span class="sr-scope-s sr-scope-1l" title="Access, shared spaces &amp; community payments">Pools, gyms &amp; access</span>';
     return '<button type="button" class="sr-scope" data-scope="'+k+'" style="--c:'+s.color+';border-color:'+hexA(s.color,.22)+'"><span class="sr-gi">'+icon(s.icon,20,'#fff')+'</span>'+
       '<span class="sr-go">'+icon('arrow',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span>'+foot+'</button>'; }).join('')+'</div>';
 }
@@ -5064,7 +5064,7 @@ function initIssue(sec){
       scope: k, categoryId: c.id, category: c.name, subcategory: st.sub.n,
       description: ($('#sr-desc', body).value||'').trim(),
       locationType: k==='unit' ? 'inside_unit' : 'common_area',
-      location: k==='unit' ? (p.name+' · '+(p.u?p.u.community:'')) : ('Common areas · '+p.name),
+      location: k==='unit' ? (p.name+' · '+(p.u?p.u.community:'')) : ('Common Areas · '+p.name),
       routedTo: s.team, preferredDate: null,
       attachments: st.files.map(function(f){ return f.name; }),
       status: 'Submitted', submittedAt: new Date().toISOString()
@@ -5371,7 +5371,7 @@ function initGpt(sec){
       var scope = g.scope, place, cat, sub, desc = '', photo = '';
       var p = Promise.resolve();
       if(!scope) p = p.then(function(){ return say('Is this about your unit or the common areas?'); })
-        .then(function(){ return choose([['unit','In Unit','home'],['common','Common areas','community']], '1fr 1fr'); })
+        .then(function(){ return choose([['unit','In Unit','home'],['common','Common Areas','community']], '1fr 1fr'); })
         .then(function(c){ scope = c; });
       return p.then(function(){
         var list = SR.places(scope);
@@ -5402,7 +5402,7 @@ function initGpt(sec){
         if(c==='add'){ photo = 'IMG_'+(2400+Math.floor(Math.random()*500))+'.jpg';
           return say('Photo attached.', '<span class="gpt-file">'+icon('file',14)+esc(photo)+' · 1.8 MB</span>'); }
       }).then(function(){
-        var rows = [['Area', scope==='unit'?'In Unit':'Common areas'],['Location', place ? (scope==='unit' ? place.name+' · '+(place.u?place.u.community:place.meta) : place.name) : '—'],['Category', cat.name],['Issue', sub.n],['Description', desc || '—'],['Photo', photo || '—']];
+        var rows = [['Area', scope==='unit'?'In Unit':'Common Areas'],['Location', place ? (scope==='unit' ? place.name+' · '+(place.u?place.u.community:place.meta) : place.name) : '—'],['Category', cat.name],['Issue', sub.n],['Description', desc || '—'],['Photo', photo || '—']];
         return say('Here’s your request. Shall I submit it?', card(rows));
       }).then(function(){ return choose([['edit','Edit','edit'],['ok','Submit request','check','primary']], '1fr 1fr'); })
       .then(function(c){
@@ -5412,7 +5412,7 @@ function initGpt(sec){
             id: 'SR-' + (9043 + SR.requests.length),
             scope: scope, categoryId: cat.id, category: cat.name, subcategory: sub.n, description: desc,
             locationType: scope==='unit' ? 'inside_unit' : 'common_area',
-            location: scope==='unit' ? ((place?place.name:'')+' · '+(place&&place.u?place.u.community:'')) : ('Common areas · '+(place?place.name:'')),
+            location: scope==='unit' ? ((place?place.name:'')+' · '+(place&&place.u?place.u.community:'')) : ('Common Areas · '+(place?place.name:'')),
             routedTo: SR.scopes[scope].team, preferredDate: null, attachments: photo ? [photo] : [],
             status: 'Submitted', submittedAt: new Date().toISOString(), via: 'Bloom GPT'
           };
@@ -7268,6 +7268,8 @@ window.__initScreen[FEAT] = initFeat;
     if(prev) prev(sec);
     var nid = CARDS[sec.dataset.sid], el = nid && sec.querySelector('[data-node-id="'+nid+'"]');
     if(!el || el.__ar) return; el.__ar = true;
+    var jid = window.__journey && window.__journey.id;
+    if(jid==='investor' || jid==='ownerhh'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
     el.style.cursor = 'pointer'; el.setAttribute('role','link'); el.tabIndex = 0;
     el.setAttribute('aria-label','AC Filter Check, request SR-9042, in progress. View details');
     // show the card's own request (SR-9042), not the last one raised in this session
