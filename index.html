@@ -6991,6 +6991,24 @@ html.is-v2 .ow-stmt .mox-chip{border-radius:8px;height:30px}
 html.is-v2 .owd-pc,html.is-v2 .owd-pu{padding:12px 14px;gap:4px}
 html.is-v2 .owd-pc-a b{font-size:17px}
 html.is-v2 .owd-pc-a{min-height:22px}
+.itr{display:grid;gap:12px}
+.itr-f{display:grid;grid-template-columns:1fr 1fr;align-items:end}
+.itr-f > span{display:grid;gap:2px}
+.itr-f small{font-size:12px;color:#6b665c}
+.itr-f b{font-size:18px;font-weight:600;letter-spacing:-.2px;color:#1c1c19}
+.itr-r{padding-left:14px;border-left:1px solid #efe7e3}
+.itr-r b{color:#54504a}
+.itr-done{justify-self:end;display:inline-flex!important;grid-auto-flow:column;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#2e7d5b;padding:4px 8px;border-radius:8px;background:rgba(46,125,91,.08)}
+.itr-seg{display:flex;gap:3px}
+.itr-seg i{flex:1;height:8px;border-radius:3px;background:#efe7e3}
+.itr-seg i[data-s="paid"],.itr-leg i[data-s="paid"]{background:#922a22}
+.itr-seg i[data-s="missed"],.itr-leg i[data-s="missed"]{background:repeating-linear-gradient(135deg,#d6453d 0 3px,#f0b8b2 3px 6px)}
+.itr-seg i[data-s="due"],.itr-leg i[data-s="due"]{background:#d9a441}
+.itr-leg i[data-s="upcoming"]{background:#e3dad3}
+.itr-leg{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:12px;color:#6b665c}
+.itr-leg span{display:inline-flex;align-items:center;gap:5px}
+.itr-leg i{width:8px;height:8px;border-radius:2px}
+.itr-leg .itr-n{display:none}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7667,6 +7685,25 @@ function payGroups(all, miss, soon){
       (x.proc ? '<small class="is-proc"><i class="pu-spin" aria-hidden="true"></i>In process · usually 1–2 days</small>' : '<small class="is-ok"><i class="pu-ok" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i>Payment confirmed · '+fds(x.paid)+'</small>')+'</button>'; }).join('')+'</div></div>';
   return h ? '<div class="owd-pgx">'+h+'</div>' : '';
 }
+/* instalment summary: two figures + one segment per instalment (paid / overdue / due soon / upcoming) */
+function instTrack(all, total){
+  var inst = all.filter(function(x){ return x.k==='Instalment'; }); if(!inst.length) return '';
+  var N = 0, by = {}, amt = inst[inst.length-1].amt;
+  inst.forEach(function(x){ var m = /(\d+) of (\d+)/.exec(x.t); if(m){ by[+m[1]] = x; N = Math.max(N, +m[2]); amt = x.amt; } });
+  var nums = Object.keys(by).map(Number), firstOpen = Math.min.apply(null, nums.filter(function(k){ return by[k].st!=='paid'; }).concat([N+1]));
+  var seg = [], cnt = { paid:0, missed:0, due:0, upcoming:0 }, remaining = 0;
+  for(var k=1;k<=N;k++){ var x = by[k], st = x ? x.st : (k < firstOpen ? 'paid' : 'upcoming');
+    if(st!=='paid') remaining += x ? x.amt : amt;
+    cnt[st]++; seg.push('<i data-s="'+st+'"></i>'); }
+  total = total || N*amt; var paidAmt = total - remaining, done = remaining===0;
+  var leg = [['paid','Paid'],['missed','Overdue'],['due','Due soon'],['upcoming','Upcoming']].filter(function(l){ return cnt[l[0]]; })
+    .map(function(l){ return '<span><i data-s="'+l[0]+'"></i>'+cnt[l[0]]+' '+l[1].toLowerCase()+'</span>'; }).join('');
+  return '<div class="itr">'+
+    '<div class="itr-f"><span><small>Paid</small><b>'+esc(aed(paidAmt))+'</b></span>'+
+      (done ? '<span class="itr-done">'+ic('check','#2e7d5b',15)+'Fully paid</span>' : '<span class="itr-r"><small>Remaining</small><b>'+esc(aed(remaining))+'</b></span>')+'</div>'+
+    '<div class="itr-seg" role="img" aria-label="'+cnt.paid+' of '+N+' instalments paid">'+seg.join('')+'</div>'+
+    '<div class="itr-leg">'+leg+'<span class="itr-n">of '+N+' instalments</span></div></div>';
+}
 function dashOIC(){
   var u = units()[0], o = u.own, all = items(), h = '';
   var att = attentionCards();
@@ -7676,8 +7713,7 @@ function dashOIC(){
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
   var paid = all.filter(function(x){ return x.st==='paid' && !x.proc; }), total = sum(all), paidAmt = sum(paid), pct = total ? Math.round(paidAmt/total*100) : 0;
   var next = open.filter(function(x){ return x.st!=='missed'; })[0];
-  h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Payment plan'+ic('chev','#922a22',14)+'</button></div>'+
-    '<div class="owd-pp"><div class="owd-pp-h"><span><small>Paid so far</small><b>'+esc(aed(paidAmt))+'</b></span><span class="owd-pp-of">of '+esc(aed(total + 0))+'</span></div><span class="owd-pbar"><i style="width:'+pct+'%"></i></span><small class="owd-pp-s">'+paid.length+' of '+(paid.length+open.length)+' instalments paid · '+pct+'%</small></div>';
+  h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Payment plan'+ic('chev','#922a22',14)+'</button></div>' + instTrack(all, null);
   if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>';
   h += payGroups(all, miss, soon);
@@ -7717,9 +7753,9 @@ function dashOHV(){
     h += '<div class="owd-fin"><span class="owd-ci">'+ic('bank','#922a22',20)+'</span><span class="owd-rt"><b>Purchase financed by Emirates NBD</b><small>Your instalments are paid directly by your bank, so nothing is due to Bloom for the purchase. Service charges are still paid by you.</small></span></div>';
   } else if(instOpen.length){
     var pend = sum(instOpen), paidP = PUR.price - pend, pct = Math.round(paidP/PUR.price*100);
-    h += '<div class="owd-pp"><div class="owd-pp-h"><span><small>Purchase paid</small><b>'+esc(aed(paidP))+'</b></span><span class="owd-pp-of">of '+esc(aed(PUR.price))+'</span></div><span class="owd-pbar"><i style="width:'+pct+'%"></i></span><small class="owd-pp-s">'+(PUR.n - instOpen.length)+' of '+PUR.n+' instalments paid · '+instOpen.length+' pending after handover</small></div>';
+    h += instTrack(all, PUR.price);
   } else {
-    h += '<div class="owd-pp owd-pp--done"><div class="owd-pp-h"><span><small>Purchase price</small><b>'+esc(aed(PUR.price))+'</b></span><span class="owd-paid">'+ic('check','#2e7d5b',16)+'Fully paid</span></div><span class="owd-pbar"><i style="width:100%"></i></span><small class="owd-pp-s">All '+PUR.n+' instalments paid · service charges continue quarterly</small></div>';
+    h += instTrack(all, PUR.price);
   }
   if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>' + payGroups(all, miss, soon);
