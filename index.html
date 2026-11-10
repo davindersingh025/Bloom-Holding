@@ -1568,9 +1568,12 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
                user:{ name:'Khalid Al Nuaimi', initials:'KN', email:'khalid.alnuaimi@example.com', phone:'+971 50 913 4472', role:'Owner · Investor' } },
     ohv:     { id:'ohv', owner:true, firstTime:true, v2:true, label:'Owner · Investor · Handed over', short:'Handed over · Vacant',
                desc:'One handed-over property, vacant, first login',
-               user:{ name:'Mariam Al Hosani', initials:'MH', email:'mariam.alhosani@example.com', phone:'+971 55 208 6631', role:'Owner · Investor' } }
+               user:{ name:'Mariam Al Hosani', initials:'MH', email:'mariam.alhosani@example.com', phone:'+971 55 208 6631', role:'Owner · Investor' } },
+    olv:     { id:'olv', owner:true, v2:true, label:'Owner · Living here', short:'Living here',
+               desc:'One property, moved in, lives there',
+               user:{ name:'Omar Al Mansoori', initials:'OM', email:'omar.almansoori@example.com', phone:'+971 50 447 1902', role:'Owner · Resident' } }
   };
-  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv'];
+  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv','olv'];
   var BASE = JOURNEYS.tenant.user;
 
   function pick(){
@@ -1642,7 +1645,10 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     ['oic','active','Under construction', 'Missed & due payments'],
     ['ohv','',      'Handed over · Vacant', 'All instalments paid'],
     ['ohv','due',   'Handed over · Vacant', 'Instalments still due'],
-    ['ohv','loan',  'Handed over · Vacant', 'Paid by bank loan']
+    ['ohv','loan',  'Handed over · Vacant', 'Paid by bank loan'],
+    ['olv','',      'Moved in · Living here', 'All payments done'],
+    ['olv','sc',    'Moved in · Living here', 'Service charge due'],
+    ['olv','inst',  'Moved in · Living here', 'Instalments still going']
   ];
   var PV = ''; try { PV = new URLSearchParams(location.search).get('pay') || ''; } catch(e){}
   function goScen(j, v){
@@ -3004,6 +3010,7 @@ if(J==='owner'){
   else if(OK==='ownerinv'){ S.resident(v138); S.rented(a1204); S.construction(o1810); S.holiday(a305); L = [v138, a1204, o1810, a305]; }
   else if(OK==='ownerhh'){ S.holiday(a305,'in'); S.holiday(v22,'none'); L = [a305, v22]; }
   else if(OK==='ownertenant'){ S.renting(v138); S.rented(a1204); S.construction(o1810); L = [v138, a1204, o1810]; }
+  else if(OK==='olv'){ S.resident(v138); Object.assign(v138.own, { moveIn:rel(-212) }); L = [v138]; }
   else if(OK==='ohv'){ S.vacant(v22); Object.assign(v22.own, { handover:rel(-27), spa:dt(2024,2,8) }); L = [v22]; }
   else if(OK==='oic'){ S.construction(o1810); Object.assign(o1810.own, { progress:24, handover:dt(2028,12,30), paidPct:10, outstanding:'AED 868,500', next:rel(46), nextAmt:'AED 96,500', spa:rel(-41) }); L = [o1810]; }
   else { S.resident(v138); L = [v138]; }
@@ -3016,6 +3023,7 @@ MO.units = function(){ var L = (LISTS[J] || ALL).slice();
   return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
 var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Move In', rented:'Rented Out', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest', construction:'Under Construction', resale:'For Resale', renting:'Renting' };
 if(J==='owner' && OK==='ohv') ST_LABEL.vacant = 'Handed Over · Vacant';
+if(J==='owner' && OK==='olv') ST_LABEL.resident = 'Living Here';
 var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey', construction:'amber', resale:'violet', renting:'blue' };
 window.__ownst = { label:ST_LABEL, tone:ST_TONE, status:function(u){ return unitStatus(u); } };
 function unitStatus(u){
@@ -6939,6 +6947,7 @@ html.is-v2 .owd-sec > .owd-docs{margin-top:-2px}
 .owd.owd-qa,.owd.owd-srq{padding:4px 16px;gap:0}
 .owd .owd-sr{flex-direction:column;align-items:stretch;gap:10px;padding:14px 0}
 .owd-sr-h{display:flex;align-items:center;gap:12px}
+.owd-sr-f{display:flex;align-items:center;gap:12px}.owd-sr-f .owd-pbar{flex:1}
 .owd-pbar--b i{background:#4d5ebe!important}
 .owd-nimg-n{position:absolute;inset:0;display:grid;place-items:center;background:#f6ecdc}
 html.is-v2 .owd-dl,html.is-v2 .owd-qa,html.is-v2 .owd-srq{border-radius:16px!important}
@@ -7009,6 +7018,68 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .itr-leg span{display:inline-flex;align-items:center;gap:5px}
 .itr-leg i{width:8px;height:8px;border-radius:2px}
 .itr-leg .itr-n{display:none}
+/* living here */
+.owd.owd-bare{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;gap:10px}
+.owd .opl{background:#fff;border:1px solid #efe7e3;border-radius:16px;padding:14px 16px;display:grid;gap:10px;box-shadow:0 6px 20px -16px rgba(28,28,25,.25)}
+.opl-next{font-size:12.5px;color:#6b665c;padding-top:10px;border-top:1px solid #f3ece8}.opl-next b{color:#1c1c19;font-weight:600}
+.owd-pg-h.opl-gap{margin-top:8px}
+.owd .opc{display:flex;flex-direction:column;gap:4px;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #efe7e3;text-align:left;cursor:pointer}
+.owd .opc.is-miss{background:#fdf4f3;border-color:rgba(196,48,43,.28)}
+.opc .owd-pc-a b{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.opc small{font-size:12.5px;color:#6b665c}.opc small em{font-style:normal;color:#c4302b}
+.opc-pay{font-size:12px;font-weight:600;color:#fff;background:#922a22;padding:6px 12px;border-radius:8px}
+.oqa-help{background:#fff;border:1px solid #efe7e3;border-radius:16px;padding:12px 14px;display:grid;gap:10px}
+.oqa-help p{margin:0;font-size:13px;font-weight:600;color:#3a3833}
+.oqa-hr{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.owd .oqa-h{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:#f8f5f1;cursor:pointer;min-width:0}
+.oqa-h > span:last-child{display:grid;min-width:0}
+.oqa-h b{font-size:13.5px;font-weight:600;white-space:nowrap}
+.oqa-h small{font-size:11.5px;color:#6b665c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oqa-h .owd-ci{width:34px!important;height:34px!important;flex:none}
+.owd-ci[data-tone="teal"]{background:rgba(44,110,106,.1)!important}
+.owd-ci[data-tone="amber"]{background:rgba(183,134,63,.12)!important}
+.oqa-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.owd .oqa-t{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:12px;background:#fff;border:1px solid #efe7e3;cursor:pointer;text-align:center}
+.oqa-t > span:last-child{font-size:11.5px;font-weight:500;line-height:1.25;color:#3a3833}
+.oqa-t .owd-ci{width:38px!important;height:38px!important}
+.owd.owd-docal{padding:0;border-radius:16px!important;background:#fffaf1;border-color:rgba(183,134,63,.3)}
+.owd .odal{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px 14px;cursor:pointer}
+.odal .owd-rt{flex:1;min-width:0}.odal .owd-rt small{white-space:normal!important}
+.odal-b{flex:none;font-size:12px;font-weight:600;color:#8f5a1c;border:1px solid rgba(143,90,28,.35);padding:6px 10px;border-radius:8px}
+.owd .ocm{flex:none;width:200px;scroll-snap-align:start;display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:16px;background:#fff;border:1px solid #efe7e3;text-align:left;cursor:pointer;box-sizing:border-box}
+.ocm-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ocm-h .owd-ci{width:34px!important;height:34px!important}
+.ocm-h i{font-style:normal;font-size:11px;font-weight:600;color:#922a22;background:rgba(146,42,34,.07);padding:3px 8px;border-radius:6px}
+.ocm b{font-size:14px;font-weight:600;line-height:1.3}
+.ocm small{font-size:12px;color:#6b665c;line-height:1.35}
+.prg{display:flex;align-items:center;gap:14px}
+.prg-r{position:relative;flex:none;width:62px;height:62px}
+.prg-r > span{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1}
+.prg-r b{font-size:14px;font-weight:600}.prg-r small{font-size:10px;color:#6b665c;margin-top:2px}
+.prg-t{display:grid;gap:2px;min-width:0}
+.prg-t small{font-size:12px;color:#6b665c}
+.prg-t b{font-size:20px;font-weight:600;letter-spacing:-.2px;line-height:1.2}
+.ptabs{display:grid;gap:10px}
+.ptab-s{display:flex;gap:2px;padding:3px;border-radius:12px;background:rgba(28,28,25,.06)}
+.ptabs button{all:unset;box-sizing:border-box;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ptabs .ptab{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;border-radius:9px;font-size:13.5px;font-weight:500;color:#54504a;cursor:pointer}
+.ptabs .ptab.is-on{background:#fff;color:#1c1c19;font-weight:600;box-shadow:0 2px 8px -3px rgba(28,28,25,.25)}
+.ptab i,.ptab-l i{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-style:normal;font-size:11px;font-weight:700;color:#fff;box-sizing:border-box}
+.ptab i[data-tone="red"],.ptab-l i[data-tone="red"]{background:#922a22}
+.ptab i[data-tone="amber"],.ptab-l i[data-tone="amber"]{background:#8f6a14}
+.ptab-l{margin:0;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;color:#3a3833}
+.prl{display:grid;gap:8px}.prl[hidden]{display:none}
+.ptabs .prw{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #efe7e3;cursor:pointer;text-align:left}
+.prw-i{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(183,134,63,.12)}
+.prw.is-miss .prw-i{background:rgba(196,48,43,.09)}
+.prw-i b{color:#c4302b;font-size:16px;font-weight:700}
+.prw-t{flex:1;min-width:0;display:grid;gap:2px}
+.prw-t b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prw-t small{font-size:12px;color:#6b665c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prw-a{flex:none;display:grid;justify-items:end;gap:4px}
+.prw-a b{font-size:14px;font-weight:600}
+.prw-a i{font-style:normal;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:rgba(183,134,63,.14);color:#8f5a1c}
+.prw.is-miss .prw-a i{background:rgba(196,48,43,.1);color:#c4302b}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7240,6 +7311,18 @@ if(OK==='investor'){
   it('a305','Service charge · Q4 2026','Service charge',-4,2360); it('v22','Service charge · Q4 2026','Service charge',15,6980); it('a305','Holiday home permit','Permit',42,1520);
   it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a305','Service charge · Q3 2026','Service charge',-92,2360,-93);
   inc('a305','Payout · Oct 2026',-6,11240); inc('v22','Payout · Oct 2026',-6,4180); inc('a305','Payout · Sep 2026',-36,9870); inc('v22','Payout · Sep 2026',-36,13650);
+} else if(OK==='olv' && PV==='inst'){
+  it('v138','Instalment 8 of 12','Instalment',-10,180000); L[L.length-1].pen = 1800;
+  it('v138','Instalment 9 of 12','Instalment',20,180000); it('v138','Instalment 10 of 12','Instalment',111,180000);
+  it('v138','Instalment 11 of 12','Instalment',202,180000); it('v138','Instalment 12 of 12','Instalment',293,180000);
+  it('v138','Instalment 7 of 12','Instalment',-81,180000,-82);
+  it('v138','Service charge · Q1 2027','Service charge',52,7840); it('v138','Service charge · Q4 2026','Service charge',-9,7840,-9);
+} else if(OK==='olv' && PV==='sc'){
+  it('v138','Service charge · Q4 2026','Service charge',-11,7840); L[L.length-1].pen = 390;
+  it('v138','Community fee · 2027','Service charge',13,1150); it('v138','Service charge · Q1 2027','Service charge',52,7840);
+  it('v138','Service charge · Q3 2026','Service charge',-100,7840,-101);
+} else if(OK==='olv'){
+  it('v138','Service charge · Q1 2027','Service charge',52,7840); it('v138','Service charge · Q4 2026','Service charge',-9,7840,-9);
 } else if(OK==='ohv' && PV==='due'){
   it('v22','Instalment 9 of 10 · post-handover','Instalment',-9,245000); it('v22','Service charge · Q4 2026','Service charge',-14,6980);
   it('v22','Instalment 10 of 10 · post-handover','Instalment',21,245000); it('v22','Service charge · Q1 2027','Service charge',52,6980);
@@ -7313,7 +7396,7 @@ function sheet(root, html){
 var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
 /* checkout sheet (payment gateway): pick what to pay → method → secure processing → receipt */
 function payFlow(root, ids, done, direct){
-  if(OK==='oic' || OK==='ohv') direct = true;
+  if(OK==='oic' || OK==='ohv' || OK==='olv') direct = true;
   var open = items().filter(function(x){ return x.st!=='paid'; });
   var pool = open.filter(function(x){ return ids.indexOf(x.id) >= 0; }).concat(open.filter(function(x){ return ids.indexOf(x.id) < 0; })).slice(0, 5);
   var sel = {}; ids.forEach(function(id){ sel[id] = true; });
@@ -7678,12 +7761,39 @@ function payGroups(all, miss, soon){
   var h = '', recent = all.filter(function(x){ return x.st==='paid' && (x.proc || JUST[x.id] || days(x.paid) >= -60); }).sort(function(a,b){ return (b.proc?1:0)-(a.proc?1:0) || b.paid - a.paid; }).slice(0,4);
   function grpH(icn, col, t){ return '<div class="owd-pg-h">'+ic(icn, col, 18)+'<span>'+t+'</span></div>'; }
   function uc(g, o, sub){ var t = sum(g.xs); return '<button type="button" class="owd-pc" data-o="'+o+'" data-u="'+g.u+'"><span class="owd-pc-u">'+esc(uName(g.u))+'</span><span class="owd-pc-a"><b>'+esc(aed(t))+'</b>'+ic('chev','#1c1c19',18)+'</span><small>'+g.xs.length+' payment'+(g.xs.length>1?'s':'')+' · '+sub(g)+'</small></button>'; }
-  if(miss.length) h += '<div class="owd-pg" data-k="miss">'+grpH('alert','#c4302b','Missed payments')+'<div class="owd-pl">'+byUnit(miss).map(function(g){ return uc(g, 'pgmiss', function(g){ return '<em>'+(-days(g.xs[0].due))+' days overdue</em>'; }); }).join('')+'</div></div>';
-  if(soon.length) h += '<div class="owd-pg" data-k="due">'+grpH('clock','#c99a1e','Payments due in 30 days')+'<div class="owd-pl">'+byUnit(soon).map(function(g){ return uc(g, 'pgdue', function(g){ return 'due '+fds(g.xs[0].due); }); }).join('')+'</div></div>';
+  h += dueTabs(miss, soon);
   if(recent.length) h += '<div class="owd-pg" data-k="upd">'+grpH('stmt','#3a3833','Payment updates')+'<div class="owd-pl">'+recent.map(function(x){
     return '<button type="button" class="owd-pu" data-o="pgupd" data-id="'+x.id+'"><span class="owd-pc-u">'+esc(uName(x.u))+' · '+esc(x.t)+'</span><span class="owd-pc-a"><b>'+esc(aed(x.amt))+'</b></span>'+
       (x.proc ? '<small class="is-proc"><i class="pu-spin" aria-hidden="true"></i>In process · usually 1–2 days</small>' : '<small class="is-ok"><i class="pu-ok" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i>Payment confirmed · '+fds(x.paid)+'</small>')+'</button>'; }).join('')+'</div></div>';
   return h ? '<div class="owd-pgx">'+h+'</div>' : '';
+}
+/* ring summary (as in the approved reference): x/N paid ring + paid so far + of total */
+function instStats(all, total){
+  var inst = all.filter(function(x){ return x.k==='Instalment'; }); if(!inst.length) return null;
+  var N = 0, by = {}, amt = inst[inst.length-1].amt;
+  inst.forEach(function(x){ var m = /(\d+) of (\d+)/.exec(x.t); if(m){ by[+m[1]] = x; N = Math.max(N, +m[2]); amt = x.amt; } });
+  var nums = Object.keys(by).map(Number), firstOpen = Math.min.apply(null, nums.filter(function(k){ return by[k].st!=='paid'; }).concat([N+1]));
+  var paidN = 0, remaining = 0, miss = 0;
+  for(var k=1;k<=N;k++){ var x = by[k], st = x ? x.st : (k < firstOpen ? 'paid' : 'upcoming'); if(st==='paid') paidN++; else remaining += x ? x.amt : amt; if(st==='missed') miss++; }
+  total = total || N*amt; return { N:N, paidN:paidN, remaining:remaining, total:total, paid:total-remaining, miss:miss };
+}
+function instRing(all, total){
+  var t = instStats(all, total); if(!t) return '';
+  var col = t.miss ? '#922a22' : '#2e7d5b', r = 25, c = 2*Math.PI*r, p = t.paidN / t.N;
+  return '<div class="prg"><span class="prg-r"><svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="'+r+'" fill="none" stroke="#efe7e3" stroke-width="6"/><circle cx="31" cy="31" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(c*p).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 31 31)"/></svg><span><b>'+t.paidN+'/'+t.N+'</b><small>paid</small></span></span>'+
+    '<span class="prg-t"><small>'+(t.remaining ? 'Paid so far' : 'Paid in full')+'</small><b>'+esc(aed(t.paid))+'</b><small>'+(t.remaining ? 'of '+esc(aed(t.total))+' · '+esc(aed(t.remaining))+' remaining' : 'All '+t.N+' instalments paid')+'</small></span></div>';
+}
+/* missed / upcoming list: tabs when both exist, a labelled list when only one does */
+var PTAB = 0;
+function dueRow(x){ var late = x.st==='missed', n = days(x.due), amt = x.amt + (late && x.pen ? x.pen : 0), u = U(x.u);
+  return '<button type="button" class="prw'+(late?' is-miss':'')+'" data-o="'+(late?'pgmiss1':'pgdue1')+'" data-id="'+x.id+'"><span class="prw-i">'+(late ? '<b>!</b>' : ic('clock','#8f5a1c',18))+'</span>'+
+    '<span class="prw-t"><b>'+esc(x.t)+'</b><small>'+esc(u ? u.name : '')+(late && x.pen ? ' · incl. '+esc(aed(x.pen))+' late fee' : '')+'</small></span>'+
+    '<span class="prw-a"><b>'+esc(aed(amt))+'</b><i>'+(late ? (-n)+' days late' : 'Due '+fds(x.due))+'</i></span></button>'; }
+function dueTabs(miss, soon){
+  if(!miss.length && !soon.length) return '';
+  var id = 'pt'+(++PTAB), list = function(a, k, on){ return '<div class="prl" data-p="'+k+'"'+(on?'':' hidden')+'>'+a.map(dueRow).join('')+'</div>'; };
+  if(miss.length && soon.length) return '<div class="ptabs" id="'+id+'"><div class="ptab-s" role="tablist"><button type="button" role="tab" class="ptab is-on" data-o="ptab" data-t="miss">Missed <i data-tone="red">'+miss.length+'</i></button><button type="button" role="tab" class="ptab" data-o="ptab" data-t="soon">Upcoming <i data-tone="amber">'+soon.length+'</i></button></div>'+list(miss,'miss',true)+list(soon,'soon',false)+'</div>';
+  var m = miss.length; return '<div class="ptabs"><p class="ptab-l">'+(m ? 'Missed' : 'Upcoming')+' <i data-tone="'+(m?'red':'amber')+'">'+(m ? miss.length : soon.length)+'</i></p>'+list(m ? miss : soon, m ? 'miss' : 'soon', true)+'</div>';
 }
 /* instalment summary: two figures + one segment per instalment (paid / overdue / due soon / upcoming) */
 function instTrack(all, total){
@@ -7713,7 +7823,7 @@ function dashOIC(){
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
   var paid = all.filter(function(x){ return x.st==='paid' && !x.proc; }), total = sum(all), paidAmt = sum(paid), pct = total ? Math.round(paidAmt/total*100) : 0;
   var next = open.filter(function(x){ return x.st!=='missed'; })[0];
-  h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Payment plan'+ic('chev','#922a22',14)+'</button></div>' + instTrack(all, null);
+  h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Payment plan'+ic('chev','#922a22',14)+'</button></div>' + instRing(all, null);
   if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>';
   h += payGroups(all, miss, soon);
@@ -7753,9 +7863,9 @@ function dashOHV(){
     h += '<div class="owd-fin"><span class="owd-ci">'+ic('bank','#922a22',20)+'</span><span class="owd-rt"><b>Purchase financed by Emirates NBD</b><small>Your instalments are paid directly by your bank, so nothing is due to Bloom for the purchase. Service charges are still paid by you.</small></span></div>';
   } else if(instOpen.length){
     var pend = sum(instOpen), paidP = PUR.price - pend, pct = Math.round(paidP/PUR.price*100);
-    h += instTrack(all, PUR.price);
+    h += instRing(all, PUR.price);
   } else {
-    h += instTrack(all, PUR.price);
+    h += instRing(all, PUR.price);
   }
   if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>' + payGroups(all, miss, soon);
@@ -7772,7 +7882,7 @@ function dashOHV(){
   }
   // service requests: only when one is open
   if(OPEN_REQ) h += '<div class="owd owd-srq"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
-    '<button type="button" class="owd-sr" data-o="req"><span class="owd-sr-h"><span class="owd-ci">'+ic('clock','#4d5ebe',20)+'</span><span class="owd-rt"><b>'+esc(OPEN_REQ.title)+'</b><small>'+esc(OPEN_REQ.ref+' · '+OPEN_REQ.when)+'</small></span>'+pill(OPEN_REQ.status,'blue')+'</span><span class="owd-pbar owd-pbar--b"><i style="width:'+OPEN_REQ.pct+'%"></i></span></button></div>';
+    '<button type="button" class="owd-sr" data-o="req"><span class="owd-sr-h"><span class="owd-ci">'+ic('clock','#4d5ebe',20)+'</span><span class="owd-rt"><b>'+esc(OPEN_REQ.title)+'</b><small>'+esc(OPEN_REQ.ref+' · '+OPEN_REQ.when)+'</small></span></span><span class="owd-sr-f"><span class="owd-pbar owd-pbar--b"><i style="width:'+OPEN_REQ.pct+'%"></i></span>'+pill(OPEN_REQ.status,'blue')+'</span></button></div>';
   // what's new (+ important notices)
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
   var NW = [['Notice','Water supply maintenance','Bloom Gardens · 14 Nov, 10am–2pm']].concat(NEWS);
@@ -7813,7 +7923,64 @@ function moveInFlow(root){
   });
   draw();
 }
+/* ---------- Owner · Living here (moved in) ---------- */
+var COMM = [['Event','event','Family movie night','Central Park lawn · Fri 14 Nov, 7pm','events'],['Notice','bell','Pool maintenance','Main pool closed 12–13 Nov','notices'],['Newsletter','doc','Bloom Gardens · November','Community news & updates','notices']];
+function olvCfg(){
+  if(PV==='inst'){ DOCS_PENDING = [['Emirates ID','expires 18 Nov']]; OPEN_REQ = { title:'AC not cooling · Master bedroom', ref:'SR-10518', when:'Raised 7 Nov', status:'Technician assigned', pct:45 }; }
+  else if(PV==='sc'){ DOCS_PENDING = [['Emirates ID','expires 18 Nov']]; OPEN_REQ = null; }
+  else { DOCS_PENDING = []; OPEN_REQ = null; }
+}
+function payCard(x, kind){   // kind: miss | due — one payment, one tap
+  var late = kind==='miss', n = days(x.due);
+  return '<button type="button" class="opc'+(late?' is-miss':'')+'" data-o="'+(late?'pgmiss1':'pgdue1')+'" data-id="'+x.id+'"><span class="owd-pc-u">'+esc(x.t)+'</span>'+
+    '<span class="owd-pc-a"><b>'+esc(aed(x.amt + (late && x.pen ? x.pen : 0)))+'</b>'+(late ? '<span class="opc-pay">Pay now</span>' : ic('chev','#8a847a',18))+'</span>'+
+    '<small>'+(late ? '<em>'+(-n)+' days overdue</em>'+(x.pen ? ' · incl. '+esc(aed(x.pen))+' late fee' : '') : 'Due '+fd(x.due))+'</small></button>';
+}
+function dashOLV(){
+  olvCfg();
+  var u = units()[0], all = items(), h = '<div class="owd-pfs" hidden></div>';
+  // needs attention: things to act on that are not payments or documents (those have their own blocks)
+  var att = PV==='inst' ? [['blue','idc','Access card ready','Collect from the community office','feat','access']] : [];
+  if(att.length) h += '<div class="owd owd-att"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Needs attention</b></span></span></div><div class="owd-attl">'+att.map(function(a){
+    return '<button type="button" class="owd-ac" data-tone="'+a[0]+'" data-o="'+a[4]+'" data-k="'+a[5]+'">'+ic(a[1], a[0]==='blue'?'#4d5ebe':'#8f5a1c', 18)+'<span><b>'+esc(a[2])+'</b><small>'+esc(a[3])+'</small></span></button>'; }).join('')+'</div></div>';
+  // payments: instalments and service charges kept apart
+  var inst = all.filter(function(x){ return x.k==='Instalment'; }), sc = all.filter(function(x){ return x.k!=='Instalment'; });
+  function openOf(list){ var o = list.filter(function(x){ return x.st!=='paid'; }); return { miss:o.filter(function(x){ return x.st==='missed'; }), due:o.filter(function(x){ return x.st==='due'; }), next:o.filter(function(x){ return x.st==='upcoming'; })[0] }; }
+  var I = openOf(inst), C = openOf(sc), instOpen = inst.some(function(x){ return x.st!=='paid'; });
+  h += '<div class="owd owd-pay owd-plan owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">'+(instOpen ? 'Payment plan' : 'Statement')+ic('chev','#922a22',14)+'</button></div>';
+  if(instOpen){
+    h += '<div class="owd-pg-h">'+ic('crane','#3a3833',18)+'<span>Instalments</span></div>'+
+      '<div class="opl">'+instRing(inst, null)+(I.next && !I.due.length ? '<small class="opl-next">Next instalment · <b>'+esc(aed(I.next.amt))+'</b> on '+fd(I.next.due)+'</small>' : '')+'</div>'+
+      dueTabs(I.miss, I.due);
+    h += '<div class="owd-pg-h opl-gap">'+ic('building','#3a3833',18)+'<span>Service charges</span></div>';
+  }
+  if(C.miss.length || C.due.length) h += dueTabs(C.miss, C.due);
+  else if(C.next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No '+(instOpen?'service charge':'payment')+' due. Next payment on <b>'+fd(C.next.due)+'</b> · '+esc(aed(C.next.amt))+'</span></div>';
+  h += '</div>';
+  // quick actions
+  var QA = [['amen','pool','Book an amenity'],['access','idc','Access card'],['park','car','Parking · ANPR'],['family','family','Add family']];
+  h += '<div class="owd owd-qa2 owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Quick actions</b></span></span></div>'+
+    '<div class="oqa-help"><p>Need help?</p><div class="oqa-hr">'+
+      '<button type="button" class="oqa-h" data-o="help" data-k="unit"><span class="owd-ci">'+ic('home','#922a22',18)+'</span><span><b>Inside my unit</b><small>Repairs & bills</small></span></button>'+
+      '<button type="button" class="oqa-h" data-o="help" data-k="common"><span class="owd-ci" data-tone="teal">'+ic('building','#2c6e6a',18)+'</span><span><b>Common areas</b><small>Shared spaces</small></span></button></div></div>'+
+    '<div class="oqa-g">'+QA.map(function(q){ return '<button type="button" class="oqa-t" data-o="feat" data-k="'+q[0]+'"><span class="owd-ci">'+ic(q[1],'#922a22',20)+'</span><span>'+q[2]+'</span></button>'; }).join('')+'</div></div>';
+  // service requests (only when one is open)
+  if(OPEN_REQ) h += '<div class="owd owd-srq"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
+    '<button type="button" class="owd-sr" data-o="req"><span class="owd-sr-h"><span class="owd-ci">'+ic('clock','#4d5ebe',20)+'</span><span class="owd-rt"><b>'+esc(OPEN_REQ.title)+'</b><small>'+esc(OPEN_REQ.ref+' · '+OPEN_REQ.when)+'</small></span></span><span class="owd-sr-f"><span class="owd-pbar owd-pbar--b"><i style="width:'+OPEN_REQ.pct+'%"></i></span>'+pill(OPEN_REQ.status,'blue')+'</span></button></div>';
+  // document expiring alert
+  if(DOCS_PENDING.length) h += '<div class="owd owd-docal">'+DOCS_PENDING.map(function(d){ return '<button type="button" class="odal" data-o="docs"><span class="owd-ci" data-tone="amber">'+ic('idc','#8f5a1c',20)+'</span><span class="owd-rt"><b>'+esc(d[0])+' '+esc(d[1])+'</b><small>Update it to keep your access card & services active</small></span><span class="odal-b">Update</span></button>'; }).join('')+'</div>';
+  // community (the home they live in)
+  h += '<div class="owd owd-news owd-comm"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Community</b></span></span><button type="button" class="owd-link" data-o="feat" data-k="events">View all'+ic('chev','#922a22',14)+'</button></div><div class="owd-nl">'+COMM.map(function(c){
+    return '<button type="button" class="ocm" data-o="feat" data-k="'+c[4]+'"><span class="ocm-h"><span class="owd-ci">'+ic(c[1],'#922a22',18)+'</span><i>'+c[0]+'</i></span><b>'+esc(c[2])+'</b><small>'+esc(c[3])+'</small></button>'; }).join('')+'</div></div>';
+  // what's new (marketing only)
+  var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  var NW = NEWS.filter(function(n){ return n[0]==='New launch' || n[0]==='Offer'; });
+  h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NW.map(function(n, i){
+    return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
+  return h;
+}
 function dashHTML(){
+  if(OK==='olv') return dashOLV();
   if(OK==='ohv') return dashOHV();
   if(OK==='oic') return dashOIC();
   var us = units(), h = dashPay();
@@ -7830,15 +7997,15 @@ function wireDashboard(sec){
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
   function paint(){ el.innerHTML = dashHTML(); sectionize(el);
-    if(OK==='oic' || OK==='ohv'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
+    if(OK==='oic' || OK==='ohv' || OK==='olv'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
       requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); } }
   /* the Figma frame has a fixed height: grow/shrink it to the dashboard content (payment groups vary) */
   function fitOIC(){ var cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!R || !el.offsetHeight) return;
     var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
     var h = Math.max(844, Math.ceil(bottom + 132)); R.style.height = h + 'px'; cv.style.height = h + 'px'; }
-  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv') requestAnimationFrame(fitOIC); };
-  if(OK==='oic' || OK==='ohv') firstTime(sec);
+  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv') requestAnimationFrame(fitOIC); };
+  if(OK==='oic' || OK==='ohv' || OK==='olv') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
   el.addEventListener('click', function(e){
@@ -7849,6 +8016,10 @@ function wireDashboard(sec){
     else if(o==='pgdue') payFlow(sec, items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }));
     else if(o==='pgupd') payDetail(sec, b.dataset.id);
     else if(o==='movein') moveInFlow(sec);
+    else if(o==='ptab'){ var tb = b.closest('.ptabs'); $$('.ptab', tb).forEach(function(t){ t.classList.toggle('is-on', t===b); }); $$('.prl', tb).forEach(function(l){ l.hidden = l.dataset.p !== b.dataset.t; }); requestAnimationFrame(fitOIC); }
+    else if(o==='pgmiss1') payFlow(sec, [b.dataset.id], null, true);
+    else if(o==='pgdue1') payFlow(sec, [b.dataset.id], null, true);
+    else if(o==='help'){ var sc = $('.sr-home [data-scope="'+b.dataset.k+'"]', sec); if(sc) sc.click(); }
     else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }), null, true);
     else if(o==='paynext') payFlow(sec, [b.dataset.id], null, true);
     else if(o==='payid') payFlow(sec, [b.dataset.id]);
@@ -7882,7 +8053,7 @@ window.__initScreen[FEAT] = initFeat;
     var nid = CARDS[sec.dataset.sid], el = nid && sec.querySelector('[data-node-id="'+nid+'"]');
     if(!el || el.__ar) return; el.__ar = true;
     var jid = window.__journey && window.__journey.id;
-    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
+    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv' || jid==='olv'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
     el.style.cursor = 'pointer'; el.setAttribute('role','link'); el.tabIndex = 0;
     el.setAttribute('aria-label','AC Filter Check, request SR-9042, in progress. View details');
     // show the card's own request (SR-9042), not the last one raised in this session
