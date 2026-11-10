@@ -8114,11 +8114,6 @@ function dashOMX(){
   var us = units(), all = items(), h = '';
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
   var home = us.filter(function(u){ return u.own.status==='resident'; })[0], vac = us.filter(function(u){ return u.own.status==='vacant'; })[0], uc = us.filter(function(u){ return u.own.status==='construction'; })[0];
-  // portfolio summary
-  var cnt = {}; us.forEach(function(u){ cnt[u.own.status] = (cnt[u.own.status]||0) + 1; });
-  h += '<div class="owd owd-pfx"><div class="pfx-h"><span><b>'+us.length+' properties</b><small>'+us.map(function(u){ return u.community; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).length+' communities</small></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
-    '<div class="pfx-bar">'+us.map(function(u){ return '<i style="background:'+stOfU(u)[2]+'"></i>'; }).join('')+'</div>'+
-    '<div class="pfx-leg">'+Object.keys(STM).filter(function(k){ return cnt[k]; }).map(function(k){ return '<span><i style="background:'+STM[k][2]+'"></i>'+cnt[k]+' '+STM[k][0].split(' · ')[STM[k][0].indexOf('·')>0?1:0]+'</span>'; }).join('')+'</div></div>';
   // needs attention (each card names its property)
   var att = [['amber','idc','Emirates ID expires 18 Nov','All properties · update to keep access','docs',''], ['blue','key','Ready to move in', vac.name+' · book your move-in date','movein','']];
   h += attBlock(att);
