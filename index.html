@@ -4957,7 +4957,7 @@ function scopeCards(){
     if(k==='unit') foot = '<span class="sr-scope-s sr-scope-1l" title="Maintenance, payments &amp; documents">Repairs, bills &amp; docs</span>';
     else foot = '<span class="sr-scope-s sr-scope-1l" title="Access, shared spaces &amp; community payments">Pools, gyms &amp; access</span>';
     return '<button type="button" class="sr-scope" data-scope="'+k+'" style="--c:'+s.color+';border-color:'+hexA(s.color,.22)+'"><span class="sr-gi">'+icon(s.icon,20,'#fff')+'</span>'+
-      '<span class="sr-go">'+icon('arrow',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span>'+foot+'</button>'; }).join('')+'</div>';
+      '<span class="sr-go">'+icon('chev',16,hexA(s.color,.75))+'</span><span class="sr-scope-t">'+esc(s.title)+'</span>'+foot+'</button>'; }).join('')+'</div>';
 }
 function stagger(root, sel){ $$(sel, root).forEach(function(el,i){ el.style.setProperty('--i', i); el.classList.remove('sr-in'); void el.offsetWidth; el.classList.add('sr-in'); }); }
 function openScope(k){ SR.scope = k; SR.place = (current(k)||{}).id; var n=nav(); if(n) n.navigate('sr:new','SLIDE_IN/350/EASE_OUT/LEFT'); }
@@ -5089,7 +5089,7 @@ function fixHome(sec){
   var head = $$('[data-name="Section Header"]', sec).filter(function(h){ return /How can we/.test(txt(h)); })[0];
   if(head){ var see = $('[data-name="See All"]', head); if(see) see.style.display = 'none'; }
   var sub = grid.parentNode && $$('[data-name="Sub"]', grid.parentNode).filter(function(s){ return /Select the service/.test(txt(s)); })[0];
-  if(sub){ var p = $('p', sub); if(p){ p.textContent = 'Do you need help with your unit or the common areas?'; p.style.whiteSpace = 'normal'; } }
+  if(sub) sub.style.display = 'none';   // heading alone is enough; the compact list explains itself
   grid.style.display = 'none';
   var box = D.createElement('div'); box.className = 'sr-home'; box.innerHTML = scopeCards();
   grid.parentNode.insertBefore(box, grid.nextSibling);
@@ -6814,6 +6814,16 @@ button.sr-scope{gap:0!important}
 button.sr-scope .sr-gi{margin-bottom:22px!important}
 button.sr-scope .sr-scope-t{line-height:21px}
 button.sr-scope .sr-scope-s{margin-top:2px!important}
+/* Home "How can we help?": compact two-row list instead of two tall cards */
+.sr-home .sr-scopes{display:block!important;background:#fff;border:1px solid #efe7e3;border-radius:20px;padding:2px 14px}
+.sr-home button.sr-scope{display:grid!important;grid-template-columns:36px 1fr 18px;grid-template-rows:auto auto;column-gap:14px!important;row-gap:0!important;align-items:center;width:100%;min-height:0!important;padding:11px 0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+.sr-home button.sr-scope + button.sr-scope{border-top:1px solid #f3ece8!important}
+.sr-home .sr-scope .sr-gi{grid-row:1/3;grid-column:1;width:36px!important;height:36px!important;margin:0!important;box-shadow:none!important}
+.sr-home .sr-scope .sr-gi svg{width:18px;height:18px}
+.sr-home .sr-scope .sr-scope-t{grid-column:2;grid-row:1;align-self:end;font-size:15px!important;line-height:20px!important;letter-spacing:0!important}
+.sr-home .sr-scope .sr-scope-s{grid-column:2;grid-row:2;align-self:start;margin:0!important;padding:0!important;font-size:12.5px!important;line-height:17px!important;font-weight:500!important}
+.sr-home .sr-scope .sr-go{position:static!important;grid-column:3;grid-row:1/3}
+.sr-home .sr-scope:hover .sr-go,.sr-home .sr-scope:active .sr-go{transform:translateX(2px)}
 /* dashboard payments v2 — calm list, one clear CTA */
 .owd .owd-row.is-late .owd-date{background:rgba(146,42,34,.07)}
 .owd .owd-row.is-late .owd-date b,.owd .owd-row.is-late .owd-date small{color:#922a22}
