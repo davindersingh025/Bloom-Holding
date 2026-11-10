@@ -1644,8 +1644,8 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   if(SOLO){ try { sessionStorage.setItem('bloom-solo','1'); } catch(e){} document.documentElement.classList.add('is-solo'); }
   /* scenarios shown in the single-link sidebar: [journey, pay variant, title, detail] */
   var SCEN = [
-    ['oic','',      'Under construction', 'Nothing due yet'],
-    ['oic','active','Under construction', 'Missed & due payments'],
+    ['oic','',      'Under Construction - Not Handed Over', 'Nothing missed - Next due date in next year'],
+    ['oic','active','Under Construction - Not Handed Over', 'Missed & due payments'],
     ['ohv','',      'Handed over · Vacant', 'All instalments paid'],
     ['ohv','due',   'Handed over · Vacant', 'Instalments still due'],
     ['ohv','loan',  'Handed over · Vacant', 'Paid by bank loan'],
