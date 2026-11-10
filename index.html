@@ -8205,8 +8205,7 @@ function dashOLV(){
   var I = openOf(inst), C = openOf(sc), instOpen = inst.some(function(x){ return x.st!=='paid'; });
   h += '<div class="owd owd-pay owd-plan owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">'+(instOpen ? 'Payment plan' : 'Statement')+ic('chev','#922a22',14)+'</button></div>';
   if(instOpen){
-    h += '<div class="owd-pg-h">'+ic('crane','#3a3833',18)+'<span>Instalments</span></div>'+
-      '<div class="opl">'+instRing(inst, null)+(I.next && !I.due.length ? '<small class="opl-next">Next instalment · <b>'+esc(aed(I.next.amt))+'</b> on '+fd(I.next.due)+'</small>' : '')+'</div>'+
+    h += '<div class="opl">'+instRing(inst, null)+(I.next && !I.due.length ? '<small class="opl-next">Next instalment · <b>'+esc(aed(I.next.amt))+'</b> on '+fd(I.next.due)+'</small>' : '')+'</div>'+
       dueTabs(I.miss, I.due);
   }
   h += '</div>';
