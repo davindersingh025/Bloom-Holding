@@ -8009,8 +8009,8 @@ function attBlock(att){
     var e = expDays(a[2]) || expDays(a[3]), t = a[2], sub = a[3], n = '', icon = '';
     if(e){ var name = /expires/.test(a[2]) ? a[2].replace(/ expires.*/,'') : a[3].replace(/ ·.*/,'').replace(/ copy$/,''); t = name+' expiring soon'; sub = 'Update before '+e.when+' to keep access active'; n = e.n; }
     else icon = a[1];
-    return '<div data-proto="cta" data-o="'+a[4]+'" data-k="'+esc(a[5]||'')+'" data-id="'+esc(a[5]||'')+'" data-t="'+esc(t)+'" data-s="'+esc(sub)+'" data-n="'+n+'" data-icon="'+icon+'"></div>'; }).join('');
-  return '<div class="owd owd-att owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Needs attention</b></span></span></div><div class="attx'+(att.length===1?' is-one':'')+'">'+cards+'</div></div>';
+    return '<div data-proto="cta" data-tone="'+(e ? 'red' : a[0])+'" data-o="'+a[4]+'" data-k="'+esc(a[5]||'')+'" data-id="'+esc(a[5]||'')+'" data-t="'+esc(t)+'" data-s="'+esc(sub)+'" data-n="'+n+'" data-icon="'+icon+'"></div>'; }).join('');
+  return '<div class="owd owd-att owd-bare"><div class="attx'+(att.length===1?' is-one':'')+'">'+cards+'</div></div>';
 }
 /* Move In: one component, a full card on a single property and a compact banner inside a property card */
 function moveInCard(u, full){
@@ -8174,6 +8174,8 @@ function wireDashboard(sec){
       var name = ph.dataset.proto==='cta' ? 'Portal CTA' : 'Card / Active Request';
       var src = $$('[data-name="'+name+'"]', sec).filter(function(n){ return !n.hasAttribute('data-proto-c'); })[0]; if(!src) return;
       var c = src.cloneNode(true); c.setAttribute('data-proto-c',''); c.setAttribute('data-o', ph.dataset.o); c.setAttribute('role','button');
+      var CTAC = { blue:'linear-gradient(135deg,#34428f,#4d5ebe)', green:'linear-gradient(135deg,#235c49,#2e7d5b)', amber:'linear-gradient(135deg,#7a4a12,#a8692a)' };
+      if(ph.dataset.tone && CTAC[ph.dataset.tone]) c.style.setProperty('background', CTAC[ph.dataset.tone], 'important');
       if(ph.dataset.k) c.setAttribute('data-k', ph.dataset.k); if(ph.dataset.id) c.setAttribute('data-id', ph.dataset.id);
       [c].concat($$('*', c)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-m'); n.removeAttribute('data-motion'); n.classList && n.classList.remove('m-wait'); if(n.style){ ['opacity','transform','scale','rotate','translate','filter','visibility','clipPath'].forEach(function(k){ n.style[k]=''; }); } n.classList && n.classList.remove('ic-in','ic-wait','is-hidden'); });
       c.style.display = ''; c.hidden = false;
