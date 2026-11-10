@@ -8120,7 +8120,7 @@ function dashOMX(){
     '<div class="pfx-bar">'+us.map(function(u){ return '<i style="background:'+stOfU(u)[2]+'"></i>'; }).join('')+'</div>'+
     '<div class="pfx-leg">'+Object.keys(STM).filter(function(k){ return cnt[k]; }).map(function(k){ return '<span><i style="background:'+STM[k][2]+'"></i>'+cnt[k]+' '+STM[k][0].split(' · ')[STM[k][0].indexOf('·')>0?1:0]+'</span>'; }).join('')+'</div></div>';
   // needs attention (each card names its property)
-  var att = [['amber','idc','Emirates ID expires 18 Nov','All properties · update to keep access','docs',''], ['blue','key','Ready to move in', vac.name+' · book your move-in date','movein',''], ['green','idc','Access card ready', home.name+' · collect at community office','feat','access']];
+  var att = [['amber','idc','Emirates ID expires 18 Nov','All properties · update to keep access','docs',''], ['blue','key','Ready to move in', vac.name+' · book your move-in date','movein','']];
   h += attBlock(att);
   // payments across properties
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
@@ -8174,7 +8174,7 @@ function wireDashboard(sec){
       var name = ph.dataset.proto==='cta' ? 'Portal CTA' : 'Card / Active Request';
       var src = $$('[data-name="'+name+'"]', sec).filter(function(n){ return !n.hasAttribute('data-proto-c'); })[0]; if(!src) return;
       var c = src.cloneNode(true); c.setAttribute('data-proto-c',''); c.setAttribute('data-o', ph.dataset.o); c.setAttribute('role','button');
-      var CTAC = { blue:'linear-gradient(135deg,#1c1c19,#3a3833)', green:'linear-gradient(135deg,#8f5a1c,#b7863f)', amber:'linear-gradient(135deg,#8f5a1c,#b7863f)' };   // theme: ink + gold
+      var CTAC = { blue:'linear-gradient(135deg,#8f5a1c,#b7863f)', green:'linear-gradient(135deg,#8f5a1c,#b7863f)', amber:'linear-gradient(135deg,#8f5a1c,#b7863f)' };   // theme: ink + gold
       if(ph.dataset.tone && CTAC[ph.dataset.tone]) c.style.setProperty('background', CTAC[ph.dataset.tone], 'important');
       if(ph.dataset.k) c.setAttribute('data-k', ph.dataset.k); if(ph.dataset.id) c.setAttribute('data-id', ph.dataset.id);
       [c].concat($$('*', c)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-m'); n.removeAttribute('data-motion'); n.classList && n.classList.remove('m-wait'); if(n.style){ ['opacity','transform','scale','rotate','translate','filter','visibility','clipPath'].forEach(function(k){ n.style[k]=''; }); } n.classList && n.classList.remove('ic-in','ic-wait','is-hidden'); });
