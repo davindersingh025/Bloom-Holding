@@ -1591,6 +1591,13 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
 
   /* Per-journey start screen: same as today for all three. */
   if(cur.start && window.__BLOOM) window.__BLOOM.start = cur.start;
+  /* single-link sidebar: switching scenario opens straight on the Home dashboard (no landing / login) */
+  var DIRECT = false; try { DIRECT = sessionStorage.getItem('bloom-direct')==='1'; } catch(e){}
+  if(DIRECT){
+    document.documentElement.classList.add('is-direct');
+    var goHome = function(){ setTimeout(function(){ try { window.__bloomNav.navigate('252:23836'); } catch(e){} document.documentElement.classList.remove('is-direct'); }, 0); };
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', goHome); else goHome();
+  }
 
   /* ---- sample user details (text only, no behaviour change) ---- */
   var U = cur.user;
@@ -1639,7 +1646,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   ];
   var PV = ''; try { PV = new URLSearchParams(location.search).get('pay') || ''; } catch(e){}
   function goScen(j, v){
-    try { sessionStorage.setItem('bloom-journey', j); } catch(e){}
+    try { sessionStorage.setItem('bloom-journey', j); sessionStorage.setItem('bloom-direct', '1'); } catch(e){}
     var u = new URL(location.href); u.searchParams.set('journey', j); if(v) u.searchParams.set('pay', v); else u.searchParams.delete('pay'); u.searchParams.set('solo','1'); u.hash = '';
     location.href = u.toString();
   }
@@ -1712,6 +1719,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
 <style id="journeys-css">
 #jr{position:fixed;z-index:9999;left:24px;top:50%;transform:translateY(-50%);font:400 14px/1.4 'Matter','Figtree',system-ui,sans-serif;color:#1c1c19}
 #jr .jr-fab{display:none}
+html.is-direct #device section.scr{visibility:hidden}
 #jr .jr-panel{width:264px;padding:18px;border-radius:16px;background:#fff;border:1px solid #e9e3dc;box-shadow:0 18px 50px -24px rgba(28,28,25,.3)}
 #jr .jr-k{margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#8a847a}
 #jr .jr-list{display:grid;gap:8px}
