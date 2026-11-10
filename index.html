@@ -3339,8 +3339,40 @@ function wireDash(sec){
       });
       var dots = D.createElement('div'); dots.className = 'rcar-dots'; dots.setAttribute('aria-hidden','true');
       dots.innerHTML = US.map(function(_, i){ return '<i'+(i?'':' class="is-on"')+'></i>'; }).join(''); wrap.appendChild(dots);
-      track.addEventListener('scroll', function(){ var w = res.offsetWidth + 12, k = Math.round(track.scrollLeft / w);
-        $$('i', dots).forEach(function(d, j){ d.classList.toggle('is-on', j===k); }); }, { passive:true });
+      var vis = function(){ return cards.filter(function(c){ return !c.classList.contains('is-off'); }); };
+      track.addEventListener('scroll', function(){ var w = res.offsetWidth + 12, k = Math.round(track.scrollLeft / w), V = vis();
+        $$('i', dots).forEach(function(d, j){ d.classList.toggle('is-on', j===k); });
+        if(fbar){ var cu = V[k] && US[cards.indexOf(V[k])]; var cs = cu && unitStatus(cu); $$('button', fbar).forEach(function(b){ b.classList.toggle('is-cur', fsel==='all' && b.dataset.f===cs); }); } }, { passive:true });
+      /* owners: status filter chips under the carousel — counts and cards in one place */
+      var fbar = null, fsel = 'all';
+      if(J==='owner'){
+        var cnt = {}, ord = ['resident','renting','rented','holiday','construction','vacant','resale'];
+        US.forEach(function(u){ var st = unitStatus(u); cnt[st] = (cnt[st]||0) + 1; });
+        var keys = ord.filter(function(k){ return cnt[k]; });
+        if(keys.length > 1){
+          fbar = D.createElement('div'); fbar.className = 'rcar-f'; fbar.setAttribute('role','toolbar'); fbar.setAttribute('aria-label','Filter properties by status');
+          fbar.innerHTML = '<button type="button" class="is-on" aria-pressed="true" data-f="all">All <b>'+US.length+'</b></button>'+keys.map(function(k){ return '<button type="button" aria-pressed="false" data-f="'+k+'">'+esc(k==='renting' ? 'Renting' : ST_LABEL[k])+' <b>'+cnt[k]+'</b></button>'; }).join('');
+          wrap.appendChild(fbar); wrap.classList.add('has-f');
+          /* the Home layout is absolutely positioned: push everything below the carousel down by the chip row */
+          (function(){ var cv = $('.canvas', sec); if(!cv) return; var R = cv.firstElementChild; if(!R) return;
+            var wasHidden = sec.hidden; sec.style.visibility = 'hidden'; sec.hidden = false;
+            var add = fbar.offsetHeight, S = (R.getBoundingClientRect().height / R.offsetHeight) || 1;
+            var lim = (fbar.getBoundingClientRect().top - R.getBoundingClientRect().top) / S - 4;
+            Array.prototype.forEach.call(R.children, function(el){ var cs = getComputedStyle(el);
+              if(cs.position !== 'absolute' || /(^|\s)bottom-/.test(el.className) || el.offsetTop < lim) return;
+              el.style.top = (el.offsetTop + add) + 'px'; });
+            var rh = parseFloat(R.style.height) || R.offsetHeight; R.style.height = (rh + add) + 'px';
+            var ch = parseFloat(cv.style.height) || cv.offsetHeight; cv.style.height = (ch + add) + 'px';
+            sec.hidden = wasHidden; sec.style.visibility = ''; })();
+          var paintDots = function(){ var n = vis().length; dots.innerHTML = n > 1 ? Array.apply(null, Array(n)).map(function(_, i){ return '<i'+(i?'':' class="is-on"')+'></i>'; }).join('') : ''; };
+          fbar.addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; e.stopPropagation(); fsel = b.dataset.f;
+            $$('button', fbar).forEach(function(x){ var on = x===b; x.classList.toggle('is-on', on); x.setAttribute('aria-pressed', on); x.classList.remove('is-cur'); });
+            cards.forEach(function(c, i){ c.classList.toggle('is-off', !(fsel==='all' || unitStatus(US[i])===fsel)); });
+            track.scrollTo({ left:0, behavior:'auto' }); paintDots();
+            b.scrollIntoView({ block:'nearest', inline:'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); });
+          var c0 = unitStatus(US[0]); $$('button', fbar).forEach(function(b){ b.classList.toggle('is-cur', b.dataset.f===c0); });
+        }
+      }
     }
     cards.forEach(function(c, i){
       if(i){ c.classList.add('pd-tap'); c.setAttribute('role','button'); c.tabIndex = 0; }
@@ -5690,6 +5722,17 @@ paint(dev);
 .rcar-dots{position:absolute;left:0;right:0;bottom:-14px;display:flex;justify-content:center;gap:6px;pointer-events:none}
 .rcar-dots i{width:6px;height:6px;border-radius:3px;background:rgba(28,28,25,.18);transition:width .25s,background .25s}
 .rcar-dots i.is-on{width:18px;background:#922a22}
+.rcar.has-f .rcar-dots{display:none}
+.rcar-track>.is-off{display:none!important}
+.rcar-f{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:18px 20px 2px;margin:0;scroll-padding:0 20px}
+.rcar-f::-webkit-scrollbar{display:none}
+.rcar-f button{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 14px;border-radius:999px;border:1px solid #e6ddd6;background:#fff;color:#3a3732;font:500 13px/1 'Matter','Figtree',sans-serif;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s;-webkit-tap-highlight-color:transparent}
+.rcar-f button b{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;display:inline-grid;place-items:center;background:#f3ece8;font-size:11.5px;font-weight:600;color:#1c1c19}
+.rcar-f button.is-on{background:#1c1c19;border-color:#1c1c19;color:#fff}
+.rcar-f button.is-on b{background:rgba(255,255,255,.18);color:#fff}
+.rcar-f button.is-cur{border-color:#922a22;box-shadow:inset 0 0 0 1px #922a22;color:#922a22}
+.rcar-f button:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.rcar-f button{transition:none}}
 @media (prefers-reduced-motion:reduce){.rcar-dots i{transition:none}}
 </style>
 <style id="bk-css">
@@ -7356,12 +7399,12 @@ function sectionize(host){
   });
 }
 function dashHTML(){
-  var us = units(), h = dashSummary() + dashPay();
+  var us = units(), h = dashPay();
   var homeU = us.filter(function(u){ return u.group==='home'; })[0], rentU = us.filter(function(u){ return u.group==='renting'; })[0], inv = us.filter(function(u){ return u.group==='invest'; });
   if(OK==='owner') h += dashCommunity(homeU, 'My community');
   else if(OK==='ownerinv') h += dashCommunity(homeU, 'My community');
   else if(OK==='ownerhh') h += dashHH(inv);
-  else if(OK==='ownertenant') h = dashSummary() + dashRented(rentU) + dashPay() + dashCommunity(rentU, 'My community');
+  else if(OK==='ownertenant') h = dashRented(rentU) + dashPay() + dashCommunity(rentU, 'My community');
   return h;
 }
 function wireDashboard(sec){
