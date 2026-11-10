@@ -7200,6 +7200,31 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .ow-sh .noc-ok{margin:0!important}
 .ow-sh .noc-ok[disabled]{opacity:.45}
 .noc-t{width:100%;box-sizing:border-box;border:1px solid #e3d9d2;border-radius:12px;padding:10px 12px;font:14px/1.45 'Matter','Figtree',sans-serif;resize:none;background:#fff}
+/* need help */
+.owd .hlp{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:16px;background:#fff;border:1px solid #efe7e3;box-shadow:0 6px 20px -16px rgba(28,28,25,.25);cursor:pointer}
+.hlp-i{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(146,42,34,.07)}
+.hlp-t{flex:1;display:grid;min-width:0}.hlp-t b{font-size:15px;font-weight:600}.hlp-t small{font-size:12.5px;color:#6b665c}
+.hlx .ow-sh-h{align-items:flex-start}
+.hlx-back svg{transform:rotate(180deg)}
+.hlx-props{display:grid;gap:8px}
+.hlx-p{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid #efe7e3;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.hlx-pi{flex:none;width:42px;height:42px;border-radius:10px;overflow:hidden;background:#efe7e3}.hlx-pi img{width:100%;height:100%;object-fit:cover}
+.hlx-pt{flex:1;display:grid;min-width:0}.hlx-pt b{font-size:14.5px;font-weight:600}.hlx-pt small{font-size:12px;color:#6b665c}
+.hlx-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hlx-t{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:104px;padding:14px;border-radius:16px;background:#fff;border:1px solid #efe7e3;text-align:left;font:600 14px/1.3 'Matter','Figtree',sans-serif;color:#1c1c19;cursor:pointer}
+.hlx-g > .hlx-t:last-child:nth-child(odd){grid-column:1/-1;min-height:0;flex-direction:row;align-items:center}
+.hlx-ti{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(146,42,34,.07)}
+.hlx-c{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:12px 14px;border-radius:16px;background:#fff;border:1px dashed #d9cfc8;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.hlx-c > span:nth-child(2){flex:1;display:grid}.hlx-c b{font-size:14.5px;font-weight:600}.hlx-c small{font-size:12px;color:#6b665c}
+.hlx-c .hlx-ti{width:38px;height:38px}
+.hlx-tp{display:flex;flex-wrap:wrap;gap:8px}
+.hlx-c2{height:36px;padding:0 14px;border-radius:10px;border:1px solid #e3d9d2;background:#fff;font:500 13.5px 'Matter','Figtree',sans-serif;color:#3a3833;cursor:pointer}
+.hlx-c2[aria-pressed="true"]{border-color:#922a22;background:rgba(146,42,34,.06);color:#922a22;font-weight:600}
+.hlx-ph{display:flex;gap:8px}
+.hlx-th,.hlx-add{width:64px;height:64px;border-radius:12px;overflow:hidden;background:#efe7e3}.hlx-th img{width:100%;height:100%;object-fit:cover}
+.hlx-add{display:grid;place-content:center;justify-items:center;gap:2px;border:1px dashed #d0c4bb;background:#fff;cursor:pointer}.hlx-add small{font-size:11px;color:#922a22;font-weight:600}
+.hlx .ow-cta[disabled]{opacity:.45}
+.ow-co-h u{color:#922a22;text-decoration:none;font-weight:600;cursor:pointer}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7977,6 +8002,7 @@ function dashOIC(){
   if(OPEN_REQ) h += '';
   // what's new
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  h += helpBlock();
   h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NEWS.map(function(n, i){
     return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
@@ -8021,6 +8047,7 @@ function dashOHV(){
   // what's new (+ important notices)
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
   var NW = [['Notice','Water supply maintenance','Bloom Gardens · 14 Nov, 10am–2pm']].concat(NEWS);
+  h += helpBlock();
   h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NW.map(function(n, i){
     return '<button type="button" class="owd-nc'+(n[0]==='Notice'?' is-notice':'')+'" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(n[0]==='Notice' ? '<span class="owd-nimg-n">'+ic('alert','#8f5a1c',28)+'</span>' : (ph.length ? '<img src="'+ph[i % ph.length]+'" alt="">' : ''))+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
@@ -8049,6 +8076,67 @@ function attBlock(att){
     else icon = a[1];
     return '<div data-proto="cta" data-tone="'+(e ? 'red' : a[0])+'" data-o="'+a[4]+'" data-k="'+esc(a[5]||'')+'" data-id="'+esc(a[5]||'')+'" data-t="'+esc(t)+'" data-s="'+esc(sub)+'" data-n="'+n+'" data-icon="'+icon+'"></div>'; }).join('');
   return '<div class="owd owd-att owd-bare"><div class="attx'+(att.length===1?' is-one':'')+'">'+cards+'</div></div>';
+}
+/* ---------- Need help: one small card on every dashboard → help sheet → short request form ---------- */
+P.help = '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>';
+P.wrench = '<path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 0-5-5L13 5Z"/><path d="m3 21 6-6"/>';
+P.chat = '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12Z"/>';
+P.cam = '<path d="M4 8h3l2-3h6l2 3h3v11H4Z"/><circle cx="12" cy="13" r="3.5"/>';
+var HELPREQ = [];
+var HTOP = {
+  pay:['Payment not reflecting','Statement request','Refund','Something else'], docs:['Missing document','Correction needed','Copy of a document'], other:['General question','Feedback','Something else'],
+  cons:['Construction progress','Handover date','Payment plan'], snag:['Snag in my unit','Book an inspection'], movein:['Access cards','Utilities','Move-in date'],
+  issue:['Leak or damage','Fixtures & fittings','Utilities'], tenant:['Tenant contact','Contract terms','Rent'], noc:['How NOC works','Approve or reject','Timeline'],
+  maint:['AC','Plumbing','Electrical','Something else'], agency:['Payouts','Agent contact','Agreement'], licence:['Holiday home permit','Contract renewal'], community:['Access & gates','Amenities','Neighbours']
+};
+function helpTiles(u){
+  var st = u && u.own ? u.own.status : '', t = [];
+  if(st==='construction'){ t.push(['cons','crane','Construction and handover']); if(u.own.handover && days(u.own.handover) <= 90) t.push(['snag','wrench','Snagging']); }
+  else if(st==='vacant'){ t.push(['movein','door','Move in'], ['issue','home','Property or unit issue']); }
+  else if(st==='rented'){ t.push(['tenant','user','Tenant or tenancy question'], ['noc','door','Move-out request (NOC) help'], ['maint','wrench','Maintenance question for my unit']); }
+  else if(st==='holiday'){ t.push(['agency','user','Agency or agent question'], ['noc','door','Move-out request (NOC) help'], ['licence','doc','Licence or contract question']); }
+  else if(st==='resident'){ t.push(['maint','wrench','Maintenance in my home'], ['community','building','Community & access']); }
+  return t.concat([['pay','card','Payments and statements'], ['docs','doc','Documents'], ['other','chat','Something else']]);
+}
+function helpBlock(){
+  var h = '';
+  if(HELPREQ.length) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>My open requests</b></span></span></div>'+
+    HELPREQ.map(function(r){ return statusCard({ o:'req', tone:'blue', icon:'clock', title:r.title, sub:r.ref+' · '+r.unit, status:'Submitted', pct:8 }); }).join('')+'</div>';
+  return h + '<div class="owd owd-bare owd-hlpw"><button type="button" class="hlp" data-o="needhelp"><span class="hlp-i">'+ic('help','#922a22',22)+'</span><span class="hlp-t"><b>Need help?</b><small>Raise a request or ask us anything</small></span>'+ic('chev','#8a847a',18)+'</button></div>';
+}
+function helpFlow(root){
+  var us = units(), u = us.length === 1 ? us[0] : null, tile = null, topic = '', photos = 0, step = u ? 'tiles' : 'prop';
+  var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  var sh = sheet(root, ''), box = $('.ow-sh', sh.el); box.classList.add('ow-co','mi-sh','hlx');
+  box.insertAdjacentHTML('beforeend', '<div data-shb></div>'); var b = $('[data-shb]', box);
+  function head(t, sub, back){ return '<div class="ow-sh-h">'+(back ? '<button type="button" class="ow-x hlx-back" data-back aria-label="Back">'+ic('chev','#1c1c19',20)+'</button>' : '')+'<span class="ow-co-h"><b>'+t+'</b>'+(sub ? '<small>'+sub+'</small>' : '')+'</span><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'; }
+  function stTag(x){ var st = window.__ownst && window.__ownst.status(x); return st ? pill(window.__ownst.label[st], window.__ownst.tone[st]) : ''; }
+  function draw(){
+    if(step==='prop') b.innerHTML = head('Which property is this about?')+'<div class="hlx-props">'+us.map(function(x, i){ return '<button type="button" class="hlx-p" data-u="'+x.id+'"><span class="hlx-pi">'+(ph.length ? '<img src="'+ph[i % ph.length]+'" alt="">' : '')+'</span><span class="hlx-pt"><b>'+esc(x.name)+'</b><small>'+esc(x.community)+'</small></span>'+stTag(x)+'</button>'; }).join('')+'</div>';
+    else if(step==='tiles') b.innerHTML = head('How can we help?', us.length > 1 ? esc(u.name)+' · <u data-chg>Change</u>' : esc(u.name+' · '+u.community), us.length > 1)+
+      '<div class="hlx-g">'+helpTiles(u).map(function(t){ return '<button type="button" class="hlx-t" data-t="'+t[0]+'" data-n="'+esc(t[2])+'"><span class="hlx-ti">'+ic(t[1],'#922a22',24)+'</span><span>'+esc(t[2])+'</span></button>'; }).join('')+'</div>'+
+      '<button type="button" class="hlx-c" data-contact><span class="hlx-ti">'+ic('phone','#922a22',20)+'</span><span><b>Contact Bloom</b><small>Call, chat or email us about anything else</small></span>'+ic('chev','#8a847a',18)+'</button>';
+    else if(step==='form') b.innerHTML = head(esc(tile.n), esc(u.name), true)+
+      '<p class="mox-eyebrow" style="margin:4px 0 8px">TOPIC</p><div class="hlx-tp">'+HTOP[tile.k].map(function(x){ return '<button type="button" class="hlx-c2" aria-pressed="'+(x===topic)+'" data-tp="'+esc(x)+'">'+esc(x)+'</button>'; }).join('')+'</div>'+
+      '<p class="mox-eyebrow" style="margin:16px 0 8px">NOTE</p><textarea class="noc-t" rows="3" placeholder="Tell us a little more (optional)" data-note></textarea>'+
+      '<p class="mox-eyebrow" style="margin:16px 0 8px">PHOTOS</p><div class="hlx-ph">'+Array.apply(null, Array(photos)).map(function(_, i){ return '<span class="hlx-th">'+(ph.length ? '<img src="'+ph[(i+2) % ph.length]+'" alt="">' : '')+'</span>'; }).join('')+(photos < 3 ? '<button type="button" class="hlx-add" data-ph>'+ic('cam','#922a22',20)+'<small>Add</small></button>' : '')+'</div>'+
+      '<button type="button" class="ow-cta" data-go style="margin-top:18px"'+(topic ? '' : ' disabled')+'><span>Submit request</span></button>';
+    else if(step==='proc') b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>Sending your request…</b></div>';
+    else b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>Request raised</b><small>'+esc(HELPREQ[0].ref)+' · '+esc(tile.n)+'. You’ll find it under My open requests.</small><button type="button" class="ow-cta" data-shx><span>Done</span></button></div>';
+  }
+  b.addEventListener('click', function(e){
+    var x;
+    if((x = e.target.closest('[data-u]'))){ u = us.filter(function(v){ return v.id===x.dataset.u; })[0]; step = 'tiles'; draw(); }
+    else if(e.target.closest('[data-chg]') || (e.target.closest('[data-back]') && step==='tiles')){ step = 'prop'; draw(); }
+    else if(e.target.closest('[data-back]')){ step = 'tiles'; topic = ''; photos = 0; draw(); }
+    else if((x = e.target.closest('[data-t]'))){ tile = { k:x.dataset.t, n:x.dataset.n }; topic = ''; photos = 0; step = 'form'; draw(); }
+    else if((x = e.target.closest('[data-tp]'))){ var note = ($('[data-note]', b) || {}).value || ''; topic = x.dataset.tp; draw(); var ta = $('[data-note]', b); if(ta) ta.value = note; }
+    else if(e.target.closest('[data-ph]')){ var n2 = ($('[data-note]', b) || {}).value || ''; photos++; draw(); var t2 = $('[data-note]', b); if(t2) t2.value = n2; }
+    else if(e.target.closest('[data-contact]')){ sh.close(); if(window.__openContact) setTimeout(window.__openContact, 200); }
+    else if(e.target.closest('[data-go]')){ step = 'proc'; draw();
+      setTimeout(function(){ HELPREQ.unshift({ title:topic, ref:'Ref #SR-'+(10700 + Math.floor(Math.random()*280)), unit:u.name }); step = 'ok'; draw(); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }, REDUCED ? 0 : 1200); }
+  });
+  draw();
 }
 /* Move In: one component, a full card on a single property and a compact banner inside a property card */
 function moveInCard(u, full){
@@ -8175,6 +8263,7 @@ function dashOMX(){
   if(home) h += '<div class="owd owd-news owd-comm"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Community</b></span></span><button type="button" class="owd-link" data-o="feat" data-k="events">'+esc(home.community)+ic('chev','#922a22',14)+'</button></div><div class="owd-nl">'+COMM.map(function(c){
     return '<button type="button" class="ocm" data-o="feat" data-k="'+c[4]+'"><span class="ocm-h"><span class="owd-ci">'+ic(c[1],'#922a22',18)+'</span><i>'+c[0]+'</i></span><b>'+esc(c[2])+'</b><small>'+esc(c[3])+'</small></button>'; }).join('')+'</div></div>';
   var NW = NEWS.filter(function(n){ return n[0]==='New launch' || n[0]==='Offer'; });
+  h += helpBlock();
   h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NW.map(function(n, i){
     return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
@@ -8204,6 +8293,7 @@ function dashORT(){
   if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
     statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  h += helpBlock();
   h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NEWS.map(function(n, i){
     return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
@@ -8307,6 +8397,7 @@ function wireDashboard(sec){
     else if(o==='pgupd') payDetail(sec, b.dataset.id);
     else if(o==='movein') moveInFlow(sec);
     else if(o==='noc') nocFlow(sec);
+    else if(o==='needhelp') helpFlow(sec);
     else if(o==='renew2') openPort('props');
     else if(o==='ptab'){ var tb = b.closest('.ptabs'); $$('.ptab', tb).forEach(function(t){ t.classList.toggle('is-on', t===b); }); $$('.prl', tb).forEach(function(l){ l.hidden = l.dataset.p !== b.dataset.t; }); requestAnimationFrame(fitOIC); }
     else if(o==='pgmiss1') payFlow(sec, [b.dataset.id], null, true);
