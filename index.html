@@ -3352,7 +3352,7 @@ function wireDash(sec){
         if(keys.length > 1){
           fbar = D.createElement('div'); fbar.className = 'rcar-f'; fbar.setAttribute('role','toolbar'); fbar.setAttribute('aria-label','Filter properties by status');
           fbar.innerHTML = '<button type="button" class="is-on" aria-pressed="true" data-f="all">All <b>'+US.length+'</b></button>'+keys.map(function(k){ return '<button type="button" aria-pressed="false" data-f="'+k+'">'+esc(k==='renting' ? 'Renting' : ST_LABEL[k])+' <b>'+cnt[k]+'</b></button>'; }).join('');
-          wrap.appendChild(fbar); wrap.classList.add('has-f');
+          wrap.parentNode.insertBefore(fbar, wrap); wrap.classList.add('has-f');
           /* the Home layout is absolutely positioned: push everything below the carousel down by the chip row */
           (function(){ var cv = $('.canvas', sec); if(!cv) return; var R = cv.firstElementChild; if(!R) return;
             var wasHidden = sec.hidden; sec.style.visibility = 'hidden'; sec.hidden = false;
@@ -3361,6 +3361,10 @@ function wireDash(sec){
             Array.prototype.forEach.call(R.children, function(el){ var cs = getComputedStyle(el);
               if(cs.position !== 'absolute' || /(^|\s)bottom-/.test(el.className) || el.offsetTop < lim) return;
               el.style.top = (el.offsetTop + add) + 'px'; });
+            var band = $('[data-name="Brand band"]', sec), hero = band && band.parentNode;
+            if(band){ band.style.height = (band.offsetHeight + add) + 'px'; $$('img,svg', band).forEach(function(m){ if(m.offsetHeight > 200){ m.style.height = '100%'; m.style.objectFit = 'fill'; } }); }
+            if(hero){ hero.style.height = (hero.offsetHeight + add) + 'px'; }
+            add += 0;
             var rh = parseFloat(R.style.height) || R.offsetHeight; R.style.height = (rh + add) + 'px';
             var ch = parseFloat(cv.style.height) || cv.offsetHeight; cv.style.height = (ch + add) + 'px';
             sec.hidden = wasHidden; sec.style.visibility = ''; })();
@@ -5724,14 +5728,14 @@ paint(dev);
 .rcar-dots i.is-on{width:18px;background:#922a22}
 .rcar.has-f .rcar-dots{display:none}
 .rcar-track>.is-off{display:none!important}
-.rcar-f{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:18px 20px 2px;margin:0;scroll-padding:0 20px}
+.rcar-f{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;width:390px;box-sizing:border-box;padding:0 20px 2px;margin:-2px 0 0;scroll-padding:0 20px;flex:none}
 .rcar-f::-webkit-scrollbar{display:none}
-.rcar-f button{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 14px;border-radius:999px;border:1px solid #e6ddd6;background:#fff;color:#3a3732;font:500 13px/1 'Matter','Figtree',sans-serif;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s;-webkit-tap-highlight-color:transparent}
-.rcar-f button b{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;display:inline-grid;place-items:center;background:#f3ece8;font-size:11.5px;font-weight:600;color:#1c1c19}
-.rcar-f button.is-on{background:#1c1c19;border-color:#1c1c19;color:#fff}
-.rcar-f button.is-on b{background:rgba(255,255,255,.18);color:#fff}
-.rcar-f button.is-cur{border-color:#922a22;box-shadow:inset 0 0 0 1px #922a22;color:#922a22}
-.rcar-f button:focus-visible{outline:2px solid #922a22;outline-offset:2px}
+.rcar-f button{flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:999px;border:1px solid rgba(248,245,235,.28);background:rgba(248,245,235,.08);color:rgba(248,245,235,.92);font:500 13px/1 'Matter','Figtree',sans-serif;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s;-webkit-tap-highlight-color:transparent}
+.rcar-f button b{min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;display:inline-grid;place-items:center;background:rgba(248,245,235,.16);font-size:11px;font-weight:600;color:#fff}
+.rcar-f button.is-on{background:#F8F5EB;border-color:#F8F5EB;color:#7d221b}
+.rcar-f button.is-on b{background:#922a22;color:#fff}
+.rcar-f button.is-cur{border-color:rgba(248,245,235,.85)}
+.rcar-f button:focus-visible{outline:2px solid #F8F5EB;outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.rcar-f button{transition:none}}
 @media (prefers-reduced-motion:reduce){.rcar-dots i{transition:none}}
 </style>
