@@ -8196,7 +8196,7 @@ function dashORT(){
   // tenant summary
   var total = Math.max(1, days(t.end) - days(t.start)), left = days(t.end), pct = Math.min(100, Math.max(0, Math.round((total - left)/total*100)));
   var ban = '';
-  if(PV==='end') ban = '<div class="tnb is-warn">'+ic('clock','#8f5a1c',16)+'<span><b>Tenancy contract ends in '+left+' days</b><small>Ends on '+fd(t.end)+'</small></span><button type="button" data-o="renew2">Renew</button></div>';
+  if(PV==='end') ban = '<div class="tnb is-warn">'+ic('clock','#8f5a1c',16)+'<span><b>Tenancy contract ends in '+left+' days</b><small>Your tenant’s tenancy contract expires in '+left+' days, on '+fd(t.end)+'.</small></span></div>';
   else if(PV==='renew') ban = '<div class="tnb is-info">'+ic('chq','#922a22',16)+'<span><b>Renewal in progress</b><small>Tenant accepted new terms · awaiting signatures</small></span></div>';
   else if(NOC.status==='approved') ban = '<div class="tnb is-info">'+ic('door','#922a22',16)+'<span><b>Moving out on '+fd(NOC.date)+'</b><small>Status changes to Vacant after move-out</small></span></div>';
   else if(NOC.status==='rejected') ban = '<div class="tnb">'+ic('x','#54504a',16)+'<span><b>Move-out request rejected</b><small>We’ve let '+esc(t.tenant.split(' ')[0])+' know</small></span></div>';
