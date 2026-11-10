@@ -8200,10 +8200,7 @@ function dashORT(){
       '<div class="tnc-tl"><div class="tnc-bar"><i style="width:'+pct+'%"></i></div><div class="tnc-d"><span><small>Start</small><b>'+fd(t.start)+'</b></span><span><small>End</small><b>'+fd(t.end)+'</b></span></div></div>'+
       '<div class="tnc-g"><span><small>Rent</small><b>'+esc(o.rent)+'</b></span><span><small>Contract</small><b>'+esc(t.no)+'</b></span></div>'+
     '</div></div>';
-  // payments
-  var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; }), next = open.filter(function(x){ return x.st==='upcoming'; })[0];
-  h += '<div class="owd owd-pay owd-plan owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Statement'+ic('chev','#922a22',14)+'</button></div>'+
-    (miss.length || soon.length ? dueGroups(miss, soon) : next ? nextLine(next) : '')+'</div>';
+  // no payment block for a property given on rent
   if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
     statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
