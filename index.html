@@ -6952,6 +6952,31 @@ html.is-v2 .owd-dl,html.is-v2 .owd-qa,html.is-v2 .owd-srq{border-radius:16px!imp
 .owd-qa-i .owd-rt small{white-space:normal!important}
 .owd-qa-i .owd-rt small.is-wait{color:#8f5a1c}
 .mi-r{display:flex;align-items:center;gap:12px}
+/* v2 compact system for sub-screens: 16/12 radii, 18–20px max figures, tighter controls */
+html.is-v2 .ow-hero{background:#fff!important;color:#1c1c19;border:1px solid #efe7e3;border-radius:16px;padding:14px 16px;gap:2px;box-shadow:0 6px 20px -16px rgba(28,28,25,.25)}
+html.is-v2 .ow-hero small{font-size:12.5px;color:#6b665c}
+html.is-v2 .ow-hero b{font-family:'Matter','Figtree',sans-serif;font-weight:600;font-size:20px;line-height:26px;letter-spacing:-.2px}
+html.is-v2 .ow-hero-m,html.is-v2 .ow-hero-ok{font-size:12px;font-weight:500;padding:3px 8px;border-radius:8px;margin-top:6px}
+html.is-v2 .ow-hero-m{background:rgba(196,48,43,.08);color:#c4302b}
+html.is-v2 .ow-hero-m svg{stroke:#c4302b;width:14px;height:14px}
+html.is-v2 .ow-hero-ok{background:rgba(46,125,91,.08);color:#2e7d5b}
+html.is-v2 .ow-hero-ok svg{width:14px;height:14px}
+html.is-v2 .mox-seg{border-radius:12px}
+html.is-v2 .mox-seg-b{height:34px;border-radius:9px;font-size:13.5px}
+html.is-v2 .mox-card,html.is-v2 .ow-list,html.is-v2 .ow-empty,html.is-v2 .ow-pc{border-radius:16px}
+html.is-v2 .ow-ri,html.is-v2 .ow-stmt-i{width:36px;height:36px;border-radius:12px}
+html.is-v2 .ow-stmt b{font-size:14px}
+html.is-v2 .ow-stmt .mox-btn{height:40px;border-radius:12px;font-size:13.5px}
+html.is-v2 .ow-payb{height:28px;padding:0 12px;border-radius:8px;font-size:12px}
+html.is-v2 .ow-empty{padding:18px 12px}
+html.is-v2 .owd-pp-h b{font-size:18px}
+html.is-v2 .ow-stmt .mox-chip{border-radius:8px;height:30px}
+.owx .ow-ra .ow-proc{padding:0!important;margin:0!important;height:auto!important;display:inline-flex!important;flex-direction:row;align-items:center;gap:6px;font-size:12px;line-height:16px;color:#8f5a1c;white-space:nowrap}
+.owx .ow-ra .ow-proc .pu-spin{width:12px;height:12px}
+/* home payment cards: compact */
+html.is-v2 .owd-pc,html.is-v2 .owd-pu{padding:12px 14px;gap:4px}
+html.is-v2 .owd-pc-a b{font-size:17px}
+html.is-v2 .owd-pc-a{min-height:22px}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7210,7 +7235,7 @@ function status(x){ if(x.paid) return 'paid'; var n = days(x.due); return n < 0 
 function items(){ L.forEach(function(x){ x.st = status(x); }); return L.slice().sort(function(a,b){ var o = { missed:0, due:1, upcoming:2, paid:3 }; return (o[a.st]-o[b.st]) || (a.st==='paid' ? b.paid - a.paid : a.due - b.due); }); }
 function meta(x){
   var n = days(x.due);
-  if(x.st==='paid') return { label:'Paid', tone:'green', when:'Paid '+fd(x.paid) };
+  if(x.st==='paid') return { label:'Paid', tone:'green', when:(x.proc ? 'Submitted ' : 'Paid ')+fd(x.paid) };
   if(x.st==='missed') return { label:'Overdue', tone:'red', when:(-n)+' day'+(n===-1?'':'s')+' late' };
   if(x.st==='due') return { label: n===0 ? 'Due today' : 'Due in '+n+'d', tone:'amber', when:'Due '+fd(x.due) };
   return { label:'Scheduled', tone:'grey', when:'Due '+fd(x.due) };
@@ -7348,9 +7373,9 @@ function initPay(sec){
   }
   function rowsH(list, payable){
     return '<div class="ow-list">'+list.map(function(x){ var u = U(x.u), m = meta(x), red = x.st==='missed';
-      return '<div class="ow-row'+(red?' is-miss':'')+'"><span class="ow-ri" data-tone="'+(red?'red':x.st==='paid'?'green':'grey')+'">'+ic(x.st==='paid'?'check':red?'alert':x.k==='Instalment'?'crane':x.k==='Rent'?'home':'card', red?'#922a22':x.st==='paid'?'#2e7d5b':'#54504a', 20)+'</span>'+
+      return '<div class="ow-row'+(red?' is-miss':'')+'"><span class="ow-ri" data-tone="'+(red?'red':x.proc?'grey':x.st==='paid'?'green':'grey')+'">'+(x.proc ? ic('clock','#8f5a1c',20) : ic(x.st==='paid'?'check':red?'alert':x.k==='Instalment'?'crane':x.k==='Rent'?'home':'card', red?'#922a22':x.st==='paid'?'#2e7d5b':'#54504a', 20))+'</span>'+
         '<span class="ow-rt"><b>'+esc(x.t)+'</b><small>'+esc((u?u.name+' · ':'')+m.when)+'</small></span>'+
-        '<span class="ow-ra"><b>'+esc(aed(x.amt))+'</b>'+(payable ? '<button type="button" class="ow-payb'+(red?' is-red':'')+'" data-payid="'+x.id+'">Pay</button>' : '<button type="button" class="ow-rc" data-rc="'+x.rc+'" aria-label="Download receipt '+x.rc+'">'+ic('dl','#922a22',16)+'Receipt</button>')+'</span></div>'; }).join('')+'</div>';
+        '<span class="ow-ra"><b>'+esc(aed(x.amt))+'</b>'+(payable ? '<button type="button" class="ow-payb'+(red?' is-red':'')+'" data-payid="'+x.id+'">Pay</button>' : x.proc ? '<small class="ow-proc"><i class="pu-spin" aria-hidden="true"></i>In process</small>' : '<button type="button" class="ow-rc" data-rc="'+x.rc+'" aria-label="Download receipt '+x.rc+'">'+ic('dl','#922a22',16)+'Receipt</button>')+'</span></div>'; }).join('')+'</div>';
   }
   body.addEventListener('click', function(e){
     var t = e.target.closest('[data-tab]'); if(t){ payState.tab = t.dataset.tab; render(); return; }
