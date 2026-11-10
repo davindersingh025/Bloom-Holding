@@ -3560,7 +3560,7 @@ function initProfile(sec){
       '<div class="mox-card pf-sec"><p class="mox-eyebrow">MY PROPERTIES</p>'+
         units.map(function(u){ return '<button type="button" class="pf-row" data-unit="'+u.id+'"><span class="pf-ic">'+icon(u.icon,18,'#922a22')+'</span><span class="pf-k">'+esc(u.name)+'<small>'+esc(u.community+' · Documents & contract')+'</small></span><span class="pf-v"></span>'+icon('chev',16,'#8a847a')+'</button>'; }).join('')+'</div>'+
       '<div class="mox-card pf-sec pf-list">'+
-        row('help','FAQs','','soon')+row('feedback','Provide feedback','','soon')+row('phone','Contact us','','contact')+'</div>'+
+        ((window.__journey && window.__journey.v2) ? row('doc','Documents','','docs') : '')+row('help','FAQs','','soon')+row('feedback','Provide feedback','','soon')+row('phone','Contact us','','contact')+'</div>'+
       '<label class="pf-lang"><span class="pf-ic">'+icon('globe',18,'#922a22')+'</span><span class="pf-k">Language</span><select aria-label="Language" data-lang><option>English</option><option>العربية</option></select>'+icon('down',16,'#6b665c')+'</label>'+
       '<button type="button" class="mox-btn mox-btn--ghost pf-pw" data-fact="password"><span class="mox-btn-t">'+icon('key',18,'#1a1a1a')+'Change password</span></button>'+
       '<button type="button" class="mox-btn mox-btn--primary pf-out" data-fact="logout"><span class="mox-btn-t">'+icon('logout',18,'#fff')+'Log out</span></button>'+
@@ -3572,6 +3572,7 @@ function initProfile(sec){
     if(u && MO){ MO.cur = u.getAttribute('data-unit'); if(n) n.navigate('pd:details','SLIDE_IN/350/EASE_OUT/LEFT'); return; }
     if(!a) return;
     if(a.dataset.fact==='contact'){ if(window.__openContact) window.__openContact(); return; }
+    if(a.dataset.fact==='docs'){ if(window.__ownui && window.__ownui.openPort) window.__ownui.openPort('docs'); return; }
     if(a.dataset.fact==='logout'){ if(n) n.navigate('212:8793','SMART_ANIMATE/300/EASE_OUT'); return; }
     toast(a.dataset.fact==='personal' ? 'Prototype: name, email, phone and Emirates ID open here.' : a.dataset.fact==='password' ? 'Prototype: change your password here.' : 'Prototype: this opens here.');
   });
@@ -7124,6 +7125,7 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .pfu-help span{margin-right:auto}
 .pfu-cp{display:flex;align-items:center;gap:12px}
 .pfu-cp .owd-ring{flex:none}
+.pfu-meta{display:flex;gap:14px;padding-top:10px;border-top:1px solid #f3ece8;font-size:12px;color:#6b665c}.pfu-meta span{display:inline-flex;align-items:center;gap:5px}
 .pfu-acts{display:flex;gap:6px;padding-top:10px;border-top:1px solid #f3ece8}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
@@ -7880,9 +7882,6 @@ function dashOIC(){
   // construction progress
   h += '<div class="owd owd-cons"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Construction progress</b></span></span><button type="button" class="owd-link" data-o="unit" data-id="'+u.id+'">Updates'+ic('chev','#922a22',14)+'</button></div>'+
     '<div class="owd-cp"><span class="owd-ring">'+ringSvg(o.progress)+'<b>'+o.progress+'%</b></span><span class="owd-cp-t"><small>Latest update · '+fds(T(-8))+'</small><b>Podium complete, tower structure at level 6</b><span class="owd-cp-h">'+ic('key','#8f5a1c',15)+'Expected handover <strong>'+fd(o.handover)+'</strong></span></span></div></div>';
-  // documents
-  var dn = 3;
-  h += '<div class="owd owd-docs"><button type="button" class="owd-doclink" data-o="docs"><span class="owd-ci">'+ic('folder','#922a22',20)+'</span><span class="owd-rt"><b>Property documents</b><small>SPA, payment plan & receipts · '+dn+' files</small></span>'+ic('chev','#8a847a',18)+'</button></div>';
   // open service request — only if one exists
   if(OPEN_REQ) h += '';
   // what's new
@@ -7919,11 +7918,6 @@ function dashOHV(){
   }
   if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>' + payGroups(all, miss, soon);
-  // documents
-  var deed = PV==='due' ? ['Title deed','Issued after the final instalment','lock', 'Pending'] : ['Title deed','Issued by DLD · '+fds(T(-20)),'idc', ''];
-  var DOCS = [['Sale & Purchase Agreement','Signed · 8 Feb 2024','doc',''], ['Handover documents','Handover certificate & snag list · '+fds(T(-27)),'key',''], deed, ['Other documents','Registration, NOCs & receipts · 6 files','folder','']];
-  h += '<div class="owd owd-dl"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Documents</b></span></span><button type="button" class="owd-link" data-o="docs">View all'+ic('chev','#922a22',14)+'</button></div>'+
-    DOCS.map(function(d){ return '<button type="button" class="owd-dr'+(d[3]?' is-pend':'')+'" data-o="docs"><span class="owd-ci">'+ic(d[2], d[3]?'#8a847a':'#922a22', 19)+'</span><span class="owd-rt"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span>'+(d[3] ? pill(d[3],'grey') : ic('chev','#8a847a',18))+'</button>'; }).join('')+'</div>';
   // quick actions: Move In only when Salesforce allows it, the owner lives nowhere else and it is not rejected
   if(MOVEIN.allowed && !MOVEIN.livesElsewhere && MOVEIN.status!=='not_approved'){
     var req = MOVEIN.status==='requested';
@@ -8069,7 +8063,7 @@ function dashOMX(){
     '<div class="pfu-help"><span>Need help?</span><button type="button" data-o="help" data-k="unit">Inside my unit</button><button type="button" data-o="help" data-k="common">Common areas</button></div></div>');
   if(vac) blocks.push('<div class="pfu" style="--sc:'+stOfU(vac)[2]+'">'+head(vac)+
     '<button type="button" class="pfu-row pfu-go" data-o="movein"><span class="owd-ci" data-tone="blue">'+ic('door','#4d5ebe',18)+'</span><span class="owd-rt"><b>Move in</b><small>Book your date, access cards & utilities</small></span>'+ic('chev','#8a847a',18)+'</button>'+
-    '<button type="button" class="pfu-row pfu-go" data-o="docs"><span class="owd-ci">'+ic('folder','#922a22',18)+'</span><span class="owd-rt"><b>Handover documents</b><small>Title deed, handover certificate & SPA · 4 files</small></span>'+ic('chev','#8a847a',18)+'</button></div>');
+    '<div class="pfu-meta"><span>'+ic('key','#4d5ebe',14)+'Handed over '+fds(vac.own.handover)+'</span><span>'+(function(){ var vd = open.filter(function(x){ return x.u===vac.id && x.st!=='upcoming'; }); return vd.length ? ic('card','#6b665c',14)+esc(aed(sum(vd)))+' due '+fds(vd[0].due) : 'Nothing due'; })()+'</span></div></div>');
   if(uc){ var t = instStats(all.filter(function(x){ return x.u===uc.id; }), null);
     blocks.push('<div class="pfu" style="--sc:'+stOfU(uc)[2]+'">'+head(uc)+
     '<div class="pfu-cp"><span class="owd-ring">'+ringSvg(uc.own.progress)+'<b>'+uc.own.progress+'%</b></span><span class="owd-rt"><small>Latest update · '+fds(T(-8))+'</small><b>Podium complete, tower at level 6</b><small>Handover '+fd(uc.own.handover)+(t ? ' · '+t.paidN+'/'+t.N+' instalments paid' : '')+'</small></span></div>'+
