@@ -1563,11 +1563,14 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     ownertenant:{ id:'ownertenant', owner:true, label:'Owner · Renting elsewhere', short:'Owner + Tenant',
                desc:'Owns units and rents another Bloom home',
                user:{ name:'Noura Bin Hamad', initials:'NB', email:'noura.binhamad@example.com', phone:'+971 54 730 2286', role:'Owner + Tenant' } },
-    oic:     { id:'oic', owner:true, firstTime:true, label:'Owner · Investor · New', short:'Investor · New',
+    oic:     { id:'oic', owner:true, firstTime:true, v2:true, label:'Owner · Investor · New', short:'Investor · New',
                desc:'One property under construction, first login, nothing due yet',
-               user:{ name:'Khalid Al Nuaimi', initials:'KN', email:'khalid.alnuaimi@example.com', phone:'+971 50 913 4472', role:'Owner · Investor' } }
+               user:{ name:'Khalid Al Nuaimi', initials:'KN', email:'khalid.alnuaimi@example.com', phone:'+971 50 913 4472', role:'Owner · Investor' } },
+    ohv:     { id:'ohv', owner:true, firstTime:true, v2:true, label:'Owner · Investor · Handed over', short:'Handed over · Vacant',
+               desc:'One handed-over property, vacant, first login',
+               user:{ name:'Mariam Al Hosani', initials:'MH', email:'mariam.alhosani@example.com', phone:'+971 55 208 6631', role:'Owner · Investor' } }
   };
-  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic'];
+  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv'];
   var BASE = JOURNEYS.tenant.user;
 
   function pick(){
@@ -1584,6 +1587,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   window.__sr.role = cur.owner ? 'owner' : cur.id==='holiday' ? 'agent' : 'tenant';
   document.documentElement.classList.add('journey-'+cur.id);
   document.documentElement.setAttribute('data-journey', cur.id);
+  if(cur.v2) document.documentElement.classList.add('is-v2');
 
   /* Per-journey start screen: same as today for all three. */
   if(cur.start && window.__BLOOM) window.__BLOOM.start = cur.start;
@@ -1625,8 +1629,47 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   var SOLO = false;
   try { SOLO = new URLSearchParams(location.search).get('solo')==='1' || sessionStorage.getItem('bloom-solo')==='1'; } catch(e){}
   if(SOLO){ try { sessionStorage.setItem('bloom-solo','1'); } catch(e){} document.documentElement.classList.add('is-solo'); }
+  /* scenarios shown in the single-link sidebar: [journey, pay variant, title, detail] */
+  var SCEN = [
+    ['oic','',      'Under construction', 'Nothing due yet'],
+    ['oic','active','Under construction', 'Missed & due payments'],
+    ['ohv','',      'Handed over · Vacant', 'All instalments paid'],
+    ['ohv','due',   'Handed over · Vacant', 'Instalments still due'],
+    ['ohv','loan',  'Handed over · Vacant', 'Paid by bank loan']
+  ];
+  var PV = ''; try { PV = new URLSearchParams(location.search).get('pay') || ''; } catch(e){}
+  function goScen(j, v){
+    try { sessionStorage.setItem('bloom-journey', j); } catch(e){}
+    var u = new URL(location.href); u.searchParams.set('journey', j); if(v) u.searchParams.set('pay', v); else u.searchParams.delete('pay'); u.searchParams.set('solo','1'); u.hash = '';
+    location.href = u.toString();
+  }
+  function buildSolo(){
+    if(document.getElementById('jr')) return;
+    var curS = SCEN.filter(function(c){ return c[0]===cur.id && c[1]===PV; })[0] || SCEN.filter(function(c){ return c[0]===cur.id; })[0];
+    var el = document.createElement('aside');
+    el.id = 'jr'; el.className = 'jr-solo'; el.setAttribute('aria-label','Owner scenarios');
+    var last = '';
+    el.innerHTML =
+      '<button type="button" class="jr-fab" aria-expanded="false" aria-controls="jr-panel"><span class="jr-dot"></span><span class="jr-fab-t">'+(curS ? curS[2]+' · '+curS[3] : cur.short)+'</span></button>'+
+      '<div class="jr-panel" id="jr-panel">'+
+        '<p class="jr-k">Owner · Investor · Single property</p>'+
+        '<div class="jr-list" role="radiogroup">'+
+          SCEN.map(function(c){ var on = c===curS, g = c[2]!==last ? '<p class="jr-g">'+c[2]+'</p>' : ''; last = c[2];
+            return g+'<button type="button" role="radio" class="jr-opt" data-j="'+c[0]+'" data-v="'+c[1]+'" aria-checked="'+on+'"><span class="jr-t"><b>'+c[3]+'</b></span></button>';
+          }).join('')+
+        '</div>'+
+        '<button type="button" class="jr-restart">Restart this scenario</button>'+
+      '</div>';
+    document.body.appendChild(el);
+    var fab = el.querySelector('.jr-fab');
+    fab.addEventListener('click', function(){ var o = el.classList.toggle('is-open'); fab.setAttribute('aria-expanded', o); });
+    el.querySelectorAll('.jr-opt').forEach(function(b){ b.addEventListener('click', function(){ if(b.getAttribute('aria-checked')==='true') return; goScen(b.dataset.j, b.dataset.v); }); });
+    el.querySelector('.jr-restart').addEventListener('click', function(){ goScen(cur.id, PV); });
+    document.addEventListener('click', function(e){ if(el.classList.contains('is-open') && !el.contains(e.target)){ el.classList.remove('is-open'); fab.setAttribute('aria-expanded','false'); } });
+  }
   function build(){
-    if(SOLO || document.getElementById('jr')) return;
+    if(SOLO) return buildSolo();
+    if(document.getElementById('jr')) return;
     var el = document.createElement('aside');
     el.id = 'jr'; el.setAttribute('aria-label','Demo journeys');
     el.innerHTML =
@@ -1681,6 +1724,12 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
 #jr .jr-t b{font-size:14px;font-weight:600}
 #jr .jr-t small{font-size:12px;color:#6b665c}
 #jr .jr-restart{margin-top:12px;width:100%;height:40px;border-radius:14px;border:0;background:#1a1a1a;color:#fff;font:600 13.5px 'Matter','Figtree',system-ui,sans-serif;cursor:pointer}
+#jr.jr-solo .jr-g{margin:10px 2px 2px;font-size:12.5px;font-weight:600;color:#1c1c19}
+#jr.jr-solo .jr-g:first-child{margin-top:0}
+#jr.jr-solo .jr-opt{padding:10px 12px;border-radius:12px}
+#jr.jr-solo .jr-t b{font-size:13.5px;font-weight:500}
+#jr.jr-solo .jr-opt[aria-checked="true"] .jr-t b{font-weight:600;color:#922a22}
+#jr.jr-solo .jr-list{gap:6px}
 #jr .jr-note{margin:10px 2px 0;font-size:11.5px;color:#8a847a}
 /* narrow desktop / tablet / phone: compact chip that opens the panel */
 @media (max-width:1000px){
@@ -2947,6 +2996,7 @@ if(J==='owner'){
   else if(OK==='ownerinv'){ S.resident(v138); S.rented(a1204); S.construction(o1810); S.holiday(a305); L = [v138, a1204, o1810, a305]; }
   else if(OK==='ownerhh'){ S.holiday(a305,'in'); S.holiday(v22,'none'); L = [a305, v22]; }
   else if(OK==='ownertenant'){ S.renting(v138); S.rented(a1204); S.construction(o1810); L = [v138, a1204, o1810]; }
+  else if(OK==='ohv'){ S.vacant(v22); Object.assign(v22.own, { handover:rel(-27), spa:dt(2024,2,8) }); L = [v22]; }
   else if(OK==='oic'){ S.construction(o1810); Object.assign(o1810.own, { progress:24, handover:dt(2028,12,30), paidPct:10, outstanding:'AED 868,500', next:rel(46), nextAmt:'AED 96,500', spa:rel(-41) }); L = [o1810]; }
   else { S.resident(v138); L = [v138]; }
   LISTS.owner = L;
@@ -2957,6 +3007,7 @@ MO.units = function(){ var L = (LISTS[J] || ALL).slice();
   if(J==='holiday') L.sort(function(a,b){ return (unitStatus(a)==='guest' ? 0 : 1) - (unitStatus(b)==='guest' ? 0 : 1); });   // guests checked in first
   return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
 var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Move In', rented:'Rented Out', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest', construction:'Under Construction', resale:'For Resale', renting:'Renting' };
+if(J==='owner' && OK==='ohv') ST_LABEL.vacant = 'Handed Over · Vacant';
 var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey', construction:'amber', resale:'violet', renting:'blue' };
 window.__ownst = { label:ST_LABEL, tone:ST_TONE, status:function(u){ return unitStatus(u); } };
 function unitStatus(u){
@@ -6857,16 +6908,42 @@ window.__initScreen[NEW] = initNew;
 .owd-wrap{gap:28px!important;margin-top:14px}
 .owd-sec{display:flex;flex-direction:column;gap:12px}
 /* oic spacing system: 16px side margin, 28px between sections, 12px inside a section */
-html.journey-oic [data-node-id="252:23840"],html.journey-oic [data-node-id="252:23850"]{padding-left:16px!important;padding-right:16px!important}
-html.journey-oic [data-node-id="252:23857"]{width:calc(100% - 32px)!important;box-sizing:border-box}
-html.journey-oic .owd-wrap{margin-top:3px}
-html.journey-oic .owd-sh{padding:0}
-html.journey-oic .owd-sec{gap:12px}
-html.journey-oic .owd-nl{scroll-padding-inline:16px}
+html.is-v2 [data-node-id="252:23840"],html.is-v2 [data-node-id="252:23850"]{padding-left:16px!important;padding-right:16px!important}
+html.is-v2 [data-node-id="252:23857"]{width:calc(100% - 32px)!important;box-sizing:border-box}
+html.is-v2 .owd-wrap{margin-top:3px}
+html.is-v2 .owd-sh{padding:0}
+html.is-v2 .owd-sec{gap:12px}
+html.is-v2 .owd-nl{scroll-padding-inline:16px}
 /* oic radii: 16px large cards, 12px small cards / inner blocks */
-html.journey-oic .owd-pay,html.journey-oic .owd-cons,html.journey-oic .owd .owd-nc,html.journey-oic [data-node-id="252:23857"]{border-radius:16px!important}
-html.journey-oic .owd-docs,html.journey-oic .owd-calm,html.journey-oic .owd-ci,html.journey-oic [data-node-id="252:23863"]{border-radius:12px!important}
-html.journey-oic .owd-sec > .owd-docs{margin-top:-2px}
+html.is-v2 .owd-pay,html.is-v2 .owd-cons,html.is-v2 .owd .owd-nc,html.is-v2 [data-node-id="252:23857"]{border-radius:16px!important}
+html.is-v2 .owd-docs,html.is-v2 .owd-calm,html.is-v2 .owd-ci,html.is-v2 [data-node-id="252:23863"]{border-radius:12px!important}
+html.is-v2 .owd-sec > .owd-docs{margin-top:-2px}
+/* handed over · vacant blocks */
+.owd-pp--done .owd-pbar i{background:#2e7d5b}
+.owd-pp-h .owd-paid{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#2e7d5b}
+.owd-fin{display:flex;gap:12px;align-items:flex-start}
+.owd-fin .owd-rt small{white-space:normal;line-height:1.45}
+.owd.owd-dl{padding:4px 16px;gap:0}
+.owd .owd-dr,.owd .owd-qa-i,.owd .owd-sr{display:flex;flex-direction:row;align-items:center;gap:12px;width:100%;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:12px 0}
+.owd .owd-dr + .owd-dr{border-top:1px solid #f1ebe7}
+.owd-dr .owd-rt,.owd-qa-i .owd-rt,.owd-sr .owd-rt{flex:1;min-width:0}
+.owd-dr.is-pend b{color:#6b665c}
+.owd.owd-qa,.owd.owd-srq{padding:4px 16px;gap:0}
+.owd .owd-sr{flex-direction:column;align-items:stretch;gap:10px;padding:14px 0}
+.owd-sr-h{display:flex;align-items:center;gap:12px}
+.owd-pbar--b i{background:#4d5ebe!important}
+.owd-nimg-n{position:absolute;inset:0;display:grid;place-items:center;background:#f6ecdc}
+html.is-v2 .owd-dl,html.is-v2 .owd-qa,html.is-v2 .owd-srq{border-radius:16px!important}
+.mi-dates{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mi-d{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0;border-radius:12px;border:1.5px solid #efe7e3;background:#fff;font:inherit;color:#1c1c19;cursor:pointer}
+.mi-d b{font-size:20px;font-weight:600}
+.mi-d small{font-size:11.5px;color:#6b665c}
+.mi-d[aria-checked="true"]{border-color:#922a22;background:rgba(146,42,34,.05)}
+.mi-l{display:grid;gap:10px}
+.ow-co.mi-sh .ow-co-h small{color:#6b665c}
+.owd-qa-i .owd-rt small{white-space:normal!important}
+.owd-qa-i .owd-rt small.is-wait{color:#8f5a1c}
+.mi-r{display:flex;align-items:center;gap:12px}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -6876,7 +6953,7 @@ html.journey-oic .owd-sec > .owd-docs{margin-top:-2px}
 .owd-pl::-webkit-scrollbar{display:none}
 .owd-pc,.owd-pu{flex:none;scroll-snap-align:start;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:14px 16px;border-radius:12px;background:#fff;border:1px solid #efe7e3;box-shadow:0 6px 20px -16px rgba(28,28,25,.25);text-align:left;font:inherit;color:#1c1c19;cursor:pointer;box-sizing:border-box}
 .owd-pc{width:172px}
-.owd-pu{width:264px}
+.owd-pu{width:250px}
 .owd-pc-u{font-size:13px;color:#6b665c}
 .owd-pc-a{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .owd-pc-a b{font-size:18px;font-weight:600;letter-spacing:-.01em}
@@ -6884,7 +6961,7 @@ html.journey-oic .owd-sec > .owd-docs{margin-top:-2px}
 .owd-pc small em{font-style:normal;color:#c4302b}
 .owd-pc[data-o="pgdue"] small{color:#6b665c}
 .owd-pu-r{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-.owd-pu-r b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.owd-pu-t{font-size:15px;font-weight:600;line-height:1.3}
 .owd-pu-r span{flex:none;font-size:15px;font-weight:600}
 .owd-pu small{display:flex;align-items:center;gap:6px;font-size:12.5px}
 .owd-pu small.is-ok{color:#2e7d5b}
@@ -6924,6 +7001,11 @@ html.journey-oic .owd-sec > .owd-docs{margin-top:-2px}
 .owd-docs{padding:12px 16px}
 .owd .owd-doclink{display:flex;align-items:center;gap:12px}
 .owd-news{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+.owd-att{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+html.is-v2 .owd .owd-ac{border-radius:12px}
+.owd-attl > .owd-ac:only-child{width:100%}
+.owd-attl{scroll-padding-inline:16px;scroll-snap-type:x mandatory}.owd .owd-ac{scroll-snap-align:start}
+.owd-sr-h .owd-rt b{white-space:normal!important}
 .owd-nl{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 6px;scroll-snap-type:x mandatory}
 .owd-nl::-webkit-scrollbar,.owd-attl::-webkit-scrollbar{display:none}
 .owd .owd-nc{flex:none;width:236px;scroll-snap-align:start;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:#fff;border:1px solid #efe7e3;box-shadow:0 6px 20px -14px rgba(28,28,25,.25)}
@@ -7071,6 +7153,7 @@ function pill(label, tone){ return '<span class="mox-pill"'+(tone && tone!=='blu
 
 /* ---------- ledger (what the backend would send) ---------- */
 var L = [], INC = [];
+var PV = (location.search.match(/[?&]pay=(\w+)/) || [])[1] || '';   // scenario variant (single-link sidebar)
 function it(u, t, k, d, amt, paid){ L.push({ id:'P'+(L.length+101), u:u, t:t, k:k, due:T(d), amt:amt, paid: paid==null ? null : T(paid), rc: paid==null ? null : 'RC-'+(260410 + L.length*37) }); }
 function inc(u, t, d, amt){ INC.push({ u:u, t:t, date:T(d), amt:amt }); }
 if(OK==='investor'){
@@ -7089,7 +7172,17 @@ if(OK==='investor'){
   it('a305','Service charge · Q4 2026','Service charge',-4,2360); it('v22','Service charge · Q4 2026','Service charge',15,6980); it('a305','Holiday home permit','Permit',42,1520);
   it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a305','Service charge · Q3 2026','Service charge',-92,2360,-93);
   inc('a305','Payout · Oct 2026',-6,11240); inc('v22','Payout · Oct 2026',-6,4180); inc('a305','Payout · Sep 2026',-36,9870); inc('v22','Payout · Sep 2026',-36,13650);
-} else if(OK==='oic' && /[?&]pay=active\b/.test(location.search)){
+} else if(OK==='ohv' && PV==='due'){
+  it('v22','Instalment 9 of 10 · post-handover','Instalment',-9,245000); it('v22','Service charge · Q4 2026','Service charge',-14,6980);
+  it('v22','Instalment 10 of 10 · post-handover','Instalment',21,245000); it('v22','Service charge · Q1 2027','Service charge',52,6980);
+  it('v22','Instalment 8 of 10 · handover','Instalment',-27,490000,-27); it('v22','District cooling · Oct 2026','Utilities',-6,840,-5); L[L.length-1].proc = true;
+} else if(OK==='ohv' && PV==='loan'){
+  it('v22','Service charge · Q4 2026','Service charge',12,6980); it('v22','Service charge · Q1 2027','Service charge',103,6980);
+  it('v22','Handover fees · DEWA & chiller deposit','Utilities',-27,4200,-27);
+} else if(OK==='ohv'){
+  it('v22','Service charge · Q1 2027','Service charge',52,6980); it('v22','Service charge · Q2 2027','Service charge',142,6980);
+  it('v22','Instalment 10 of 10 · handover','Instalment',-27,490000,-27); it('v22','Service charge · Q4 2026','Service charge',-9,6980,-9);
+} else if(OK==='oic' && PV==='active'){
   it('o1810','Booking · Instalment 1 of 10','Instalment',-131,96500,-131);
   it('o1810','Oqood registration fee','Permit',-3,7720,-2); L[L.length-1].proc = true;
   it('o1810','Instalment 2 of 10','Instalment',-12,96500); it('o1810','Instalment 3 of 10','Instalment',18,96500);
@@ -7518,7 +7611,7 @@ function payGroups(all, miss, soon){
   if(miss.length) h += '<div class="owd-pg" data-k="miss">'+grpH('alert','#c4302b','Missed payments')+'<div class="owd-pl">'+byUnit(miss).map(function(g){ return uc(g, 'pgmiss', function(g){ return '<em>'+(-days(g.xs[0].due))+' days overdue</em>'; }); }).join('')+'</div></div>';
   if(soon.length) h += '<div class="owd-pg" data-k="due">'+grpH('clock','#c99a1e','Payments due in 30 days')+'<div class="owd-pl">'+byUnit(soon).map(function(g){ return uc(g, 'pgdue', function(g){ return 'due '+fds(g.xs[0].due); }); }).join('')+'</div></div>';
   if(recent.length) h += '<div class="owd-pg" data-k="upd">'+grpH('stmt','#3a3833','Payment updates')+'<div class="owd-pl">'+recent.map(function(x){
-    return '<button type="button" class="owd-pu" data-o="pgupd" data-id="'+x.id+'"><span class="owd-pc-u">'+esc(uName(x.u))+'</span><span class="owd-pu-r"><b>'+esc(x.t)+'</b><span>'+esc(aed(x.amt))+'</span></span>'+
+    return '<button type="button" class="owd-pu" data-o="pgupd" data-id="'+x.id+'"><span class="owd-pu-r"><span class="owd-pc-u">'+esc(uName(x.u))+'</span><span>'+esc(aed(x.amt))+'</span></span><b class="owd-pu-t">'+esc(x.t)+'</b>'+
       (x.proc ? '<small class="is-proc"><i></i>In process</small>' : '<small class="is-ok">'+ic('check','#2e7d5b',16)+'Payment confirmed · '+fds(x.paid)+'</small>')+'</button>'; }).join('')+'</div></div>';
   return h ? '<div class="owd-pgx">'+h+'</div>' : '';
 }
@@ -7550,7 +7643,77 @@ function dashOIC(){
     return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
 }
+/* ---------- Owner · Investor · single property handed over, vacant ---------- */
+var PUR = { price:2450000, n:10 };
+var MOVEIN = { allowed: PV!=='due', livesElsewhere:false, status:'eligible', date:null };   // from Salesforce: allowed / approval status
+function ohvCfg(){
+  if(PV==='due'){ DOCS_PENDING = [['Emirates ID copy','expires 18 Nov']]; OPEN_REQ = { title:'Snagging · Kitchen cabinet hinge', ref:'SR-10422', when:'Raised 4 Nov', status:'In progress', pct:55 }; }
+  else { DOCS_PENDING = []; OPEN_REQ = null; }
+}
+function dashOHV(){
+  ohvCfg();
+  var u = units()[0], all = items(), h = '<div class="owd-pfs" hidden></div>';   // reserved: combined portfolio summary (2+ properties)
+  var att = attentionCards().filter(function(a){ return a[4]!=='req'; });     // open request has its own section below
+  if(att.length) h += '<div class="owd owd-att"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Needs attention</b></span></span></div><div class="owd-attl">'+att.map(function(a){
+    return '<button type="button" class="owd-ac" data-tone="'+a[0]+'" data-o="'+a[4]+'" data-id="'+a[5]+'">'+ic(a[1], a[0]==='red'?'#922a22':a[0]==='blue'?'#4d5ebe':'#8f5a1c', 18)+'<span><b>'+esc(a[2])+'</b><small>'+esc(a[3])+'</small></span></button>'; }).join('')+'</div></div>';
+  // payments
+  var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
+  var next = open.filter(function(x){ return x.st==='upcoming'; })[0];
+  var instOpen = open.filter(function(x){ return x.k==='Instalment'; });
+  h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">'+(instOpen.length ? 'Payment plan' : 'Statement')+ic('chev','#922a22',14)+'</button></div>';
+  if(PV==='loan'){
+    h += '<div class="owd-fin"><span class="owd-ci">'+ic('bank','#922a22',20)+'</span><span class="owd-rt"><b>Purchase financed by Emirates NBD</b><small>Your instalments are paid directly by your bank, so nothing is due to Bloom for the purchase. Service charges are still paid by you.</small></span></div>';
+  } else if(instOpen.length){
+    var pend = sum(instOpen), paidP = PUR.price - pend, pct = Math.round(paidP/PUR.price*100);
+    h += '<div class="owd-pp"><div class="owd-pp-h"><span><small>Purchase paid</small><b>'+esc(aed(paidP))+'</b></span><span class="owd-pp-of">of '+esc(aed(PUR.price))+'</span></div><span class="owd-pbar"><i style="width:'+pct+'%"></i></span><small class="owd-pp-s">'+(PUR.n - instOpen.length)+' of '+PUR.n+' instalments paid · '+instOpen.length+' pending after handover</small></div>';
+  } else {
+    h += '<div class="owd-pp owd-pp--done"><div class="owd-pp-h"><span><small>Purchase price</small><b>'+esc(aed(PUR.price))+'</b></span><span class="owd-paid">'+ic('check','#2e7d5b',16)+'Fully paid</span></div><span class="owd-pbar"><i style="width:100%"></i></span><small class="owd-pp-s">All '+PUR.n+' instalments paid · service charges continue quarterly</small></div>';
+  }
+  if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
+  h += '</div>' + payGroups(all, miss, soon);
+  // documents
+  var deed = PV==='due' ? ['Title deed','Issued after the final instalment','lock', 'Pending'] : ['Title deed','Issued by DLD · '+fds(T(-20)),'idc', ''];
+  var DOCS = [['Sale & Purchase Agreement','Signed · 8 Feb 2024','doc',''], ['Handover documents','Handover certificate & snag list · '+fds(T(-27)),'key',''], deed, ['Other documents','Oqood, NOCs & receipts · 6 files','folder','']];
+  h += '<div class="owd owd-dl"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Documents</b></span></span><button type="button" class="owd-link" data-o="docs">View all'+ic('chev','#922a22',14)+'</button></div>'+
+    DOCS.map(function(d){ return '<button type="button" class="owd-dr'+(d[3]?' is-pend':'')+'" data-o="docs"><span class="owd-ci">'+ic(d[2], d[3]?'#8a847a':'#922a22', 19)+'</span><span class="owd-rt"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span>'+(d[3] ? pill(d[3],'grey') : ic('chev','#8a847a',18))+'</button>'; }).join('')+'</div>';
+  // quick actions: Move In only when Salesforce allows it, the owner lives nowhere else and it is not rejected
+  if(MOVEIN.allowed && !MOVEIN.livesElsewhere && MOVEIN.status!=='not_approved'){
+    var req = MOVEIN.status==='requested';
+    h += '<div class="owd owd-qa"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Quick actions</b></span></span></div>'+
+      '<button type="button" class="owd-qa-i'+(req?' is-req':'')+'" data-o="'+(req?'':'movein')+'"><span class="owd-ci">'+ic('door','#922a22',20)+'</span><span class="owd-rt"><b>'+(req ? 'Move-in requested · '+fds(MOVEIN.date) : 'Move in')+'</b><small'+(req?' class="is-wait"':'')+'>'+(req ? 'Awaiting approval · we’ll confirm within 2 working days' : 'Book your date, access cards & utilities')+'</small></span>'+(req ? '' : ic('chev','#8a847a',18))+'</button></div>';
+  }
+  // service requests: only when one is open
+  if(OPEN_REQ) h += '<div class="owd owd-srq"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
+    '<button type="button" class="owd-sr" data-o="req"><span class="owd-sr-h"><span class="owd-ci">'+ic('clock','#4d5ebe',20)+'</span><span class="owd-rt"><b>'+esc(OPEN_REQ.title)+'</b><small>'+esc(OPEN_REQ.ref+' · '+OPEN_REQ.when)+'</small></span>'+pill(OPEN_REQ.status,'blue')+'</span><span class="owd-pbar owd-pbar--b"><i style="width:'+OPEN_REQ.pct+'%"></i></span></button></div>';
+  // what's new (+ important notices)
+  var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  var NW = [['Notice','Water supply maintenance','Bloom Gardens · 14 Nov, 10am–2pm']].concat(NEWS);
+  h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NW.map(function(n, i){
+    return '<button type="button" class="owd-nc'+(n[0]==='Notice'?' is-notice':'')+'" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(n[0]==='Notice' ? '<span class="owd-nimg-n">'+ic('alert','#8f5a1c',28)+'</span>' : (ph.length ? '<img src="'+ph[i % ph.length]+'" alt="">' : ''))+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
+  return h;
+}
+/* Move-in request sheet */
+function moveInFlow(root){
+  var u = units()[0], pick = 0, step = 'form';
+  var dates = [T(7), T(10), T(14)];
+  var sh = sheet(root, ''), box = $('.ow-sh', sh.el); box.classList.add('ow-co'); box.classList.add('mi-sh');
+  box.insertAdjacentHTML('beforeend', '<div data-shb></div>'); var b = $('[data-shb]', box);
+  function draw(){
+    if(step==='form') b.innerHTML = '<div class="ow-sh-h"><span class="ow-co-h"><b>Move in to '+esc(u.name)+'</b><small>'+esc(u.address||u.community)+'</small></span><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'+
+      '<p class="mox-eyebrow" style="margin:6px 0 8px">PREFERRED DATE</p><div class="mi-dates" role="radiogroup">'+dates.map(function(d,i){ return '<button type="button" role="radio" class="mi-d" aria-checked="'+(i===pick)+'" data-d="'+i+'"><small>'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+'</small><b>'+d.getDate()+'</b><small>'+fds(d).split(' ')[1]+'</small></button>'; }).join('')+'</div>'+
+      '<p class="mox-eyebrow" style="margin:16px 0 8px">WE’LL ARRANGE</p><div class="mi-l">'+[['key','Access cards & keys','Collected at the community office'],['snow','DEWA & district cooling','Activated in your name'],['shield','Community registration','Move-in permit & lift booking']].map(function(r){ return '<div class="mi-r"><span class="owd-ci">'+ic(r[0],'#922a22',18)+'</span><span class="owd-rt"><b>'+r[1]+'</b><small>'+r[2]+'</small></span></div>'; }).join('')+'</div>'+
+      '<button type="button" class="ow-cta" data-go style="margin-top:16px"><span>Request move-in</span></button>';
+    else if(step==='proc') b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>Sending your request…</b></div>';
+    else b.innerHTML = '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>Move-in requested</b><small>'+fd(dates[pick])+' · we’ll confirm your slot within 2 working days.</small><button type="button" class="ow-cta" data-shx><span>Done</span></button></div>';
+  }
+  b.addEventListener('click', function(e){
+    var d = e.target.closest('[data-d]'); if(d){ pick = +d.dataset.d; draw(); return; }
+    if(e.target.closest('[data-go]')){ step = 'proc'; draw(); setTimeout(function(){ MOVEIN.status = 'requested'; MOVEIN.date = dates[pick]; step = 'ok'; draw(); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }, REDUCED ? 0 : 1300); }
+  });
+  draw();
+}
 function dashHTML(){
+  if(OK==='ohv') return dashOHV();
   if(OK==='oic') return dashOIC();
   var us = units(), h = dashPay();
   var homeU = us.filter(function(u){ return u.group==='home'; })[0], rentU = us.filter(function(u){ return u.group==='renting'; })[0], inv = us.filter(function(u){ return u.group==='invest'; });
@@ -7566,15 +7729,15 @@ function wireDashboard(sec){
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
   function paint(){ el.innerHTML = dashHTML(); sectionize(el);
-    if(OK==='oic'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
+    if(OK==='oic' || OK==='ohv'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
       requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); } }
   /* the Figma frame has a fixed height: grow/shrink it to the dashboard content (payment groups vary) */
   function fitOIC(){ var cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!R || !el.offsetHeight) return;
     var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
     var h = Math.max(844, Math.ceil(bottom + 132)); R.style.height = h + 'px'; cv.style.height = h + 'px'; }
-  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic') requestAnimationFrame(fitOIC); };
-  if(OK==='oic') firstTime(sec);
+  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv') requestAnimationFrame(fitOIC); };
+  if(OK==='oic' || OK==='ohv') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
   el.addEventListener('click', function(e){
@@ -7584,6 +7747,7 @@ function wireDashboard(sec){
     else if(o==='pgmiss') payFlow(sec, items().filter(function(x){ return x.st==='missed' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
     else if(o==='pgdue') payFlow(sec, items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }));
     else if(o==='pgupd') openPay('paid');
+    else if(o==='movein') moveInFlow(sec);
     else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }), null, true);
     else if(o==='paynext') payFlow(sec, [b.dataset.id], null, true);
     else if(o==='payid') payFlow(sec, [b.dataset.id]);
@@ -7617,7 +7781,7 @@ window.__initScreen[FEAT] = initFeat;
     var nid = CARDS[sec.dataset.sid], el = nid && sec.querySelector('[data-node-id="'+nid+'"]');
     if(!el || el.__ar) return; el.__ar = true;
     var jid = window.__journey && window.__journey.id;
-    if(jid==='investor' || jid==='ownerhh' || jid==='oic'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
+    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
     el.style.cursor = 'pointer'; el.setAttribute('role','link'); el.tabIndex = 0;
     el.setAttribute('aria-label','AC Filter Check, request SR-9042, in progress. View details');
     // show the card's own request (SR-9042), not the last one raised in this session
