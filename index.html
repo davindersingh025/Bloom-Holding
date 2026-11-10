@@ -1569,11 +1569,14 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     ohv:     { id:'ohv', owner:true, firstTime:true, v2:true, label:'Owner · Investor · Handed over', short:'Handed over · Vacant',
                desc:'One handed-over property, vacant, first login',
                user:{ name:'Mariam Al Hosani', initials:'MH', email:'mariam.alhosani@example.com', phone:'+971 55 208 6631', role:'Owner · Investor' } },
+    omx:     { id:'omx', owner:true, v2:true, label:'Owner · 3 properties', short:'All properties',
+               desc:'Three properties: living in one, one vacant, one under construction',
+               user:{ name:'Rashid Al Falasi', initials:'RF', email:'rashid.alfalasi@example.com', phone:'+971 50 662 3018', role:'Owner · Investor' } },
     olv:     { id:'olv', owner:true, v2:true, label:'Owner · Living here', short:'Living here',
                desc:'One property, moved in, lives there',
                user:{ name:'Omar Al Mansoori', initials:'OM', email:'omar.almansoori@example.com', phone:'+971 50 447 1902', role:'Owner · Resident' } }
   };
-  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv','olv'];
+  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv','olv','omx'];
   var BASE = JOURNEYS.tenant.user;
 
   function pick(){
@@ -1648,7 +1651,8 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     ['ohv','loan',  'Handed over · Vacant', 'Paid by bank loan'],
     ['olv','',      'Moved in · Living here', 'All payments done'],
     ['olv','sc',    'Moved in · Living here', 'Service charge due'],
-    ['olv','inst',  'Moved in · Living here', 'Instalments still going']
+    ['olv','inst',  'Moved in · Living here', 'Instalments still going'],
+    ['omx','',      'All together · 3 properties', 'Living · Vacant · Under construction']
   ];
   var PV = ''; try { PV = new URLSearchParams(location.search).get('pay') || ''; } catch(e){}
   function goScen(j, v){
@@ -3010,6 +3014,8 @@ if(J==='owner'){
   else if(OK==='ownerinv'){ S.resident(v138); S.rented(a1204); S.construction(o1810); S.holiday(a305); L = [v138, a1204, o1810, a305]; }
   else if(OK==='ownerhh'){ S.holiday(a305,'in'); S.holiday(v22,'none'); L = [a305, v22]; }
   else if(OK==='ownertenant'){ S.renting(v138); S.rented(a1204); S.construction(o1810); L = [v138, a1204, o1810]; }
+  else if(OK==='omx'){ S.resident(v138); Object.assign(v138.own, { moveIn:rel(-212) }); S.vacant(v22); Object.assign(v22.own, { handover:rel(-27) });
+    S.construction(o1810); Object.assign(o1810.own, { progress:24, handover:dt(2028,12,30) }); L = [v138, v22, o1810]; }
   else if(OK==='olv'){ S.resident(v138); Object.assign(v138.own, { moveIn:rel(-212) }); L = [v138]; }
   else if(OK==='ohv'){ S.vacant(v22); Object.assign(v22.own, { handover:rel(-27), spa:dt(2024,2,8) }); L = [v22]; }
   else if(OK==='oic'){ S.construction(o1810); Object.assign(o1810.own, { progress:24, handover:dt(2028,12,30), paidPct:10, outstanding:'AED 868,500', next:rel(46), nextAmt:'AED 96,500', spa:rel(-41) }); L = [o1810]; }
@@ -3023,8 +3029,10 @@ MO.units = function(){ var L = (LISTS[J] || ALL).slice();
   return (MO.multi && J!=='tenant') ? L : L.slice(0,1); };
 var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Move In', rented:'Rented Out', holiday:'Holiday Home', guest:'Guest Checked In', noguest:'No Guest', construction:'Under Construction', resale:'For Resale', renting:'Renting' };
 if(J==='owner' && OK==='ohv') ST_LABEL.vacant = 'Handed Over · Vacant';
-if(J==='owner' && OK==='olv') ST_LABEL.resident = 'Living Here';
+if(J==='owner' && (OK==='olv' || OK==='omx')) ST_LABEL.resident = 'Living Here';
+if(J==='owner' && OK==='omx') ST_LABEL.vacant = 'Handed Over · Vacant';
 var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey', construction:'amber', resale:'violet', renting:'blue' };
+if(J==='owner' && OK==='omx') ST_TONE.vacant = 'blue';
 window.__ownst = { label:ST_LABEL, tone:ST_TONE, status:function(u){ return unitStatus(u); } };
 function unitStatus(u){
   if(J==='owner') return u.own ? u.own.status : null;
@@ -7080,6 +7088,39 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .prw-a b{font-size:14px;font-weight:600}
 .prw-a i{font-style:normal;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:rgba(183,134,63,.14);color:#8f5a1c}
 .prw.is-miss .prw-a i{background:rgba(196,48,43,.1);color:#c4302b}
+/* all properties together */
+.owd.owd-pfx{border-radius:16px!important;padding:14px 16px;gap:10px}
+.pfx-h{display:flex;align-items:center;justify-content:space-between}
+.pfx-h > span{display:grid}.pfx-h b{font-size:17px;font-weight:600}.pfx-h small{font-size:12px;color:#6b665c}
+.owd .pfx-h .owd-link{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:600;color:#922a22}
+.pfx-bar{display:flex;gap:3px}.pfx-bar i{flex:1;height:8px;border-radius:3px}
+.pfx-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#54504a}
+.pfx-leg span{display:inline-flex;align-items:center;gap:6px}.pfx-leg i{width:8px;height:8px;border-radius:2px}
+.pfp{background:#fff;border:1px solid #efe7e3;border-radius:16px;padding:2px 14px;box-shadow:0 6px 20px -16px rgba(28,28,25,.25)}
+.pfp-r{display:flex;align-items:center;gap:10px;padding:11px 0}
+.pfp-r + .pfp-r{border-top:1px solid #f3ece8}
+.pfp-r > i{flex:none;width:4px;height:30px;border-radius:2px}
+.pfp-n{flex:1;display:grid;gap:1px;min-width:0}.pfp-n b{font-size:14px;font-weight:600}.pfp-n small{font-size:12px;color:#6b665c}.pfp-n em{font-style:normal;color:#c4302b}
+.pfp-a{font-size:14px;font-weight:600}.pfp-a.is-zero{color:#b5aea6;font-weight:500}
+.owd-pfus{gap:10px!important}
+.pfu{position:relative;background:#fff;border:1px solid #efe7e3;border-radius:16px;padding:12px 14px 14px;display:grid;gap:10px;overflow:hidden;box-shadow:0 6px 20px -16px rgba(28,28,25,.25)}
+.pfu::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sc)}
+.owd .pfu-h{display:flex;align-items:center;gap:10px;cursor:pointer;width:100%}
+.pfu-img{flex:none;width:40px;height:40px;border-radius:10px;overflow:hidden;background:#f3ece8}.pfu-img img{width:100%;height:100%;object-fit:cover}
+.pfu-t{flex:1;display:grid;min-width:0}.pfu-t b{font-size:15px;font-weight:600}.pfu-t small{font-size:12px;color:#6b665c}
+.pfu-qa{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.owd .pfu-q{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 2px;border-radius:12px;background:#f8f5f1;cursor:pointer}
+.pfu-q > span:last-child{font-size:11px;font-weight:500;color:#3a3833}
+.pfu-q .owd-ci{width:32px!important;height:32px!important;background:#fff!important}
+.owd .pfu-row{display:flex;align-items:center;gap:10px;padding:10px 0 0;border-top:1px solid #f3ece8;width:100%;cursor:pointer}
+.pfu-row .owd-rt{flex:1;min-width:0}.pfu-row .owd-ci{width:34px!important;height:34px!important}
+.owd-ci[data-tone="blue"]{background:rgba(77,94,190,.1)!important}
+.pfu-help{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#6b665c;padding-top:10px;border-top:1px solid #f3ece8}
+.owd .pfu-help button,.owd .pfu-acts button{font-size:12px;font-weight:600;color:#922a22;background:rgba(146,42,34,.06);padding:6px 10px;border-radius:8px;cursor:pointer}
+.pfu-help span{margin-right:auto}
+.pfu-cp{display:flex;align-items:center;gap:12px}
+.pfu-cp .owd-ring{flex:none}
+.pfu-acts{display:flex;gap:6px;padding-top:10px;border-top:1px solid #f3ece8}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7311,6 +7352,11 @@ if(OK==='investor'){
   it('a305','Service charge · Q4 2026','Service charge',-4,2360); it('v22','Service charge · Q4 2026','Service charge',15,6980); it('a305','Holiday home permit','Permit',42,1520);
   it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a305','Service charge · Q3 2026','Service charge',-92,2360,-93);
   inc('a305','Payout · Oct 2026',-6,11240); inc('v22','Payout · Oct 2026',-6,4180); inc('a305','Payout · Sep 2026',-36,9870); inc('v22','Payout · Sep 2026',-36,13650);
+} else if(OK==='omx'){
+  it('o1810','Instalment 2 of 10','Instalment',-12,96500); L[L.length-1].pen = 965;
+  it('o1810','Instalment 3 of 10','Instalment',18,96500); it('v22','Service charge · Q4 2026','Service charge',12,6980);
+  it('o1810','Instalment 4 of 10','Instalment',109,96500); it('v138','Service charge · Q1 2027','Service charge',52,7840);
+  it('o1810','Booking · Instalment 1 of 10','Instalment',-131,96500,-131); it('v138','Service charge · Q4 2026','Service charge',-9,7840,-9);
 } else if(OK==='olv' && PV==='inst'){
   it('v138','Instalment 8 of 12','Instalment',-10,180000); L[L.length-1].pen = 1800;
   it('v138','Instalment 9 of 12','Instalment',20,180000); it('v138','Instalment 10 of 12','Instalment',111,180000);
@@ -7396,7 +7442,7 @@ function sheet(root, html){
 var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
 /* checkout sheet (payment gateway): pick what to pay → method → secure processing → receipt */
 function payFlow(root, ids, done, direct){
-  if(OK==='oic' || OK==='ohv' || OK==='olv') direct = true;
+  if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') direct = true;
   var open = items().filter(function(x){ return x.st!=='paid'; });
   var pool = open.filter(function(x){ return ids.indexOf(x.id) >= 0; }).concat(open.filter(function(x){ return ids.indexOf(x.id) < 0; })).slice(0, 5);
   var sel = {}; ids.forEach(function(id){ sel[id] = true; });
@@ -7979,7 +8025,53 @@ function dashOLV(){
     return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
 }
+/* ---------- all properties together (living · vacant · under construction) ---------- */
+var STM = { resident:['Living here','green','#2e7d5b','home'], vacant:['Handed over · Vacant','blue','#4d5ebe','key'], construction:['Under construction','amber','#b7863f','crane'] };
+function stOfU(u){ return STM[u.own.status] || ['', 'grey', '#8a847a', 'building']; }
+function dashOMX(){
+  var us = units(), all = items(), h = '';
+  var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  var home = us.filter(function(u){ return u.own.status==='resident'; })[0], vac = us.filter(function(u){ return u.own.status==='vacant'; })[0], uc = us.filter(function(u){ return u.own.status==='construction'; })[0];
+  // portfolio summary
+  var cnt = {}; us.forEach(function(u){ cnt[u.own.status] = (cnt[u.own.status]||0) + 1; });
+  h += '<div class="owd owd-pfx"><div class="pfx-h"><span><b>'+us.length+' properties</b><small>'+us.map(function(u){ return u.community; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).length+' communities</small></span><button type="button" class="owd-link" data-o="port">View all'+ic('chev','#922a22',14)+'</button></div>'+
+    '<div class="pfx-bar">'+us.map(function(u){ return '<i style="background:'+stOfU(u)[2]+'"></i>'; }).join('')+'</div>'+
+    '<div class="pfx-leg">'+Object.keys(STM).filter(function(k){ return cnt[k]; }).map(function(k){ return '<span><i style="background:'+STM[k][2]+'"></i>'+cnt[k]+' '+STM[k][0].split(' · ')[STM[k][0].indexOf('·')>0?1:0]+'</span>'; }).join('')+'</div></div>';
+  // needs attention (each card names its property)
+  var att = [['amber','idc','Emirates ID expires 18 Nov','All properties · update to keep access','docs',''], ['blue','key','Ready to move in', vac.name+' · book your move-in date','movein',''], ['green','idc','Access card ready', home.name+' · collect at community office','feat','access']];
+  h += '<div class="owd owd-att"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Needs attention</b></span></span></div><div class="owd-attl">'+att.map(function(a){
+    return '<button type="button" class="owd-ac" data-tone="'+a[0]+'" data-o="'+a[4]+'" data-k="'+a[5]+'">'+ic(a[1], a[0]==='blue'?'#4d5ebe':a[0]==='green'?'#2e7d5b':'#8f5a1c', 18)+'<span><b>'+esc(a[2])+'</b><small>'+esc(a[3])+'</small></span></button>'; }).join('')+'</div></div>';
+  // payments across properties
+  var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
+  h += '<div class="owd owd-pay owd-plan owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">All payments'+ic('chev','#922a22',14)+'</button></div>'+
+    '<div class="pfp">'+us.map(function(u){ var o = open.filter(function(x){ return x.u===u.id && x.st!=='upcoming'; }), m = o.filter(function(x){ return x.st==='missed'; }), st = stOfU(u);
+      return '<div class="pfp-r"><i style="background:'+st[2]+'"></i><span class="pfp-n"><b>'+esc(u.name)+'</b><small>'+(m.length ? '<em>'+m.length+' overdue</em>' : o.length ? o.length+' due in 30 days' : 'Nothing due')+'</small></span><b class="pfp-a'+(o.length?'':' is-zero')+'">'+(o.length ? esc(aed(sum(o) + sum(m.map(function(x){ return { amt:x.pen||0 }; })))) : '—')+'</b></div>'; }).join('')+'</div>'+
+    dueTabs(miss, soon)+'</div>';
+  // one block per property — content depends on its status
+  function head(u){ var st = stOfU(u), i = us.indexOf(u); return '<button type="button" class="pfu-h" data-o="unit" data-id="'+u.id+'"><span class="pfu-img">'+(ph.length ? '<img src="'+ph[i % ph.length]+'" alt="">' : '')+'</span><span class="pfu-t"><b>'+esc(u.name)+'</b><small>'+esc(u.community)+'</small></span>'+pill(st[0], st[1])+'</button>'; }
+  var blocks = [];
+  if(home) blocks.push('<div class="pfu" style="--sc:'+stOfU(home)[2]+'">'+head(home)+
+    '<div class="pfu-qa">'+[['amen','pool','Amenity'],['access','idc','Access card'],['park','car','Parking'],['family','family','Family']].map(function(q){ return '<button type="button" class="pfu-q" data-o="feat" data-k="'+q[0]+'"><span class="owd-ci">'+ic(q[1],'#922a22',18)+'</span><span>'+q[2]+'</span></button>'; }).join('')+'</div>'+
+    '<div class="pfu-row"><span class="owd-ci" data-tone="blue">'+ic('clock','#4d5ebe',18)+'</span><span class="owd-rt"><b>AC not cooling · Master bedroom</b><small>SR-10518 · Technician assigned</small></span>'+pill('In progress','blue')+'</div>'+
+    '<div class="pfu-help"><span>Need help?</span><button type="button" data-o="help" data-k="unit">Inside my unit</button><button type="button" data-o="help" data-k="common">Common areas</button></div></div>');
+  if(vac) blocks.push('<div class="pfu" style="--sc:'+stOfU(vac)[2]+'">'+head(vac)+
+    '<button type="button" class="pfu-row pfu-go" data-o="movein"><span class="owd-ci" data-tone="blue">'+ic('door','#4d5ebe',18)+'</span><span class="owd-rt"><b>Move in</b><small>Book your date, access cards & utilities</small></span>'+ic('chev','#8a847a',18)+'</button>'+
+    '<button type="button" class="pfu-row pfu-go" data-o="docs"><span class="owd-ci">'+ic('folder','#922a22',18)+'</span><span class="owd-rt"><b>Handover documents</b><small>Title deed, handover certificate & SPA · 4 files</small></span>'+ic('chev','#8a847a',18)+'</button></div>');
+  if(uc){ var t = instStats(all.filter(function(x){ return x.u===uc.id; }), null);
+    blocks.push('<div class="pfu" style="--sc:'+stOfU(uc)[2]+'">'+head(uc)+
+    '<div class="pfu-cp"><span class="owd-ring">'+ringSvg(uc.own.progress)+'<b>'+uc.own.progress+'%</b></span><span class="owd-rt"><small>Latest update · '+fds(T(-8))+'</small><b>Podium complete, tower at level 6</b><small>Handover '+fd(uc.own.handover)+(t ? ' · '+t.paidN+'/'+t.N+' instalments paid' : '')+'</small></span></div>'+
+    '<div class="pfu-acts"><button type="button" data-o="unit" data-id="'+uc.id+'">Construction updates</button><button type="button" data-o="pay">Payment plan</button></div></div>'); }
+  h += '<div class="owd owd-bare owd-pfus"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>My properties</b></span></span></div>'+blocks.join('')+'</div>';
+  // community: only the home the owner lives in
+  if(home) h += '<div class="owd owd-news owd-comm"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Community</b></span></span><button type="button" class="owd-link" data-o="feat" data-k="events">'+esc(home.community)+ic('chev','#922a22',14)+'</button></div><div class="owd-nl">'+COMM.map(function(c){
+    return '<button type="button" class="ocm" data-o="feat" data-k="'+c[4]+'"><span class="ocm-h"><span class="owd-ci">'+ic(c[1],'#922a22',18)+'</span><i>'+c[0]+'</i></span><b>'+esc(c[2])+'</b><small>'+esc(c[3])+'</small></button>'; }).join('')+'</div></div>';
+  var NW = NEWS.filter(function(n){ return n[0]==='New launch' || n[0]==='Offer'; });
+  h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NW.map(function(n, i){
+    return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
+  return h;
+}
 function dashHTML(){
+  if(OK==='omx') return dashOMX();
   if(OK==='olv') return dashOLV();
   if(OK==='ohv') return dashOHV();
   if(OK==='oic') return dashOIC();
@@ -7997,15 +8089,15 @@ function wireDashboard(sec){
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
   function paint(){ el.innerHTML = dashHTML(); sectionize(el);
-    if(OK==='oic' || OK==='ohv' || OK==='olv'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
+    if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
       requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); } }
   /* the Figma frame has a fixed height: grow/shrink it to the dashboard content (payment groups vary) */
   function fitOIC(){ var cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!R || !el.offsetHeight) return;
     var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
     var h = Math.max(844, Math.ceil(bottom + 132)); R.style.height = h + 'px'; cv.style.height = h + 'px'; }
-  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv') requestAnimationFrame(fitOIC); };
-  if(OK==='oic' || OK==='ohv' || OK==='olv') firstTime(sec);
+  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') requestAnimationFrame(fitOIC); };
+  if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
   el.addEventListener('click', function(e){
@@ -8053,7 +8145,7 @@ window.__initScreen[FEAT] = initFeat;
     var nid = CARDS[sec.dataset.sid], el = nid && sec.querySelector('[data-node-id="'+nid+'"]');
     if(!el || el.__ar) return; el.__ar = true;
     var jid = window.__journey && window.__journey.id;
-    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv' || jid==='olv'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
+    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv' || jid==='olv' || jid==='omx'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
     el.style.cursor = 'pointer'; el.setAttribute('role','link'); el.tabIndex = 0;
     el.setAttribute('aria-label','AC Filter Check, request SR-9042, in progress. View details');
     // show the card's own request (SR-9042), not the last one raised in this session
