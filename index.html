@@ -1622,8 +1622,11 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     var u = new URL(location.href); u.searchParams.set('journey', cur.id); u.hash = '';
     location.href = u.toString();
   }
+  var SOLO = false;
+  try { SOLO = new URLSearchParams(location.search).get('solo')==='1' || sessionStorage.getItem('bloom-solo')==='1'; } catch(e){}
+  if(SOLO){ try { sessionStorage.setItem('bloom-solo','1'); } catch(e){} document.documentElement.classList.add('is-solo'); }
   function build(){
-    if(document.getElementById('jr')) return;
+    if(SOLO || document.getElementById('jr')) return;
     var el = document.createElement('aside');
     el.id = 'jr'; el.setAttribute('aria-label','Demo journeys');
     el.innerHTML =
