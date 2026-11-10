@@ -8107,8 +8107,9 @@ function dashOLV(){
   olvCfg();
   var u = units()[0], all = items(), h = '<div class="owd-pfs" hidden></div>';
   // needs attention: things to act on that are not payments or documents (those have their own blocks)
-  var att = PV==='inst' ? [['blue','idc','Access card ready','Collect from the community office','feat','access']] : [];
-  if(att.length) h += attBlock(att);
+  DOCS_PENDING.forEach(function(d){ var e = expDays(d[1]); h += attCards([{ o:'docs', tone:'red', t:d[0]+' expiring soon', s:'Update before '+(e ? e.when : '')+' to keep access active', n:e ? e.n : '' }]); });
+  if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
+    statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
   if(PV!==''){   // all payments done: no payment block on Home
   // payments: instalments and service charges kept apart
   var inst = all.filter(function(x){ return x.k==='Instalment'; }), sc = all.filter(function(x){ return x.k!=='Instalment'; });
@@ -8119,10 +8120,7 @@ function dashOLV(){
     h += '<div class="owd-pg-h">'+ic('crane','#3a3833',18)+'<span>Instalments</span></div>'+
       '<div class="opl">'+instRing(inst, null)+(I.next && !I.due.length ? '<small class="opl-next">Next instalment · <b>'+esc(aed(I.next.amt))+'</b> on '+fd(I.next.due)+'</small>' : '')+'</div>'+
       dueTabs(I.miss, I.due);
-    h += '<div class="owd-pg-h opl-gap">'+ic('building','#3a3833',18)+'<span>Service charges</span></div>';
   }
-  if(C.miss.length || C.due.length) h += dueTabs(C.miss, C.due);
-  else if(C.next) h += nextLine(C.next, instOpen ? 'service charge' : 'payment');
   h += '</div>';
   }
   // quick actions
@@ -8132,11 +8130,6 @@ function dashOLV(){
       '<button type="button" class="oqa-h" data-o="help" data-k="unit"><span class="owd-ci">'+ic('home','#922a22',18)+'</span><span><b>Inside my unit</b><small>Repairs & bills</small></span></button>'+
       '<button type="button" class="oqa-h" data-o="help" data-k="common"><span class="owd-ci" data-tone="teal">'+ic('building','#2c6e6a',18)+'</span><span><b>Common areas</b><small>Shared spaces</small></span></button></div></div>'+'</div>';
   h += '<div class="owd owd-qa3 owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Quick actions</b></span></span></div><div class="oqa-g">'+QA.map(function(q){ return '<button type="button" class="oqa-t" data-o="feat" data-k="'+q[0]+'"><span class="owd-ci">'+ic(q[1],'#922a22',20)+'</span><span>'+q[2]+'</span></button>'; }).join('')+'</div></div>';
-  // service requests (only when one is open)
-  if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
-    statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
-  // document expiring alert
-  if(DOCS_PENDING.length) h += '<div class="owd owd-srq owd-docal">'+DOCS_PENDING.map(function(d){ var n = Math.max(0, days(T(8))); return statusCard({ o:'docs', title:d[0]+' expiring soon', sub:'Update before '+d[1].replace('expires ','')+' to keep access active', days:n }); }).join('')+'</div>';
   // community (the home they live in)
   h += '<div class="owd owd-news owd-comm"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Community</b></span></span><button type="button" class="owd-link" data-o="feat" data-k="events">View all'+ic('chev','#922a22',14)+'</button></div><div class="owd-nl">'+COMM.map(function(c){
     return '<button type="button" class="ocm" data-o="feat" data-k="'+c[4]+'"><span class="ocm-h"><span class="owd-ci">'+ic(c[1],'#922a22',18)+'</span><i>'+c[0]+'</i></span><b>'+esc(c[2])+'</b><small>'+esc(c[3])+'</small></button>'; }).join('')+'</div></div>';
