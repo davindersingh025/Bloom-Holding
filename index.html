@@ -8192,12 +8192,16 @@ function wireDashboard(sec){
   function paint(){ el.innerHTML = dashHTML(); sectionize(el); protoFill();
     if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
-      requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); } }
+      requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); setTimeout(fitOIC, 1600); } }
   /* the Figma frame has a fixed height: grow/shrink it to the dashboard content (payment groups vary) */
   function fitOIC(){ var cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!R || !el.offsetHeight) return;
+    // keep exactly 28px between the property card(s) and the first dashboard section
+    var top = $('.rcar', sec) || $('[data-name="Card / Residence"]', sec);
+    if(top){ var S = window.__S || 1, gap = (el.getBoundingClientRect().top - top.getBoundingClientRect().bottom)/S, mt = parseFloat(getComputedStyle(el).marginTop) || 0;
+      if(Math.abs(gap - 28) > 1) el.style.marginTop = (mt + 28 - gap) + 'px'; }
     var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
     var h = Math.max(844, Math.ceil(bottom + 132)); R.style.height = h + 'px'; cv.style.height = h + 'px'; }
-  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') requestAnimationFrame(fitOIC); };
+  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx'){ requestAnimationFrame(fitOIC); setTimeout(fitOIC, 1600); } };
   if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
