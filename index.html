@@ -6955,6 +6955,12 @@ html.is-v2 .owd-sec > .owd-docs{margin-top:-2px}
 .owd.owd-qa,.owd.owd-srq{padding:4px 16px;gap:0}
 .owd .owd-sr{flex-direction:column;align-items:stretch;gap:10px;padding:14px 0}
 .owd-sr-h{display:flex;align-items:center;gap:12px}
+.owd-docal,.owd-docal.owd{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+.owd-srq.owd-bare2{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+[data-proto-c],[data-proto-c] *{opacity:1!important}
+[data-proto-c] [data-name="Text"]{min-width:0}
+[data-proto-c] [data-name="Text"] p{white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+[data-proto-c]{width:100%!important;box-sizing:border-box;cursor:pointer;position:relative!important;left:auto!important;top:auto!important}
 .owd-sr-f{display:flex;align-items:center;gap:12px}.owd-sr-f .owd-pbar{flex:1}
 .owd-pbar--b i{background:#4d5ebe!important}
 .owd-nimg-n{position:absolute;inset:0;display:grid;place-items:center;background:#f6ecdc}
@@ -7890,7 +7896,7 @@ function dashOIC(){
 var PUR = { price:2450000, n:10 };
 var MOVEIN = { allowed: PV!=='due', livesElsewhere:false, status:'eligible', date:null };   // from Salesforce: allowed / approval status
 function ohvCfg(){
-  if(PV==='due'){ DOCS_PENDING = [['Emirates ID copy','expires 18 Nov']]; OPEN_REQ = { title:'Snagging · Kitchen cabinet hinge', ref:'SR-10422', when:'Raised 4 Nov', status:'In progress', pct:55 }; }
+  if(PV==='due'){ DOCS_PENDING = [['Emirates ID copy','expires 18 Nov']]; OPEN_REQ = { title:'Kitchen cabinet hinge', ref:'Ref #SR-10422', when:'Snagging', status:'In Progress', pct:55 }; }
   else { DOCS_PENDING = []; OPEN_REQ = null; }
 }
 function dashOHV(){
@@ -7926,7 +7932,7 @@ function dashOHV(){
       '<button type="button" class="owd-qa-i'+(req?' is-req':'')+'" data-o="'+(req?'':'movein')+'"><span class="owd-ci">'+ic('door','#922a22',20)+'</span><span class="owd-rt"><b>'+(req ? 'Move-in requested · '+fds(MOVEIN.date) : 'Move in')+'</b><small'+(req?' class="is-wait"':'')+'>'+(req ? 'Awaiting approval · we’ll confirm within 2 working days' : 'Book your date, access cards & utilities')+'</small></span>'+(req ? '' : ic('chev','#8a847a',18))+'</button></div>';
   }
   // service requests: only when one is open
-  if(OPEN_REQ) h += '<div class="owd owd-srq"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
+  if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
     statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
   // what's new (+ important notices)
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
@@ -7971,6 +7977,8 @@ function moveInFlow(root){
 /* one reusable status card (service request, expiring document, …): icon · title · sub · progress · status */
 var TONEC = { blue:'#4d5ebe', amber:'#b7863f', red:'#c4302b', green:'#2e7d5b' };
 function statusCard(t){
+  if(t.o==='req') return '<div data-proto="req" data-o="req" data-t="'+esc(t.title)+'" data-s="'+esc(t.sub)+'" data-st="'+esc(t.status)+'" data-pct="'+t.pct+'"></div>';
+  if(t.o==='docs') return '<div data-proto="cta" data-o="docs" data-t="'+esc(t.title)+'" data-s="'+esc(t.sub)+'" data-n="'+esc(t.days)+'"></div>';
   var c = TONEC[t.tone] || TONEC.blue;
   return '<button type="button" class="owd-sr" data-o="'+t.o+'"><span class="owd-sr-h"><span class="owd-ci" data-tone="'+t.tone+'">'+ic(t.icon, t.tone==='amber' ? '#8f5a1c' : c, 20)+'</span><span class="owd-rt"><b>'+esc(t.title)+'</b><small>'+esc(t.sub)+'</small></span></span>'+
     '<span class="owd-sr-f"><span class="owd-pbar"><i style="width:'+t.pct+'%;background:'+c+'!important"></i></span>'+pill(t.status, t.tone)+'</span></button>';
@@ -7978,7 +7986,7 @@ function statusCard(t){
 /* ---------- Owner · Living here (moved in) ---------- */
 var COMM = [['Event','event','Family movie night','Central Park lawn · Fri 14 Nov, 7pm','events'],['Notice','bell','Pool maintenance','Main pool closed 12–13 Nov','notices'],['Newsletter','doc','Bloom Gardens · November','Community news & updates','notices']];
 function olvCfg(){
-  if(PV==='inst'){ DOCS_PENDING = [['Emirates ID','expires 18 Nov']]; OPEN_REQ = { title:'AC not cooling · Master bedroom', ref:'SR-10518', when:'Raised 7 Nov', status:'Technician assigned', pct:45 }; }
+  if(PV==='inst'){ DOCS_PENDING = [['Emirates ID','expires 18 Nov']]; OPEN_REQ = { title:'AC not cooling', ref:'Ref #SR-10518', when:'Maintenance', status:'In Progress', pct:45 }; }
   else if(PV==='sc'){ DOCS_PENDING = [['Emirates ID','expires 18 Nov']]; OPEN_REQ = null; }
   else { DOCS_PENDING = []; OPEN_REQ = null; }
 }
@@ -8017,10 +8025,10 @@ function dashOLV(){
       '<button type="button" class="oqa-h" data-o="help" data-k="common"><span class="owd-ci" data-tone="teal">'+ic('building','#2c6e6a',18)+'</span><span><b>Common areas</b><small>Shared spaces</small></span></button></div></div>'+
     '<div class="oqa-g">'+QA.map(function(q){ return '<button type="button" class="oqa-t" data-o="feat" data-k="'+q[0]+'"><span class="owd-ci">'+ic(q[1],'#922a22',20)+'</span><span>'+q[2]+'</span></button>'; }).join('')+'</div></div>';
   // service requests (only when one is open)
-  if(OPEN_REQ) h += '<div class="owd owd-srq"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
+  if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
     statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
   // document expiring alert
-  if(DOCS_PENDING.length) h += '<div class="owd owd-srq owd-docal">'+DOCS_PENDING.map(function(d){ var n = Math.max(0, days(T(8))); return statusCard({ o:'docs', tone:'amber', icon:'idc', title:d[0]+' '+d[1], sub:'Update it to keep your access active', status:n+' days left', pct:Math.round((30-n)/30*100) }); }).join('')+'</div>';
+  if(DOCS_PENDING.length) h += '<div class="owd owd-srq owd-docal">'+DOCS_PENDING.map(function(d){ var n = Math.max(0, days(T(8))); return statusCard({ o:'docs', title:d[0]+' expiring soon', sub:'Update before '+d[1].replace('expires ','')+' to keep access active', days:n }); }).join('')+'</div>';
   // community (the home they live in)
   h += '<div class="owd owd-news owd-comm"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Community</b></span></span><button type="button" class="owd-link" data-o="feat" data-k="events">View all'+ic('chev','#922a22',14)+'</button></div><div class="owd-nl">'+COMM.map(function(c){
     return '<button type="button" class="ocm" data-o="feat" data-k="'+c[4]+'"><span class="ocm-h"><span class="owd-ci">'+ic(c[1],'#922a22',18)+'</span><i>'+c[0]+'</i></span><b>'+esc(c[2])+'</b><small>'+esc(c[3])+'</small></button>'; }).join('')+'</div></div>';
@@ -8094,7 +8102,27 @@ function wireDashboard(sec){
   var ref = sec.querySelector('[data-node-id="'+nid+'"]'); if(!ref || ref.__ow) return; ref.__ow = true;
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
-  function paint(){ el.innerHTML = dashHTML(); sectionize(el);
+  function protoFill(){
+    $$('[data-proto]', el).forEach(function(ph){
+      var name = ph.dataset.proto==='cta' ? 'Portal CTA' : 'Card / Active Request';
+      var src = $$('[data-name="'+name+'"]', sec).filter(function(n){ return !n.hasAttribute('data-proto-c'); })[0]; if(!src) return;
+      var c = src.cloneNode(true); c.setAttribute('data-proto-c',''); c.setAttribute('data-o', ph.dataset.o); c.setAttribute('role','button');
+      [c].concat($$('*', c)).forEach(function(n){ n.removeAttribute('data-node-id'); n.removeAttribute('data-m'); n.removeAttribute('data-motion'); n.classList && n.classList.remove('m-wait'); if(n.style){ ['opacity','transform','scale','rotate','translate','filter','visibility','clipPath'].forEach(function(k){ n.style[k]=''; }); } n.classList && n.classList.remove('ic-in','ic-wait','is-hidden'); });
+      c.style.display = ''; c.hidden = false;
+      var P = $$('p', c);
+      if(ph.dataset.proto==='cta'){
+        var tx = $('[data-name="Portal cta text"]', c), tp = tx && $$('p', tx);
+        if(tp && tp.length){ tp[0].textContent = ph.dataset.t; if(tp[1]){ tp[1].textContent = ph.dataset.s; for(var i=2;i<tp.length;i++) tp[i].remove(); } }
+        var dy = $('[data-name="Days"]', c), dp = dy && $$('p', dy); if(dp && dp[0]) dp[0].textContent = ph.dataset.n;
+      } else {
+        var t = $('[data-name="Text"]', c), tp2 = t && $$('p', t); if(tp2 && tp2[0]){ tp2[0].textContent = ph.dataset.t; if(tp2[1]) tp2[1].textContent = ph.dataset.s; }
+        var stp = $('[data-name^="Status ·"] p', c); if(stp) stp.textContent = ph.dataset.st;
+        var fl = $('[data-name="Fill"]', c); if(fl) fl.style.width = ph.dataset.pct+'%';
+      }
+      ph.replaceWith(c);
+    });
+  }
+  function paint(){ el.innerHTML = dashHTML(); sectionize(el); protoFill();
     if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
       requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); } }
