@@ -7195,8 +7195,8 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .tnc-bar{height:6px;border-radius:3px;background:#f0e9e4;overflow:hidden}.tnc-bar i{display:block;height:100%;border-radius:3px;background:#922a22}
 .tnc-d{display:flex;justify-content:space-between}.tnc-d span{display:grid}.tnc-d span:last-child{text-align:right}
 .tnc-d small,.tnc-g small{font-size:11.5px;color:#6b665c}.tnc-d b{font-size:13px;font-weight:600}
-.tnc-g{display:grid;grid-template-columns:1.2fr 1fr 1.1fr;gap:8px;padding-top:12px;border-top:1px solid #f3ece8}
-.tnc-g span{display:grid;gap:1px;min-width:0}.tnc-g b{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tnc-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:12px;border-top:1px solid #f3ece8}
+.tnc-g span{display:grid;gap:1px;min-width:0}.tnc-g span:last-child{text-align:right}.tnc-g b{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .noc-a{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:14px}
 .noc-r{height:46px;border-radius:12px;border:1px solid #d9cfc8;background:#fff;font:600 14.5px 'Matter','Figtree',sans-serif;color:#1c1c19;cursor:pointer}
 .ow-sh .noc-ok{margin:0!important}
@@ -8204,7 +8204,7 @@ function dashORT(){
     '<div class="tnc">'+ban+
       '<div class="tnc-h"><span class="tnc-av">'+t.tenant.split(' ').map(function(w){ return w[0]; }).join('')+'</span><span class="tnc-n"><b>'+esc(t.tenant)+'</b><small>Tenant since '+fd(t.start)+'</small></span>'+pill(left+' days left', PV==='end'||PV==='renew' ? 'amber' : 'green')+'</div>'+
       '<div class="tnc-tl"><div class="tnc-bar"><i style="width:'+pct+'%"></i></div><div class="tnc-d"><span><small>Start</small><b>'+fd(t.start)+'</b></span><span><small>End</small><b>'+fd(t.end)+'</b></span></div></div>'+
-      '<div class="tnc-g"><span><small>Rent</small><b>'+esc(o.rent)+'</b></span><span><small>Cheques</small><b>2 of 4 received</b></span><span><small>Contract</small><b>'+esc(t.no)+'</b></span></div>'+
+      '<div class="tnc-g"><span><small>Rent</small><b>'+esc(o.rent)+'</b></span><span><small>Contract</small><b>'+esc(t.no)+'</b></span></div>'+
     '</div></div>';
   // payments
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; }), next = open.filter(function(x){ return x.st==='upcoming'; })[0];
