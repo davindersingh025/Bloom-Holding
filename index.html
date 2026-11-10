@@ -8148,12 +8148,12 @@ function dashOMX(){
   var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
   var home = us.filter(function(u){ return u.own.status==='resident'; })[0], vac = us.filter(function(u){ return u.own.status==='vacant'; })[0], uc = us.filter(function(u){ return u.own.status==='construction'; })[0];
   // needs attention (each card names its property)
-  var att = [['amber','idc','Emirates ID expires 18 Nov','All properties · update to keep access','docs',''], ['blue','key','Ready to move in', vac.name+' · book your move-in date','movein','']];
+  var att = [['amber','idc','Emirates ID expires 18 Nov','All properties · update to keep access','docs','']];
   h += attBlock(att);
   // payments across properties
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
   h += '<div class="owd owd-pay owd-plan owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">All payments'+ic('chev','#922a22',14)+'</button></div>'+
-    '<div class="pfp">'+us.map(function(u){ var o = open.filter(function(x){ return x.u===u.id && x.st!=='upcoming'; }), m = o.filter(function(x){ return x.st==='missed'; }), st = stOfU(u);
+    '<div class="pfp">'+us.filter(function(u){ return open.some(function(x){ return x.u===u.id && x.st!=='upcoming'; }); }).map(function(u){ var o = open.filter(function(x){ return x.u===u.id && x.st!=='upcoming'; }), m = o.filter(function(x){ return x.st==='missed'; }), st = stOfU(u);
       return '<div class="pfp-r"><i style="background:'+st[2]+'"></i><span class="pfp-n"><b>'+esc(u.name)+'</b><small>'+(m.length ? '<em>'+m.length+' overdue</em>' : o.length ? o.length+' due in 30 days' : 'Nothing due')+'</small></span><b class="pfp-a'+(o.length?'':' is-zero')+'">'+(o.length ? esc(aed(sum(o) + sum(m.map(function(x){ return { amt:x.pen||0 }; })))) : '—')+'</b></div>'; }).join('')+'</div>'+
     dueTabs(miss, soon)+'</div>';
   // one block per property — content depends on its status
