@@ -7127,6 +7127,27 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .pfu-cp .owd-ring{flex:none}
 .pfu-meta{display:flex;gap:14px;padding-top:10px;border-top:1px solid #f3ece8;font-size:12px;color:#6b665c}.pfu-meta span{display:inline-flex;align-items:center;gap:5px}
 .pfu-acts{display:flex;gap:6px;padding-top:10px;border-top:1px solid #f3ece8}
+/* move in */
+.mvc{background:#fff;border:1px solid #efe7e3;border-radius:16px;overflow:hidden;box-shadow:0 10px 28px -18px rgba(146,42,34,.45)}
+.mvc-img{position:relative;height:118px;background:#efe7e3}
+.mvc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.mvc-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,28,25,0) 40%,rgba(28,28,25,.45))}
+.mvc-tag{position:absolute;left:12px;bottom:10px;z-index:1;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:#fff;background:rgba(28,28,25,.35);backdrop-filter:blur(6px);padding:4px 8px;border-radius:8px}
+.mvc-b{padding:14px 16px 16px;display:grid;gap:4px}
+.mvc-b > b{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.mvc-b > small{font-size:12.5px;color:#6b665c}
+.mvc-steps{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.mvc-steps span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#3a3833;background:#f8f5f1;padding:5px 8px;border-radius:8px}
+.owd .mvc-cta{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:12px;background:#922a22;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;width:100%}
+.mvc-cta span{flex:none}.mvc-cta svg:last-child{margin-left:2px}
+.mvc-st{display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border-radius:12px;background:rgba(183,134,63,.12);color:#8f5a1c;font-size:13.5px;font-weight:600}
+.mvc-st i{width:8px;height:8px;border-radius:50%;background:#b7863f;animation:mvPulse 1.6s ease-in-out infinite}
+@keyframes mvPulse{50%{opacity:.35}}
+.mvs{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,rgba(146,42,34,.08),rgba(183,134,63,.10));border:1px solid rgba(146,42,34,.14)}
+.mvs.is-req{background:rgba(183,134,63,.1);border-color:rgba(183,134,63,.25)}
+.mvs-i{flex:none;width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center}
+.mvs-t{flex:1;display:grid;min-width:0}.mvs-t b{font-size:14px;font-weight:600}.mvs-t small{font-size:12px;color:#6b665c}
+.owd .mvs-b{flex:none;font-size:12.5px;font-weight:600;color:#fff;background:#922a22;padding:8px 12px;border-radius:10px;cursor:pointer}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7907,6 +7928,7 @@ function dashOHV(){
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
   var next = open.filter(function(x){ return x.st==='upcoming'; })[0];
   var instOpen = open.filter(function(x){ return x.k==='Instalment'; });
+  h += '%%MV%%';
   h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">'+(instOpen.length ? 'Payment plan' : 'Statement')+ic('chev','#922a22',14)+'</button></div>';
   if(PV==='loan'){
     h += '<div class="owd-fin"><span class="owd-ci">'+ic('bank','#922a22',20)+'</span><span class="owd-rt"><b>Purchase financed by Emirates NBD</b><small>Your instalments are paid directly by your bank, so nothing is due to Bloom for the purchase. Service charges are still paid by you.</small></span></div>';
@@ -7919,11 +7941,9 @@ function dashOHV(){
   if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>' + payGroups(all, miss, soon);
   // quick actions: Move In only when Salesforce allows it, the owner lives nowhere else and it is not rejected
-  if(MOVEIN.allowed && !MOVEIN.livesElsewhere && MOVEIN.status!=='not_approved'){
-    var req = MOVEIN.status==='requested';
-    h += '<div class="owd owd-qa"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Quick actions</b></span></span></div>'+
-      '<button type="button" class="owd-qa-i'+(req?' is-req':'')+'" data-o="'+(req?'':'movein')+'"><span class="owd-ci">'+ic('door','#922a22',20)+'</span><span class="owd-rt"><b>'+(req ? 'Move-in requested · '+fds(MOVEIN.date) : 'Move in')+'</b><small'+(req?' class="is-wait"':'')+'>'+(req ? 'Awaiting approval · we’ll confirm within 2 working days' : 'Book your date, access cards & utilities')+'</small></span>'+(req ? '' : ic('chev','#8a847a',18))+'</button></div>';
-  }
+  if(MOVEIN.allowed && !MOVEIN.livesElsewhere && MOVEIN.status!=='not_approved')
+    h = h.replace('%%MV%%', '<div class="owd owd-bare owd-mv"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Move in</b></span></span></div>'+moveInCard(u, true)+'</div>');
+  h = h.replace('%%MV%%', '');
   // service requests: only when one is open
   if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
     statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
@@ -7946,6 +7966,17 @@ function payDetail(root, id){
           : '<button type="button" class="ow-cta pdx-dl" data-rcd>'+ic('dl','#fff',16)+'<span>Download receipt</span></button>'));
   var box = $('.ow-sh', sh.el); box.classList.add('pdx');
   box.addEventListener('click', function(e){ var d = e.target.closest('[data-rcd]'); if(d){ d.innerHTML = ic('check','#fff',16)+'<span>Receipt saved</span>'; } });
+}
+/* Move In: one component, a full card on a single property and a compact banner inside a property card */
+function moveInCard(u, full){
+  var req = MOVEIN.status==='requested', ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  var steps = [['idc','Access cards'],['snow','Utilities'],['shield','Move-in permit']];
+  var cta = req ? '<span class="mvc-st"><i></i>Awaiting approval · '+fds(MOVEIN.date)+'</span>'
+                : '<button type="button" class="mvc-cta" data-o="movein">'+ic('door','#fff',18)+'<span>Book move-in date</span>'+ic('chev','#fff',16)+'</button>';
+  if(!full) return '<div class="mvs'+(req?' is-req':'')+'"><span class="mvs-i">'+ic('door', req?'#8f5a1c':'#922a22', 20)+'</span><span class="mvs-t"><b>'+(req ? 'Move-in requested' : 'Ready to move in')+'</b><small>'+(req ? 'Awaiting approval · '+fds(MOVEIN.date) : 'Access cards, utilities & permit arranged')+'</small></span>'+(req ? '' : '<button type="button" class="mvs-b" data-o="movein">Book date</button>')+'</div>';
+  return '<div class="mvc'+(req?' is-req':'')+'"><div class="mvc-img">'+(ph.length ? '<img src="'+ph[1 % ph.length]+'" alt="">' : '')+'<span class="mvc-tag">'+ic('key','#fff',13)+'Handed over '+fds(u.own.handover)+'</span></div>'+
+    '<div class="mvc-b"><b>'+(req ? 'Your move-in is requested' : 'Your home is ready to move in')+'</b><small>'+(req ? 'We’ll confirm your slot within 2 working days.' : 'Pick a date and we’ll arrange the rest for you.')+'</small>'+
+    '<div class="mvc-steps">'+steps.map(function(t){ return '<span>'+ic(req ? 'check' : t[0], req ? '#2e7d5b' : '#922a22', 14)+t[1]+'</span>'; }).join('')+'</div>'+cta+'</div></div>';
 }
 /* Move-in request sheet */
 function moveInFlow(root){
@@ -8062,7 +8093,7 @@ function dashOMX(){
     '<div class="pfu-row"><span class="owd-ci" data-tone="blue">'+ic('clock','#4d5ebe',18)+'</span><span class="owd-rt"><b>AC not cooling · Master bedroom</b><small>SR-10518 · Technician assigned</small></span>'+pill('In progress','blue')+'</div>'+
     '<div class="pfu-help"><span>Need help?</span><button type="button" data-o="help" data-k="unit">Inside my unit</button><button type="button" data-o="help" data-k="common">Common areas</button></div></div>');
   if(vac) blocks.push('<div class="pfu" style="--sc:'+stOfU(vac)[2]+'">'+head(vac)+
-    '<button type="button" class="pfu-row pfu-go" data-o="movein"><span class="owd-ci" data-tone="blue">'+ic('door','#4d5ebe',18)+'</span><span class="owd-rt"><b>Move in</b><small>Book your date, access cards & utilities</small></span>'+ic('chev','#8a847a',18)+'</button>'+
+    moveInCard(vac, false)+
     '<div class="pfu-meta"><span>'+ic('key','#4d5ebe',14)+'Handed over '+fds(vac.own.handover)+'</span><span>'+(function(){ var vd = open.filter(function(x){ return x.u===vac.id && x.st!=='upcoming'; }); return vd.length ? ic('card','#6b665c',14)+esc(aed(sum(vd)))+' due '+fds(vd[0].due) : 'Nothing due'; })()+'</span></div></div>');
   if(uc){ var t = instStats(all.filter(function(x){ return x.u===uc.id; }), null);
     blocks.push('<div class="pfu" style="--sc:'+stOfU(uc)[2]+'">'+head(uc)+
