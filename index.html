@@ -8271,7 +8271,7 @@ function dashOMX(){
 var NOC = { status: PV==='noc' ? 'pending' : null, date:T(20), reason:'Relocating for work', ref:'NOC-26-0418', note:'' };
 function dashORT(){
   var u = units()[0], o = u.own, t = o.tenancy, all = items(), h = '';
-  if(PV==='end'){ OPEN_REQ = { title:'Water heater issue', ref:'Ref #SR-10611', when:'From tenant', status:'In Progress', pct:35 }; } else OPEN_REQ = null;
+  OPEN_REQ = null;
   // needs attention: the tenant's move-out request (or its outcome)
   if(NOC.status==='pending') h += attCards([{ o:'noc', tone:'red', t:'Move-out request from your tenant', s:t.tenant+' · moving out '+fds(NOC.date), n:days(NOC.date) }]);
   else if(NOC.status==='approved') h += attCards([{ o:'noc', tone:'amber', t:'Move-out approved', s:t.tenant+' moves out on '+fds(NOC.date), icon:'check' }]);
