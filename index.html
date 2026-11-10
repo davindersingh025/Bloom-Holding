@@ -7192,7 +7192,7 @@ if(OK==='investor'){
   it('v22','Instalment 10 of 10 · handover','Instalment',-27,490000,-27); it('v22','Service charge · Q4 2026','Service charge',-9,6980,-9);
 } else if(OK==='oic' && PV==='active'){
   it('o1810','Booking · Instalment 1 of 10','Instalment',-131,96500,-131);
-  it('o1810','Oqood registration fee','Permit',-3,7720,-2); L[L.length-1].proc = true;
+  it('o1810','DLD registration fee','Permit',-3,7720,-2); L[L.length-1].proc = true;
   it('o1810','Instalment 2 of 10','Instalment',-12,96500); it('o1810','Instalment 3 of 10','Instalment',18,96500);
   it('o1810','Instalment 4 of 10','Instalment',109,96500);
 } else if(OK==='oic'){
@@ -7681,7 +7681,7 @@ function dashOHV(){
   h += '</div>' + payGroups(all, miss, soon);
   // documents
   var deed = PV==='due' ? ['Title deed','Issued after the final instalment','lock', 'Pending'] : ['Title deed','Issued by DLD · '+fds(T(-20)),'idc', ''];
-  var DOCS = [['Sale & Purchase Agreement','Signed · 8 Feb 2024','doc',''], ['Handover documents','Handover certificate & snag list · '+fds(T(-27)),'key',''], deed, ['Other documents','Oqood, NOCs & receipts · 6 files','folder','']];
+  var DOCS = [['Sale & Purchase Agreement','Signed · 8 Feb 2024','doc',''], ['Handover documents','Handover certificate & snag list · '+fds(T(-27)),'key',''], deed, ['Other documents','Registration, NOCs & receipts · 6 files','folder','']];
   h += '<div class="owd owd-dl"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Documents</b></span></span><button type="button" class="owd-link" data-o="docs">View all'+ic('chev','#922a22',14)+'</button></div>'+
     DOCS.map(function(d){ return '<button type="button" class="owd-dr'+(d[3]?' is-pend':'')+'" data-o="docs"><span class="owd-ci">'+ic(d[2], d[3]?'#8a847a':'#922a22', 19)+'</span><span class="owd-rt"><b>'+esc(d[0])+'</b><small>'+esc(d[1])+'</small></span>'+(d[3] ? pill(d[3],'grey') : ic('chev','#8a847a',18))+'</button>'; }).join('')+'</div>';
   // quick actions: Move In only when Salesforce allows it, the owner lives nowhere else and it is not rejected
