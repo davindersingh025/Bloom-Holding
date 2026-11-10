@@ -7148,6 +7148,21 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .mvs-i{flex:none;width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center}
 .mvs-t{flex:1;display:grid;min-width:0}.mvs-t b{font-size:14px;font-weight:600}.mvs-t small{font-size:12px;color:#6b665c}
 .owd .mvs-b{flex:none;font-size:12.5px;font-weight:600;color:#fff;background:#922a22;padding:8px 12px;border-radius:10px;cursor:pointer}
+/* missed / due groups */
+.dgs{display:grid;gap:16px}
+.dgg{display:grid;gap:10px}
+.dgg-h{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:#3a3833}
+.dgg-i{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 12%,transparent)}
+.dgg-h i{font-style:normal;font-size:11px;font-weight:700;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;display:inline-grid;place-items:center;background:#efe7e3;color:#54504a}
+.dgg[data-k="miss"] .dgg-h i{background:#922a22;color:#fff}
+.dgs button.dgc,.owd .dgc{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:176px;scroll-snap-align:start;display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:16px;background:#fff;border:1px solid #efe7e3;box-shadow:0 6px 20px -16px rgba(28,28,25,.25);position:relative;overflow:hidden}
+.dgs .dgc.is-miss::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#c4302b}
+.dgs .owd-pl > .dgc:only-child{width:100%}
+.dgc-u{font-size:13px;color:#6b665c}
+.dgc-a{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dgc-a b{font-size:17px;font-weight:600;letter-spacing:-.2px;color:#1c1c19}
+.dgc small{font-size:12px;color:#6b665c}.dgc small em{font-style:normal;color:#c4302b;font-weight:500}
+.dgs .dgc:active{transform:scale(.98)}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7862,7 +7877,19 @@ function dueRow(x){ var late = x.st==='missed', n = days(x.due), amt = x.amt + (
   return '<button type="button" class="prw'+(late?' is-miss':'')+'" data-o="'+(late?'pgmiss1':'pgdue1')+'" data-id="'+x.id+'"><span class="prw-i">'+(late ? '<b>!</b>' : ic('clock','#8f5a1c',18))+'</span>'+
     '<span class="prw-t"><b>'+esc(x.t)+'</b><small>'+esc(u ? u.name : '')+(late && x.pen ? ' · incl. '+esc(aed(x.pen))+' late fee' : '')+'</small></span>'+
     '<span class="prw-a"><b>'+esc(aed(amt))+'</b><i>'+(late ? (-n)+' days late' : 'Due '+fds(x.due))+'</i></span></button>'; }
-function dueTabs(miss, soon){
+/* missed / due in 30 days: two labelled groups of swipeable cards, one card per property (as in the live app) */
+function dueGroups(miss, soon){
+  if(!miss.length && !soon.length) return '';
+  function card(g, late){ var pen = late ? sum(g.xs.map(function(x){ return { amt:x.pen||0 }; })) : 0, n = g.xs.length;
+    var meta = late ? '<em>'+(-days(g.xs[0].due))+' days late</em>'+(pen ? ' · incl. late fee' : '') : 'Due '+fds(g.xs[0].due);
+    return '<button type="button" class="dgc'+(late?' is-miss':'')+'" data-o="'+(late?'pgmiss':'pgdue')+'" data-u="'+g.u+'" data-ids="'+g.xs.map(function(x){ return x.id; }).join(',')+'">'+
+      '<span class="dgc-u">'+esc(uName(g.u))+'</span><span class="dgc-a"><b>'+esc(aed(sum(g.xs)+pen))+'</b>'+ic('chev','#1c1c19',18)+'</span>'+
+      '<small>'+n+' payment'+(n>1?'s':'')+' · '+meta+'</small></button>'; }
+  function grp(k, icn, col, t, list, late){ return '<div class="dgg" data-k="'+k+'"><div class="dgg-h"><span class="dgg-i" style="--c:'+col+'">'+ic(icn, col, 16)+'</span><span>'+t+'</span><i>'+list.length+'</i></div><div class="owd-pl">'+byUnit(list).map(function(g){ return card(g, late); }).join('')+'</div></div>'; }
+  return '<div class="dgs">'+(miss.length ? grp('miss','alert','#c4302b','Missed payments', miss, true) : '')+(soon.length ? grp('due','clock','#b7863f','Payments due in 30 days', soon, false) : '')+'</div>';
+}
+function dueTabs(miss, soon){ return dueGroups(miss, soon); }
+function dueTabsOld(miss, soon){
   if(!miss.length && !soon.length) return '';
   var id = 'pt'+(++PTAB), list = function(a, k, on){ return '<div class="prl" data-p="'+k+'"'+(on?'':' hidden')+'>'+a.map(dueRow).join('')+'</div>'; };
   if(miss.length && soon.length) return '<div class="ptabs" id="'+id+'"><div class="ptab-s" role="tablist"><button type="button" role="tab" class="ptab is-on" data-o="ptab" data-t="miss">Missed <i data-tone="red">'+miss.length+'</i></button><button type="button" role="tab" class="ptab" data-o="ptab" data-t="soon">Upcoming <i data-tone="amber">'+soon.length+'</i></button></div>'+list(miss,'miss',true)+list(soon,'soon',false)+'</div>';
@@ -8162,8 +8189,8 @@ function wireDashboard(sec){
     var b = e.target.closest('[data-o]'); if(!b) return; e.preventDefault(); e.stopPropagation();
     var o = b.dataset.o, M = mo();
     if(o==='pay') openPay('due');
-    else if(o==='pgmiss') payFlow(sec, items().filter(function(x){ return x.st==='missed' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
-    else if(o==='pgdue') payFlow(sec, items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }));
+    else if(o==='pgmiss') payFlow(sec, b.dataset.ids ? b.dataset.ids.split(',') : items().filter(function(x){ return x.st==='missed' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
+    else if(o==='pgdue') payFlow(sec, b.dataset.ids ? b.dataset.ids.split(',') : items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
     else if(o==='pgupd') payDetail(sec, b.dataset.id);
     else if(o==='movein') moveInFlow(sec);
     else if(o==='ptab'){ var tb = b.closest('.ptabs'); $$('.ptab', tb).forEach(function(t){ t.classList.toggle('is-on', t===b); }); $$('.prl', tb).forEach(function(l){ l.hidden = l.dataset.p !== b.dataset.t; }); requestAnimationFrame(fitOIC); }
