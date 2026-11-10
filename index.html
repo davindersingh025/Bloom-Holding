@@ -6971,6 +6971,7 @@ html.is-v2 .ow-payb{height:28px;padding:0 12px;border-radius:8px;font-size:12px}
 html.is-v2 .ow-empty{padding:18px 12px}
 html.is-v2 .owd-pp-h b{font-size:18px}
 html.is-v2 .ow-stmt .mox-chip{border-radius:8px;height:30px}
+.owx .ow-ra .ow-paidok{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:8px;background:rgba(46,125,91,.1);color:#2e7d5b;font-size:12px;font-weight:600}
 .owx .ow-ra .ow-proc{padding:0!important;margin:0!important;height:auto!important;display:inline-flex!important;flex-direction:row;align-items:center;gap:6px;font-size:12px;line-height:16px;color:#8f5a1c;white-space:nowrap}
 .owx .ow-ra .ow-proc .pu-spin{width:12px;height:12px}
 /* home payment cards: compact */
@@ -7241,8 +7242,8 @@ function meta(x){
   return { label:'Scheduled', tone:'grey', when:'Due '+fd(x.due) };
 }
 function sum(a){ return a.reduce(function(t,x){ return t + x.amt; }, 0); }
-var JUST = {};
-function markPaid(ids){ ids.forEach(function(id){ JUST[id] = true; });
+var JUST = {}, JST = {};
+function markPaid(ids){ ids.forEach(function(id){ JUST[id] = true; L.forEach(function(x){ if(x.id===id) JST[id] = status(x); }); });
   ids.forEach(function(id){ L.forEach(function(x){ if(x.id===id && !x.paid){ x.paid = T(0); x.rc = 'RC-'+(261000 + Math.floor(Math.random()*8999)); } }); }); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }
 window.__own = { items:items, forUnit:function(id){ return items().filter(function(x){ return x.u===id; }); }, meta:meta, aed:aed, income:function(){ return INC.slice(); } };
 
@@ -7281,6 +7282,7 @@ function sheet(root, html){
 var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
 /* checkout sheet (payment gateway): pick what to pay → method → secure processing → receipt */
 function payFlow(root, ids, done, direct){
+  if(OK==='oic' || OK==='ohv') direct = true;
   var open = items().filter(function(x){ return x.st!=='paid'; });
   var pool = open.filter(function(x){ return ids.indexOf(x.id) >= 0; }).concat(open.filter(function(x){ return ids.indexOf(x.id) < 0; })).slice(0, 5);
   var sel = {}; ids.forEach(function(id){ sel[id] = true; });
@@ -7342,6 +7344,7 @@ function initPay(sec){
     var all = items(), g = payState.flt, uf = payState.unit;
     var pick = all.filter(function(x){ return (g==='all' || groupOf(x)===g) && (!uf || x.u===uf); });
     var due = pick.filter(function(x){ return x.st!=='paid'; }), miss = due.filter(function(x){ return x.st==='missed'; });
+    var jp = pick.filter(function(x){ return x.st==='paid' && JUST[x.id]; }), jpMiss = jp.filter(function(x){ return JST[x.id]==='missed'; }), jpUp = jp.filter(function(x){ return JST[x.id]!=='missed'; });
     var paid = pick.filter(function(x){ return x.st==='paid'; });
     var inc = INC.filter(function(x){ return (g==='all' || groupOf(x)===g) && (!uf || x.u===uf); });
     var tabs = [['due','To pay'+(miss.length?' <i class="ow-cnt">'+miss.length+'</i>':'')],['paid','Paid']]; 
@@ -7353,10 +7356,10 @@ function initPay(sec){
     else if(mixed()){ var N = GN(); h += chips([['all','All'],['home',N.home],['invest',N.invest]], g); }
     h += seg('Payments', tabs, payState.tab);
     if(payState.tab==='due'){
-      if(!due.length) h += '<div class="ow-empty">'+ic('check','#2e7d5b',28)+'<b>You’re all paid up</b><small>New payments will show here before they’re due.</small></div>';
-      if(miss.length) h += '<div class="ow-sec"><div class="ow-sec-h"><p class="mox-eyebrow" style="color:#922a22">OVERDUE</p><button type="button" class="ow-link" data-payall>Pay all '+esc(aed(ov))+'</button></div>'+rowsH(miss, true)+'</div>';
+      if(!due.length && !jp.length) h += '<div class="ow-empty">'+ic('check','#2e7d5b',28)+'<b>You’re all paid up</b><small>New payments will show here before they’re due.</small></div>';
+      if(miss.length || jpMiss.length) h += '<div class="ow-sec"><div class="ow-sec-h"><p class="mox-eyebrow" style="color:#922a22">OVERDUE</p>'+(miss.length ? '<button type="button" class="ow-link" data-payall>Pay all '+esc(aed(ov))+'</button>' : '')+'</div>'+rowsH(miss.concat(jpMiss), true)+'</div>';
       var up = due.filter(function(x){ return x.st!=='missed'; });
-      if(up.length) h += '<div class="ow-sec"><p class="mox-eyebrow">UPCOMING</p>'+rowsH(up, true)+'</div>';
+      if(up.length || jpUp.length) h += '<div class="ow-sec"><p class="mox-eyebrow">UPCOMING</p>'+rowsH(jpUp.concat(up), true)+'</div>';
       h += '<div class="mox-card ow-how"><p class="mox-eyebrow">WAYS TO PAY</p>'+METHODS.map(function(k){ return '<div class="ow-how-r"><span class="ow-m-i">'+ic(k[3],'#922a22',18)+'</span><span><b>'+k[1]+'</b><small>'+k[2]+'</small></span></div>'; }).join('')+'</div>';
     } else if(payState.tab==='paid'){
       h += '<div class="mox-card ow-stmt"><span class="ow-stmt-i">'+ic('stmt','#922a22',22)+'</span><span><b>Statement of account</b><small>All payments & receipts · '+(uf ? esc(U(uf).name) : 'every property')+'</small></span>'+
@@ -7375,7 +7378,7 @@ function initPay(sec){
     return '<div class="ow-list">'+list.map(function(x){ var u = U(x.u), m = meta(x), red = x.st==='missed';
       return '<div class="ow-row'+(red?' is-miss':'')+'"><span class="ow-ri" data-tone="'+(red?'red':x.proc?'grey':x.st==='paid'?'green':'grey')+'">'+(x.proc ? ic('clock','#8f5a1c',20) : ic(x.st==='paid'?'check':red?'alert':x.k==='Instalment'?'crane':x.k==='Rent'?'home':'card', red?'#922a22':x.st==='paid'?'#2e7d5b':'#54504a', 20))+'</span>'+
         '<span class="ow-rt"><b>'+esc(x.t)+'</b><small>'+esc((u?u.name+' · ':'')+m.when)+'</small></span>'+
-        '<span class="ow-ra"><b>'+esc(aed(x.amt))+'</b>'+(payable ? '<button type="button" class="ow-payb'+(red?' is-red':'')+'" data-payid="'+x.id+'">Pay</button>' : x.proc ? '<small class="ow-proc"><i class="pu-spin" aria-hidden="true"></i>In process</small>' : '<button type="button" class="ow-rc" data-rc="'+x.rc+'" aria-label="Download receipt '+x.rc+'">'+ic('dl','#922a22',16)+'Receipt</button>')+'</span></div>'; }).join('')+'</div>';
+        '<span class="ow-ra"><b>'+esc(aed(x.amt))+'</b>'+(payable && x.st==='paid' ? '<span class="ow-paidok">'+ic('check','#2e7d5b',14)+'Paid</span>' : payable ? '<button type="button" class="ow-payb'+(red?' is-red':'')+'" data-payid="'+x.id+'">Pay</button>' : x.proc ? '<small class="ow-proc"><i class="pu-spin" aria-hidden="true"></i>In process</small>' : '<button type="button" class="ow-rc" data-rc="'+x.rc+'" aria-label="Download receipt '+x.rc+'">'+ic('dl','#922a22',16)+'Receipt</button>')+'</span></div>'; }).join('')+'</div>';
   }
   body.addEventListener('click', function(e){
     var t = e.target.closest('[data-tab]'); if(t){ payState.tab = t.dataset.tab; render(); return; }
