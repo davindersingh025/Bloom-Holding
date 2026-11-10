@@ -8000,6 +8000,8 @@ function dashOHV(){
   var next = open.filter(function(x){ return x.st==='upcoming'; })[0];
   var instOpen = open.filter(function(x){ return x.k==='Instalment'; });
   h += '%%MV%%';
+  var noPay = PV==='';   // handed over · all instalments paid: no payment block on Home
+  if(!noPay){
   h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">'+(instOpen.length ? 'Payment plan' : 'Statement')+ic('chev','#922a22',14)+'</button></div>';
   if(PV==='loan'){
     h += '<div class="owd-fin"><span class="owd-ci">'+ic('bank','#922a22',20)+'</span><span class="owd-rt"><b>Purchase financed by Emirates NBD</b><small>Your instalments are paid directly by your bank, so nothing is due to Bloom for the purchase. Service charges are still paid by you.</small></span></div>';
@@ -8011,6 +8013,7 @@ function dashOHV(){
   }
   if(!miss.length && !soon.length && next) h += nextLine(next);
   h += '</div>' + payGroups(all, miss, soon);
+  }
   // quick actions: Move In only when Salesforce allows it, the owner lives nowhere else and it is not rejected
   if(MOVEIN.allowed && !MOVEIN.livesElsewhere && MOVEIN.status!=='not_approved')
     h = h.replace('%%MV%%', '<div class="owd owd-bare owd-mv"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Move in</b></span></span></div>'+moveInCard(u, true)+'</div>');
