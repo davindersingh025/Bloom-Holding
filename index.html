@@ -6863,6 +6863,10 @@ html.journey-oic .owd-wrap{margin-top:3px}
 html.journey-oic .owd-sh{padding:0}
 html.journey-oic .owd-sec{gap:12px}
 html.journey-oic .owd-nl{scroll-padding-inline:16px}
+/* oic radii: 16px large cards, 12px small cards / inner blocks */
+html.journey-oic .owd-pay,html.journey-oic .owd-cons,html.journey-oic .owd .owd-nc,html.journey-oic [data-node-id="252:23857"]{border-radius:16px!important}
+html.journey-oic .owd-docs,html.journey-oic .owd-calm,html.journey-oic .owd-ci,html.journey-oic [data-node-id="252:23863"]{border-radius:12px!important}
+html.journey-oic .owd-sec > .owd-docs{margin-top:-2px}
 .owd-sh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
 .owd-sh:has(small){align-items:flex-end}
 .owd-sh-t{display:grid;gap:0;min-width:0}
@@ -7521,7 +7525,8 @@ function wireDashboard(sec){
   var ref = sec.querySelector('[data-node-id="'+nid+'"]'); if(!ref || ref.__ow) return; ref.__ow = true;
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
-  function paint(){ el.innerHTML = dashHTML(); sectionize(el); }
+  function paint(){ el.innerHTML = dashHTML(); sectionize(el);
+    if(OK==='oic'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc); } }
   if(OK==='oic') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
