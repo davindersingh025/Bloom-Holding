@@ -7709,7 +7709,7 @@ function initPort(sec){
 
 /* ---------- ow:feat (resident community features) ---------- */
 var FEATS = {
-  access:{ t:'Access card', ic:'idc' }, amen:{ t:'Amenities', ic:'pool' }, park:{ t:'Parking & ANPR', ic:'car' }, family:{ t:'Family access', ic:'family' },
+  access:{ t:'Access card', ic:'idc' }, amen:{ t:'Amenities', ic:'pool' }, park:{ t:'Parking', ic:'car' }, family:{ t:'Family access', ic:'family' },
   events:{ t:'Events', ic:'event' }, visitor:{ t:'Visitor Access', ic:'qr' }, notices:{ t:'Notices', ic:'bell' }
 };
 var featKey = 'access';
@@ -7734,7 +7734,6 @@ function initFeat(sec){
       h += '<div class="ow-list ow-amen">'+[['pool','Swimming pool','Open now · 6 AM – 10 PM','Walk in'],['gym','Gym','Open 24 hours','Walk in'],['padel','Padel courts','2 slots free today','Book'],['grill','BBQ area','Book up to 7 days ahead','Book'],['kids','Kids’ play area','Open now · 7 AM – 8 PM','Walk in']].map(function(a){
         return '<div class="ow-row"><span class="ow-ri" data-tone="grey">'+ic(a[0],'#922a22',20)+'</span><span class="ow-rt"><b>'+a[1]+'</b><small>'+a[2]+'</small></span>'+(a[3]==='Book' ? '<button type="button" class="ow-payb" data-book="'+a[1]+'">Book</button>' : '<span class="ow-tag">Walk in</span>')+'</div>'; }).join('')+'</div>';
     } else if(featKey==='park'){
-      h += '<div class="mox-card ow-anpr"><span class="ow-ri" data-tone="green">'+ic('car','#2e7d5b',20)+'</span><span><b>ANPR is on</b><small>Registered cars open the barrier automatically at Gates 1 & 2.</small></span></div>';
       h += '<div class="ow-sec"><p class="mox-eyebrow">MY VEHICLES · '+CARS.length+' OF 3</p><div class="ow-list">'+CARS.map(function(c){ return '<div class="ow-row"><span class="ow-plate">'+esc(c[0].split(' · ')[1])+'</span><span class="ow-rt"><b>'+esc(c[1])+'</b><small>'+esc(c[0].split(' · ')[0]+' · '+c[2])+'</small></span>'+pill('Active','green')+'</div>'; }).join('')+'</div></div>';
       h += '<div class="ow-acts">'+btn('Visitor parking pass','visitor','ghost')+(CARS.length < 3 ? btn('Add vehicle','addcar','dark') : '')+'</div>';
     } else if(featKey==='family'){
@@ -7745,7 +7744,7 @@ function initFeat(sec){
       h += '<div class="ow-list">'+EVENTS.map(function(ev, i){ var on = !!RSVP[i], d = new Date(T(0).getFullYear(), T(0).getMonth() + (ev[0] < T(0).getDate() ? 1 : 0), ev[0]);
         return '<div class="ow-row ow-ev"><span class="ow-date"><b>'+d.getDate()+'</b><small>'+MON[d.getMonth()].toUpperCase()+'</small></span><span class="ow-rt"><b>'+esc(ev[1])+'</b><small>'+esc(ev[2])+'</small><small>'+esc(ev[3])+'</small></span><button type="button" class="ow-payb'+(on?' is-on':'')+'" data-rsvp="'+i+'" aria-pressed="'+on+'">'+(on?'Going':'RSVP')+'</button></div>'; }).join('')+'</div>';
     } else if(featKey==='visitor'){
-      h += '<p class="ow-note">Create a pass and share it. Visitors show the QR code at the gate; registered cars enter by ANPR.</p>';
+      h += '<p class="ow-note">Create a pass and share it. Visitors show the QR code at the gate.</p>';
       h += '<div class="ow-sec"><p class="mox-eyebrow">VISITOR PASSES</p><div class="ow-list">'+VIS.map(function(v){ var d = T(v[2]); var ini = v[0].split(' ').filter(function(w,i,a){ return i===0 || i===a.length-1; }).map(function(w){ return w[0]; }).join('');
         return '<div class="ow-row"><span class="ow-av">'+esc(ini)+'</span><span class="ow-rt"><b>'+esc(v[0])+'</b><small>'+esc(v[1])+'</small><small>'+(v[2]===0 ? 'Today' : fd(d))+' · '+esc(u.name)+'</small></span>'+pill(v[3], v[3]==='Active today'?'green':'blue')+'</div>'; }).join('')+'</div></div>';
       h += '<div class="ow-acts">'+btn('Share QR pass','sharevis','ghost')+btn('New visitor pass','addvis','dark')+'</div>';
@@ -7763,7 +7762,7 @@ function initFeat(sec){
     if(k==='lost') toast('Card blocked. A replacement is on its way.');
     else if(k==='newcard') toast('Request sent. Collect your card at the community office.');
     else if(k==='visitor') toast('Visitor pass created and ready to share.');
-    else if(k==='addcar'){ CARS.push(['Dubai · M 33190', 'Nissan Patrol · Black', 'Visitor bay V-12']); render(); toast('Vehicle added. ANPR active within 24 hours.'); }
+    else if(k==='addcar'){ CARS.push(['Dubai · M 33190', 'Nissan Patrol · Black', 'Visitor bay V-12']); render(); toast('Vehicle added to your parking.'); }
     else if(k==='sharevis') toast('QR pass link copied. Send it to your visitor.');
     else if(k==='addvis'){ VIS.unshift(['Fatima Noor', 'Guest · 1 person', 1, 'Scheduled']); render(); toast('Visitor pass created for tomorrow.'); }
     else if(k==='addfam'){ FAM.push(['Sara '+((JR.user&&JR.user.name)||'').split(' ').slice(-1)[0], 'Daughter', 'Gate & lobby', 'Invite sent']); render(); toast('Invite sent. Sara can sign in once she accepts.'); }
@@ -8110,6 +8109,7 @@ function dashOLV(){
   // needs attention: things to act on that are not payments or documents (those have their own blocks)
   var att = PV==='inst' ? [['blue','idc','Access card ready','Collect from the community office','feat','access']] : [];
   if(att.length) h += attBlock(att);
+  if(PV!==''){   // all payments done: no payment block on Home
   // payments: instalments and service charges kept apart
   var inst = all.filter(function(x){ return x.k==='Instalment'; }), sc = all.filter(function(x){ return x.k!=='Instalment'; });
   function openOf(list){ var o = list.filter(function(x){ return x.st!=='paid'; }); return { miss:o.filter(function(x){ return x.st==='missed'; }), due:o.filter(function(x){ return x.st==='due'; }), next:o.filter(function(x){ return x.st==='upcoming'; })[0] }; }
@@ -8124,13 +8124,14 @@ function dashOLV(){
   if(C.miss.length || C.due.length) h += dueTabs(C.miss, C.due);
   else if(C.next) h += nextLine(C.next, instOpen ? 'service charge' : 'payment');
   h += '</div>';
+  }
   // quick actions
-  var QA = [['amen','pool','Book an amenity'],['access','idc','Access card'],['park','car','Parking · ANPR'],['family','family','Add family']];
-  h += '<div class="owd owd-qa2 owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Quick actions</b></span></span></div>'+
-    '<div class="oqa-help"><p>Need help?</p><div class="oqa-hr">'+
+  var QA = [['amen','pool','Book an amenity'],['access','idc','Access card'],['park','car','Parking'],['family','family','Add family']];
+  h += '<div class="owd owd-qa2 owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Need help?</b></span></span></div>'+
+    '<div class="oqa-help"><div class="oqa-hr">'+
       '<button type="button" class="oqa-h" data-o="help" data-k="unit"><span class="owd-ci">'+ic('home','#922a22',18)+'</span><span><b>Inside my unit</b><small>Repairs & bills</small></span></button>'+
-      '<button type="button" class="oqa-h" data-o="help" data-k="common"><span class="owd-ci" data-tone="teal">'+ic('building','#2c6e6a',18)+'</span><span><b>Common areas</b><small>Shared spaces</small></span></button></div></div>'+
-    '<div class="oqa-g">'+QA.map(function(q){ return '<button type="button" class="oqa-t" data-o="feat" data-k="'+q[0]+'"><span class="owd-ci">'+ic(q[1],'#922a22',20)+'</span><span>'+q[2]+'</span></button>'; }).join('')+'</div></div>';
+      '<button type="button" class="oqa-h" data-o="help" data-k="common"><span class="owd-ci" data-tone="teal">'+ic('building','#2c6e6a',18)+'</span><span><b>Common areas</b><small>Shared spaces</small></span></button></div></div>'+'</div>';
+  h += '<div class="owd owd-qa3 owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Quick actions</b></span></span></div><div class="oqa-g">'+QA.map(function(q){ return '<button type="button" class="oqa-t" data-o="feat" data-k="'+q[0]+'"><span class="owd-ci">'+ic(q[1],'#922a22',20)+'</span><span>'+q[2]+'</span></button>'; }).join('')+'</div></div>';
   // service requests (only when one is open)
   if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
     statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
