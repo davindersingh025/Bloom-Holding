@@ -6948,6 +6948,19 @@ html.is-v2 .owd-dl,html.is-v2 .owd-qa,html.is-v2 .owd-srq{border-radius:16px!imp
 .mi-d small{font-size:11.5px;color:#6b665c}
 .mi-d[aria-checked="true"]{border-color:#922a22;background:rgba(146,42,34,.05)}
 .mi-l{display:grid;gap:10px}
+.pdx-amt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0 12px}
+.pdx-amt b{font-size:20px;font-weight:600;letter-spacing:-.2px}
+.pdx-st{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:4px 8px;border-radius:8px}
+.pdx-st.is-ok{background:rgba(46,125,91,.08);color:#2e7d5b}
+.pdx-st.is-proc{background:rgba(183,134,63,.1);color:#8f5a1c}
+.pdx-rows{background:#fff;border:1px solid #efe7e3;border-radius:12px;padding:2px 14px}
+.pdx-r{display:flex;justify-content:space-between;gap:12px;padding:10px 0;font-size:13.5px}
+.pdx-r + .pdx-r{border-top:1px solid #f3ece8}
+.pdx-r small{font-size:13px;color:#6b665c}
+.pdx-r span{font-weight:500;text-align:right}
+.pdx-note{margin:12px 2px 4px;font-size:12.5px;line-height:1.5;color:#6b665c}
+html.is-v2 .ow-cta{height:46px;border-radius:12px;font-size:14.5px}
+.pdx .ow-cta.pdx-dl{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .ow-co.mi-sh .ow-co-h small{color:#6b665c}
 .owd-qa-i .owd-rt small{white-space:normal!important}
 .owd-qa-i .owd-rt small.is-wait{color:#8f5a1c}
@@ -7731,6 +7744,19 @@ function dashOHV(){
     return '<button type="button" class="owd-nc'+(n[0]==='Notice'?' is-notice':'')+'" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(n[0]==='Notice' ? '<span class="owd-nimg-n">'+ic('alert','#8f5a1c',28)+'</span>' : (ph.length ? '<img src="'+ph[i % ph.length]+'" alt="">' : ''))+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
 }
+/* one payment, opened from its Payment updates card: only that payment's details */
+function payDetail(root, id){
+  var x = items().filter(function(i){ return i.id===id; })[0]; if(!x) return;
+  var u = U(x.u), proc = !!x.proc;
+  var rows = [['Property', u ? u.name+' · '+u.community : ''], ['Category', x.k], [proc ? 'Submitted' : 'Paid on', fd(x.paid)], ['Method', proc ? 'Bank transfer' : 'Visa •••• 4417'], [proc ? 'Reference' : 'Receipt no.', proc ? (u ? u.code : '') : x.rc]];
+  var sh = sheet(root, '<div class="ow-sh-h"><span class="ow-co-h"><b>'+esc(x.t)+'</b></span><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'+
+    '<div class="pdx-amt"><b>'+esc(aed(x.amt))+'</b>'+(proc ? '<span class="pdx-st is-proc"><i class="pu-spin" aria-hidden="true"></i>In process</span>' : '<span class="pdx-st is-ok"><i class="pu-ok" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i>Payment confirmed</span>')+'</div>'+
+    '<div class="pdx-rows">'+rows.map(function(r){ return '<div class="pdx-r"><small>'+r[0]+'</small><span>'+esc(r[1])+'</span></div>'; }).join('')+'</div>'+
+    (proc ? '<p class="pdx-note">We’re matching your transfer. It usually takes 1–2 working days, and we’ll notify you once it’s confirmed.</p>'
+          : '<button type="button" class="ow-cta pdx-dl" data-rcd>'+ic('dl','#fff',16)+'<span>Download receipt</span></button>'));
+  var box = $('.ow-sh', sh.el); box.classList.add('pdx');
+  box.addEventListener('click', function(e){ var d = e.target.closest('[data-rcd]'); if(d){ d.innerHTML = ic('check','#fff',16)+'<span>Receipt saved</span>'; } });
+}
 /* Move-in request sheet */
 function moveInFlow(root){
   var u = units()[0], pick = 0, step = 'form';
@@ -7785,7 +7811,7 @@ function wireDashboard(sec){
     if(o==='pay') openPay('due');
     else if(o==='pgmiss') payFlow(sec, items().filter(function(x){ return x.st==='missed' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
     else if(o==='pgdue') payFlow(sec, items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }));
-    else if(o==='pgupd') openPay('paid');
+    else if(o==='pgupd') payDetail(sec, b.dataset.id);
     else if(o==='movein') moveInFlow(sec);
     else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }), null, true);
     else if(o==='paynext') payFlow(sec, [b.dataset.id], null, true);
