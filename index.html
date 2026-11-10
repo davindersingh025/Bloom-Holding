@@ -7897,7 +7897,7 @@ function dashOIC(){
   var paid = all.filter(function(x){ return x.st==='paid' && !x.proc; }), total = sum(all), paidAmt = sum(paid), pct = total ? Math.round(paidAmt/total*100) : 0;
   var next = open.filter(function(x){ return x.st!=='missed'; })[0];
   h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Payment plan'+ic('chev','#922a22',14)+'</button></div>' + instRing(all, null);
-  if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
+  if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b></span></div>';
   h += '</div>';
   h += payGroups(all, miss, soon);
   // construction progress
@@ -7938,7 +7938,7 @@ function dashOHV(){
   } else {
     h += instRing(all, PUR.price);
   }
-  if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
+  if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b></span></div>';
   h += '</div>' + payGroups(all, miss, soon);
   // quick actions: Move In only when Salesforce allows it, the owner lives nowhere else and it is not rejected
   if(MOVEIN.allowed && !MOVEIN.livesElsewhere && MOVEIN.status!=='not_approved')
@@ -8039,7 +8039,7 @@ function dashOLV(){
     h += '<div class="owd-pg-h opl-gap">'+ic('building','#3a3833',18)+'<span>Service charges</span></div>';
   }
   if(C.miss.length || C.due.length) h += dueTabs(C.miss, C.due);
-  else if(C.next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No '+(instOpen?'service charge':'payment')+' due. Next payment on <b>'+fd(C.next.due)+'</b> · '+esc(aed(C.next.amt))+'</span></div>';
+  else if(C.next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No '+(instOpen?'service charge':'payment')+' due. Next payment on <b>'+fd(C.next.due)+'</b></span></div>';
   h += '</div>';
   // quick actions
   var QA = [['amen','pool','Book an amenity'],['access','idc','Access card'],['park','car','Parking · ANPR'],['family','family','Add family']];
