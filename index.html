@@ -6867,6 +6867,31 @@ html.journey-oic .owd-nl{scroll-padding-inline:16px}
 html.journey-oic .owd-pay,html.journey-oic .owd-cons,html.journey-oic .owd .owd-nc,html.journey-oic [data-node-id="252:23857"]{border-radius:16px!important}
 html.journey-oic .owd-docs,html.journey-oic .owd-calm,html.journey-oic .owd-ci,html.journey-oic [data-node-id="252:23863"]{border-radius:12px!important}
 html.journey-oic .owd-sec > .owd-docs{margin-top:-2px}
+/* payment groups: sub-categories of Payments */
+.owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
+.owd-pg{display:flex;flex-direction:column;gap:10px}
+.owd-pg-h{display:flex;align-items:center;gap:8px;font:600 15px/1.3 'Matter','Figtree',sans-serif;color:#3a3833}
+.owd-pg-h svg{flex:none}
+.owd-pl{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 6px;scroll-snap-type:x mandatory;scroll-padding-inline:16px}
+.owd-pl::-webkit-scrollbar{display:none}
+.owd-pc,.owd-pu{flex:none;scroll-snap-align:start;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:14px 16px;border-radius:12px;background:#fff;border:1px solid #efe7e3;box-shadow:0 6px 20px -16px rgba(28,28,25,.25);text-align:left;font:inherit;color:#1c1c19;cursor:pointer;box-sizing:border-box}
+.owd-pc{width:172px}
+.owd-pu{width:264px}
+.owd-pc-u{font-size:13px;color:#6b665c}
+.owd-pc-a{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.owd-pc-a b{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.owd-pc small{font-size:12.5px;color:#6b665c}
+.owd-pc small em{font-style:normal;color:#c4302b}
+.owd-pc[data-o="pgdue"] small{color:#6b665c}
+.owd-pu-r{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.owd-pu-r b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.owd-pu-r span{flex:none;font-size:15px;font-weight:600}
+.owd-pu small{display:flex;align-items:center;gap:6px;font-size:12.5px}
+.owd-pu small.is-ok{color:#2e7d5b}
+.owd-pu small.is-proc{color:#6b665c}
+.owd-pu small.is-proc i{width:12px;height:12px;border-radius:50%;border:1.6px solid #8a847a;box-sizing:border-box}
+.owd-pc:active,.owd-pu:active{transform:scale(.98)}
+.owd-pl > .owd-pc:only-child,.owd-pl > .owd-pu:only-child{width:100%}
 .owd-sh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
 .owd-sh:has(small){align-items:flex-end}
 .owd-sh-t{display:grid;gap:0;min-width:0}
@@ -7064,6 +7089,11 @@ if(OK==='investor'){
   it('a305','Service charge · Q4 2026','Service charge',-4,2360); it('v22','Service charge · Q4 2026','Service charge',15,6980); it('a305','Holiday home permit','Permit',42,1520);
   it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a305','Service charge · Q3 2026','Service charge',-92,2360,-93);
   inc('a305','Payout · Oct 2026',-6,11240); inc('v22','Payout · Oct 2026',-6,4180); inc('a305','Payout · Sep 2026',-36,9870); inc('v22','Payout · Sep 2026',-36,13650);
+} else if(OK==='oic' && /[?&]pay=active\b/.test(location.search)){
+  it('o1810','Booking · Instalment 1 of 10','Instalment',-131,96500,-131);
+  it('o1810','Oqood registration fee','Permit',-3,7720,-2); L[L.length-1].proc = true;
+  it('o1810','Instalment 2 of 10','Instalment',-12,96500); it('o1810','Instalment 3 of 10','Instalment',18,96500);
+  it('o1810','Instalment 4 of 10','Instalment',109,96500);
 } else if(OK==='oic'){
   it('o1810','Booking · Instalment 1 of 10','Instalment',-41,96500,-41);
   it('o1810','Instalment 2 of 10','Instalment',46,96500); it('o1810','Instalment 3 of 10','Instalment',137,96500); it('o1810','Instalment 4 of 10','Instalment',228,96500);
@@ -7473,11 +7503,24 @@ var OPEN_REQ = null;              // e.g. { title:'Snagging visit', status:'Sche
 function ringSvg(p){ var r = 26, c = 2*Math.PI*r; return '<svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#efe5df" stroke-width="6"/><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#b7863f" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(c*p/100).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 32 32)"/></svg>'; }
 function attentionCards(){
   var all = items(), out = [];
-  all.filter(function(x){ return x.st==='missed'; }).forEach(function(x){ out.push(['red','alert','Missed payment', aed(x.amt)+' · '+x.t, 'payid', x.id]); });
-  all.filter(function(x){ return x.st==='due'; }).slice(0,1).forEach(function(x){ out.push(['amber','cal','Payment due '+fds(x.due), aed(x.amt)+' · '+x.t, 'payid', x.id]); });
+  // missed / due payments are shown as their own groups inside Payments, so they are not repeated here
   DOCS_PENDING.forEach(function(d){ out.push(['amber','doc','Document needed', d[0]+' · '+d[1], 'docs', '']); });
   if(OPEN_REQ) out.push(['blue','clock', OPEN_REQ.title, OPEN_REQ.status, 'req', '']);
   return out;
+}
+/* payment groups (as in the live app): missed · due in 30 days · payment updates — each shows only when it has items */
+function byUnit(list){ var m = {}, o = []; list.forEach(function(x){ if(!m[x.u]){ m[x.u] = []; o.push(x.u); } m[x.u].push(x); }); return o.map(function(u){ return { u:u, xs:m[u] }; }); }
+function uName(id){ var u = U(id); return u ? u.name : id; }
+function payGroups(all, miss, soon){
+  var h = '', recent = all.filter(function(x){ return x.st==='paid' && (x.proc || JUST[x.id] || days(x.paid) >= -60); }).sort(function(a,b){ return (b.proc?1:0)-(a.proc?1:0) || b.paid - a.paid; }).slice(0,4);
+  function grpH(icn, col, t){ return '<div class="owd-pg-h">'+ic(icn, col, 18)+'<span>'+t+'</span></div>'; }
+  function uc(g, o, sub){ var t = sum(g.xs); return '<button type="button" class="owd-pc" data-o="'+o+'" data-u="'+g.u+'"><span class="owd-pc-u">'+esc(uName(g.u))+'</span><span class="owd-pc-a"><b>'+esc(aed(t))+'</b>'+ic('chev','#1c1c19',18)+'</span><small>'+g.xs.length+' payment'+(g.xs.length>1?'s':'')+' · '+sub(g)+'</small></button>'; }
+  if(miss.length) h += '<div class="owd-pg" data-k="miss">'+grpH('alert','#c4302b','Missed payments')+'<div class="owd-pl">'+byUnit(miss).map(function(g){ return uc(g, 'pgmiss', function(g){ return '<em>'+(-days(g.xs[0].due))+' days overdue</em>'; }); }).join('')+'</div></div>';
+  if(soon.length) h += '<div class="owd-pg" data-k="due">'+grpH('clock','#c99a1e','Payments due in 30 days')+'<div class="owd-pl">'+byUnit(soon).map(function(g){ return uc(g, 'pgdue', function(g){ return 'due '+fds(g.xs[0].due); }); }).join('')+'</div></div>';
+  if(recent.length) h += '<div class="owd-pg" data-k="upd">'+grpH('stmt','#3a3833','Payment updates')+'<div class="owd-pl">'+recent.map(function(x){
+    return '<button type="button" class="owd-pu" data-o="pgupd" data-id="'+x.id+'"><span class="owd-pc-u">'+esc(uName(x.u))+'</span><span class="owd-pu-r"><b>'+esc(x.t)+'</b><span>'+esc(aed(x.amt))+'</span></span>'+
+      (x.proc ? '<small class="is-proc"><i></i>In process</small>' : '<small class="is-ok">'+ic('check','#2e7d5b',16)+'Payment confirmed · '+fds(x.paid)+'</small>')+'</button>'; }).join('')+'</div></div>';
+  return h ? '<div class="owd-pgx">'+h+'</div>' : '';
 }
 function dashOIC(){
   var u = units()[0], o = u.own, all = items(), h = '';
@@ -7486,16 +7529,13 @@ function dashOIC(){
     return '<button type="button" class="owd-ac" data-tone="'+a[0]+'" data-o="'+a[4]+'" data-id="'+a[5]+'">'+ic(a[1], a[0]==='red'?'#922a22':a[0]==='blue'?'#4d5ebe':'#8f5a1c', 18)+'<span><b>'+esc(a[2])+'</b><small>'+esc(a[3])+'</small></span></button>'; }).join('')+'</div></div>';
   // payments: big block only when something is missed or due within 30 days
   var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; });
-  var paid = all.filter(function(x){ return x.st==='paid'; }), total = sum(all), paidAmt = sum(paid), pct = total ? Math.round(paidAmt/total*100) : 0;
+  var paid = all.filter(function(x){ return x.st==='paid' && !x.proc; }), total = sum(all), paidAmt = sum(paid), pct = total ? Math.round(paidAmt/total*100) : 0;
   var next = open.filter(function(x){ return x.st!=='missed'; })[0];
   h += '<div class="owd owd-pay owd-plan"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Payment plan'+ic('chev','#922a22',14)+'</button></div>'+
     '<div class="owd-pp"><div class="owd-pp-h"><span><small>Paid so far</small><b>'+esc(aed(paidAmt))+'</b></span><span class="owd-pp-of">of '+esc(aed(total + 0))+'</span></div><span class="owd-pbar"><i style="width:'+pct+'%"></i></span><small class="owd-pp-s">'+paid.length+' of '+(paid.length+open.length)+' instalments paid · '+pct+'%</small></div>';
-  if(miss.length || soon.length){
-    h += '<div class="owd-rows">'+miss.concat(soon).map(function(x){ var late = x.st==='missed', n = days(x.due);
-      return '<button type="button" class="owd-row'+(late?' is-late':'')+'" data-o="payid" data-id="'+x.id+'"><span class="owd-ci"'+(late?' data-tone="red"':'')+'>'+ic('crane', late?'#922a22':'#54504a', 20)+'</span><span class="owd-rt"><b>'+esc(x.t)+'</b><small>'+(late ? '<em>'+(-n)+' days overdue</em>' : 'due '+fd(x.due))+'</small></span><span class="owd-ra"><b class="owd-amt">'+esc(aed(x.amt))+'</b>'+(late ? pill('Overdue','red') : pill('Due soon','amber'))+'</span></button>'; }).join('')+'</div>';
-    if(miss.length) h += '<button type="button" class="owd-paycta" data-o="paymiss">Pay overdue · '+esc(aed(sum(miss)))+'</button>';
-  } else if(next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
+  if(!miss.length && !soon.length && next) h += '<div class="owd-calm">'+ic('check','#2e7d5b',18)+'<span>No payment due. Next payment on <b>'+fd(next.due)+'</b> · '+esc(aed(next.amt))+'</span></div>';
   h += '</div>';
+  h += payGroups(all, miss, soon);
   // construction progress
   h += '<div class="owd owd-cons"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Construction progress</b></span></span><button type="button" class="owd-link" data-o="unit" data-id="'+u.id+'">Updates'+ic('chev','#922a22',14)+'</button></div>'+
     '<div class="owd-cp"><span class="owd-ring">'+ringSvg(o.progress)+'<b>'+o.progress+'%</b></span><span class="owd-cp-t"><small>Latest update · '+fds(T(-8))+'</small><b>Podium complete, tower structure at level 6</b><span class="owd-cp-h">'+ic('key','#8f5a1c',15)+'Expected handover <strong>'+fd(o.handover)+'</strong></span></span></div></div>';
@@ -7526,7 +7566,14 @@ function wireDashboard(sec){
   var el = D.createElement('div'); el.className = 'owd-wrap';
   ref.parentNode.insertBefore(el, ref);
   function paint(){ el.innerHTML = dashHTML(); sectionize(el);
-    if(OK==='oic'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc); } }
+    if(OK==='oic'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
+      var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
+      requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); } }
+  /* the Figma frame has a fixed height: grow/shrink it to the dashboard content (payment groups vary) */
+  function fitOIC(){ var cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!R || !el.offsetHeight) return;
+    var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
+    var h = Math.max(844, Math.ceil(bottom + 132)); R.style.height = h + 'px'; cv.style.height = h + 'px'; }
+  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic') requestAnimationFrame(fitOIC); };
   if(OK==='oic') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
@@ -7534,6 +7581,9 @@ function wireDashboard(sec){
     var b = e.target.closest('[data-o]'); if(!b) return; e.preventDefault(); e.stopPropagation();
     var o = b.dataset.o, M = mo();
     if(o==='pay') openPay('due');
+    else if(o==='pgmiss') payFlow(sec, items().filter(function(x){ return x.st==='missed' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
+    else if(o==='pgdue') payFlow(sec, items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }));
+    else if(o==='pgupd') openPay('paid');
     else if(o==='paymiss') payFlow(sec, items().filter(function(x){ return x.st==='missed'; }).map(function(x){ return x.id; }), null, true);
     else if(o==='paynext') payFlow(sec, [b.dataset.id], null, true);
     else if(o==='payid') payFlow(sec, [b.dataset.id]);
