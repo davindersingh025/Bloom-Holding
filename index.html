@@ -1569,6 +1569,9 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     ohv:     { id:'ohv', owner:true, firstTime:true, v2:true, label:'Owner · Investor · Handed over', short:'Handed over · Vacant',
                desc:'One handed-over property, vacant, first login',
                user:{ name:'Mariam Al Hosani', initials:'MH', email:'mariam.alhosani@example.com', phone:'+971 55 208 6631', role:'Owner · Investor' } },
+    ort:     { id:'ort', owner:true, v2:true, label:'Owner · Rented out', short:'Rented out',
+               desc:'One handed-over property, rented to a tenant',
+               user:{ name:'Hessa Al Shamsi', initials:'HS', email:'hessa.alshamsi@example.com', phone:'+971 52 318 7740', role:'Owner · Landlord' } },
     omx:     { id:'omx', owner:true, v2:true, label:'Owner · 3 properties', short:'All properties',
                desc:'Three properties: living in one, one vacant, one under construction',
                user:{ name:'Rashid Al Falasi', initials:'RF', email:'rashid.alfalasi@example.com', phone:'+971 50 662 3018', role:'Owner · Investor' } },
@@ -1576,7 +1579,7 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
                desc:'One property, moved in, lives there',
                user:{ name:'Omar Al Mansoori', initials:'OM', email:'omar.almansoori@example.com', phone:'+971 50 447 1902', role:'Owner · Resident' } }
   };
-  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv','olv','omx'];
+  var ORDER = ['tenant','holiday','investor','owner','ownerinv','ownerhh','ownertenant','oic','ohv','olv','omx','ort'];
   var BASE = JOURNEYS.tenant.user;
 
   function pick(){
@@ -1651,6 +1654,10 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
     ['ohv','loan',  'Handed over · Vacant', 'Paid by bank loan'],
     ['olv','',      'Moved in · Living here', 'All payments done'],
     ['olv','inst',  'Moved in · Living here', 'Instalments still going'],
+    ['ort','',      'Handed over · Given on rent', 'Tenant living · all normal'],
+    ['ort','end',   'Handed over · Given on rent', 'Contract ends in 15 days'],
+    ['ort','renew', 'Handed over · Given on rent', 'Renewal in progress'],
+    ['ort','noc',   'Handed over · Given on rent', 'Move-out request (NOC)'],
     ['omx','',      'All together · 3 properties', 'Living · Vacant · Under construction']
   ];
   var PV = ''; try { PV = new URLSearchParams(location.search).get('pay') || ''; } catch(e){}
@@ -3013,6 +3020,10 @@ if(J==='owner'){
   else if(OK==='ownerinv'){ S.resident(v138); S.rented(a1204); S.construction(o1810); S.holiday(a305); L = [v138, a1204, o1810, a305]; }
   else if(OK==='ownerhh'){ S.holiday(a305,'in'); S.holiday(v22,'none'); L = [a305, v22]; }
   else if(OK==='ownertenant'){ S.renting(v138); S.rented(a1204); S.construction(o1810); L = [v138, a1204, o1810]; }
+  else if(OK==='ort'){ S.rented(a1204); var pvR = (location.search.match(/[?&]pay=(\w+)/) || [])[1] || '';
+    Object.assign(a1204.own, { handover:rel(-420), rent:'AED 95,000 / year', cheques:'4 cheques · 2 received' });
+    a1204.own.tenancy = { tenant:'Rahul Verma', no:'TC-2025-11204', start:rel(pvR==='end'||pvR==='renew' ? -350 : -165), end:rel(pvR==='end'||pvR==='renew' ? 15 : 200), status:'Active', tone:'green' };
+    L = [a1204]; }
   else if(OK==='omx'){ S.resident(v138); Object.assign(v138.own, { moveIn:rel(-212) }); S.vacant(v22); Object.assign(v22.own, { handover:rel(-27) });
     S.construction(o1810); Object.assign(o1810.own, { progress:24, handover:dt(2028,12,30) }); L = [v138, v22, o1810]; }
   else if(OK==='olv'){ S.resident(v138); Object.assign(v138.own, { moveIn:rel(-212) }); L = [v138]; }
@@ -3030,8 +3041,10 @@ var ST_LABEL = { pending:'Payment Pending', vacant:'Vacant', resident:'Move In',
 if(J==='owner' && OK==='ohv') ST_LABEL.vacant = 'Handed Over · Vacant';
 if(J==='owner' && (OK==='olv' || OK==='omx')) ST_LABEL.resident = 'Living Here';
 if(J==='owner' && OK==='omx') ST_LABEL.vacant = 'Handed Over · Vacant';
+if(J==='owner' && OK==='ort') ST_LABEL.rented = 'Rented';
 var ST_TONE  = { pending:'amber', vacant:'grey', resident:'green', rented:'blue', holiday:'teal', guest:'green', noguest:'grey', construction:'amber', resale:'violet', renting:'blue' };
 if(J==='owner' && OK==='omx') ST_TONE.vacant = 'blue';
+if(J==='owner' && OK==='ort') ST_TONE.rented = 'blue';
 window.__ownst = { label:ST_LABEL, tone:ST_TONE, status:function(u){ return unitStatus(u); } };
 function unitStatus(u){
   if(J==='owner') return u.own ? u.own.status : null;
@@ -7168,6 +7181,27 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .dgc-a b{font-size:17px;font-weight:600;letter-spacing:-.2px;color:#1c1c19}
 .dgc small{font-size:12px;color:#6b665c}.dgc small em{font-style:normal;color:#c4302b;font-weight:500}
 .dgs .dgc:active{transform:scale(.98)}
+/* rented: tenant summary + NOC */
+.tnc{background:#fff;border:1px solid #efe7e3;border-radius:16px;padding:14px 16px;display:grid;gap:14px;box-shadow:0 6px 20px -16px rgba(28,28,25,.25)}
+.tnb{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#f8f5f1;margin:-2px -4px 0}
+.tnb > span{flex:1;display:grid;min-width:0}.tnb b{font-size:13.5px;font-weight:600}.tnb small{font-size:12px;color:#6b665c}
+.tnb.is-warn{background:rgba(183,134,63,.12)}.tnb.is-warn b{color:#8f5a1c}
+.tnb.is-info{background:rgba(146,42,34,.06)}
+.owd .tnb button{flex:none;font-size:12px;font-weight:600;color:#fff;background:#922a22;padding:7px 12px;border-radius:9px;cursor:pointer}
+.tnc-h{display:flex;align-items:center;gap:12px}
+.tnc-av{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(146,42,34,.08);color:#922a22;font-weight:600;font-size:14px}
+.tnc-n{flex:1;display:grid;min-width:0}.tnc-n b{font-size:15.5px;font-weight:600}.tnc-n small{font-size:12px;color:#6b665c}
+.tnc-tl{display:grid;gap:8px}
+.tnc-bar{height:6px;border-radius:3px;background:#f0e9e4;overflow:hidden}.tnc-bar i{display:block;height:100%;border-radius:3px;background:#922a22}
+.tnc-d{display:flex;justify-content:space-between}.tnc-d span{display:grid}.tnc-d span:last-child{text-align:right}
+.tnc-d small,.tnc-g small{font-size:11.5px;color:#6b665c}.tnc-d b{font-size:13px;font-weight:600}
+.tnc-g{display:grid;grid-template-columns:1.2fr 1fr 1.1fr;gap:8px;padding-top:12px;border-top:1px solid #f3ece8}
+.tnc-g span{display:grid;gap:1px;min-width:0}.tnc-g b{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.noc-a{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:14px}
+.noc-r{height:46px;border-radius:12px;border:1px solid #d9cfc8;background:#fff;font:600 14.5px 'Matter','Figtree',sans-serif;color:#1c1c19;cursor:pointer}
+.ow-sh .noc-ok{margin:0!important}
+.ow-sh .noc-ok[disabled]{opacity:.45}
+.noc-t{width:100%;box-sizing:border-box;border:1px solid #e3d9d2;border-radius:12px;padding:10px 12px;font:14px/1.45 'Matter','Figtree',sans-serif;resize:none;background:#fff}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -7402,6 +7436,11 @@ if(OK==='investor'){
   it('a305','Service charge · Q4 2026','Service charge',-4,2360); it('v22','Service charge · Q4 2026','Service charge',15,6980); it('a305','Holiday home permit','Permit',42,1520);
   it('v22','Service charge · Q3 2026','Service charge',-97,6980,-99); it('a305','Service charge · Q3 2026','Service charge',-92,2360,-93);
   inc('a305','Payout · Oct 2026',-6,11240); inc('v22','Payout · Oct 2026',-6,4180); inc('a305','Payout · Sep 2026',-36,9870); inc('v22','Payout · Sep 2026',-36,13650);
+} else if(OK==='ort' && PV==='end'){
+  it('a1204','Service charge · Q4 2026','Service charge',12,4120); it('a1204','Service charge · Q1 2027','Service charge',103,4120);
+  it('a1204','Service charge · Q3 2026','Service charge',-80,4120,-81);
+} else if(OK==='ort'){
+  it('a1204','Service charge · Q1 2027','Service charge',52,4120); it('a1204','Service charge · Q4 2026','Service charge',-9,4120,-9);
 } else if(OK==='omx'){
   it('o1810','Instalment 2 of 10','Instalment',-12,96500); L[L.length-1].pen = 965;
   it('o1810','Instalment 3 of 10','Instalment',18,96500); it('v22','Service charge · Q4 2026','Service charge',12,6980);
@@ -7492,7 +7531,7 @@ function sheet(root, html){
 var METHODS = [['card','Credit / debit card','Visa ending 4417 · instant', 'card'], ['bank','Bank transfer','2–3 working days · use your unit code as reference','bank'], ['chq','Cheque','Drop at Bloom Central or courier pickup','chq']];
 /* checkout sheet (payment gateway): pick what to pay → method → secure processing → receipt */
 function payFlow(root, ids, done, direct){
-  if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') direct = true;
+  if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx' || OK==='ort') direct = true;
   var open = items().filter(function(x){ return x.st!=='paid'; });
   var pool = open.filter(function(x){ return ids.indexOf(x.id) >= 0; }).concat(open.filter(function(x){ return ids.indexOf(x.id) < 0; })).slice(0, 5);
   var sel = {}; ids.forEach(function(id){ sel[id] = true; });
@@ -8146,7 +8185,70 @@ function dashOMX(){
     return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
   return h;
 }
+/* ---------- Owner · property given on rent ---------- */
+var NOC = { status: PV==='noc' ? 'pending' : null, date:T(20), reason:'Relocating for work', ref:'NOC-26-0418', note:'' };
+function dashORT(){
+  var u = units()[0], o = u.own, t = o.tenancy, all = items(), h = '';
+  if(PV==='end'){ OPEN_REQ = { title:'Water heater issue', ref:'Ref #SR-10611', when:'From tenant', status:'In Progress', pct:35 }; } else OPEN_REQ = null;
+  // needs attention: the tenant's move-out request (or its outcome)
+  if(NOC.status==='pending') h += attCards([{ o:'noc', tone:'red', t:'Move-out request from your tenant', s:t.tenant+' · moving out '+fds(NOC.date), n:days(NOC.date) }]);
+  else if(NOC.status==='approved') h += attCards([{ o:'noc', tone:'amber', t:'Move-out approved', s:t.tenant+' moves out on '+fds(NOC.date), icon:'check' }]);
+  // tenant summary
+  var total = Math.max(1, days(t.end) - days(t.start)), left = days(t.end), pct = Math.min(100, Math.max(0, Math.round((total - left)/total*100)));
+  var ban = '';
+  if(PV==='end') ban = '<div class="tnb is-warn">'+ic('clock','#8f5a1c',16)+'<span><b>Tenancy contract ends in '+left+' days</b><small>Ends on '+fd(t.end)+'</small></span><button type="button" data-o="renew2">Renew</button></div>';
+  else if(PV==='renew') ban = '<div class="tnb is-info">'+ic('chq','#922a22',16)+'<span><b>Renewal in progress</b><small>Tenant accepted new terms · awaiting signatures</small></span></div>';
+  else if(NOC.status==='approved') ban = '<div class="tnb is-info">'+ic('door','#922a22',16)+'<span><b>Moving out on '+fd(NOC.date)+'</b><small>Status changes to Vacant after move-out</small></span></div>';
+  else if(NOC.status==='rejected') ban = '<div class="tnb">'+ic('x','#54504a',16)+'<span><b>Move-out request rejected</b><small>We’ve let '+esc(t.tenant.split(' ')[0])+' know</small></span></div>';
+  h += '<div class="owd owd-bare owd-tn"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Tenant</b></span></span></div>'+
+    '<div class="tnc">'+ban+
+      '<div class="tnc-h"><span class="tnc-av">'+t.tenant.split(' ').map(function(w){ return w[0]; }).join('')+'</span><span class="tnc-n"><b>'+esc(t.tenant)+'</b><small>Tenant since '+fd(t.start)+'</small></span>'+pill(left+' days left', PV==='end'||PV==='renew' ? 'amber' : 'green')+'</div>'+
+      '<div class="tnc-tl"><div class="tnc-bar"><i style="width:'+pct+'%"></i></div><div class="tnc-d"><span><small>Start</small><b>'+fd(t.start)+'</b></span><span><small>End</small><b>'+fd(t.end)+'</b></span></div></div>'+
+      '<div class="tnc-g"><span><small>Rent</small><b>'+esc(o.rent)+'</b></span><span><small>Cheques</small><b>2 of 4 received</b></span><span><small>Contract</small><b>'+esc(t.no)+'</b></span></div>'+
+    '</div></div>';
+  // payments
+  var open = all.filter(function(x){ return x.st!=='paid'; }), miss = open.filter(function(x){ return x.st==='missed'; }), soon = open.filter(function(x){ return x.st==='due'; }), next = open.filter(function(x){ return x.st==='upcoming'; })[0];
+  h += '<div class="owd owd-pay owd-plan owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Payments</b></span></span><button type="button" class="owd-link" data-o="pay">Statement'+ic('chev','#922a22',14)+'</button></div>'+
+    (miss.length || soon.length ? dueGroups(miss, soon) : next ? nextLine(next) : '')+'</div>';
+  if(OPEN_REQ) h += '<div class="owd owd-srq owd-bare"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>Service requests</b></span></span></div>'+
+    statusCard({ o:'req', tone:'blue', icon:'clock', title:OPEN_REQ.title, sub:OPEN_REQ.ref+' · '+OPEN_REQ.when, status:OPEN_REQ.status, pct:OPEN_REQ.pct })+'</div>';
+  var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+  h += '<div class="owd owd-news"><div class="owd-h"><span class="owd-t"><span class="owd-tt"><b>What’s new for you</b></span></span></div><div class="owd-nl">'+NEWS.map(function(n, i){
+    return '<button type="button" class="owd-nc" data-o="news" data-k="'+i+'"><span class="owd-nimg">'+(ph.length ? '<img src="'+ph[(i+1) % ph.length]+'" alt="">' : '')+'<i>'+esc(n[0])+'</i></span><span class="owd-nt"><b>'+esc(n[1])+'</b><small>'+esc(n[2])+'</small></span></button>'; }).join('')+'</div></div>';
+  return h;
+}
+/* attention cards from explicit items: {o, tone, t, s, n | icon} */
+function attCards(list){
+  return '<div class="owd owd-att owd-bare"><div class="attx'+(list.length===1?' is-one':'')+'">'+list.map(function(a){
+    return '<div data-proto="cta" data-tone="'+(a.tone||'red')+'" data-o="'+a.o+'" data-t="'+esc(a.t)+'" data-s="'+esc(a.s)+'" data-n="'+(a.n==null?'':a.n)+'" data-icon="'+(a.icon||'')+'"></div>'; }).join('')+'</div></div>';
+}
+/* NOC: the tenant's move-out request → view, approve or reject (with a reason) */
+function nocFlow(root){
+  var u = units()[0], t = u.own.tenancy, step = NOC.status==='pending' ? 'view' : 'done';
+  var sh = sheet(root, ''), box = $('.ow-sh', sh.el); box.classList.add('ow-co','mi-sh','pdx');
+  box.insertAdjacentHTML('beforeend', '<div data-shb></div>'); var b = $('[data-shb]', box);
+  function rows(){ return '<div class="pdx-rows">'+[['Tenant', t.tenant], ['Requested move-out', fd(NOC.date)], ['Reason', NOC.reason], ['Contract ends', fd(t.end)], ['Request', NOC.ref]].map(function(r){ return '<div class="pdx-r"><small>'+r[0]+'</small><span>'+esc(r[1])+'</span></div>'; }).join('')+'</div>'; }
+  function head(x){ return '<div class="ow-sh-h"><span class="ow-co-h"><b>'+x+'</b><small>'+esc(u.name+' · '+u.community)+'</small></span><button type="button" class="ow-x" data-shx aria-label="Close">'+ic('x','#1c1c19',20)+'</button></div>'; }
+  function draw(){
+    if(step==='view') b.innerHTML = head('Move-out request')+rows()+'<div class="noc-a"><button type="button" class="noc-r" data-rej>Reject</button><button type="button" class="ow-cta noc-ok" data-ok><span>Approve</span></button></div>';
+    else if(step==='reject') b.innerHTML = head('Reject move-out request')+'<p class="pdx-note" style="margin-top:0">Tell '+esc(t.tenant.split(' ')[0])+' why, in a line or two.</p><textarea class="noc-t" rows="3" placeholder="e.g. Notice period is 60 days as per contract" data-why></textarea><div class="noc-a"><button type="button" class="noc-r" data-back>Back</button><button type="button" class="ow-cta noc-ok" data-rejgo disabled><span>Reject request</span></button></div>';
+    else if(step==='proc') b.innerHTML = '<div class="ow-proc"><span class="ow-spin" aria-hidden="true"></span><b>Sending your decision…</b></div>';
+    else b.innerHTML = NOC.status==='approved'
+      ? '<div class="ow-ok"><span class="ow-ok-i">'+ic('check','#2e7d5b',34)+'</span><b>Approved</b><small>'+esc(t.tenant)+' moves out on '+fd(NOC.date)+'. Your property shows as Vacant after move-out.</small><button type="button" class="ow-cta" data-shx><span>Done</span></button></div>'
+      : '<div class="ow-ok"><span class="ow-ok-i" style="background:rgba(196,48,43,.1)">'+ic('x','#c4302b',30)+'</span><b>Rejected</b><small>We’ve let '+esc(t.tenant.split(' ')[0])+' know'+(NOC.note ? ': “'+esc(NOC.note)+'”' : '.')+'</small><button type="button" class="ow-cta" data-shx><span>Done</span></button></div>';
+  }
+  function decide(st){ step = 'proc'; draw(); setTimeout(function(){ NOC.status = st; step = 'done'; draw(); D.dispatchEvent(new CustomEvent('bloom:own-changed')); }, REDUCED ? 0 : 1200); }
+  b.addEventListener('input', function(e){ if(e.target.matches('[data-why]')){ var go = $('[data-rejgo]', b); go.disabled = e.target.value.trim().length < 3; } });
+  b.addEventListener('click', function(e){
+    if(e.target.closest('[data-ok]')) decide('approved');
+    else if(e.target.closest('[data-rej]')){ step = 'reject'; draw(); var ta = $('[data-why]', b); if(ta) ta.focus(); }
+    else if(e.target.closest('[data-back]')){ step = 'view'; draw(); }
+    else if(e.target.closest('[data-rejgo]')){ NOC.note = $('[data-why]', b).value.trim(); decide('rejected'); }
+  });
+  draw();
+}
 function dashHTML(){
+  if(OK==='ort') return dashORT();
   if(OK==='omx') return dashOMX();
   if(OK==='olv') return dashOLV();
   if(OK==='ohv') return dashOHV();
@@ -8190,7 +8292,7 @@ function wireDashboard(sec){
     });
   }
   function paint(){ el.innerHTML = dashHTML(); sectionize(el); protoFill();
-    if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
+    if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx' || OK==='ort'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
       requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); setTimeout(fitOIC, 1600); } }
   /* the Figma frame has a fixed height: grow/shrink it to the dashboard content (payment groups vary) */
@@ -8201,8 +8303,8 @@ function wireDashboard(sec){
       if(Math.abs(gap - 28) > 1) el.style.marginTop = (mt + 28 - gap) + 'px'; }
     var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
     var h = Math.max(844, Math.ceil(bottom + 132)); R.style.height = h + 'px'; cv.style.height = h + 'px'; }
-  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx'){ requestAnimationFrame(fitOIC); setTimeout(fitOIC, 1600); } };
-  if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx') firstTime(sec);
+  var pe = sec.__onEnter; sec.__onEnter = function(){ if(pe) pe(); if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx' || OK==='ort'){ requestAnimationFrame(fitOIC); setTimeout(fitOIC, 1600); } };
+  if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx' || OK==='ort') firstTime(sec);
   paint();
   D.addEventListener('bloom:own-changed', paint);
   el.addEventListener('click', function(e){
@@ -8213,6 +8315,8 @@ function wireDashboard(sec){
     else if(o==='pgdue') payFlow(sec, b.dataset.ids ? b.dataset.ids.split(',') : items().filter(function(x){ return x.st==='due' && x.u===b.dataset.u; }).map(function(x){ return x.id; }), null, true);
     else if(o==='pgupd') payDetail(sec, b.dataset.id);
     else if(o==='movein') moveInFlow(sec);
+    else if(o==='noc') nocFlow(sec);
+    else if(o==='renew2') openPort('props');
     else if(o==='ptab'){ var tb = b.closest('.ptabs'); $$('.ptab', tb).forEach(function(t){ t.classList.toggle('is-on', t===b); }); $$('.prl', tb).forEach(function(l){ l.hidden = l.dataset.p !== b.dataset.t; }); requestAnimationFrame(fitOIC); }
     else if(o==='pgmiss1') payFlow(sec, [b.dataset.id], null, true);
     else if(o==='pgdue1') payFlow(sec, [b.dataset.id], null, true);
@@ -8250,7 +8354,7 @@ window.__initScreen[FEAT] = initFeat;
     var nid = CARDS[sec.dataset.sid], el = nid && sec.querySelector('[data-node-id="'+nid+'"]');
     if(!el || el.__ar) return; el.__ar = true;
     var jid = window.__journey && window.__journey.id;
-    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv' || jid==='olv' || jid==='omx'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
+    if(jid==='investor' || jid==='ownerhh' || jid==='oic' || jid==='ohv' || jid==='olv' || jid==='omx' || jid==='ort'){ el.style.display = 'none'; return; }   // owner not living in any unit: no in-unit active request
     el.style.cursor = 'pointer'; el.setAttribute('role','link'); el.tabIndex = 0;
     el.setAttribute('aria-label','AC Filter Check, request SR-9042, in progress. View details');
     // show the card's own request (SR-9042), not the last one raised in this session
