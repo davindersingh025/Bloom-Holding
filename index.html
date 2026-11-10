@@ -1597,6 +1597,8 @@ button[class*="primary,#922a22)]"]:active,a[class*="primary,#922a22)]"]:active{b
   document.documentElement.classList.add('journey-'+cur.id);
   document.documentElement.setAttribute('data-journey', cur.id);
   if(cur.v2) document.documentElement.classList.add('is-v2');
+  /* modern "immersive hero" design: ?ui=hero (kept for the session) */
+  try { var UI = new URLSearchParams(location.search).get('ui') || sessionStorage.getItem('bloom-ui'); if(UI){ sessionStorage.setItem('bloom-ui', UI); } if(UI==='hero' && cur.v2) document.documentElement.classList.add('ui-hero'); } catch(e){}
 
   /* Per-journey start screen: same as today for all three. */
   if(cur.start && window.__BLOOM) window.__BLOOM.start = cur.start;
@@ -7226,6 +7228,42 @@ html.is-v2 .owd-pc-a{min-height:22px}
 .hlx-add{display:grid;place-content:center;justify-items:center;gap:2px;border:1px dashed #d0c4bb;background:#fff;cursor:pointer}.hlx-add small{font-size:11px;color:#922a22;font-weight:600}
 .hlx .ow-cta[disabled]{opacity:.45}
 .ow-co-h u{color:#922a22;text-decoration:none;font-weight:600;cursor:pointer}
+/* ---------- immersive hero (ui=hero) ---------- */
+html.ui-hero [data-name="Brand band"],html.ui-hero [data-name="Hero"] > div:has([data-name="Welcome"]){display:none!important}
+html.ui-hero [data-name="Hero"]{overflow:hidden}
+html.ui-hero [data-name="Header"]{z-index:3}
+.hx{position:absolute;left:0;top:0;width:100%;z-index:1;overflow:hidden;background:#2a2723}
+.hx-track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.hx-track::-webkit-scrollbar{display:none}
+.hx-s{position:relative;flex:none;width:100%;height:100%;scroll-snap-align:start}
+.hx-s img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.04)}
+.hx-sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,14,.62) 0%,rgba(20,16,14,.18) 34%,rgba(20,16,14,.12) 52%,rgba(20,16,14,.66) 100%)}
+.hx-w{position:absolute;left:16px;right:16px;top:118px;z-index:2;color:#fff;pointer-events:none;display:grid;gap:2px;text-shadow:0 1px 2px rgba(0,0,0,.35),0 2px 14px rgba(0,0,0,.45)}
+.hx-w small{font-size:13px;opacity:.85}
+.hx-w b{font-family:'Orpheus Pro','Playfair Display',Georgia,serif;font-weight:400;font-size:34px;line-height:1.05;letter-spacing:-.4px}
+.hx-w b em{font-style:normal;color:#e3c48d}
+.hx-g{position:absolute;left:16px;right:16px;bottom:40px;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border-radius:16px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
+  color:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:0 18px 40px -22px rgba(0,0,0,.6)}
+.hx.is-multi .hx-g{bottom:54px}
+.hx-gt{flex:1;display:grid;gap:2px;min-width:0}
+.hx-gt small{font-size:10.5px;letter-spacing:.16em;opacity:.8}
+.hx-gt b{font-size:18px;font-weight:600;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hx-gt > span{display:flex;align-items:center;gap:5px;font-size:12.5px;opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hx-gr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.hx-gr em{display:inline-flex;align-items:center;gap:6px;font-style:normal;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:8px;background:rgba(255,255,255,.92);color:#1c1c19}
+.hx-gr em i{width:6px;height:6px;border-radius:50%;background:#8a847a}
+.hx-gr em[data-tone="green"] i{background:#2e7d5b}.hx-gr em[data-tone="amber"] i{background:#b7863f}.hx-gr em[data-tone="blue"] i{background:#4d5ebe}.hx-gr em[data-tone="red"] i{background:#c4302b}
+.hx-f{position:absolute;left:0;right:0;top:184px;z-index:2;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 16px}
+.hx-f::-webkit-scrollbar{display:none}
+.hx-f button{flex:none;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;font:500 12.5px 'Matter','Figtree',sans-serif;cursor:pointer}
+.hx-f button b{min-width:18px;height:18px;border-radius:9px;display:inline-grid;place-items:center;background:rgba(255,255,255,.22);font-size:11px}
+.hx-f button.is-on{background:#fff;color:#1c1c19}.hx-f button.is-on b{background:#922a22;color:#fff}
+.hx-f button.is-cur:not(.is-on){border-color:#fff}
+.hx-d{position:absolute;left:0;right:0;bottom:36px;z-index:2;display:flex;justify-content:center;gap:6px;pointer-events:none}
+.hx-d i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.45);transition:width .25s,background .25s}.hx-d i.is-on{width:18px;background:#fff}
+html.ui-hero .hx-body{z-index:2;background:#f3f0ea;border-radius:22px 22px 0 0;padding-top:24px;box-shadow:0 -12px 30px -18px rgba(0,0,0,.35)}
+html.ui-hero .owd-sec .owd-pay,html.ui-hero .owd .opl,html.ui-hero .tnc,html.ui-hero .owd .hlp,html.ui-hero .mvc,html.ui-hero .dgs .dgc,html.ui-hero .pfu,html.ui-hero .pfp{box-shadow:0 14px 34px -22px rgba(28,28,25,.4)}
 /* payment groups: sub-categories of Payments */
 .owd-pgx{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .owd-pg{display:flex;flex-direction:column;gap:10px}
@@ -8372,7 +8410,37 @@ function wireDashboard(sec){
       ph.replaceWith(c);
     });
   }
-  function paint(){ el.innerHTML = dashHTML(); sectionize(el); protoFill();
+  /* ---------- immersive hero: full-bleed property photo with a glass card ---------- */
+  var HEROUI = D.documentElement.classList.contains('ui-hero');
+  function heroBuild(){
+    if(!HEROUI || sec.__hx) return;
+    var hero = $('[data-name="Hero"]', sec), cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!hero || !R) return;
+    var us = units(), multi = us.length > 1, H = multi ? 468 : 430;
+    var ph = []; $$('.arch-frame img, .fmedia img').forEach(function(i){ if(i.src && ph.indexOf(i.src) < 0) ph.push(i.src); });
+    var PIX = { v138:0, v22:1, a1204:2, o1810:3 };
+    var cnt = {}; us.forEach(function(u){ var st = window.__ownst.status(u); cnt[st] = (cnt[st]||0) + 1; });
+    var hx = D.createElement('div'); hx.className = 'hx'+(multi ? ' is-multi' : ''); hx.style.height = H+'px';
+    hx.innerHTML =
+      '<div class="hx-track">'+us.map(function(u, i){ var st = window.__ownst.status(u);
+        return '<div class="hx-s" data-i="'+i+'" data-st="'+st+'"><img src="'+(ph.length ? ph[(PIX[u.id]!=null ? PIX[u.id] : i) % ph.length] : '')+'" alt=""><i class="hx-sh"></i>'+
+          '<button type="button" class="hx-g" data-i="'+i+'" aria-label="View '+esc(u.name)+' details"><span class="hx-gt"><small>'+esc(String(u.community).toUpperCase())+'</small><b>'+esc(u.type)+'</b><span>'+ic('pin','#fff',13)+esc(u.address)+'</span></span>'+
+          '<span class="hx-gr"><em data-tone="'+window.__ownst.tone[st]+'"><i></i>'+esc(window.__ownst.label[st])+'</em>'+ic('chev','#fff',18)+'</span></button></div>'; }).join('')+'</div>'+
+      '<div class="hx-w"><small>'+($('[data-name="Welcome"] p', hero) ? $('[data-name="Welcome"] p', hero).textContent : 'Welcome back to,')+'</small><b>Bloom <em>Holding</em></b></div>'+
+      (multi ? '<div class="hx-f">'+['all'].concat(Object.keys(cnt)).map(function(k){ return '<button type="button" data-f="'+k+'"'+(k==='all'?' class="is-on"':'')+'>'+(k==='all' ? 'All' : esc(window.__ownst.label[k]))+' <b>'+(k==='all' ? us.length : cnt[k])+'</b></button>'; }).join('')+'</div>'+
+        '<div class="hx-d">'+us.map(function(_, i){ return '<i'+(i? '' : ' class="is-on"')+'></i>'; }).join('')+'</div>' : '');
+    hero.insertBefore(hx, hero.firstChild); hero.style.height = H+'px'; sec.__hx = hx;
+    var body = R.children[1]; if(body){ body.classList.add('hx-body'); body.style.top = (H - 22)+'px'; }
+    var tr = $('.hx-track', hx);
+    function cardsOf(){ var c = $$('.rcar-track > [data-name^="Card / Residence"]', sec); return c.length ? c : [$('[data-name="Card / Residence"]', sec)]; }
+    hx.addEventListener('click', function(e){
+      var g = e.target.closest('.hx-g'); if(g){ var c = cardsOf()[+g.dataset.i]; if(c) c.click(); return; }
+      var f = e.target.closest('.hx-f button'); if(f){ $$('.hx-f button', hx).forEach(function(b){ b.classList.toggle('is-on', b===f); });
+        var t = f.dataset.f==='all' ? $('.hx-s', hx) : $('.hx-s[data-st="'+f.dataset.f+'"]', hx); if(t) tr.scrollTo({ left:t.offsetLeft, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    });
+    if(multi) tr.addEventListener('scroll', function(){ var i = Math.round(tr.scrollLeft / tr.clientWidth); $$('.hx-d i', hx).forEach(function(d, k){ d.classList.toggle('is-on', k===i); });
+      var st = us[i] && window.__ownst.status(us[i]); $$('.hx-f button', hx).forEach(function(b){ b.classList.toggle('is-cur', b.dataset.f===st); }); }, { passive:true });
+  }
+  function paint(){ heroBuild(); el.innerHTML = dashHTML(); sectionize(el); protoFill();
     if(OK==='oic' || OK==='ohv' || OK==='olv' || OK==='omx' || OK==='ort'){ var dc = $('.owd-docs', el), cs = $('.owd-cons', el); if(dc && cs && cs.parentNode) cs.parentNode.appendChild(dc);
       var pg = $('.owd-pgx', el), pc = $('.owd-pay', el); if(pg && pc && pc.parentNode) pc.parentNode.appendChild(pg);
       requestAnimationFrame(fitOIC); setTimeout(fitOIC, 300); setTimeout(fitOIC, 1600); } }
@@ -8380,6 +8448,7 @@ function wireDashboard(sec){
   function fitOIC(){ var cv = $('.canvas', sec), R = cv && cv.firstElementChild; if(!R || !el.offsetHeight) return;
     // keep exactly 28px between the property card(s) and the first dashboard section
     var top = $('.rcar', sec) || $('[data-name="Card / Residence"]', sec);
+    if(HEROUI){ el.style.marginTop = '0px'; top = null; }
     if(top){ var S = window.__S || 1, gap = (el.getBoundingClientRect().top - top.getBoundingClientRect().bottom)/S, mt = parseFloat(getComputedStyle(el).marginTop) || 0;
       if(Math.abs(gap - 28) > 1) el.style.marginTop = (mt + 28 - gap) + 'px'; }
     var bottom = 0; Array.prototype.forEach.call(R.children, function(c){ if(c.offsetHeight) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight); });
