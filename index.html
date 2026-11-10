@@ -7985,10 +7985,9 @@ function dashOIC(){
 }
 /* ---------- Owner · Investor · single property handed over, vacant ---------- */
 var PUR = { price:2450000, n:10 };
-var MOVEIN = { allowed: PV!=='due', livesElsewhere:false, status:'eligible', date:null };   // from Salesforce: allowed / approval status
+var MOVEIN = { allowed: true, livesElsewhere:false, status:'eligible', date:null };   // from Salesforce: allowed / approval status
 function ohvCfg(){
-  if(PV==='due'){ DOCS_PENDING = [['Emirates ID copy','expires 18 Nov']]; OPEN_REQ = { title:'Kitchen cabinet hinge', ref:'Ref #SR-10422', when:'Snagging', status:'In Progress', pct:55 }; }
-  else { DOCS_PENDING = []; OPEN_REQ = null; }
+  DOCS_PENDING = []; OPEN_REQ = null;
 }
 function dashOHV(){
   ohvCfg();
