@@ -432,6 +432,150 @@ img{display:block}
 .okv h3{margin-bottom:6px}
 .btn .spin,.bbtn .spin{border-color:rgba(255,255,255,.3);border-top-color:#fff}
 .cnt{font-variant-numeric:tabular-nums}
+
+/* ================= DESIGN C (clean listing) ================= */
+.vc{--bg:#ffffff;--tile:#f4f4f4;--ink:#111111;--mut:#7a7a7a}
+.vc .app{background:#fff}
+.vc .mini{background:rgba(255,255,255,.86)}
+.vc .pad{padding-left:16px;padding-right:16px}
+.vc .car{margin:0 -16px;padding:2px 16px 4px;scroll-padding:0 16px}
+.vc .mswitch{background:var(--tile)}
+.c-top{display:flex;align-items:center;gap:12px}
+.c-sq{width:48px;height:48px;border-radius:12px;background:var(--tile);display:grid;place-items:center;flex:none;position:relative;font-size:14px;font-weight:600}
+.c-sq em{position:absolute;top:12px;right:13px;width:8px;height:8px;border-radius:50%;background:#e5483b;box-shadow:0 0 0 2px var(--tile)}
+.c-loc{flex:1;min-width:0}
+.c-loc small{display:block;font-size:12.5px;color:var(--mut)}
+.c-loc b{display:block;font-size:15px;font-weight:500;margin-top:2px}
+.c-sr{display:flex;gap:12px;margin-top:20px}
+.c-in{flex:1;height:52px;border-radius:12px;background:var(--tile);display:flex;align-items:center;gap:10px;padding:0 16px;font-size:14px;color:var(--mut);text-align:left}
+.c-flt{width:52px;height:52px;border-radius:12px;background:var(--ink);display:grid;place-items:center;flex:none}
+.c-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:16px -16px 0;padding:0 16px}
+.c-chips::-webkit-scrollbar{display:none}
+.c-chip{flex:none;height:48px;padding:0 16px 0 6px;border-radius:12px;background:var(--tile);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;transition:background .3s var(--ease),color .3s}
+.c-chip .ci{width:36px;height:36px;border-radius:9px;background:#fff;display:grid;place-items:center;transition:background .3s}
+.c-chip.on{background:var(--ink);color:#fff}
+.c-chip.on .ci{background:#2a2a2a}
+.c-chip.on .ci svg{stroke:#fff}
+.c-sec{margin-top:28px}
+.c-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.c-h h2{margin:0;font-size:19px;font-weight:500;letter-spacing:-.3px}
+.c-see{font-size:13.5px;color:var(--mut)}
+.c-pc{width:310px;background:var(--tile);border-radius:16px;padding:6px;text-align:left}
+.c-ph{position:relative;height:190px;border-radius:12px;overflow:hidden}
+.c-ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.c-pc:active .c-ph img{transform:scale(1.04)}
+.c-tag{position:absolute;left:10px;top:10px;height:32px;padding:0 12px 0 10px;border-radius:10px;background:#fff;display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500}
+.c-heart{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;transition:transform .3s var(--spring)}
+.c-heart.on svg{fill:#111}
+.c-heart.pop{animation:hpop .45s var(--spring)}
+@keyframes hpop{40%{transform:scale(1.25)}}
+.c-pi{background:#fff;border-radius:12px;margin-top:6px;padding:12px}
+.c-pt{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.c-pt b{display:block;font-size:16px;font-weight:500;letter-spacing:-.2px}
+.c-pt small{display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--mut);margin-top:4px}
+.c-rate{flex:none;height:32px;padding:0 10px;border-radius:10px;background:var(--tile);display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600}
+.c-pf{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #efefef}
+.c-st{height:32px;padding:0 10px;border-radius:10px;border:1px solid #ececec;display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600}
+.c-pr{margin-left:auto;font-size:21px;font-weight:600;letter-spacing:-.5px}
+.c-pr small{font-size:12px;font-weight:500;color:var(--mut);margin-right:3px;letter-spacing:0}
+.c-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.c-dots i{width:6px;height:6px;border-radius:3px;background:#d9d9d9;transition:width .35s var(--spring),background .3s}
+.c-dots i.on{width:18px;background:var(--ink)}
+.c-at{width:300px;background:var(--tile);border-radius:16px;padding:12px;transition:background .4s}
+.c-ah{display:flex;gap:12px;align-items:center}
+.c-rg{position:relative;width:48px;height:48px;border-radius:12px;background:#fff;display:grid;place-items:center;flex:none}
+.c-rg b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:600}
+.c-ah .x{flex:1;min-width:0}
+.c-ah .x b{display:block;font-size:14.5px;font-weight:500}
+.c-ah .x small,.c-af small{font-size:12px;color:var(--mut)}
+.c-af{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;margin-top:10px;padding:8px 8px 8px 12px}
+.c-af .x{flex:1;min-width:0}
+.c-af .x b{display:block;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-btn{height:38px;padding:0 14px;border-radius:10px;font-size:13px;font-weight:500;background:var(--ink);color:#fff}
+.c-btn.o{background:var(--tile);color:var(--ink)}
+.c-at.done{background:#e9f3ee}
+.c-fac{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.c-f{background:var(--tile);border-radius:12px;padding:14px 12px;text-align:left;display:flex;flex-direction:column;gap:14px}
+.c-f b{font-size:14px;font-weight:500}
+.c-f b em{font-style:normal;color:#e5483b}
+.c-paid{background:var(--tile);border-radius:16px;padding:14px;margin-top:12px}
+.c-paid .r{display:flex;justify-content:space-between;align-items:center}
+.c-paid small{font-size:12.5px;color:var(--mut)}
+.c-paid .amt{display:flex;align-items:center;gap:6px;font-size:28px;font-weight:600;letter-spacing:-.8px;margin-top:4px}
+.c-paid .amt .dh{width:20px;height:18px}
+.c-bar{height:8px;border-radius:4px;background:#e2e2e2;margin:14px 0 8px;overflow:hidden}
+.c-bar i{display:block;height:100%;width:0;border-radius:4px;background:var(--ink);transition:width 1.4s var(--ease) .25s}
+.in .c-bar i{width:var(--w)}
+.c-sm{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+.vc .seg2{background:var(--tile);border-radius:12px;margin-top:12px}
+.vc .seg2 span.k{background:#fff;border-radius:9px;box-shadow:0 2px 8px -3px rgba(0,0,0,.15)}
+.vc .seg2 button{border-radius:9px}
+.vc .seg2 button.on{color:var(--ink)}
+.vc .seg2 button em{background:#fff}
+.vc .seg2 button.on em{background:#e5483b;color:#fff}
+.c-row .x small,.c-pt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-pt>div{min-width:0}
+.c-pt small svg{flex:none}
+.vc .blist{background:var(--tile);border-radius:16px;padding:0 14px}
+.vc .brow{border-color:#e9e9e9}
+.vc .brow .u{background:#fff;border-radius:12px}
+.vc .brow .u::after{box-shadow:0 0 0 2px var(--tile)}
+.vc .brow b,.vc .brow .amt{font-weight:600}
+.vc .bpay{border-radius:10px}
+.vc .bpu{background:var(--tile);border-radius:16px;width:260px}
+.vc .bpu .amt{font-weight:600}
+.c-row{display:flex;align-items:center;gap:12px;background:var(--tile);border-radius:16px;padding:12px;text-align:left}
+.c-row .ic{width:48px;height:48px;border-radius:12px;background:#fff;display:grid;place-items:center;flex:none;font-size:14px;font-weight:600}
+.c-row .x{flex:1;min-width:0}
+.c-row .x b{display:flex;align-items:center;gap:4px;font-size:15px;font-weight:500}
+.c-row .x small{display:block;font-size:12.5px;color:var(--mut);margin-top:3px}
+.c-cb{width:42px;height:42px;border-radius:50%;background:var(--ink);display:grid;place-items:center;flex:none}
+.c-req{background:var(--tile);border-radius:16px;padding:6px}
+.c-req .c-row{background:#fff;border-radius:12px}
+.c-req .c-bar{margin:12px 8px 8px;background:#e2e2e2}
+.c-req .c-sm{padding:0 8px 6px}
+.c-mv{position:relative;border-radius:16px;overflow:hidden;background:var(--tile)}
+.c-mv .ph{position:relative;height:240px;margin:6px;border-radius:12px;overflow:hidden}
+.c-mv .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 1.6s var(--ease)}
+.c-mv.in .ph img,.in .c-mv .ph img{transform:none}
+.c-mv .pl{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:6px}
+.c-mv .pl span{height:34px;padding:0 12px;border-radius:17px;background:#fff;display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;box-shadow:0 6px 16px -8px rgba(0,0,0,.35);opacity:0;transform:translateY(10px);transition:opacity .5s,transform .6s var(--spring)}
+.in .c-mv .pl span{opacity:1;transform:none}
+.in .c-mv .pl span:nth-child(2){transition-delay:.1s}.in .c-mv .pl span:nth-child(3){transition-delay:.2s}
+.c-mv .bd{padding:10px 14px 4px}
+.c-mv .bd b{display:block;font-size:16px;font-weight:500}
+.c-mv .bd small{display:block;font-size:12.5px;color:var(--mut);line-height:1.5;margin-top:4px}
+.c-mv .ft{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 6px 6px;padding:10px 10px 10px 14px;background:#fff;border-radius:12px}
+.c-mv .ft small{display:block;font-size:12px;color:var(--mut)}
+.c-mv .ft b{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.c-cta{height:46px;padding:0 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:8px;flex:none}
+.c-cta.lt{background:var(--tile);color:var(--ink)}
+.c-qa{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.c-q{background:var(--tile);border-radius:12px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:16px}
+.c-q b{display:block;font-size:14px;font-weight:500}
+.c-q small{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+.c-nc{width:230px;background:var(--tile);border-radius:16px;padding:6px;text-align:left}
+.c-nc .c-ph{height:140px}
+.c-nc .c-tag{height:28px;font-size:11.5px;border-radius:9px}
+.c-nc .tx{padding:10px 8px 6px}
+.c-nc .tx b{display:block;font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-nc .tx small{display:block;font-size:12px;color:var(--mut);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc .dock{background:#fff;box-shadow:0 14px 40px -10px rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.04)}
+.vc .dock button{background:transparent;color:#5c5c5c}
+.vc .dock button.on{background:var(--ink);color:#fff;border-radius:16px}
+.vc .dock button{border-radius:16px}
+.vc .dock{border-radius:22px}
+.vc .sheet h3{font-weight:500}
+.vc .bbtn{border-radius:12px}
+.vc .opt,.vc .day,.vc .slot{border-radius:12px}
+.vc .b-h1{font:500 26px/1.15 var(--sans);letter-spacing:-.4px}
+.vc .b-h1 span{font-style:normal;display:block;font-size:15px;color:#7a7a7a;margin-top:4px;letter-spacing:0}
+.vc .rq{background:var(--tile);border-radius:16px;box-shadow:none}
+.vc .rq .ci{background:#fff!important;border-radius:12px!important}
+.vc .msg.ai{background:var(--tile);border:0;box-shadow:none}
+.vc .sugg button{background:var(--tile);border-radius:12px}
+.vc .ask{background:var(--tile);box-shadow:none;border-radius:16px}
+.vc .ask button{border-radius:12px}
 </style>
 </head>
 <body>
@@ -442,6 +586,7 @@ img{display:block}
     <div class="seg" id="seg">
       <button data-set="a" class="on"><b>Design A · Figma</b><small>Your redesign, fully interactive</small></button>
       <button data-set="b"><b>Design B · Modern</b><small>Bento cards, black dock, glass details</small></button>
+      <button data-set="c"><b>Design C · Clean</b><small>Light tiles, listing cards, floating nav</small></button>
     </div>
     <ul class="tips">
       <li>Scroll the home screen; swipe the cards</li>
@@ -459,10 +604,10 @@ img{display:block}
 /* ---------------- data ---------------- */
 var IMG={pool:'img/pool.jpg',town:'img/townhouse.jpg',villa:'img/villa2.jpg',resort:'img/resort.jpg',aerial:'img/aerial.jpg',interior:'img/interior.jpg',interior2:'img/interior2.jpg'};
 var PROPS=[
-  {k:'uc',comm:'BLOOM MARINA',st:'Under Construction',stc:'uc',type:'1-Bedroom Apartment',addr:'Apt 1810, Tower B, Bloom Marina',img:IMG.pool,meta:'Construction',val:'24%',w:24,c:'#b88740'},
-  {k:'lv',comm:'BLOOM GARDENS',st:'Living Here',stc:'lv',type:'4-Bedroom Villa',addr:'Villa 138, Royal Palm Avenue',img:IMG.villa,meta:'Paid off',val:'100%',w:100,c:'#2e7d5c'},
-  {k:'rt',comm:'BLOOM TOWERS',st:'Rented',stc:'rt',type:'2-Bedroom Apartment',addr:'Apt 1204, Tower A, Bloom Towers',img:IMG.resort,meta:'Lease used',val:'45%',w:45,c:'#4c5ebf'},
-  {k:'vc',comm:'BLOOM GARDENS',st:'Handed Over · Vacant',stc:'vc',type:'3-Bedroom Villa',addr:'Villa 22, Palm Grove Street',img:IMG.town,meta:'Move-in ready',val:'Ready',w:100,c:'#7c7c7c'}
+  {k:'uc',comm:'BLOOM MARINA',st:'Under Construction',stc:'uc',type:'1-Bedroom Apartment',addr:'Apt 1810, Tower B, Bloom Marina',bd:1,ba:2,pr:'1.35M',img:IMG.pool,meta:'Construction',val:'24%',w:24,c:'#b88740'},
+  {k:'lv',comm:'BLOOM GARDENS',st:'Living Here',stc:'lv',type:'4-Bedroom Villa',addr:'Villa 138, Royal Palm Avenue',bd:4,ba:5,pr:'4.80M',img:IMG.villa,meta:'Paid off',val:'100%',w:100,c:'#2e7d5c'},
+  {k:'rt',comm:'BLOOM TOWERS',st:'Rented',stc:'rt',type:'2-Bedroom Apartment',addr:'Apt 1204, Tower A, Bloom Towers',bd:2,ba:3,pr:'2.10M',img:IMG.resort,meta:'Lease used',val:'45%',w:45,c:'#4c5ebf'},
+  {k:'vc',comm:'BLOOM GARDENS',st:'Handed Over · Vacant',stc:'vc',type:'3-Bedroom Villa',addr:'Villa 22, Palm Grove Street',bd:3,ba:4,pr:'3.60M',img:IMG.town,meta:'Move-in ready',val:'Ready',w:100,c:'#7c7c7c'}
 ];
 var CHIPS=[['all','All Units'],['lv','Currently Living'],['uc','Under Construction'],['rt','Rented'],['vc','Vacant']];
 var PAY={
@@ -500,6 +645,7 @@ function ic(n,c,s,w){ c=c||'currentColor'; s=s||20; w=w||1.7; var P={
   user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.8-3.6 3.8-5.5 7.5-5.5s6.7 1.9 7.5 5.5"/>', plus:'<path d="M12 5v14M5 12h14"/>',
   door:'<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16"/><path d="M14.5 12h.01"/>', chat:'<path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/>',
   sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z"/>',
+  heart:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20Z"/>', bed:'<path d="M3 18V6M3 13h18v5M21 13v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="10" r="1.6"/>', bath:'<path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5ZM6 12V6a2 2 0 0 1 4 0M7 19l-1 2M17 19l1 2"/>', badge:'<path d="m12 3 2.1 1.6 2.6-.1.8 2.5 2.1 1.6-.8 2.4.8 2.4-2.1 1.6-.8 2.5-2.6-.1L12 19.4l-2.1-1.6-2.6.1-.8-2.5-2.1-1.6.8-2.4-.8-2.4 2.1-1.6.8-2.5 2.6.1Z"/><path d="m9.5 11.5 1.8 1.8 3.4-3.4"/>', filter:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
   logo:'<path d="M12 21c-4-2.5-7-6-7-10a7 7 0 0 1 7-7 7 7 0 0 1 7 7c0 4-3 7.5-7 10Z"/><path d="M12 21V11M12 14l3-3M12 16l-3-3"/>'
 }; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round">'+(P[n]||'')+'</svg>'; }
 function dh(c){ return '<svg class="dh" viewBox="0 0 14 12.5" fill="none" stroke="'+(c||'currentColor')+'" stroke-width="1.6" stroke-linecap="round"><path d="M3 1h3.2a5.25 5.25 0 0 1 0 10.5H3Z"/><path d="M1 5h12M1 7.5h12"/></svg>'; }
@@ -510,11 +656,11 @@ var app=document.getElementById('app');
 function hour(){ var h=new Date().getHours(); return h<12?'Good morning':h<17?'Good afternoon':'Good evening'; }
 function sbar(){ return '<div class="sbar"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#000"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#000"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#000"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#000"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4c2.3 0 4.4.9 6 2.4l1.1-1.1A10 10 0 0 0 .9 3.7L2 4.8a8.4 8.4 0 0 1 6-2.4Zm0 3.2c1.4 0 2.7.5 3.7 1.4l1.1-1.1a7 7 0 0 0-9.6 0L4.3 7c1-.9 2.3-1.4 3.7-1.4Zm0 3.2c-.6 0-1.1.2-1.5.6L8 11l1.5-1.6c-.4-.4-.9-.6-1.5-.6Z" fill="#000"/></svg><svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#000" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="#000"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" fill="#000" opacity=".45"/></svg></span></div>'; }
 function render(){
-  document.documentElement.setAttribute('data-v',S.v);
-  var b=S.v==='b';
+  document.documentElement.setAttribute('data-v',S.v==='c'?'b':S.v); document.documentElement.classList.toggle('vc',S.v==='c');
+  var b=S.v!=='a';
   app.innerHTML=sbar()+
     '<div class="mini" id="mini">'+(b?'<span class="circ av2" style="width:34px;height:34px;font-size:12px">RM</span>':'<span class="av" style="width:32px;height:32px;font-size:12px">RM</span>')+'<b>Rashid Al Mansoori</b><button data-act="notif" class="'+(b?'circ':'bell')+'" style="width:34px;height:34px">'+ic('bell',null,18)+'</button></div>'+
-    '<div class="view" id="v-home"><div class="pad">'+(b?homeB():homeA())+'</div></div>'+
+    '<div class="view" id="v-home"><div class="pad">'+homeFor()+'</div></div>'+
     '<div class="view" id="v-req"><div class="pad">'+reqView()+'</div></div>'+
     '<div class="view" id="v-gpt"><div class="pad gpt">'+gptView()+'</div></div>'+
     (b?dock():tabs())+
@@ -522,7 +668,7 @@ function render(){
   document.querySelectorAll('#seg button').forEach(function(x){ x.classList.toggle('on',x.dataset.set===S.v); });
   wire(); show(S.tab,true);
 }
-function mswitch(){ return '<div class="mswitch"><button data-set="a" class="'+(S.v==='a'?'on':'')+'">Design A</button><button data-set="b" class="'+(S.v==='b'?'on':'')+'">Design B · Modern</button></div>'; }
+function mswitch(){ return '<div class="mswitch"><button data-set="a" class="'+(S.v==='a'?'on':'')+'">Design A</button><button data-set="b" class="'+(S.v==='b'?'on':'')+'">Design B</button><button data-set="c" class="'+(S.v==='c'?'on':'')+'">Design C</button></div>'; }
 function tabs(){ return '<nav class="tabs" id="nav"><span class="ind" id="ind"></span>'+
   '<button data-tab="home">'+ic('home',null,24,1.6)+'Home</button><button data-tab="req">'+ic('req',null,24,1.6)+'Requests</button><button data-tab="gpt"><span class="orb"></span>Bloom GPT</button></nav>'; }
 function dock(){ return '<nav class="dock" id="nav"><button data-tab="home">'+ic('home','currentColor',22,1.8)+'<span>Home</span></button><button data-tab="req">'+ic('req','currentColor',22,1.8)+'<span>Requests</span></button><button data-tab="gpt"><span class="orb" style="max-width:none"></span><span>Bloom GPT</span></button><button data-act="profile">'+ic('user','currentColor',22,1.8)+'</button></nav>'; }
@@ -599,12 +745,56 @@ function homeB(){
 }
 function moveB(){ var done=!!S.movein; return '<div class="ph"><img src="'+IMG.interior2+'" alt=""><span>'+ic('key','#fff',14,2)+(done?'Move-in requested':'Handed over 15 Oct')+'</span></div><div class="bd"><b>'+(done?'See you on '+S.movein.split(' · ')[0]:'Your home is ready to move in')+'</b><small>'+(done?S.movein+' · we’ll confirm shortly':'Pick a date and we’ll arrange access cards, utilities and the permit.')+'</small></div><button class="bbtn '+(done?'lt':'')+' press" data-act="movein">'+(done?ic('cal','#0f0f0f',18)+'Change date':'Raise move-in request'+ic('arrow','#fff',16,2))+'</button>'; }
 
+
+/* ---------------- DESIGN C ---------------- */
+function homeFor(){ return S.v==='c'?homeC():S.v==='b'?homeB():homeA(); }
+var CHIC={all:'home',lv:'family',uc:'building',rt:'user',vc:'door'};
+var FAV={};
+function attC(a){ var st=S.att[a.k];
+  return '<div class="c-at'+(st?' done':'')+'"><div class="c-ah"><span class="c-rg">'+ringSvg(a.days/a.max,40,3.5,'#111','#e8e8e8')+'<b>'+a.days+'d</b></span><span class="x"><b>'+a.t+'</b><small>'+(a.link?'<u data-act="bills" style="text-underline-offset:2px">'+a.link+'</u>':a.where)+'</small></span></div>'+
+  '<div class="c-af"><span class="x"><b>'+a.who+'</b><small>'+(a.link?a.where:'Renew online in 2 minutes')+'</small></span>'+(st?'<span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding-right:6px">'+ic('checkc','#2e7d5c',18)+st+'</span>':a.btns.map(function(x){ return '<button class="c-btn press'+(x[1]==='o'?' o':'')+'" data-act="'+x[2]+'" data-k="'+a.k+'">'+x[0]+'</button>'; }).join(''))+'</div></div>'; }
+function moveC(){ var done=!!S.movein;
+  return '<div class="ph"><img src="'+IMG.interior2+'" alt=""><div class="pl"><span>'+ic('bed','#111',16,1.8)+'3 Bed</span><span>'+ic('bath','#111',16,1.8)+'4 Bath</span><span>'+ic('key','#111',15,2)+(done?'Booked':'Ready')+'</span></div></div>'+
+  '<div class="bd"><b>'+(done?'See you on '+S.movein.split(' · ')[0]:'Your home is ready to move in')+'</b><small>'+(done?S.movein+' · we’ll confirm shortly':'Pick a date and we’ll arrange access cards, utilities and the permit.')+'</small></div>'+
+  '<div class="ft"><span><small>Villa 22 · Bloom Gardens</small><b>Handed over 15 Oct</b></span><button class="c-cta press'+(done?' lt':'')+'" data-act="movein">'+(done?ic('cal','#111',16)+'Change':'Book move-in')+'</button></div>'; }
+function homeC(){
+  var ps=propsFor(), at=attData(), lst=S.ptab==='miss'?PAY.miss:PAY.due;
+  var mCount=PAY.miss.filter(function(p){return !S.paid[p.id]}).length, dCount=PAY.due.filter(function(p){return !S.paid[p.id]}).length;
+  var nextPay=PAY.miss.concat(PAY.due).filter(function(p){return !S.paid[p.id]})[0];
+  return mswitch()+
+  '<div class="c-top" data-r><button class="c-sq press" data-act="profile">RM</button><div class="c-loc"><small>Welcome back</small><b>Rashid Al Mansoori</b></div><button class="c-sq press" data-act="notif">'+ic('bell','#111',22,1.7)+'<em></em></button></div>'+
+  '<div class="c-sr" data-r><button class="c-in press" data-act="search">'+ic('search','#7a7a7a',20,1.6)+'Search payments, requests…</button><button class="c-flt press" data-act="search">'+ic('filter','#fff',20,1.8)+'</button></div>'+
+  '<div class="c-chips" data-r>'+CHIPS.map(function(c){ return '<button class="c-chip press'+(S.chip===c[0]?' on':'')+'" data-chip="'+c[0]+'"><span class="ci">'+ic(CHIC[c[0]],'#111',18,1.7)+'</span>'+c[1]+'</button>'; }).join('')+'</div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>My properties</h2><button class="c-see" data-act="props">See all</button></div>'+
+    '<div class="car" data-dots="pdots" id="pcar">'+ps.map(function(p){ return '<div class="c-pc press" data-act="prop" data-k="'+p.k+'"><div class="c-ph"><img src="'+p.img+'" alt=""><span class="c-tag">'+ic('building','#111',15,1.8)+p.st+'</span><button class="c-heart'+(FAV[p.k]?' on':'')+'" data-act="fav" data-k="'+p.k+'">'+ic('heart','#111',18,1.7)+'</button></div>'+
+      '<div class="c-pi"><div class="c-pt"><div><b>'+p.type+'</b><small>'+ic('pin','#7a7a7a',14,1.8)+p.addr+'</small></div><span class="c-rate">'+ic('clock','#111',14,2)+p.val+'</span></div>'+
+      '<div class="c-pf"><span class="c-st">'+ic('bed','#111',15,1.8)+p.bd+'</span><span class="c-st">'+ic('bath','#111',15,1.8)+p.ba+'</span><span class="c-pr"><small>AED</small>'+p.pr+'</span></div></div></div>'; }).join('')+'</div>'+
+    '<div class="c-dots" id="pdots">'+ps.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join('')+'</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Needs attention</h2><button class="c-see" data-act="notif">'+at.filter(function(a){return !S.att[a.k]}).length+' open</button></div><div class="car" data-dots="adots">'+at.map(attC).join('')+'</div><div class="c-dots" id="adots">'+at.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join('')+'</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Payments</h2><button class="c-see" data-act="allpay">See all</button></div>'+
+    '<div class="c-fac"><button class="c-f press" data-act="props">'+ic('building','#111',22,1.7)+'<b><span class="cnt" data-count="4">4</span> Units</b></button><button class="c-f press" data-ptab="miss">'+ic('alert','#111',22,1.7)+'<b><em>'+mCount+'</em> Missed</b></button><button class="c-f press" data-ptab="due">'+ic('cal','#111',22,1.7)+'<b>'+dCount+' Due</b></button></div>'+
+    '<div class="c-paid"><div class="r"><div><small>Paid so far · 1 of 10 instalments</small><div class="amt">'+dh()+'<span class="cnt" data-count="96500">96,500</span></div></div>'+(nextPay?'<button class="c-cta press" data-act="pay" data-id="'+nextPay.id+'">Pay now</button>':'')+'</div><div class="c-bar"><i style="--w:28%"></i></div><div class="c-sm"><span>28% of purchase price</span><span>AED 965,000</span></div></div>'+
+    '<div class="seg2" id="seg2"><span class="k" style="transform:translateX('+(S.ptab==='miss'?'0':'100%')+')"></span><button data-ptab="miss" class="'+(S.ptab==='miss'?'on':'')+'">Missed<em>'+mCount+'</em></button><button data-ptab="due" class="'+(S.ptab==='due'?'on':'')+'">Due in 30 days<em>'+dCount+'</em></button></div>'+
+    '<div class="blist" id="blist">'+payRowsB(lst)+'</div>'+
+    '<div class="car" style="margin-top:12px">'+
+      '<div class="bpu"><div class="h"><b>A1-404</b><span class="spin"></span></div><small>September Instalment</small><div class="amt">'+dh()+'135,000</div><span class="s" style="background:rgba(184,135,64,.14);color:#8f591c">In process · 1–2 days</span></div>'+
+      '<div class="bpu"><div class="h"><b>Villa no. 202</b>'+ic('checkc','#2e7d5c',20)+'</div><small>Maintenance fee</small><div class="amt">'+dh()+'12,400</div><span class="s" style="background:rgba(46,125,92,.12);color:#2e7d5c">Payment confirmed</span></div>'+
+    '</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Service requests</h2><button class="c-see" data-tab-go="req">See all</button></div><div class="c-req"><div class="c-row"><span class="ic">'+ic('fan','#111',22)+'</span><span class="x" data-tab-go="req"><b>AC Filter Check</b><small>Apt 1810 · Technician assigned</small></span><button class="c-cb press" data-act="gochat">'+ic('chat','#fff',18,1.8)+'</button><button class="c-cb press" data-act="call">'+ic('phone','#fff',18,1.8)+'</button></div><div class="c-bar"><i style="--w:60%"></i></div><div class="c-sm"><span>In progress</span><span>ETA today, 4 pm</span></div></div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Move in</h2></div><div class="c-mv" id="mvcard">'+moveC()+'</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Quick actions</h2><button class="c-see" data-act="help">Help</button></div><div class="c-qa">'+QA.map(function(q){ return '<button class="c-q press" data-act="qa" data-k="'+q[2]+'">'+ic(q[0],'#111',24,1.7)+'<span><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'; }).join('')+'</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>My tenant</h2><button class="c-see" data-act="pdf">Contract</button></div>'+
+    '<div class="c-fac"><div class="c-f">'+ic('receipt','#111',22,1.7)+'<b>AED 95k<small style="display:block;font-size:11.5px;color:#7a7a7a;font-weight:400;margin-top:2px">Annual rent</small></b></div><div class="c-f">'+ic('clock','#111',22,1.7)+'<b>200 days<small style="display:block;font-size:11.5px;color:#7a7a7a;font-weight:400;margin-top:2px">Lease left</small></b></div><div class="c-f">'+ic('cal','#111',22,1.7)+'<b>30 May<small style="display:block;font-size:11.5px;color:#7a7a7a;font-weight:400;margin-top:2px">Renews 2027</small></b></div></div>'+
+    '<div class="c-row" style="margin-top:12px"><span class="ic" style="border-radius:50%">RV</span><span class="x"><b>Rahul Verma '+ic('badge','#111',16,1.6)+'</b><small>Tenant · Apt 1204, Bloom Towers</small></span><button class="c-cb press" data-act="gochat">'+ic('chat','#fff',18,1.8)+'</button><button class="c-cb press" data-act="call">'+ic('phone','#fff',18,1.8)+'</button></div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Community</h2><button class="c-see" data-act="news">See all</button></div><div class="car">'+NEWS.map(function(n,i){ return '<div class="c-nc press" data-act="newsitem" data-k="'+n[1]+'"><div class="c-ph"><img src="'+n[3]+'" alt=""><span class="c-tag">'+n[0]+'</span><button class="c-heart'+(FAV['n'+i]?' on':'')+'" data-act="fav" data-k="n'+i+'">'+ic('heart','#111',16,1.7)+'</button></div><div class="tx"><b>'+n[1]+'</b><small>'+n[2]+'</small></div></div>'; }).join('')+'</div></div>';
+}
+
 /* ---------------- Requests + GPT ---------------- */
-function reqView(){ var b=S.v==='b';
+function reqView(){ var b=S.v!=='a';
   return (b?'<h1 class="b-h1" style="font-size:28px">Requests</h1>':'<div class="a-wel" style="margin-bottom:16px"><small>Service</small><h1>Requests</h1></div>')+
   '<button class="'+(b?'bbtn':'btn')+' press" data-act="newreq" style="margin:0 0 18px">'+ic('plus','#fff',18,2)+'New request</button>'+
   REQS.map(function(r){ return '<div class="rq" data-r><span class="ci" style="'+(b?'border-radius:50%;background:#f1f1f1':'')+'">'+ic(r.ic,b?'#0f0f0f':'#922a22',18)+'</span><span class="x"><b>'+r.t+'</b><small>'+r.s+'</small><div class="bar" style="margin-top:10px"><i style="--w:'+r.w+'%"></i></div></span><em class="st '+r.stc+'" style="align-self:flex-start">'+r.st+'</em></div>'; }).join(''); }
-function gptView(){ var b=S.v==='b';
+function gptView(){ var b=S.v!=='a';
   return (b?'<h1 class="b-h1" style="font-size:28px">Bloom GPT<br><span>Ask anything about your home</span></h1>':'<div class="a-wel" style="margin-bottom:6px"><small>Your assistant</small><h1>Bloom GPT</h1></div>')+
   '<div class="msgs" id="msgs"><div class="msg ai">Hi Rashid 👋 I can check payments, book amenities or raise a request for you.</div></div>'+
   '<div class="sugg" id="sugg"><button data-q="When is my next payment?">When is my next payment?</button><button data-q="Book the pool this Friday">Book the pool this Friday</button><button data-q="Status of my AC request">Status of my AC request</button></div>'+
@@ -626,7 +816,7 @@ function reveal(root){
   if(io) io.disconnect();
   io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); countUp(e.target); io.unobserve(e.target); } }); },{root:root,threshold:.12});
   root.querySelectorAll('[data-r]:not(.in)').forEach(function(el,i){ el.style.transitionDelay=Math.min(i,6)*60+'ms'; io.observe(el); });
-  root.querySelectorAll('.bmv,.mv,.hatch,.bp').forEach(function(el){ io.observe(el); });
+  root.querySelectorAll('.bmv,.mv,.hatch,.bp,.c-mv').forEach(function(el){ io.observe(el); });
 }
 function countUp(el){ el.querySelectorAll('.cnt[data-count]').forEach(function(c){ if(c._d) return; c._d=1; var to=+c.dataset.count, t0=performance.now(), d=1100;
   (function f(t){ var p=Math.min(1,(t-t0)/d), e=1-Math.pow(1-p,3); c.textContent=money(Math.round(to*e)); if(p<1) requestAnimationFrame(f); })(t0); }); }
@@ -649,19 +839,19 @@ function wire(){
 function toast(msg){ var t=document.getElementById('toast'); t.innerHTML='<i>'+ic('check','#fff',14,2.4)+'</i>'+msg; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(function(){ t.classList.remove('on'); },2400); }
 function sheet(html){ var s=document.getElementById('sheet'); s.innerHTML='<div class="grab"></div>'+html; s.scrollTop=0; requestAnimationFrame(function(){ s.classList.add('on'); document.getElementById('scrim').classList.add('on'); }); }
 function close(){ var s=document.getElementById('sheet'); if(!s) return; s.classList.remove('on'); s.style.transform=''; document.getElementById('scrim').classList.remove('on'); }
-function okSheet(title,sub,btn){ sheet('<div class="okv"><div class="ck">'+ic('check','#2e7d5c',36,2.4)+'</div><h3>'+title+'</h3><p class="sub">'+sub+'</p></div><button class="'+(S.v==='b'?'bbtn':'btn')+' press" data-act="close">'+(btn||'Done')+'</button>'); }
+function okSheet(title,sub,btn){ sheet('<div class="okv"><div class="ck">'+ic('check','#2e7d5c',36,2.4)+'</div><h3>'+title+'</h3><p class="sub">'+sub+'</p></div><button class="'+(S.v!=='a'?'bbtn':'btn')+' press" data-act="close">'+(btn||'Done')+'</button>'); }
 function busy(btn,cb){ var w=btn.offsetWidth; btn.style.width=w+'px'; btn.innerHTML='<span class="spin"></span>'; setTimeout(cb,1200); }
 function findPay(id){ return PAY.miss.concat(PAY.due).filter(function(p){return p.id===id})[0]; }
-function refreshHome(){ var v=document.getElementById('v-home'), y=v.scrollTop; v.querySelector('.pad').innerHTML=S.v==='b'?homeB():homeA(); v.querySelectorAll('[data-r]').forEach(function(e){ e.classList.add('in'); e.style.transitionDelay='0ms'; }); v.querySelectorAll('.cnt').forEach(function(c){ c._d=1; }); v.querySelectorAll('.bmv,.mv,.hatch,.bp').forEach(function(e){ e.classList.add('in'); }); v.scrollTop=y; v.querySelectorAll('.car[data-dots]').forEach(dotsFor); }
+function refreshHome(){ var v=document.getElementById('v-home'), y=v.scrollTop; v.querySelector('.pad').innerHTML=homeFor(); v.querySelectorAll('[data-r]').forEach(function(e){ e.classList.add('in'); e.style.transitionDelay='0ms'; }); v.querySelectorAll('.cnt').forEach(function(c){ c._d=1; }); v.querySelectorAll('.bmv,.mv,.hatch,.bp,.c-mv').forEach(function(e){ e.classList.add('in'); }); v.scrollTop=y; v.querySelectorAll('.car[data-dots]').forEach(dotsFor); }
 var MOVE={day:1,slot:0};
-function movein(){ var b=S.v==='b', d=new Date(), days=[]; for(var i=1;i<=10;i++){ var x=new Date(d.getTime()+i*864e5); days.push(x); }
+function movein(){ var b=S.v!=='a', d=new Date(), days=[]; for(var i=1;i<=10;i++){ var x=new Date(d.getTime()+i*864e5); days.push(x); }
   var slots=['9–11 am','11–1 pm','3–5 pm'];
   sheet('<h3>Book your move-in</h3><p class="sub">Villa 22 · Bloom Gardens. Access cards, DEWA and the permit are arranged for this date.</p>'+
     '<div class="lbl">Date</div><div class="days">'+days.map(function(x,i){ return '<button class="day'+(i===MOVE.day?' on':'')+'" data-day="'+i+'"><small>'+x.toLocaleDateString('en-GB',{weekday:'short'})+'</small><b>'+x.getDate()+'</b><small>'+x.toLocaleDateString('en-GB',{month:'short'})+'</small></button>'; }).join('')+'</div>'+
     '<div class="lbl">Time slot</div><div class="slots">'+slots.map(function(s,i){ return '<button class="slot'+(i===MOVE.slot?' on':'')+'" data-slot="'+i+'">'+s+'</button>'; }).join('')+'</div>'+
     '<button class="'+(b?'bbtn':'btn')+' press" data-act="moveok">Confirm move-in date</button>');
   MOVE._days=days; MOVE._slots=slots; }
-function pay(id){ var p=findPay(id), b=S.v==='b';
+function pay(id){ var p=findPay(id), b=S.v!=='a';
   sheet('<h3>'+p.u+'</h3><p class="sub">'+p.n+' · '+(PAY.miss.indexOf(p)>-1?'overdue':'upcoming')+'</p><div class="kv"><span>Amount</span><b>AED '+money(p.a)+'</b></div><div class="kv"><span>Late fee</span><b>'+(PAY.miss.indexOf(p)>-1?'AED 1,350':'—')+'</b></div><div class="kv"><span>Pay with</span><b>Visa •••• 6411</b></div>'+
   '<button class="'+(b?'bbtn':'btn')+' press" data-act="payok" data-id="'+id+'" style="margin-top:20px">Pay AED '+money(p.a+(PAY.miss.indexOf(p)>-1?1350:0))+'</button>'); }
 document.addEventListener('click',function(e){
@@ -673,14 +863,15 @@ document.addEventListener('click',function(e){
   if(t.dataset.chip){ S.chip=t.dataset.chip; t.parentNode.querySelectorAll('[data-chip]').forEach(function(x){ x.classList.toggle('on',x===t); });
     var car=document.getElementById('pcar'), ps=propsFor(); car.style.transition='opacity .2s,transform .2s'; car.style.opacity=0; car.style.transform='translateX(16px)';
     setTimeout(function(){ refreshHome(); var c2=document.getElementById('pcar'); c2.style.opacity=0; c2.style.transform='translateX(16px)'; c2.scrollLeft=0; requestAnimationFrame(function(){ c2.style.transition='opacity .35s,transform .45s var(--ease)'; c2.style.opacity=1; c2.style.transform='none'; }); },200); return; }
-  if(t.dataset.ptab){ S.ptab=t.dataset.ptab; var k=document.querySelector('#seg2 .k'); k.style.transform='translateX('+(S.ptab==='miss'?'0':'100%')+')'; document.querySelectorAll('#seg2 button').forEach(function(x){ x.classList.toggle('on',x===t); });
+  if(t.dataset.ptab){ S.ptab=t.dataset.ptab; var k=document.querySelector('#seg2 .k'); k.style.transform='translateX('+(S.ptab==='miss'?'0':'100%')+')'; document.querySelectorAll('#seg2 button').forEach(function(x){ x.classList.toggle('on',x.dataset.ptab===S.ptab); });
     var l=document.getElementById('blist'); l.style.transition='opacity .18s'; l.style.opacity=0; setTimeout(function(){ l.innerHTML=payRowsB(S.ptab==='miss'?PAY.miss:PAY.due); l.style.opacity=1; },180); return; }
   if(t.dataset.day){ MOVE.day=+t.dataset.day; t.parentNode.querySelectorAll('.day').forEach(function(x){ x.classList.toggle('on',x===t); }); return; }
   if(t.dataset.slot){ MOVE.slot=+t.dataset.slot; t.parentNode.querySelectorAll('.slot').forEach(function(x){ x.classList.toggle('on',x===t); }); return; }
   if(t.dataset.q){ return chat(t.dataset.q); }
-  var a=t.dataset.act, b=S.v==='b';
+  var a=t.dataset.act, b=S.v!=='a';
   switch(a){
     case 'close': return close();
+    case 'fav': FAV[t.dataset.k]=!FAV[t.dataset.k]; t.classList.toggle('on',!!FAV[t.dataset.k]); t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop'); return toast(FAV[t.dataset.k]?'Saved to favourites':'Removed from favourites');
     case 'notif': { var bl=t; bl.classList.remove('ring'); void bl.offsetWidth; bl.classList.add('ring');
       return sheet('<h3>Notifications</h3><p class="sub">3 new</p>'+[['alert','Missed payment · A1-404','AED 135,000 is 12 days late'],['door','Move-out request','Rahul Verma uploaded final bills'],['idc','Emirates ID','Expires on 10 Oct 2026']].map(function(n){ return '<button class="opt press" data-act="close"><span class="ci" style="'+(b?'border-radius:50%;background:#fff':'background:#fff')+'">'+ic(n[0],b?'#0f0f0f':'#922a22',18)+'</span><span class="x"><b>'+n[1]+'</b><small>'+n[2]+'</small></span>'+ic('chev','#8a847a',16)+'</button>'; }).join('')); }
     case 'accept': return sheet('<h3>Accept move-out?</h3><p class="sub">Rahul Verma · Apt 1810, Bloom Marina. We’ll schedule the inspection and release the deposit after checks.</p><div class="kv"><span>Move-out date</span><b>30 Nov 2026</b></div><div class="kv"><span>Final bills</span><b>Uploaded ✓</b></div><button class="'+(b?'bbtn':'btn')+' press" data-act="acceptok" style="margin-top:18px">Accept request</button><button class="'+(b?'bbtn lt':'btn out')+' press" data-act="close" style="margin-top:8px">Not now</button>');
