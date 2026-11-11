@@ -7343,6 +7343,23 @@ html.is-v2 .owd .owd-ac{border-radius:12px}
 .owd-nimg img{width:100%;height:100%;object-fit:cover;display:block}
 .owd-nimg i{position:absolute;left:10px;top:10px;font-style:normal;font-size:11px;font-weight:600;letter-spacing:.3px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#922a22}
 .owd-nt{display:grid;gap:2px;padding:10px 12px 12px}.owd-nt b{font-size:14px;font-weight:600;line-height:19px}.owd-nt small{font-size:12px;color:#6b665c;line-height:16px}
+/* What's new — immersive cards (photo fills card, text on gradient, glass tag, arrow) */
+.owd .owd-nc{position:relative;width:272px;height:212px;border:0!important;background:#2a211e;box-shadow:0 14px 28px -18px rgba(60,20,14,.55)!important}
+.owd .owd-nc .owd-nimg{position:absolute;inset:0;height:auto;background:#2a211e}
+.owd .owd-nc .owd-nimg img{transition:transform .5s ease}
+.owd .owd-nc:active .owd-nimg img{transform:scale(1.04)}
+.owd .owd-nc .owd-nimg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,12,10,0) 30%,rgba(20,12,10,.35) 55%,rgba(20,12,10,.86) 100%)}
+.owd .owd-nc .owd-nimg i{z-index:2;left:12px;top:12px;padding:5px 10px;font-size:11px;letter-spacing:.2px;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.owd .owd-nc .owd-nt{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 60px 16px 16px;gap:4px}
+.owd .owd-nc .owd-nt b{color:#fff;font-size:16px;line-height:21px;letter-spacing:-.1px}
+.owd .owd-nc .owd-nt small{color:rgba(255,255,255,.78);font-size:12px;line-height:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.owd .owd-nc::after{content:"";position:absolute;right:14px;bottom:16px;z-index:3;width:34px;height:34px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23922a22' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M9 7h8v8'/%3E%3C/svg%3E") center/16px no-repeat;box-shadow:0 4px 12px -4px rgba(0,0,0,.35)}
+.owd .owd-nc.is-notice{background:linear-gradient(150deg,#a2412f 0%,#7a2a22 100%)}
+.owd .owd-nc.is-notice .owd-nimg{background:transparent}
+.owd .owd-nc.is-notice .owd-nimg-n{background:radial-gradient(120% 90% at 85% 10%,rgba(255,214,170,.28),transparent 60%);place-items:start end;padding:18px}
+.owd .owd-nc.is-notice .owd-nimg-n svg{width:44px;height:44px;opacity:.9}
+.owd .owd-nc.is-notice .owd-nimg-n svg *{stroke:#ffe6c7}
+.owd .owd-nc.is-notice .owd-nimg::after{display:none}
 /* help cards: title + subtext read as one group */
 button.sr-scope{gap:0!important}
 button.sr-scope .sr-gi{margin-bottom:22px!important}
