@@ -451,11 +451,11 @@ img{display:block}
 <script>
 (function(){
 /* ---------------- data ---------------- */
-var IMG={pool:'img/pool.jpg',town:'img/townhouse.jpg',villa:'img/villa.jpg',interior:'img/interior.jpg'};
+var IMG={pool:'img/pool.jpg',town:'img/townhouse.jpg',villa:'img/villa2.jpg',resort:'img/resort.jpg',aerial:'img/aerial.jpg',interior:'img/interior.jpg',interior2:'img/interior2.jpg'};
 var PROPS=[
   {k:'uc',comm:'BLOOM MARINA',st:'Under Construction',stc:'uc',type:'1-Bedroom Apartment',addr:'Apt 1810, Tower B, Bloom Marina',img:IMG.pool,meta:'Construction',val:'24%',w:24,c:'#b88740'},
-  {k:'lv',comm:'BLOOM GARDENS',st:'Living Here',stc:'lv',type:'4-Bedroom Villa',addr:'Villa 138, Royal Palm Avenue',img:IMG.town,meta:'Paid off',val:'100%',w:100,c:'#2e7d5c'},
-  {k:'rt',comm:'BLOOM TOWERS',st:'Rented',stc:'rt',type:'2-Bedroom Apartment',addr:'Apt 1204, Tower A, Bloom Towers',img:IMG.villa,meta:'Lease used',val:'45%',w:45,c:'#4c5ebf'},
+  {k:'lv',comm:'BLOOM GARDENS',st:'Living Here',stc:'lv',type:'4-Bedroom Villa',addr:'Villa 138, Royal Palm Avenue',img:IMG.villa,meta:'Paid off',val:'100%',w:100,c:'#2e7d5c'},
+  {k:'rt',comm:'BLOOM TOWERS',st:'Rented',stc:'rt',type:'2-Bedroom Apartment',addr:'Apt 1204, Tower A, Bloom Towers',img:IMG.resort,meta:'Lease used',val:'45%',w:45,c:'#4c5ebf'},
   {k:'vc',comm:'BLOOM GARDENS',st:'Handed Over · Vacant',stc:'vc',type:'3-Bedroom Villa',addr:'Villa 22, Palm Grove Street',img:IMG.town,meta:'Move-in ready',val:'Ready',w:100,c:'#7c7c7c'}
 ];
 var CHIPS=[['all','All Units'],['lv','Currently Living'],['uc','Under Construction'],['rt','Rented'],['vc','Vacant']];
@@ -556,7 +556,7 @@ function homeA(){
   '<div class="sec" data-r><div class="sec-h"><h2>Community Updates</h2><button class="lnk" data-act="news">View all'+ic('chev','#922a22',14)+'</button></div><div class="car">'+NEWS.map(function(n){ return '<button class="nc" data-act="newsitem" data-k="'+n[1]+'"><img src="'+n[3]+'" alt=""><span class="tg">'+n[0]+'</span><span class="tx"><b>'+n[1]+'</b><small>'+n[2]+'</small></span><span class="go">'+ic('arrow','#922a22',16,2)+'</span></button>'; }).join('')+'</div></div>';
 }
 var QA=[['pool','',"Amenities",'Pool, gym & BBQ'],['idc','','Access card','Request or replace'],['car','','Parking','Bay B-14 · 2 slots'],['family','','Add family','Invite members']];
-var NEWS=[['New Launch','Bloom Gardens · Phase 3','Townhouses from AED 2.4M · EOI open',IMG.town],['Offer','0% DLD fee at Bloom Towers','For existing owners · until 30 Nov',IMG.villa],['Event','Family movie night','Central Park lawn · Fri 14 Nov, 7pm',IMG.pool]];
+var NEWS=[['New Launch','Bloom Gardens · Phase 3','Townhouses from AED 2.4M · EOI open',IMG.aerial],['Offer','0% DLD fee at Bloom Towers','For existing owners · until 30 Nov',IMG.resort],['Event','Family movie night','Central Park lawn · Fri 14 Nov, 7pm',IMG.pool]];
 function moveA(){ if(S.movein) return '<div class="ph"><img src="'+IMG.interior+'" alt=""></div><div class="bd"><b>Move-in requested 🎉</b><small>'+S.movein+' · our team will confirm shortly</small><button class="btn out press" data-act="movein">'+ic('cal','#1c1c1a',18)+'Change date</button></div>';
   return '<div class="ph"><img src="'+IMG.interior+'" alt=""></div><div class="bd"><b>Congratulations! your unit is ready to move in</b><small>Pick a date and we’ll arrange the rest for you.</small><button class="btn press" data-act="movein">Raise move-in request</button></div>'; }
 
@@ -591,7 +591,7 @@ function homeB(){
   '<div class="bsec" data-r><div class="bsec-h"><h2>My tenant</h2><span class="blnk">'+ic('clock','#0f0f0f',14,2)+'200 days left</span></div><div class="btn2"><div class="h"><span class="ck">'+ic('check','#fff',18,2)+'</span><span class="t">Lease active · Apt 1204</span><button class="ck" data-act="pdf" style="background:#262626">'+ic('file','#fff',18)+'</button></div><div class="num"><div><b>AED 95,000</b><small>Annual rent · renews 30 May 2027</small></div><em>Yearly</em></div><div class="pr"><span class="av">RV</span><div class="x"><b>Rahul Verma</b><small>TC-2025-11204 · Available</small></div><button class="press" data-act="call">'+ic('phone','#0f0f0f',20)+'</button></div></div></div>'+
   '<div class="bsec" data-r><div class="bsec-h"><h2>Community</h2><button class="blnk press" data-act="news">View all'+ic('chev','#0f0f0f',14,2)+'</button></div><div class="car">'+NEWS.map(function(n){ return '<button class="bnc press" data-act="newsitem" data-k="'+n[1]+'"><img src="'+n[3]+'" alt=""><span class="tg">'+n[0]+'</span><span class="gl"><span class="x"><b>'+n[1]+'</b><small>'+n[2]+'</small></span><i>'+ic('arrow','#0f0f0f',16,2)+'</i></span></button>'; }).join('')+'</div></div>';
 }
-function moveB(){ var done=!!S.movein; return '<div class="ph"><img src="'+IMG.interior+'" alt=""><span>'+ic('key','#fff',14,2)+(done?'Move-in requested':'Handed over 15 Oct')+'</span></div><div class="bd"><b>'+(done?'See you on '+S.movein.split(' · ')[0]:'Your home is ready to move in')+'</b><small>'+(done?S.movein+' · we’ll confirm shortly':'Pick a date and we’ll arrange access cards, utilities and the permit.')+'</small></div><button class="bbtn '+(done?'lt':'')+' press" data-act="movein">'+(done?ic('cal','#0f0f0f',18)+'Change date':'Raise move-in request'+ic('arrow','#fff',16,2))+'</button>'; }
+function moveB(){ var done=!!S.movein; return '<div class="ph"><img src="'+IMG.interior2+'" alt=""><span>'+ic('key','#fff',14,2)+(done?'Move-in requested':'Handed over 15 Oct')+'</span></div><div class="bd"><b>'+(done?'See you on '+S.movein.split(' · ')[0]:'Your home is ready to move in')+'</b><small>'+(done?S.movein+' · we’ll confirm shortly':'Pick a date and we’ll arrange access cards, utilities and the permit.')+'</small></div><button class="bbtn '+(done?'lt':'')+' press" data-act="movein">'+(done?ic('cal','#0f0f0f',18)+'Change date':'Raise move-in request'+ic('arrow','#fff',16,2))+'</button>'; }
 
 /* ---------------- Requests + GPT ---------------- */
 function reqView(){ var b=S.v==='b';
@@ -698,7 +698,7 @@ document.addEventListener('click',function(e){
     case 'pdf': return toast('Contract TC-2025-11204 downloaded');
     case 'call': return toast('Calling Rahul Verma…');
     case 'prop': var pp=PROPS.filter(function(x){return x.k===t.dataset.k})[0]; return sheet('<div style="height:180px;border-radius:'+(b?'24px':'14px')+';overflow:hidden;margin-bottom:14px"><img src="'+pp.img+'" style="width:100%;height:100%;object-fit:cover"></div><h3>'+pp.type+'</h3><p class="sub">'+pp.addr+'</p><div class="kv"><span>Status</span><b>'+pp.st+'</b></div><div class="kv"><span>'+pp.meta+'</span><b>'+pp.val+'</b></div><button class="'+(b?'bbtn':'btn')+' press" data-act="close">Close</button>');
-    case 'news': case 'newsitem': return sheet('<h3>'+(t.dataset.k||'Community updates')+'</h3><p class="sub">Bloom Holding · Community</p><div style="height:180px;border-radius:'+(b?'24px':'14px')+';overflow:hidden;margin-bottom:14px"><img src="'+IMG.town+'" style="width:100%;height:100%;object-fit:cover"></div><p style="font-size:14px;line-height:1.6;color:#3a3833;margin:0">Register your interest to get early access and owner-only pricing. Our sales team will reach out within 24 hours.</p><button class="'+(b?'bbtn':'btn')+' press" data-act="eoi">Register interest</button>');
+    case 'news': case 'newsitem': return sheet('<h3>'+(t.dataset.k||'Community updates')+'</h3><p class="sub">Bloom Holding · Community</p><div style="height:180px;border-radius:'+(b?'24px':'14px')+';overflow:hidden;margin-bottom:14px"><img src="'+IMG.aerial+'" style="width:100%;height:100%;object-fit:cover"></div><p style="font-size:14px;line-height:1.6;color:#3a3833;margin:0">Register your interest to get early access and owner-only pricing. Our sales team will reach out within 24 hours.</p><button class="'+(b?'bbtn':'btn')+' press" data-act="eoi">Register interest</button>');
     case 'eoi': close(); return toast('Interest registered');
     case 'search': return show('gpt');
     case 'props': return toast('4 properties · 1 under construction');
