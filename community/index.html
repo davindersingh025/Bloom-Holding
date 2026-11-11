@@ -594,6 +594,27 @@ img{display:block}
 .c-btn.o,.c-cta.lt,.vc .bbtn.lt{background:var(--tile);color:var(--ink)}
 .vc .dock{background:#fff}
 .c-heart.on svg{fill:var(--pri);stroke:var(--pri)}
+
+/* Vertical stacks instead of side-scrolling rows (only properties keep the swipe) */
+.vst{display:grid;gap:12px}
+.vst>*{width:auto!important}
+.vst .bnc{height:220px}
+.vst .bpu{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;padding:14px 16px}
+.vst .bpu .h{grid-column:1/-1}
+.vst .bpu small{margin:2px 0 10px;grid-column:1/-1}
+.vst .bpu .amt{font-size:22px}
+.vst .bpu .s{margin-top:0}
+.c-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.c-grid .c-nc{width:auto;min-width:0}
+.c-grid .c-nc:first-child{grid-column:1/-1}
+.c-grid .c-ph{height:120px}
+.c-grid .c-nc:first-child .c-ph{height:180px}
+.bgrid{grid-template-columns:1fr 1fr}
+.bgrid .bnc:first-child{grid-column:1/-1;height:220px}
+.bgrid .bnc:not(:first-child){height:200px}
+.bgrid .bnc:not(:first-child) .gl{padding:10px;border-radius:16px}
+.bgrid .bnc:not(:first-child) .gl i{display:none}
+.bgrid .bnc:not(:first-child) .gl b{font-size:13.5px;line-height:1.25}
 </style>
 </head>
 <body>
@@ -744,14 +765,14 @@ function homeB(){
   '<button class="srch press" data-act="search" data-r style="width:100%">'+ic('search','#6b665c',20,1.6)+'<span>Search payments, requests…</span><i>'+ic('sparkle','#fff',18,1.6)+'</i></button>'+
   '<div class="pills" data-r>'+CHIPS.map(function(c){ return '<button class="pill press'+(S.chip===c[0]?' on':'')+'" data-chip="'+c[0]+'">'+c[1]+'<i>'+chipCount(c[0])+'</i></button>'; }).join('')+'</div>'+
   '<div data-r><div class="car" data-dots="pdots" id="pcar">'+ps.map(function(p){ return '<button class="bp press" data-act="prop" data-k="'+p.k+'"><div class="bp-h"><span class="ic">'+ic('building','#1c1c1a',20,1.6)+'</span><span><b>'+p.type+'</b><small>'+p.addr+'</small></span></div><div class="bp-ph"><img src="'+p.img+'" alt=""><span class="bp-tag" style="--c:'+p.c+'">'+p.st+'</span><span class="glass"><small>'+p.meta+'</small><b>'+p.val+'</b><span class="mt"><i style="--w:'+p.w+'%"></i></span></span></div></button>'; }).join('')+'</div><div class="bdots" id="pdots">'+ps.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join('')+'</div></div>'+
-  '<div class="bsec" data-r><div class="bsec-h"><h2>Needs attention</h2><span class="blnk" style="background:#922a22;color:#fff">'+at.filter(function(a){return !S.att[a.k]}).length+' open</span></div><div class="car" data-dots="adots">'+at.map(attB).join('')+'</div><div class="bdots" id="adots">'+at.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join('')+'</div></div>'+
+  '<div class="bsec" data-r><div class="bsec-h"><h2>Needs attention</h2><span class="blnk" style="background:#922a22;color:#fff">'+at.filter(function(a){return !S.att[a.k]}).length+' open</span></div><div class="vst">'+at.map(attB).join('')+'</div></div>'+
   '<div class="bsec" data-r><div class="bsec-h"><h2>Payments</h2><button class="blnk press" data-act="allpay">View all'+ic('chev','#1c1c1a',14,2)+'</button></div>'+
     '<div class="bento"><button class="tile press" data-act="props"><small>Total<br>properties</small><span class="arw">'+ic('arrow','#1c1c1a',16,2)+'</span><span class="big"><span class="cnt" data-count="4">4</span><em>units</em></span></button>'+
     '<button class="tile press" data-act="allpay"><small>Purchase<br>price</small><span class="bk">AED</span><span class="big"><span class="cnt" data-count="135">135</span><em>k</em></span></button>'+
     '<div class="tile wide"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><small>Paid so far</small><div class="big" style="margin-top:6px;font-size:30px">'+dh()+'<span class="cnt" data-count="96500">96,500</span></div></div><span class="bk" style="position:static">10%</span></div><div class="hatch"><i style="--w:28%"></i></div><div class="hl"><span>1 of 10 instalments</span><span>AED 965,000</span></div></div></div>'+
     '<div class="seg2" style="margin-top:12px" id="seg2"><span class="k" style="transform:translateX('+(S.ptab==='miss'?'0':'100%')+')"></span><button data-ptab="miss" class="'+(S.ptab==='miss'?'on':'')+'">Missed<em>'+mCount+'</em></button><button data-ptab="due" class="'+(S.ptab==='due'?'on':'')+'">Due in 30 days<em>'+dCount+'</em></button></div>'+
     '<div class="blist" id="blist">'+payRowsB(lst)+'</div>'+
-    '<div class="car" style="margin-top:12px">'+
+    '<div class="vst" style="margin-top:12px">'+
       '<div class="bpu"><div class="h"><b>A1-404</b><span class="spin"></span></div><small>September Instalment</small><div class="amt">'+dh()+'135,000</div><span class="s" style="background:rgba(184,135,64,.14);color:#8f591c">In process · 1–2 days</span></div>'+
       '<div class="bpu"><div class="h"><b>Villa no. 202</b>'+ic('checkc','#2e7d5c',20)+'</div><small>Maintenance fee</small><div class="amt">'+dh()+'12,400</div><span class="s" style="background:rgba(46,125,92,.12);color:#2e7d5c">Payment confirmed</span></div>'+
     '</div></div>'+
@@ -759,7 +780,7 @@ function homeB(){
   '<div class="bsec" data-r><div class="bsec-h"><h2>Move in</h2></div><div class="bmv" id="mvcard">'+moveB()+'</div></div>'+
   '<div class="bsec" data-r><div class="bsec-h"><h2>Quick actions</h2><button class="blnk press" data-act="help">'+ic('help','#1c1c1a',14,2)+'Help</button></div><div class="bento">'+QA.map(function(q){ return '<button class="bq press" data-act="qa" data-k="'+q[2]+'"><span class="ic">'+ic(q[0],'#1c1c1a',20)+'</span><span class="arw" style="width:32px;height:32px">'+ic('arrow','#1c1c1a',14,2)+'</span><span><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'; }).join('')+'</div></div>'+
   '<div class="bsec" data-r><div class="bsec-h"><h2>My tenant</h2><span class="blnk">'+ic('clock','#1c1c1a',14,2)+'200 days left</span></div><div class="btn2"><div class="h"><span class="ck">'+ic('check','#fff',18,2)+'</span><span class="t">Lease active · Apt 1204</span><button class="ck" data-act="pdf" style="background:#3a302b">'+ic('file','#fff',18)+'</button></div><div class="num"><div><b>AED 95,000</b><small>Annual rent · renews 30 May 2027</small></div><em>Yearly</em></div><div class="pr"><span class="av">RV</span><div class="x"><b>Rahul Verma</b><small>TC-2025-11204 · Available</small></div><button class="press" data-act="call">'+ic('phone','#1c1c1a',20)+'</button></div></div></div>'+
-  '<div class="bsec" data-r><div class="bsec-h"><h2>Community</h2><button class="blnk press" data-act="news">View all'+ic('chev','#1c1c1a',14,2)+'</button></div><div class="car">'+NEWS.map(function(n){ return '<button class="bnc press" data-act="newsitem" data-k="'+n[1]+'"><img src="'+n[3]+'" alt=""><span class="tg">'+n[0]+'</span><span class="gl"><span class="x"><b>'+n[1]+'</b><small>'+n[2]+'</small></span><i>'+ic('arrow','#1c1c1a',16,2)+'</i></span></button>'; }).join('')+'</div></div>';
+  '<div class="bsec" data-r><div class="bsec-h"><h2>Community</h2><button class="blnk press" data-act="news">View all'+ic('chev','#1c1c1a',14,2)+'</button></div><div class="vst bgrid">'+NEWS.map(function(n){ return '<button class="bnc press" data-act="newsitem" data-k="'+n[1]+'"><img src="'+n[3]+'" alt=""><span class="tg">'+n[0]+'</span><span class="gl"><span class="x"><b>'+n[1]+'</b><small>'+n[2]+'</small></span><i>'+ic('arrow','#1c1c1a',16,2)+'</i></span></button>'; }).join('')+'</div></div>';
 }
 function moveB(){ var done=!!S.movein; return '<div class="ph"><img src="'+IMG.interior2+'" alt=""><span>'+ic('key','#fff',14,2)+(done?'Move-in requested':'Handed over 15 Oct')+'</span></div><div class="bd"><b>'+(done?'See you on '+S.movein.split(' · ')[0]:'Your home is ready to move in')+'</b><small>'+(done?S.movein+' · we’ll confirm shortly':'Pick a date and we’ll arrange access cards, utilities and the permit.')+'</small></div><button class="bbtn '+(done?'lt':'')+' press" data-act="movein">'+(done?ic('cal','#1c1c1a',18)+'Change date':'Raise move-in request'+ic('arrow','#fff',16,2))+'</button>'; }
 
@@ -788,13 +809,13 @@ function homeC(){
       '<div class="c-pi"><div class="c-pt"><div><b>'+p.type+'</b><small>'+ic('pin','#6b665c',14,1.8)+p.addr+'</small></div><span class="c-rate">'+ic('clock','#1c1c1a',14,2)+p.val+'</span></div>'+
       '<div class="c-pf"><span class="c-st">'+ic('bed','#1c1c1a',15,1.8)+p.bd+'</span><span class="c-st">'+ic('bath','#1c1c1a',15,1.8)+p.ba+'</span><span class="c-pr"><small>AED</small>'+p.pr+'</span></div></div></div>'; }).join('')+'</div>'+
     '<div class="c-dots" id="pdots">'+ps.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join('')+'</div></div>'+
-  '<div class="c-sec" data-r><div class="c-h"><h2>Needs attention</h2><button class="c-see" data-act="notif">'+at.filter(function(a){return !S.att[a.k]}).length+' open</button></div><div class="car" data-dots="adots">'+at.map(attC).join('')+'</div><div class="c-dots" id="adots">'+at.map(function(_,i){return '<i class="'+(i?'':'on')+'"></i>';}).join('')+'</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Needs attention</h2><button class="c-see" data-act="notif">'+at.filter(function(a){return !S.att[a.k]}).length+' open</button></div><div class="vst">'+at.map(attC).join('')+'</div></div>'+
   '<div class="c-sec" data-r><div class="c-h"><h2>Payments</h2><button class="c-see" data-act="allpay">See all</button></div>'+
     '<div class="c-fac"><button class="c-f press" data-act="props">'+ic('building','#1c1c1a',22,1.7)+'<b><span class="cnt" data-count="4">4</span> Units</b></button><button class="c-f press" data-ptab="miss">'+ic('alert','#1c1c1a',22,1.7)+'<b><em>'+mCount+'</em> Missed</b></button><button class="c-f press" data-ptab="due">'+ic('cal','#1c1c1a',22,1.7)+'<b>'+dCount+' Due</b></button></div>'+
     '<div class="c-paid"><div class="r"><div><small>Paid so far · 1 of 10 instalments</small><div class="amt">'+dh()+'<span class="cnt" data-count="96500">96,500</span></div></div>'+(nextPay?'<button class="c-cta press" data-act="pay" data-id="'+nextPay.id+'">Pay now</button>':'')+'</div><div class="c-bar"><i style="--w:28%"></i></div><div class="c-sm"><span>28% of purchase price</span><span>AED 965,000</span></div></div>'+
     '<div class="seg2" id="seg2"><span class="k" style="transform:translateX('+(S.ptab==='miss'?'0':'100%')+')"></span><button data-ptab="miss" class="'+(S.ptab==='miss'?'on':'')+'">Missed<em>'+mCount+'</em></button><button data-ptab="due" class="'+(S.ptab==='due'?'on':'')+'">Due in 30 days<em>'+dCount+'</em></button></div>'+
     '<div class="blist" id="blist">'+payRowsB(lst)+'</div>'+
-    '<div class="car" style="margin-top:12px">'+
+    '<div class="vst" style="margin-top:12px">'+
       '<div class="bpu"><div class="h"><b>A1-404</b><span class="spin"></span></div><small>September Instalment</small><div class="amt">'+dh()+'135,000</div><span class="s" style="background:rgba(184,135,64,.14);color:#8f591c">In process · 1–2 days</span></div>'+
       '<div class="bpu"><div class="h"><b>Villa no. 202</b>'+ic('checkc','#2e7d5c',20)+'</div><small>Maintenance fee</small><div class="amt">'+dh()+'12,400</div><span class="s" style="background:rgba(46,125,92,.12);color:#2e7d5c">Payment confirmed</span></div>'+
     '</div></div>'+
@@ -804,7 +825,7 @@ function homeC(){
   '<div class="c-sec" data-r><div class="c-h"><h2>My tenant</h2><button class="c-see" data-act="pdf">Contract</button></div>'+
     '<div class="c-fac"><div class="c-f">'+ic('receipt','#1c1c1a',22,1.7)+'<b>AED 95k<small style="display:block;font-size:11.5px;color:#6b665c;font-weight:400;margin-top:2px">Annual rent</small></b></div><div class="c-f">'+ic('clock','#1c1c1a',22,1.7)+'<b>200 days<small style="display:block;font-size:11.5px;color:#6b665c;font-weight:400;margin-top:2px">Lease left</small></b></div><div class="c-f">'+ic('cal','#1c1c1a',22,1.7)+'<b>30 May<small style="display:block;font-size:11.5px;color:#6b665c;font-weight:400;margin-top:2px">Renews 2027</small></b></div></div>'+
     '<div class="c-row" style="margin-top:12px"><span class="ic" style="border-radius:50%">RV</span><span class="x"><b>Rahul Verma '+ic('badge','#1c1c1a',16,1.6)+'</b><small>Tenant · Apt 1204, Bloom Towers</small></span><button class="c-cb press" data-act="gochat">'+ic('chat','#fff',18,1.8)+'</button><button class="c-cb press" data-act="call">'+ic('phone','#fff',18,1.8)+'</button></div></div>'+
-  '<div class="c-sec" data-r><div class="c-h"><h2>Community</h2><button class="c-see" data-act="news">See all</button></div><div class="car">'+NEWS.map(function(n,i){ return '<div class="c-nc press" data-act="newsitem" data-k="'+n[1]+'"><div class="c-ph"><img src="'+n[3]+'" alt=""><span class="c-tag">'+n[0]+'</span><button class="c-heart'+(FAV['n'+i]?' on':'')+'" data-act="fav" data-k="n'+i+'">'+ic('heart','#1c1c1a',16,1.7)+'</button></div><div class="tx"><b>'+n[1]+'</b><small>'+n[2]+'</small></div></div>'; }).join('')+'</div></div>';
+  '<div class="c-sec" data-r><div class="c-h"><h2>Community</h2><button class="c-see" data-act="news">See all</button></div><div class="c-grid">'+NEWS.map(function(n,i){ return '<div class="c-nc press" data-act="newsitem" data-k="'+n[1]+'"><div class="c-ph"><img src="'+n[3]+'" alt=""><span class="c-tag">'+n[0]+'</span><button class="c-heart'+(FAV['n'+i]?' on':'')+'" data-act="fav" data-k="n'+i+'">'+ic('heart','#1c1c1a',16,1.7)+'</button></div><div class="tx"><b>'+n[1]+'</b><small>'+n[2]+'</small></div></div>'; }).join('')+'</div></div>';
 }
 
 /* ---------------- Requests + GPT ---------------- */
