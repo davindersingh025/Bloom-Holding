@@ -615,6 +615,28 @@ img{display:block}
 .bgrid .bnc:not(:first-child) .gl{padding:10px;border-radius:16px}
 .bgrid .bnc:not(:first-child) .gl i{display:none}
 .bgrid .bnc:not(:first-child) .gl b{font-size:13.5px;line-height:1.25}
+
+/* Move-in: several homes ready (Design C) */
+.lblp{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a847a;margin:22px 0 8px}
+.seg2p{grid-template-columns:1fr 1fr}
+.c-mv3{background:var(--tile);border-radius:16px;padding:6px}
+.c-mv3 .top{display:flex;align-items:flex-start;gap:12px;padding:10px 10px 0}
+.c-mv3 .top .x{flex:1;min-width:0}
+.c-mv3 .top b{display:block;font-size:16px;font-weight:500}
+.c-mv3 .top small{display:block;font-size:12.5px;color:var(--mut);line-height:1.5;margin-top:4px}
+.c-mv3 .n3{flex:none;height:32px;padding:0 12px;border-radius:10px;background:#fff;display:flex;align-items:center;font-size:13px;font-weight:600}
+.c-mv3 .c-bar{margin:12px 10px 12px;height:6px}
+.c-mr{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:8px 8px 8px 8px;margin-top:6px;transition:background .4s}
+.c-mr img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none}
+.c-mr .x{flex:1;min-width:0}
+.c-mr .x b{display:block;font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-mr .x small{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mut);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-mr .x em{display:flex;align-items:center;gap:4px;font-style:normal;font-size:12px;font-weight:500;margin-top:3px;color:var(--ink)}
+.c-mr.done .x em{color:#2e7d5c}
+.c-mr img{height:72px}
+.seg2p button{padding:10px 14px}
+.c-cta.sm{height:38px;padding:0 14px;border-radius:10px;font-size:13px}
+.panel .seg button b{display:block}
 </style>
 </head>
 <body>
@@ -627,6 +649,8 @@ img{display:block}
       <button data-set="b"><b>Design B · Modern</b><small>Bento cards, black dock, glass details</small></button>
       <button data-set="c"><b>Design C · Clean</b><small>Light tiles, listing cards, floating nav</small></button>
     </div>
+    <div class="lblp">Move-in card (Design C)</div>
+    <div class="seg seg2p" id="mvseg"><button data-mv="1" class="on"><b>1 home ready</b></button><button data-mv="3"><b>3 homes ready</b></button></div>
     <ul class="tips">
       <li>Scroll the home screen; swipe the cards</li>
       <li>Tap the filter chips to filter properties</li>
@@ -658,7 +682,7 @@ var REQS=[
   {t:'Kitchen sink leak',s:'Villa 138 · Technician on the way',st:'Assigned',stc:'rt',w:35,ic:'wrench'},
   {t:'Access card replacement',s:'Villa 138 · Ready for pickup',st:'Completed',stc:'lv',w:100,ic:'idc'}
 ];
-var S; function reset(){ S={v:(function(){try{return new URLSearchParams(location.search).get('v')||localStorage.getItem('bca-v')||'a'}catch(e){return 'a'}})(),tab:'home',chip:'all',att:{},paid:{},movein:null,ptab:'miss',chat:[]}; }
+var S; function reset(){ S={v:(function(){try{return new URLSearchParams(location.search).get('v')||localStorage.getItem('bca-v')||'a'}catch(e){return 'a'}})(),tab:'home',chip:'all',att:{},paid:{},movein:null,ptab:'miss',chat:[],mvn:(function(){try{return new URLSearchParams(location.search).get('mv')==='3'?3:1}catch(e){return 1}})(),mvd:{}}; }
 reset();
 /* ---------------- icons ---------------- */
 function ic(n,c,s,w){ c=c||'currentColor'; s=s||20; w=w||1.7; var P={
@@ -704,10 +728,10 @@ function render(){
     '<div class="view" id="v-gpt"><div class="pad gpt">'+gptView()+'</div></div>'+
     (b?dock():tabs())+
     '<div class="scrim" id="scrim"></div><div class="sheet" id="sheet"></div><div class="toast" id="toast"></div>';
-  document.querySelectorAll('#seg button').forEach(function(x){ x.classList.toggle('on',x.dataset.set===S.v); });
+  document.querySelectorAll('#seg button').forEach(function(x){ x.classList.toggle('on',x.dataset.set===S.v); }); document.querySelectorAll('#mvseg button').forEach(function(x){ x.classList.toggle('on',+x.dataset.mv===S.mvn); });
   wire(); show(S.tab,true);
 }
-function mswitch(){ return '<div class="mswitch"><button data-set="a" class="'+(S.v==='a'?'on':'')+'">Design A</button><button data-set="b" class="'+(S.v==='b'?'on':'')+'">Design B</button><button data-set="c" class="'+(S.v==='c'?'on':'')+'">Design C</button></div>'; }
+function mswitch(){ return '<div class="mswitch"><button data-set="a" class="'+(S.v==='a'?'on':'')+'">Design A</button><button data-set="b" class="'+(S.v==='b'?'on':'')+'">Design B</button><button data-set="c" class="'+(S.v==='c'?'on':'')+'">Design C</button></div>'+(S.v==='c'?'<div class="mswitch"><button data-mv="1" class="'+(S.mvn===1?'on':'')+'">1 move-in</button><button data-mv="3" class="'+(S.mvn===3?'on':'')+'">3 move-ins</button></div>':''); }
 function tabs(){ return '<nav class="tabs" id="nav"><span class="ind" id="ind"></span>'+
   '<button data-tab="home">'+ic('home',null,24,1.6)+'Home</button><button data-tab="req">'+ic('req',null,24,1.6)+'Requests</button><button data-tab="gpt"><span class="orb"></span>Bloom GPT</button></nav>'; }
 function dock(){ return '<nav class="dock" id="nav"><button data-tab="home">'+ic('home','currentColor',22,1.8)+'<span>Home</span></button><button data-tab="req">'+ic('req','currentColor',22,1.8)+'<span>Requests</span></button><button data-tab="gpt"><span class="orb" style="max-width:none"></span><span>Bloom GPT</span></button><button data-act="profile">'+ic('user','currentColor',22,1.8)+'</button></nav>'; }
@@ -792,7 +816,12 @@ var FAV={};
 function attC(a){ var st=S.att[a.k];
   return '<div class="c-at'+(st?' done':'')+'"><div class="c-ah"><span class="c-rg">'+ringSvg(a.days/a.max,40,3.5,'#1c1c1a','#e9e3d8')+'<b>'+a.days+'d</b></span><span class="x"><b>'+a.t+'</b><small>'+(a.link?'<u data-act="bills" style="text-underline-offset:2px">'+a.link+'</u>':a.where)+'</small></span></div>'+
   '<div class="c-af"><span class="x"><b>'+a.who+'</b><small>'+(a.link?a.where:'Renew online in 2 minutes')+'</small></span>'+(st?'<span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding-right:6px">'+ic('checkc','#2e7d5c',18)+st+'</span>':a.btns.map(function(x){ return '<button class="c-btn press'+(x[1]==='o'?' o':'')+'" data-act="'+x[2]+'" data-k="'+a.k+'">'+x[0]+'</button>'; }).join(''))+'</div></div>'; }
-function moveC(){ var done=!!S.movein;
+var MVH=[{k:'v22',n:'Villa 22',c:'Bloom Gardens',bd:3,ba:4,ho:'15 Oct',img:IMG.interior2},{k:'a2204',n:'Apt 2204',c:'Bloom Towers',bd:2,ba:3,ho:'2 Nov',img:IMG.interior},{k:'t07',n:'Townhouse 7',c:'Palm Grove',bd:4,ba:5,ho:'8 Nov',img:IMG.town}];
+function moveC3(){ var n=MVH.filter(function(h){return S.mvd[h.k]}).length;
+  return '<div class="top"><span class="x"><b>'+(n===3?'All 3 move-ins booked':'3 homes ready to move in')+'</b><small>'+(n===3?'We’ll arrange access cards, utilities and permits for each date.':'Book a date for each home. We’ll arrange access cards, utilities and permits.')+'</small></span><span class="n3">'+n+'/3</span></div>'+
+  '<div class="c-bar"><i style="--w:'+Math.max(4,n/3*100)+'%"></i></div>'+
+  MVH.map(function(h){ var d=S.mvd[h.k]; return '<div class="c-mr'+(d?' done':'')+'"><img src="'+h.img+'" alt=""><span class="x"><b>'+h.n+'</b><small>'+h.c+' · '+h.bd+' Bed · '+h.ba+' Bath</small><em>'+(d?ic('checkc','#2e7d5c',13)+d:'Handed over '+h.ho)+'</em></span><button class="c-cta sm press'+(d?' lt':'')+'" data-act="movein" data-k="'+h.k+'">'+(d?'Change':'Book')+'</button></div>'; }).join(''); }
+function moveC(){ if(S.mvn===3) return moveC3(); var done=!!S.movein;
   return '<div class="ph"><img src="'+IMG.interior2+'" alt=""><div class="pl"><span>'+ic('bed','#1c1c1a',16,1.8)+'3 Bed</span><span>'+ic('bath','#1c1c1a',16,1.8)+'4 Bath</span><span>'+ic('key','#1c1c1a',15,2)+(done?'Booked':'Ready')+'</span></div></div>'+
   '<div class="bd"><b>'+(done?'See you on '+S.movein.split(' · ')[0]:'Your home is ready to move in')+'</b><small>'+(done?S.movein+' · we’ll confirm shortly':'Pick a date and we’ll arrange access cards, utilities and the permit.')+'</small></div>'+
   '<div class="ft"><span><small>Villa 22 · Bloom Gardens</small><b>Handed over 15 Oct</b></span><button class="c-cta press'+(done?' lt':'')+'" data-act="movein">'+(done?ic('cal','#1c1c1a',16)+'Change':'Book move-in')+'</button></div>'; }
@@ -820,7 +849,7 @@ function homeC(){
       '<div class="bpu"><div class="h"><b>Villa no. 202</b>'+ic('checkc','#2e7d5c',20)+'</div><small>Maintenance fee</small><div class="amt">'+dh()+'12,400</div><span class="s" style="background:rgba(46,125,92,.12);color:#2e7d5c">Payment confirmed</span></div>'+
     '</div></div>'+
   '<div class="c-sec" data-r><div class="c-h"><h2>Service requests</h2><button class="c-see" data-tab-go="req">See all</button></div><div class="c-req"><div class="c-row"><span class="ic">'+ic('fan','#1c1c1a',22)+'</span><span class="x" data-tab-go="req"><b>AC Filter Check</b><small>Apt 1810 · Technician assigned</small></span><button class="c-cb press" data-act="gochat">'+ic('chat','#fff',18,1.8)+'</button><button class="c-cb press" data-act="call">'+ic('phone','#fff',18,1.8)+'</button></div><div class="c-bar"><i style="--w:60%"></i></div><div class="c-sm"><span>In progress</span><span>ETA today, 4 pm</span></div></div></div>'+
-  '<div class="c-sec" data-r><div class="c-h"><h2>Move in</h2></div><div class="c-mv" id="mvcard">'+moveC()+'</div></div>'+
+  '<div class="c-sec" data-r><div class="c-h"><h2>Move in</h2>'+(S.mvn===3?'<span class="c-see">3 ready</span>':'')+'</div><div class="'+(S.mvn===3?'c-mv3':'c-mv')+'" id="mvcard">'+moveC()+'</div></div>'+
   '<div class="c-sec" data-r><div class="c-h"><h2>Quick actions</h2><button class="c-see" data-act="help">Help</button></div><div class="c-qa">'+QA.map(function(q){ return '<button class="c-q press" data-act="qa" data-k="'+q[2]+'">'+ic(q[0],'#1c1c1a',24,1.7)+'<span><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'; }).join('')+'</div></div>'+
   '<div class="c-sec" data-r><div class="c-h"><h2>My tenant</h2><button class="c-see" data-act="pdf">Contract</button></div>'+
     '<div class="c-fac"><div class="c-f">'+ic('receipt','#1c1c1a',22,1.7)+'<b>AED 95k<small style="display:block;font-size:11.5px;color:#6b665c;font-weight:400;margin-top:2px">Annual rent</small></b></div><div class="c-f">'+ic('clock','#1c1c1a',22,1.7)+'<b>200 days<small style="display:block;font-size:11.5px;color:#6b665c;font-weight:400;margin-top:2px">Lease left</small></b></div><div class="c-f">'+ic('cal','#1c1c1a',22,1.7)+'<b>30 May<small style="display:block;font-size:11.5px;color:#6b665c;font-weight:400;margin-top:2px">Renews 2027</small></b></div></div>'+
@@ -885,7 +914,8 @@ function refreshHome(){ var v=document.getElementById('v-home'), y=v.scrollTop; 
 var MOVE={day:1,slot:0};
 function movein(){ var b=S.v!=='a', d=new Date(), days=[]; for(var i=1;i<=10;i++){ var x=new Date(d.getTime()+i*864e5); days.push(x); }
   var slots=['9–11 am','11–1 pm','3–5 pm'];
-  sheet('<h3>Book your move-in</h3><p class="sub">Villa 22 · Bloom Gardens. Access cards, DEWA and the permit are arranged for this date.</p>'+
+  var hm=MOVE.k?MVH.filter(function(h){return h.k===MOVE.k})[0]:null;
+  sheet('<h3>Book your move-in</h3><p class="sub">'+(hm?hm.n+' · '+hm.c:'Villa 22 · Bloom Gardens')+'. Access cards, DEWA and the permit are arranged for this date.</p>'+
     '<div class="lbl">Date</div><div class="days">'+days.map(function(x,i){ return '<button class="day'+(i===MOVE.day?' on':'')+'" data-day="'+i+'"><small>'+x.toLocaleDateString('en-GB',{weekday:'short'})+'</small><b>'+x.getDate()+'</b><small>'+x.toLocaleDateString('en-GB',{month:'short'})+'</small></button>'; }).join('')+'</div>'+
     '<div class="lbl">Time slot</div><div class="slots">'+slots.map(function(s,i){ return '<button class="slot'+(i===MOVE.slot?' on':'')+'" data-slot="'+i+'">'+s+'</button>'; }).join('')+'</div>'+
     '<button class="'+(b?'bbtn':'btn')+' press" data-act="moveok">Confirm move-in date</button>');
@@ -894,8 +924,9 @@ function pay(id){ var p=findPay(id), b=S.v!=='a';
   sheet('<h3>'+p.u+'</h3><p class="sub">'+p.n+' · '+(PAY.miss.indexOf(p)>-1?'overdue':'upcoming')+'</p><div class="kv"><span>Amount</span><b>AED '+money(p.a)+'</b></div><div class="kv"><span>Late fee</span><b>'+(PAY.miss.indexOf(p)>-1?'AED 1,350':'—')+'</b></div><div class="kv"><span>Pay with</span><b>Visa •••• 6411</b></div>'+
   '<button class="'+(b?'bbtn':'btn')+' press" data-act="payok" data-id="'+id+'" style="margin-top:20px">Pay AED '+money(p.a+(PAY.miss.indexOf(p)>-1?1350:0))+'</button>'); }
 document.addEventListener('click',function(e){
-  var t=e.target.closest('[data-set],[data-tab],[data-tab-go],[data-chip],[data-ptab],[data-act],[data-day],[data-slot],[data-q],#scrim'); if(!t) return;
+  var t=e.target.closest('[data-mv],[data-set],[data-tab],[data-tab-go],[data-chip],[data-ptab],[data-act],[data-day],[data-slot],[data-q],#scrim'); if(!t) return;
   if(t.id==='scrim') return close();
+  if(t.dataset.mv){ S.mvn=+t.dataset.mv; render(); setTimeout(function(){ var m=document.getElementById('mvcard'); if(m) m.scrollIntoView({block:'center'}); },60); return; }
   if(t.dataset.set){ if(t.dataset.set===S.v) return; S.v=t.dataset.set; try{localStorage.setItem('bca-v',S.v)}catch(_){} S.tab='home'; render(); return; }
   if(t.dataset.tab) return show(t.dataset.tab);
   if(t.dataset.tabGo) return show(t.dataset.tabGo);
@@ -921,8 +952,8 @@ document.addEventListener('click',function(e){
     case 'renewok': var kk=t.dataset.k; return busy(t,function(){ S.att[kk]='Submitted'; refreshHome(); okSheet('Submitted','We’ll update you within 1 working day.'); });
     case 'bills': return sheet('<h3>Uploaded bills</h3><p class="sub">From Rahul Verma · Apt 1810</p>'+[['DEWA final bill','AED 642 · Paid'],['Chiller (Empower)','AED 310 · Paid'],['Internet (du)','Closed']].map(function(x){ return '<div class="opt"><span class="ci" style="background:#fff">'+ic('receipt',b?'#1c1c1a':'#922a22',18)+'</span><span class="x"><b>'+x[0]+'</b><small>'+x[1]+'</small></span>'+ic('checkc','#2e7d5c',18)+'</div>'; }).join(''));
     case 'eidinfo': return toast('Reminder set for 3 days before expiry');
-    case 'movein': return movein();
-    case 'moveok': var dd=MOVE._days[MOVE.day]; return busy(t,function(){ S.movein=dd.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+MOVE._slots[MOVE.slot]; refreshHome(); okSheet('Move-in requested','We’ve booked '+S.movein+'. Access cards and utilities will be ready.'); });
+    case 'movein': MOVE.k=t.dataset.k||null; return movein();
+    case 'moveok': var dd=MOVE._days[MOVE.day]; return busy(t,function(){ var lab=dd.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+MOVE._slots[MOVE.slot]; if(MOVE.k&&S.mvn===3) S.mvd[MOVE.k]=lab; else S.movein=lab; refreshHome(); okSheet('Move-in requested','We’ve booked '+lab+'. Access cards and utilities will be ready.'); });
     case 'help': return sheet('<h3>How can we help?</h3><p class="sub">Choose where the issue is</p>'+[['home','Inside my unit','Repairs, AC, plumbing & bills'],['building','Common areas','Lifts, pool, gym, parking'],['chat','Talk to us','Chat or call the community team']].map(function(o){ return '<button class="opt press" data-act="'+(o[1]==='Talk to us'?'gochat':'newreq')+'"><span class="ci" style="background:#fff">'+ic(o[0],b?'#1c1c1a':'#922a22',18)+'</span><span class="x"><b>'+o[1]+'</b><small>'+o[2]+'</small></span>'+ic('chev','#8a847a',16)+'</button>'; }).join(''));
     case 'gochat': close(); return show('gpt');
     case 'newreq': return sheet('<h3>New request</h3><p class="sub">What do you need help with?</p><div class="slots" style="grid-template-columns:1fr 1fr">'+['AC','Plumbing','Electrical','Pest control','Cleaning','Other'].map(function(x,i){ return '<button class="slot'+(i?'':' on')+'" data-slot="'+i+'">'+x+'</button>'; }).join('')+'</div><button class="'+(b?'bbtn':'btn')+' press" data-act="reqok">Raise request</button>');
