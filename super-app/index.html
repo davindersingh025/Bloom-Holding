@@ -383,11 +383,11 @@ var UNITS={
 var ST={live:'#2e7d5c',rent:'#4c5ebf',hol:'#0e9fb5',vacant:'#b88740',uc:'#922a22'};
 var PERS=[
  {k:'inv_uc',n:'Investor',s:'Under construction',units:['h802'],price:'AED 19,51,000',live:null,uc:true,
-  note:['Investor · under construction','Not handed over yet, so there is no community view and no My properties tab. The home is the payments dashboard.',['Upper navigation: profile, notifications, help','Total properties and purchase price stay as today','Unit details with construction progress','Immediate attention: missed and upcoming payments','Payment updates with the 3 latest transactions and View more','Sales updates and Bloom World','Bottom navigation: Dashboard, Payments, Bloom GPT']]},
+  note:['Investor · under construction','Not handed over yet, so there is no community view and no My properties tab. The home is the payments dashboard.',['Upper navigation: profile, notifications, help','Total properties and purchase price stay as today','Unit details with construction progress','Immediate attention: missed and upcoming payments','Payment updates with the 3 latest transactions and View more','New Launches and Bloom World','Bottom navigation: Dashboard, Payments, Bloom GPT']]},
  {k:'inv_ho',n:'Investor',s:'Handed over',units:['q1204','pr07','t2204'],price:'AED 58,40,000',live:null,
   note:['Investor · handed over','Owns handed-over units but does not live in any, so the Owner / Community switch is hidden.',['Unit details for single or multiple units: BHK, area, amenities, owners with shareholding, title deed and SPA','Rented unit shows the tenant; holiday home shows StayCo and bookings','Vacant unit shows the Move in button','Immediate attention: missed and upcoming payments, move-out request (Give NOC or Decline)','Service request status only when one is raised']]},
  {k:'own_res',n:'Owner + Resident',s:'Also ADHA owners',units:['v138','h802'],price:'AED 61,26,000',live:'v138',
-  note:['Owner + resident','Lives in one unit and owns another. The Owner / Community switch appears because the owner has moved in.',['Owner: every unit, payments, sales updates, Bloom World','Community: stories (Phase II), the moved-in unit with Move out, action items, quick links','Action items: Emirates ID, service charge due or overdue','ADHA owners follow the same layout']]},
+  note:['Owner + resident','Lives in one unit and owns another. The Owner / Community switch appears because the owner has moved in.',['Owner: every unit, payments, New Launches, Bloom World','Community: stories (Phase II), the moved-in unit with Move out, action items, quick links','Action items: Emirates ID, service charge due or overdue','ADHA owners follow the same layout']]},
  {k:'res_ll',n:'Resident + Landlord',s:'Lives in one, rents one',units:['v138','q1204'],price:'AED 64,10,000',live:'v138',
   note:['Resident + landlord','Lives in their own villa and rents out an apartment.',['Owner: the rented unit shows the tenant, and the move-out request needs your NOC','Community: only the villa they live in, with community quick links','Dynamic cards disappear once handled']]},
  {k:'ten_ll',n:'Tenant + Landlord',s:'Rents home, owns units',units:['q1204','pr07'],price:'AED 39,85,000',live:'s905',
@@ -492,7 +492,7 @@ function payments(){var p=per(), all=[];
  return '<div class="sec">'+sh2('Payment updates','<button class="see" data-tab="pay">View more</button>')+'<div class="pcard">'+
   recent.map(function(r){return txRow(r[0],r[1])}).join('')+'<button class="vm press" data-tab="pay">View more'+I('chev')+'</button></div></div>'}
 
-function sales(){return '<div class="sec">'+sh2('Sales updates','<span class="tagp">New</span>')+
+function sales(){return '<div class="sec">'+sh2('New Launches')+
  '<div class="sale press" data-act="eoi"><div class="im"><img src="'+IMG+'aerial.jpg" alt=""><span>New launch</span></div><div class="bd"><span class="x"><b>Bloom Gardens · Phase 3</b><small>Townhouses from AED 2.4M · owners get first access</small></span><button class="btn sm press">Register</button></div></div></div>'}
 
 function explore(){var E=[['Bloom Properties','bld','villa.jpg'],['Bloom Education','edu'],['Bloom Hospitality','hosp'],['Bloom Landscape','leaf'],['BFM','fm']];
