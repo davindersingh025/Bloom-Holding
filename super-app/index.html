@@ -382,7 +382,7 @@ var UNITS={
 };
 var ST={live:'#2e7d5c',rent:'#4c5ebf',hol:'#0e9fb5',vacant:'#b88740',uc:'#922a22'};
 var PERS=[
- {k:'inv_uc',n:'Investor',s:'Under construction',units:['h802'],price:'AED 19,51,000',live:null,uc:true,
+ {k:'inv_uc',n:'Off-plan Investor',s:'Under construction',units:['h802'],price:'AED 19,51,000',live:null,uc:true,
   note:['Investor · under construction','Not handed over yet, so there is no community view and no My properties tab. The home is the payments dashboard.',['Upper navigation: profile, notifications, help','Total properties and purchase price stay as today','Unit details with construction progress','Immediate attention: missed and upcoming payments','Payment updates with the 3 latest transactions and View more','New Launches and Bloom World','Bottom navigation: Dashboard, Payments, Bloom GPT']]},
  {k:'inv_ho',n:'Investor',s:'Handed over',units:['q1204','pr07','t2204'],price:'AED 58,40,000',live:null,
   note:['Investor · handed over','Owns handed-over units but does not live in any, so the Owner / Community switch is hidden.',['Unit details for single or multiple units: BHK, area, amenities, owners with shareholding, title deed and SPA','Rented unit shows the tenant; holiday home shows StayCo and bookings','Vacant unit shows the Move in button','Immediate attention: missed and upcoming payments, move-out request (Give NOC or Decline)','Service request status only when one is raised']]},
@@ -595,7 +595,7 @@ document.addEventListener('click',function(e){var b=e.target.closest('[data-amo]
   case 'help': return helpSheet();
   case 'raise': return busy(b,function(){ okSheet('Request raised','“'+d.k+'” · Ref #SR-'+(9200+Math.floor(Math.random()*90))+'. We’ll update you here and by email.'); S.sr=true; render(true); });
   case 'notif': return sheet('<h3>Notifications</h3><p class="sub">Latest updates across your units.</p>'+[['Service charge Q4 is overdue','Bloom Gardens · 2 days ago'],['Ahmed requested to move out','Marina Quays 1204 · today'],['Construction reached 72%','Bloom Heights 802 · this week'],['Phase 3 launch: early access','Bloom Gardens · this week']].map(function(n){return '<div class="nrow"><span class="d"></span><span><b>'+n[0]+'</b><small>'+n[1]+'</small></span></div>'}).join('')+'<button class="btn full lt press" style="margin-top:14px" data-act="close">Close</button>');
-  case 'profile': return sheet('<h3>Profile</h3><p class="sub">'+per().n+' · '+per().s+'</p><div class="kv"><span>Meena Raj</span><b>Personal details, language</b></div><div class="kv"><span>Email</span><b>meena.raj@mail.com</b></div><div class="kv"><span>Phone</span><b>+971 50 123 4567</b></div><div class="kv"><span>Emirates ID</span><b>Valid · Mar 2029</b></div><div class="kv"><span>Language</span><b>English</b></div><button class="btn full lt press" style="margin-top:16px" data-act="close">Log out</button>');
+  case 'profile': return sheet('<h3>Profile</h3><p class="sub">'+per().n+'</p><div class="kv"><span>Meena Raj</span><b>Personal details, language</b></div><div class="kv"><span>Email</span><b>meena.raj@mail.com</b></div><div class="kv"><span>Phone</span><b>+971 50 123 4567</b></div><div class="kv"><span>Emirates ID</span><b>Valid · Mar 2029</b></div><div class="kv"><span>Language</span><b>English</b></div><button class="btn full lt press" style="margin-top:16px" data-act="close">Log out</button>');
   case 'more': S.open=!S.open; var det=b.nextElementSibling; det.classList.toggle('open',S.open); b.classList.toggle('open',S.open); b.firstChild.textContent=S.open?'Hide details':'Unit details, owners & documents'; return;
   case 'movein': return moveSheet(d.k);
   case 'moveok': var dd=MV.days[MV.day]; return busy(b,function(){ S.movein[MV.k]=dd.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+MV.slots[MV.slot]; refreshCard(); okSheet('Move-in booked','We’ll have access cards, utilities and the permit ready for '+S.movein[MV.k]+'.'); });
@@ -628,8 +628,8 @@ function resolve(id){ S.done[id]=1; var el=document.querySelector('.at[data-id="
 /* swipe down to close the sheet */
 (function(){var sy=null,sh=$('#sh');sh.addEventListener('touchstart',function(e){if(sh.scrollTop<=0)sy=e.touches[0].clientY},{passive:true});sh.addEventListener('touchmove',function(e){if(sy==null)return;var dy=e.touches[0].clientY-sy;if(dy>0)sh.style.transform='translateY('+dy+'px)'},{passive:true});sh.addEventListener('touchend',function(e){if(sy==null)return;var dy=e.changedTouches[0].clientY-sy;sh.style.transform='';sy=null;if(dy>90)close()})})();
 /* persona controls */
-$('#vt').innerHTML=PERS.map(function(p,i){return '<button data-p="'+i+'">'+p.n+'<small>'+p.s+'</small></button>'}).join('');
-$('#vsel').innerHTML=PERS.map(function(p,i){return '<option value="'+i+'">'+p.n+' · '+p.s+'</option>'}).join('');
+$('#vt').innerHTML=PERS.map(function(p,i){return '<button data-p="'+i+'">'+p.n+'</button>'}).join('');
+$('#vsel').innerHTML=PERS.map(function(p,i){return '<option value="'+i+'">'+p.n+'</option>'}).join('');
 $('#vsel').addEventListener('change',function(){reset(+this.value);render()});
 render();
 </script>
