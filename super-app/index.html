@@ -322,6 +322,16 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .qrb{width:150px;height:150px;border-radius:16px;background:var(--tile);display:grid;place-items:center;margin:0 auto 12px;color:var(--ink);animation:pop .5s var(--spring)}
 .qrb svg{stroke-width:1.4}
 .hg button svg{color:var(--pri)}
+
+.cnv{align-items:flex-end;overflow:visible}
+.cnv button{height:56px;font-size:10.5px}
+.cnv button.on:not(.ct){background:transparent;color:var(--pri)}
+.cnv .ct{justify-content:flex-end;gap:3px;background:transparent!important;color:#6b665c}
+.cnv .ct.on{color:var(--pri)}
+.cnv .ct .c{width:54px;height:54px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;margin-top:-34px;box-shadow:0 0 0 5px #fff,0 10px 18px -8px rgba(122,42,34,.8);transition:transform .2s var(--ease)}
+.cnv .ct:active .c{transform:scale(.94)}
+.cnv .ct.on .c{box-shadow:0 0 0 5px #fff,0 0 0 9px rgba(146,42,34,.15),0 10px 18px -8px rgba(122,42,34,.8)}
+.cnv .ct .c svg{width:22px;height:22px}
 </style>
 </head>
 <body>
@@ -354,7 +364,7 @@ fan:'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 10c0-4 1-6 3-6s3 3 0 5M14 12c4 0 6 1
 check:'m5 12.5 4.5 4.5L19 7.5',checkc:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.3l2.7 2.7L16 9.6',arrow:'M7 17 17 7M9 7h8v8',x:'M6 6l12 12M18 6 6 18',
 edu:'M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5M22 9v6',hosp:'M3 21V10l9-6 9 6v11M9 21v-6h6v6M3 13h18',leaf:'M5 21c0-9 5-15 15-16-1 10-7 15-15 16ZM5 21l8-8',
 fm:'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',permit:'M4 4h16v16H4zM8 9h8M8 13h5M15 16l1.5 1.5L20 14',sc:'M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6',
-tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2v2M18 18h2v2h-2M7 7h.01M17 7h.01M7 17h.01',box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',sos:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v6M12 16.5v.01',poll:'M4 20V10M10 20V4M16 20v-7M22 20H2',paw:'M12 20c-3 0-5-2-5-4s2-4 5-4 5 2 5 4-2 4-5 4zM6 10a1.5 2 0 1 0 0-.01M10 6.5a1.5 2 0 1 0 0-.01M14 6.5a1.5 2 0 1 0 0-.01M18 10a1.5 2 0 1 0 0-.01',bolt:'M13 3 5 14h6l-1 7 8-11h-6Z',lost:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2ZM4 19V5M8 7h7',staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M17 11l2 2 4-4',paint:'M4 4h14v5H4zM18 6.5h2v5h-8v3M11 14.5h2V21h-2z',bell2:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',chatb:'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
+tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',list:'M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2v2M18 18h2v2h-2M7 7h.01M17 7h.01M7 17h.01',box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',sos:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v6M12 16.5v.01',poll:'M4 20V10M10 20V4M16 20v-7M22 20H2',paw:'M12 20c-3 0-5-2-5-4s2-4 5-4 5 2 5 4-2 4-5 4zM6 10a1.5 2 0 1 0 0-.01M10 6.5a1.5 2 0 1 0 0-.01M14 6.5a1.5 2 0 1 0 0-.01M18 10a1.5 2 0 1 0 0-.01',bolt:'M13 3 5 14h6l-1 7 8-11h-6Z',lost:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2ZM4 19V5M8 7h7',staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M17 11l2 2 4-4',paint:'M4 4h14v5H4zM18 6.5h2v5h-8v3M11 14.5h2V21h-2z',bell2:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',chatb:'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
 function I(n,s){return '<svg class="i" viewBox="0 0 24 24"'+(s?' style="width:'+s+'px;height:'+s+'px"':'')+'><path d="'+P[n]+'"/></svg>'}
 var DH='<svg class="dh" viewBox="0 0 14 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 1h3.2a5.25 5.25 0 0 1 0 10.5H3Z"/><path d="M1 5h12M1 7.5h12"/></svg>';
 function aed(n){return n.toLocaleString('en-US')}
@@ -499,6 +509,13 @@ function homeAll(){var us=unitsOf(); if(S.u>=us.length) S.u=0;
   attention()+srBlock()+payments()+sales()+explore()}
 function homeLive(){var u=UNITS[per().live];
  return header()+stories()+'<div class="sec">'+sh2('Your home')+unitCard([u],0,true)+'</div>'+attention()+quick()+gate()+srBlock()+notice()}
+function listView(t,sub,rows){return '<div class="ttl"><h1>'+t+'</h1><p>'+sub+'</p></div><div class="sec" style="margin-top:16px"><div class="plist">'+rows.map(function(r){return '<button class="tx press" style="width:100%;text-align:left" data-t="'+(r[4]||'Opens '+r[0])+'"><span class="ic">'+I(r[3]||'doc')+'</span><span class="x"><b>'+r[0]+'</b><small>'+r[1]+'</small></span>'+(r[2]?'<span class="st '+(r[5]||'amb')+'">'+r[2]+'</span>':I('chev'))+'</button>'}).join('')+'</div></div>'}
+function reqView(){return listView('Requests','Service requests for '+UNITS[per().live].comm+'.',[['AC Filter Check','Ref #SR-9042 · Maintenance','In progress','fan'],['Parking sticker','Ref #SR-9011 · Access & Parking','Raised','car'],['Water leak','Ref #SR-8870 · Maintenance · Completed','Completed','tool','Opens Water leak','ok']])+'<div class="sec" style="margin-top:12px"><button class="btn full press" data-act="help">'+I('help',16)+'Raise a new request</button></div>'}
+function docView(){var u=UNITS[per().live]; var rows=[['Emirates ID','Expires in 12 days. Upload a renewed copy','Expiring','card','Opens Emirates ID','red']];
+ if(u.tenantSelf) rows.push(['Tenancy contract','Valid until 12 Jan 2027','','contract'],['Ejari','Registered','','doc']); else rows.push(['Title deed','Valid','','dl'],['Sales agreement','Valid','','dl']);
+ rows.push(['Access card','Card #BH-20931 · expires 28 Nov 2026','','card'],['Move-in permit','Issued Mar 2025','','permit']);
+ return listView('Documents','Your documents for '+u.comm+' · '+u.no+'.',rows)}
+function profView(){return listView('Profile','Account and app settings.',[['Meena Raj','Personal details, language','','user'],['Switch view','Owner · Community','','grid','Use the Owner / Community switch on Home'],['Notifications','Payments, requests, community','','bell'],['Log out','','','out']])}
 function hubView(){return '<div class="ttl"><h1>My Community</h1><p>'+UNITS[per().live||per().units[0]].comm+' · services for your home.</p></div>'+HUB.map(function(g){return '<div class="sec" style="margin-top:20px"><div class="pl-h" style="padding:0 0 10px">'+g[0]+'</div><div class="g3">'+g[1].map(function(h){var act=h[2]&&h[2]!=='Soon'?h[2]:null; return '<button class="hbt press" '+(act?'data-act="'+act+'"':'data-t="Opens '+h[0]+'"')+'>'+(h[2]==='Soon'?'<em>Soon</em>':'')+'<span class="c">'+I(h[1])+'</span>'+h[0]+'</button>'}).join('')+'</div></div>'}).join('')}
 function payView(){var p=per(), tabs=[['all','All units']].concat(p.units.map(function(k){return [k,UNITS[k].comm]}));
  var rows=[]; p.units.forEach(function(k){ if(S.ptab==='all'||S.ptab===k)(PAYS[k]||[]).forEach(function(x){rows.push([x,k])})});
@@ -515,13 +532,16 @@ var ANS={'When is my next payment due?':'Your next payment is due on 1 Dec 2026:
 function gptView(){var q=Object.keys(ANS);
  return '<div class="ttl"><h1>Bloom GPT</h1><p>Ask about payments, documents or your community.</p></div><div class="chat" id="chat"><div class="msg ai">Hi Meena, how can I help today?</div>'+S.chat.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join('')+
  '<div class="sugg">'+q.map(function(x){return '<button class="press" data-q="'+x+'">'+x+'</button>'}).join('')+'</div></div>'}
-function nav(){var uc=per().uc, it=[['home','home','Dashboard'],['props','bld','My properties'],['pay','wal','Payments'],['gpt','orb','Bloom GPT']];
+function nav(){
+ if(S.mode==='live'){ var c=[['home','home','Home'],['req','list','Requests'],['hub','grid','My Community',1],['doc','doc','Documents'],['prof','user','Profile']];
+  return '<div class="nv cnv">'+c.map(function(x){return '<button class="'+(x[3]?'ct ':'')+(S.tab===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[3]?'<span class="c">'+I(x[1])+'</span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'; }
+ var uc=per().uc, it=[['home','home','Dashboard'],['props','bld','My properties'],['pay','wal','Payments'],['gpt','orb','Bloom GPT']];
  if(uc) it=it.filter(function(x){return x[0]!=='props'});
  return '<div class="nv">'+it.map(function(x){return '<button class="'+(S.tab===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[1]==='orb'?'<span class="orb"></span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'}
 
 function render(keepScroll){var sc=$('#sc'), y=sc.scrollTop, h;
  if(S.tab==='home') h=S.mode==='live'?homeLive():homeAll();
- else if(S.tab==='pay') h=payView(); else if(S.tab==='props') h=propsView(); else if(S.tab==='hub') h=hubView(); else h=gptView();
+ else if(S.tab==='pay') h=payView(); else if(S.tab==='props') h=propsView(); else if(S.tab==='hub') h=hubView(); else if(S.tab==='req') h=reqView(); else if(S.tab==='doc') h=docView(); else if(S.tab==='prof') h=profView(); else h=gptView();
  sc.innerHTML=sbar()+'<div class="'+(keepScroll?'':'fd')+'">'+h+'</div>';
  $('#nvw').innerHTML=nav();
  if(keepScroll) sc.scrollTop=y; else sc.scrollTop=0;
