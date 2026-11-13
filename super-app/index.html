@@ -411,6 +411,7 @@ var HUB=[['Access & security',[['Visitor access','qr','visit'],['Deliveries','bo
  ['Community',[['Amenities','pool','amen'],['Notices','bell2'],['Events','spark','Soon'],['Polls & surveys','poll'],['Community wall','chatb','Soon'],['Lost & found','lost'],['Directory','phone'],['Community rules','book']]]];
 
 /* ---------------- state ---------------- */
+var VIEW=(function(){try{return window.BLOOM_VIEW||new URLSearchParams(location.search).get('view')||''}catch(e){return ''}})();
 var S;
 function reset(keep){ var p=keep!=null?keep:(function(){try{var q=new URLSearchParams(location.search).get('p');for(var i=0;i<PERS.length;i++)if(PERS[i].k===q)return i}catch(e){}return 2})();
  S={p:p,mode:'all',tab:'home',u:0,open:false,done:{},sr:true,dyn:true,movein:{},moveout:false,ptab:'all',chat:[],seen:{},noc:null}; }
@@ -421,7 +422,7 @@ function unitsOf(){return per().units.map(function(k){return UNITS[k]})}
 
 /* ---------------- shared bits ---------------- */
 function sbar(){return '<div class="sb"><span>9:41</span><span><svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="#1c1c1a"/><rect x="5" y="5" width="3" height="6" rx="1" fill="#1c1c1a"/><rect x="10" y="2.5" width="3" height="8.5" rx="1" fill="#1c1c1a"/><rect x="15" y="0" width="3" height="11" rx="1" fill="#1c1c1a"/></svg>5G <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="#1c1c1a" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#1c1c1a"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="#1c1c1a" opacity=".4"/></svg></span></div>'}
-function toggle(){var p=per(); if(!p.live) return '';
+function toggle(){var p=per(); if(!p.live||VIEW==='owner') return '';
  return '<div class="seg'+(S.mode==='live'?' r':'')+'"><i></i><button data-mode="all" class="'+(S.mode==='all'?'on':'')+'">'+I('home',17)+'Owner<em>'+unitsOf().length+'</em></button><button data-mode="live" class="'+(S.mode==='live'?'on':'')+'">'+I('bld',17)+'Community</button></div>'}
 function header(){var live=S.mode==='live';
  var right='<button class="sq press" id="hb" data-act="help" aria-label="Need help">'+I('help')+'</button><button class="sq press" data-act="notif" aria-label="Notifications">'+I('bell')+'<em></em></button>';
@@ -545,9 +546,9 @@ function render(keepScroll){var sc=$('#sc'), y=sc.scrollTop, h;
  sc.innerHTML=sbar()+'<div class="'+(keepScroll?'':'fd')+'">'+h+'</div>';
  $('#nvw').innerHTML=nav();
  if(keepScroll) sc.scrollTop=y; else sc.scrollTop=0;
- var p=per(); $('#nt').innerHTML='<h2>'+p.note[0]+'</h2><p>'+p.note[1]+'</p><ul>'+p.note[2].map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'+
+ var p=per(); var nb=p.note[2].filter(function(x){return VIEW!=='owner'||!/^Community|^You live|Owner \/ Community|^Action items: Emirates|Dynamic cards/.test(x)}).map(function(x){if(VIEW!=='owner')return x; x=x.replace(/^Owner: /,''); return x.charAt(0).toUpperCase()+x.slice(1)}); $('#nt').innerHTML='<h2>'+p.note[0]+'</h2><p>'+(VIEW==='owner'?p.note[1].replace(/ The Owner \/ Community switch[^.]*\./,'').replace(/, so the Owner \/ Community switch is hidden/,''):p.note[1])+'</p><ul>'+nb.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'+
   '<div class="lb">Dynamic fields</div><div class="sim"><div><b>Show action items & service request</b><small>They only appear when an action is needed or an SR is raised</small></div><button class="sk'+(S.dyn?' on':'')+'" data-act="dyn" aria-label="Toggle dynamic fields"></button></div>'+
-  '<div class="lb">Prototype</div><button class="btn full lt press" data-act="restart">Restart</button>';
+  (VIEW==='owner'?'<div class="lb">Owner view</div><p style="margin:0">This link shows the Owner experience only. The Community view is not included.</p>':'')+'<div class="lb">Prototype</div><button class="btn full lt press" data-act="restart">Restart</button>';
  document.querySelectorAll('#vt button').forEach(function(b){b.classList.toggle('on',+b.dataset.p===S.p)}); $('#vsel').value=S.p;
  setTimeout(function(){document.querySelectorAll('.bar').forEach(function(b){b.classList.add('go')})},60);
  var hb=$('#hb'); if(hb&&!keepScroll){setTimeout(function(){hb.classList.add('open')},700);setTimeout(function(){hb.classList.remove('open')},3200)}
