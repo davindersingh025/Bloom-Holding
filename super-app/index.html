@@ -464,7 +464,7 @@ function attItems(){var p=per(), it=[];
   if(lu.tenantSelf) it.push({id:'renew',ic:'contract',t:'Contract getting expired',s:'Soho Square · Unit 905',lv:['60 days','amb'],who:'Tenancy ends 12 Jan 2027',amt:'',btn:[['Renew','renew']]});
   else it.push({id:'p6',ic:'sc',t:'Service charge overdue',s:lu.comm+' · '+lu.no,lv:['Overdue','red'],who:'Service charge Q4 · due 30 Oct',amt:14550,btn:[['Pay now','pay','p6']]});
  } else {
-  p.units.forEach(function(k){(PAYS[k]||[]).forEach(function(x){ if(x.id&&!S.done[x.id]&&(x.s==='miss'||x.s==='due')) it.push({id:x.id,ic:x.s==='miss'?'alert':'cal',t:(x.s==='miss'?'Missed payment':'Upcoming payment'),s:UNITS[k].comm+' · '+UNITS[k].no,lv:x.s==='miss'?['Overdue','red']:['Upcoming','amb'],who:x.t+' · '+x.d,amt:x.a,btn:[[x.s==='miss'?'Pay now':'Pay','pay',x.id]]}); })});
+  p.units.forEach(function(k){(PAYS[k]||[]).forEach(function(x){ if(x.id&&!S.done[x.id]&&(x.s==='miss'||x.s==='due')) it.push({id:x.id,ic:x.s==='miss'?'alert':'cal',t:(x.s==='miss'?'Missed payment':'Upcoming payment'),s:UNITS[k].comm+' · '+UNITS[k].no,lv:x.s==='miss'?['Overdue','red']:['Upcoming','amb'],who:x.t+' · '+x.d,amt:x.a,btn:[['Pay now','pay',x.id]]}); })});
   if(p.units.indexOf('q1204')>-1) it.splice(1,0,{id:'mo',ic:'out',t:'Move out request: your NOC is needed',s:'Marina Quays · Unit 1204',lv:['Action','red'],who:'Ahmed wants to move out on 30 Oct 2026',amt:'',btn:[['Give NOC','noc','ok'],['Decline','noc','no']]});
  }
  return it.filter(function(x){return !S.done[x.id]}); }
