@@ -169,7 +169,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .tx .x{flex:1;min-width:0}.tx .x b{display:block;font-size:13.5px;font-weight:500}.tx .x small{display:block;font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx .a{text-align:right;flex:none}.tx .a b{display:block;font-size:13.5px;font-weight:600}
 .st{display:inline-block;font-size:11px;font-weight:600;padding:3px 7px;border-radius:7px;margin-top:3px}
-.st.ok{background:var(--okbg);color:var(--ok)}.st.nt{background:var(--tile);color:var(--ink)}.st.amb{background:var(--ambbg);color:#8f591c}.st.red{background:#f7e4e1;color:var(--pri)}
+.st.ok{background:var(--okbg);color:var(--ok)}.st.amb{background:var(--ambbg);color:#8f591c}.st.red{background:#f7e4e1;color:var(--pri)}
 .vm{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:44px;margin-top:6px;border-radius:12px;background:#fff;font-size:13px;font-weight:500}
 .vm svg{width:16px;height:16px}
 
@@ -355,137 +355,6 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .spn{width:14px;height:14px;border-radius:50%;border:2px solid rgba(184,135,64,.25);border-top-color:#b88740;animation:spn .9s linear infinite;flex:none}
 @keyframes spn{to{transform:rotate(360deg)}}
 .pay2 .vm{margin-top:0}
-
-/* ---------- sub screens v2 ---------- */
-.tb{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px 0}
-.tb>b{font-size:16px;font-weight:500;letter-spacing:-.2px}
-.tb .sq.ghost{background:transparent}
-.box{background:var(--tile);border-radius:16px;padding:6px}
-.wb{background:#fff;border-radius:12px;padding:2px 14px}
-.wb .kv:last-child{border-bottom:0}
-.wb+.wb,.box>*+*{margin-top:6px}
-.ptot.c3{grid-template-columns:repeat(3,1fr);margin:0}
-.ptot.c2{margin:0}
-.ptot.c3 b{font-size:17px}
-.ptot .rd{color:var(--pri)}
-.pc{display:block;width:100%;text-align:left;background:var(--tile);border-radius:16px;padding:6px}
-.pc+.pc{margin-top:12px}
-.pc .uph{height:150px}
-.pst{display:flex;align-items:center;gap:10px;background:var(--tile);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:12.5px}
-.pst .x{flex:1;min-width:0}.pst b{display:block;font-size:13px;font-weight:500}.pst small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
-.pst .d{width:8px;height:8px;border-radius:50%;background:var(--d);flex:none}
-.pst .btn{height:34px;padding:0 12px;border-radius:9px;font-size:12.5px}
-.hero{position:relative;height:220px;border-radius:16px;overflow:hidden}
-.hero img{width:100%;height:100%;object-fit:cover}
-.pcd{background:#fff;border-radius:12px;padding:14px;margin-bottom:6px}
-.pcd:last-child{margin-bottom:0}
-.pcd .r1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.pcd .r1 b{display:block;font-size:15px;font-weight:600;letter-spacing:-.2px}.pcd .r1 small{display:block;font-size:12.5px;color:var(--mut);margin-top:3px}
-.pcd .r2{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid #f1ece3}
-.pcd .r2 .lvl{font-size:11px}
-.pcd .r2 small{font-size:12px;color:var(--mut)}
-.gpt-in{display:flex;align-items:center;gap:12px;background:var(--tile);border-radius:16px;padding:14px}
-.gpt-in .orb{width:40px;height:40px;flex:none}
-.gpt-in b{display:block;font-size:15px;font-weight:500}.gpt-in small{display:block;font-size:12.5px;color:var(--mut);margin-top:2px}
-.sgl{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border-radius:12px;padding:12px;margin-bottom:6px;font-size:13.5px;font-weight:500}
-.sgl:last-child{margin-bottom:0}
-.sgl .ic{width:36px;height:36px;border-radius:10px;background:var(--tile);display:grid;place-items:center;color:var(--pri);flex:none}
-.sgl .ic svg{width:18px;height:18px}
-.sgl .x{flex:1;min-width:0}
-.sgl>svg{width:16px;height:16px;color:#8a847a}
-.cin{position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:6px 6px 6px 16px;box-shadow:0 10px 30px -14px rgba(0,0,0,.25);z-index:2}
-.cin span{flex:1;font-size:13.5px;color:#8a847a}
-.cin button{width:38px;height:38px;border-radius:11px;background:var(--pri);color:#fff;display:grid;place-items:center}
-.cin button svg{width:18px;height:18px}
-.rq{display:block;width:100%;text-align:left}
-.rq+.rq{margin-top:12px}
-.tl{position:relative;padding:4px 0}
-.tl .e{position:relative;display:flex;gap:12px;padding:10px 0}
-.tl .e::before{content:"";position:absolute;left:9px;top:30px;bottom:-10px;width:2px;background:var(--line)}
-.tl .e:last-child::before{display:none}
-.tl .e.on::before{background:var(--pri)}
-.tl .dt{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);background:#fff;flex:none;display:grid;place-items:center;position:relative;z-index:1}
-.tl .e.on .dt{background:var(--pri);border-color:var(--pri);color:#fff}
-.tl .e.on .dt svg{width:12px;height:12px;stroke-width:2.6}
-.tl .e.cur .dt{border-color:var(--pri)}
-.tl .e.cur .dt::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--pri)}
-.tl b{display:block;font-size:13.5px;font-weight:500}.tl small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
-.tl .e.off b{color:var(--mut);font-weight:400}
-.pho{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-.pho img,.pho button{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;display:block}
-.pho button{background:#fff;border:1.5px dashed #d9d2c5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.5px;color:var(--mut);font-weight:500}
-.pho button svg{width:18px;height:18px;color:var(--pri)}
-.tech{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px}
-.tech .av{width:42px;height:42px;border-radius:50%;background:var(--tile);display:grid;place-items:center;font-size:13px;font-weight:600;flex:none}
-.tech .x{flex:1;min-width:0}.tech b{display:block;font-size:14px;font-weight:500}.tech small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
-.tech button{width:40px;height:40px;border-radius:11px;background:var(--tile);color:var(--pri);display:grid;place-items:center}
-.tech button svg{width:18px;height:18px}
-.row2b{display:flex;gap:8px}.row2b .btn{flex:1}
-.fl{font-size:12.5px;font-weight:500;color:var(--mut);margin:0 0 8px 2px}
-.fld{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:0 14px;height:48px;font-size:14px}
-.fld+.fld{margin-top:6px}
-.fld .x{flex:1;min-width:0}.fld small{display:block;font-size:11.5px;color:var(--mut)}.fld b{display:block;font-weight:500;font-size:13.5px}
-.fld.tall{height:auto;padding:12px 14px;align-items:flex-start}
-.fld.tall p{margin:0;font-size:13.5px;line-height:1.45}
-.fld>svg{width:18px;height:18px;color:#8a847a}
-.fld .ic{width:30px;height:30px;border-radius:9px;background:var(--tile);display:grid;place-items:center;color:var(--pri);flex:none}
-.fld .ic svg{width:16px;height:16px}
-.opt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.opt button{height:40px;border-radius:10px;background:#fff;font-size:12.5px;font-weight:500;border:1.5px solid transparent}
-.opt button.on{border-color:var(--pri);color:var(--pri);background:#fbeeec}
-.opt button.off{color:#b5aea2;text-decoration:line-through}
-.box .days,.box .slots{margin:0}
-.box .day{background:#fff}.box .doc{background:#fff}.box>.lrow+.lrow,.box>.pcd+.pcd{margin-top:0}.box .slot{background:#fff}
-.box .day.on,.box .slot.on{background:var(--pri)}
-.amg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.amc{position:relative;height:118px;border-radius:12px;overflow:hidden;text-align:left;border:2px solid transparent}
-.amc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.amc::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6))}
-.amc span{position:absolute;left:10px;bottom:9px;right:10px;z-index:1;color:#fff}
-.amc b{display:block;font-size:13.5px;font-weight:500}.amc small{display:block;font-size:11px;opacity:.85;margin-top:1px}
-.amc.on{border-color:var(--pri);box-shadow:0 0 0 2px #fff inset}
-.amc .ck2{position:absolute;right:8px;top:8px;width:24px;height:24px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;z-index:1}
-.amc .ck2 svg{width:14px;height:14px;stroke-width:2.6}
-.stp{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;padding:8px 8px 8px 14px}
-.stp .x b{display:block;font-size:13.5px;font-weight:500}.stp .x small{display:block;font-size:12px;color:var(--mut)}
-.stp .c{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600}
-.stp .c button{width:34px;height:34px;border-radius:10px;background:var(--tile);font-size:18px;font-weight:500;display:grid;place-items:center}
-.info{display:flex;gap:10px;align-items:flex-start;background:var(--ambbg);color:#7a531c;border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.45}
-.info svg{width:18px;height:18px;flex:none;margin-top:1px}
-.qrc{background:var(--tile);border-radius:16px;padding:6px}
-.qrc .q1{background:#fff;border-radius:12px;padding:22px 16px 16px;text-align:center}
-.qrc .q1 .qr{width:190px;height:190px;margin:0 auto;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line)}
-.qrc .q1 h3{margin:16px 0 4px;font:500 24px/1.15 var(--serif)}
-.qrc .q1 p{margin:0;font-size:13px;color:var(--mut)}
-.ckl .kv b{display:flex;align-items:center;gap:6px}
-.ckl .kv b svg{width:16px;height:16px}
-.prof{display:flex;align-items:center;gap:14px;background:#fff;border-radius:12px;padding:14px}
-.prof .av{width:56px;height:56px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font:500 20px var(--serif);flex:none}
-.prof b{display:block;font-size:17px;font-weight:500;letter-spacing:-.2px}.prof small{display:block;font-size:12.5px;color:var(--mut);margin-top:3px}
-.lrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;padding:12px;border-bottom:1px solid #f1ece3}
-.lrow:first-child{border-radius:12px 12px 0 0}.lrow:last-child{border-radius:0 0 12px 12px;border-bottom:0}.lrow:only-child{border-radius:12px}
-.lrow .ic{width:36px;height:36px;border-radius:10px;background:var(--tile);display:grid;place-items:center;color:var(--pri);flex:none}
-.lrow .ic svg{width:18px;height:18px}
-.lrow .x{flex:1;min-width:0}.lrow b{display:block;font-size:13.5px;font-weight:500}.lrow small{display:block;font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lrow .v{font-size:12.5px;color:var(--mut);flex:none}
-.lrow>svg{width:16px;height:16px;color:#8a847a;flex:none}
-.lrow .dlb{width:36px;height:36px;border-radius:10px;background:var(--tile);color:var(--pri);display:grid;place-items:center;flex:none}
-.lrow .dlb svg{width:18px;height:18px}
-.hubg{background:var(--tile);border-radius:16px;padding:6px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.hubg .hbt{background:#fff}
-.hubg .hbt .c{background:var(--tile)}
-.cmh{position:relative;height:140px;border-radius:16px;overflow:hidden}
-.cmh img{width:100%;height:100%;object-fit:cover}
-.cmh::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.6))}
-.cmh span{position:absolute;left:14px;bottom:12px;color:#fff;z-index:1}
-.cmh b{display:block;font:500 24px/1.1 var(--serif)}.cmh small{display:block;font-size:12.5px;opacity:.9;margin-top:3px}
-.sc.nonav{padding-bottom:28px}
-.shx .amt{background:var(--tile);border-radius:16px;padding:18px;text-align:center;margin-bottom:6px}
-.shx .amt small{display:block;font-size:12.5px;color:var(--mut)}
-.shx .amt b{display:flex;align-items:center;justify-content:center;gap:6px;font-size:30px;font-weight:600;letter-spacing:-.8px;margin-top:6px}
-.shx .amt b .dh{width:22px;height:20px}
-.vis{width:36px;height:24px;border-radius:5px;background:#1a1f71;color:#fff;font-size:9px;font-weight:700;font-style:italic;display:grid;place-items:center;flex:none;letter-spacing:.02em}
-.nhd{display:flex;align-items:center;justify-content:space-between}
 </style>
 </head>
 <body>
@@ -518,7 +387,7 @@ fan:'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 10c0-4 1-6 3-6s3 3 0 5M14 12c4 0 6 1
 check:'m5 12.5 4.5 4.5L19 7.5',checkc:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.3l2.7 2.7L16 9.6',arrow:'M7 17 17 7M9 7h8v8',x:'M6 6l12 12M18 6 6 18',
 edu:'M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5M22 9v6',hosp:'M3 21V10l9-6 9 6v11M9 21v-6h6v6M3 13h18',leaf:'M5 21c0-9 5-15 15-16-1 10-7 15-15 16ZM5 21l8-8',
 fm:'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',permit:'M4 4h16v16H4zM8 9h8M8 13h5M15 16l1.5 1.5L20 14',sc:'M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6',
-tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',list:'M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2v2M18 18h2v2h-2M7 7h.01M17 7h.01M7 17h.01',box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',sos:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v6M12 16.5v.01',poll:'M4 20V10M10 20V4M16 20v-7M22 20H2',paw:'M12 20c-3 0-5-2-5-4s2-4 5-4 5 2 5 4-2 4-5 4zM6 10a1.5 2 0 1 0 0-.01M10 6.5a1.5 2 0 1 0 0-.01M14 6.5a1.5 2 0 1 0 0-.01M18 10a1.5 2 0 1 0 0-.01',bolt:'M13 3 5 14h6l-1 7 8-11h-6Z',lost:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2ZM4 19V5M8 7h7',staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M17 11l2 2 4-4',paint:'M4 4h14v5H4zM18 6.5h2v5h-8v3M11 14.5h2V21h-2z',bell2:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',chatb:'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',back:'m15 6-6 6 6 6',plus:'M12 5v14M5 12h14',cam:'M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7',share:'M12 3v12M7 8l5-5 5 5M5 14v6h14v-6',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
+tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',list:'M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2v2M18 18h2v2h-2M7 7h.01M17 7h.01M7 17h.01',box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',sos:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v6M12 16.5v.01',poll:'M4 20V10M10 20V4M16 20v-7M22 20H2',paw:'M12 20c-3 0-5-2-5-4s2-4 5-4 5 2 5 4-2 4-5 4zM6 10a1.5 2 0 1 0 0-.01M10 6.5a1.5 2 0 1 0 0-.01M14 6.5a1.5 2 0 1 0 0-.01M18 10a1.5 2 0 1 0 0-.01',bolt:'M13 3 5 14h6l-1 7 8-11h-6Z',lost:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2ZM4 19V5M8 7h7',staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M17 11l2 2 4-4',paint:'M4 4h14v5H4zM18 6.5h2v5h-8v3M11 14.5h2V21h-2z',bell2:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',chatb:'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
 function I(n,s){return '<svg class="i" viewBox="0 0 24 24"'+(s?' style="width:'+s+'px;height:'+s+'px"':'')+'><path d="'+P[n]+'"/></svg>'}
 var DH='<svg class="dh" viewBox="0 0 14 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 1h3.2a5.25 5.25 0 0 1 0 10.5H3Z"/><path d="M1 5h12M1 7.5h12"/></svg>';
 function aed(n){return n.toLocaleString('en-US')}
@@ -619,7 +488,7 @@ function attItems(){var p=per(), it=[];
   else it.push({id:'p6',ic:'sc',t:'Service charge overdue',s:lu.comm+' · '+lu.no,lv:['Overdue','red'],who:'Service charge Q4 · due 30 Oct',amt:14550,btn:[['Pay now','pay','p6']]});
  } else {
   p.units.forEach(function(k){(PAYS[k]||[]).forEach(function(x){ if(x.id&&!S.done[x.id]&&(x.s==='miss'||x.s==='due')) it.push({id:x.id,ic:x.s==='miss'?'alert':'cal',t:(x.s==='miss'?'Missed payment':'Upcoming payment'),s:UNITS[k].comm+' · '+UNITS[k].no,lv:x.s==='miss'?['Overdue','red']:['Upcoming','amb'],who:x.t+' · '+x.d,amt:x.a,btn:[['Pay now','pay',x.id]]}); })});
-  if(p.units.indexOf('q1204')>-1) it.splice(1,0,{id:'mo',ic:'out',t:'Move out request: your NOC is needed',s:'Marina Quays · Unit 1204',lv:['Action','red'],who:'Ahmed wants to move out on 30 Oct 2026',amt:'',btn:[['Give NOC','nocv'],['Decline','noc','no']]});
+  if(p.units.indexOf('q1204')>-1) it.splice(1,0,{id:'mo',ic:'out',t:'Move out request: your NOC is needed',s:'Marina Quays · Unit 1204',lv:['Action','red'],who:'Ahmed wants to move out on 30 Oct 2026',amt:'',btn:[['Give NOC','noc','ok'],['Decline','noc','no']]});
  }
  return it.filter(function(x){return !S.done[x.id]}); }
 function attention(){var it=attItems(), out='';
@@ -673,163 +542,39 @@ function homeAll(){var us=unitsOf(); if(S.u>=us.length) S.u=0;
   attention()+srBlock()+payments()+sales()+explore()}
 function homeLive(){var u=UNITS[per().live];
  return header()+stories()+'<div class="sec">'+sh2('Your home')+unitCard([u],0,true)+'</div>'+attention()+quick()+srBlock()+notice()}
-var REQS=[{t:'AC Filter Check',ref:'SR-9042',cat:'Maintenance',ic:'fan',st:1,loc:'Villa 138 · Living room',desc:'The living room AC is blowing warm air and the filter light is on.',slot:'14 Nov, 10–12 AM',raised:'10 Nov, 9:12 AM'},
- {t:'Parking sticker',ref:'SR-9011',cat:'Access & Parking',ic:'car',st:0,loc:'Villa 138 · Driveway',desc:'Sticker for a second car, plate Dubai K 48213.',slot:'Not needed',raised:'12 Nov, 6:40 PM'},
- {t:'Water leak',ref:'SR-8870',cat:'Maintenance',ic:'tool',st:2,loc:'Villa 138 · Kitchen',desc:'Leak under the kitchen sink.',slot:'27 Oct, 3–5 PM',raised:'26 Oct, 8:05 AM'}];
-var STEPS=['Raised','In progress','Done'], STC=['nt','amb','ok'];
-var AMEN=[['Swimming pool','pool.jpg','6 AM – 10 PM'],['Gym','interior.jpg','Open 24 hours'],['BBQ area','townhouse.jpg','4 PM – 11 PM'],['Tennis court','aerial.jpg','6 AM – 10 PM']];
-function hu(){var p=per();return UNITS[p.live||p.units[0]]}
-function tbar(t,back){return '<div class="tb"><button class="sq press" data-tab="'+back+'" aria-label="Back">'+I('back')+'</button><b>'+t+'</b><span class="sq ghost"></span></div>'}
-function ttl(t,sub){return '<div class="ttl"><h1>'+t+'</h1><p>'+sub+'</p></div>'}
-function dstrip(){var b=new Date(2026,10,13),o=''; for(var i=1;i<=5;i++){var x=new Date(b.getTime()+i*864e5); o+='<button class="day'+(i-1===MV.day?' on':'')+'" data-day="'+(i-1)+'"><small>'+x.toLocaleDateString('en-GB',{weekday:'short'})+'</small><b>'+x.getDate()+'</b><small>'+x.toLocaleDateString('en-GB',{month:'short'})+'</small></button>'} return '<div class="days">'+o+'</div>'}
-function opts(a,on,off){return '<div class="opt">'+a.map(function(x,i){return '<button class="'+(i===on?'on':'')+(off&&off.indexOf(i)>-1?' off':'')+'" '+(off&&off.indexOf(i)>-1?'disabled':'data-opt="1"')+'>'+x+'</button>'}).join('')+'</div>'}
-function fsec(label,inner,first){return '<div class="sec" style="margin-top:'+(first?16:20)+'px"><div class="fl">'+label+'</div>'+inner+'</div>'}
-function lrow(ic,t,sub,right,attr){return '<button class="lrow press" '+(attr||'data-t="Opens '+t+'"')+'><span class="ic">'+I(ic)+'</span><span class="x"><b>'+t+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span>'+(right==null?I('chev'):right)+'</button>'}
-function kv(a){return a.map(function(r){return '<div class="kv"><span>'+r[0]+'</span><b'+(r[2]?' style="color:'+r[2]+'"':'')+'>'+r[1]+'</b></div>'}).join('')}
-
-/* ---- owner: My properties ---- */
-function pstat(u){
- if(u.status==='rent') return '<div class="pst" style="--d:'+ST.rent+'"><span class="d"></span><span class="x"><b>Tenant · '+u.tenant[0]+'</b><small>Contract ends '+u.tenant[1]+'</small></span></div>';
- if(u.status==='hol') return '<div class="pst" style="--d:'+ST.hol+'"><span class="d"></span><span class="x"><b>StayCo Holidays</b><small>Guest staying · checks out 14 Oct</small></span></div>';
- if(u.status==='vacant'){var mv=S.movein[u.k]; return '<div class="pst" style="--d:'+ST.vacant+'"><span class="d"></span><span class="x"><b>'+(mv?'Move-in booked':'Ready to move in')+'</b><small>'+(mv||'Keys and access cards are ready')+'</small></span><span class="btn press" data-act="movein" data-k="'+u.k+'">'+I('inn',15)+(mv?'Change':'Move in')+'</span></div>';}
- if(u.status==='uc') return '<div class="uprog"><div class="bar"><i style="--w:'+u.pct+'%"></i></div><div class="bsm"><span>Construction '+u.pct+'% complete</span></div></div>';
- return '<div class="pst" style="--d:'+ST.live+'"><span class="d"></span><span class="x"><b>You live here</b><small>Moved in Mar 2025</small></span></div>';}
-function propsView(){var p=per(), list=p.units.map(function(k){return UNITS[k]}), c={};
- list.forEach(function(u){c[u.chip]=(c[u.chip]||0)+1}); var ks=Object.keys(c);
- return ttl('My properties',list.length+' units linked to your account.')+
- '<div class="sec" style="margin-top:16px"><div class="pay2"><div class="ptot '+(ks.length>2?'c3':'c2')+'">'+ks.slice(0,3).map(function(k){return '<div><small>'+k+'</small><b>'+c[k]+'</b></div>'}).join('')+'</div></div></div>'+
- '<div class="sec">'+sh2('All units')+list.map(function(u){return '<button class="pc press" data-tab="unit" data-k="'+u.k+'"><div class="uph"><img src="'+IMG+u.img+'" alt=""><span class="utag" style="--d:'+ST[u.status]+'"><i></i>'+u.chip+'</span><span class="ucode">'+u.code+'</span></div><div class="ubd"><div class="t"><span class="cl">'+u.comm.toUpperCase()+'</span><b>'+u.s+'</b><small>'+I('pin',14)+u.addr+'</small></div>'+
-  '<div class="chips"><span class="chip">'+I('bed')+u.bhk+'</span><span class="chip">'+I('area')+u.area+'</span><span class="chip">'+I('bld')+u.type+'</span></div>'+pstat(u)+'<span class="more">View unit details'+I('chev')+'</span></div></button>'}).join('')+'</div>'}
-
-/* ---- owner: unit details ---- */
-function payRows(k){var r=(PAYS[k]||[]).filter(function(x){return (x.s==='miss'||x.s==='due')&&!S.done[x.id]});
- return r.length?r.map(function(x){return '<button class="pq '+(x.s==='miss'?'red':'')+' press" data-act="pay" data-id="'+x.id+'"><span class="pi">'+I(x.s==='miss'?'alert':'clock',18)+'</span><span class="x"><b>'+x.t+'</b><small>'+x.d+'</small></span><span class="pa">'+DH+aed(x.a)+'</span></button>'}).join(''):'<div class="empty" style="margin-bottom:6px">'+I('checkc',18)+'No payments due for this unit.</div>'}
-function unitView(){var u=UNITS[S.k]||unitsOf()[0], col=ST[u.status];
- var extra='';
- if(u.status==='rent') extra='<div class="sec">'+sh2('Tenant','<span class="st ok" style="margin:0">Active</span>')+'<div class="box"><div class="tech"><span class="av">AM</span><span class="x"><b>'+u.tenant[0]+'</b><small>Tenant since 13 Oct 2024</small></span><button data-t="Calling tenant">'+I('phone')+'</button></div><div class="wb">'+kv([['Contract ends',u.tenant[1]],['Rent',u.tenant[2]],['Cheques','2 of 4 received']])+'</div></div></div>';
- if(u.status==='hol') extra='<div class="sec">'+sh2('Holiday home','<span class="st ok" style="margin:0">Guest staying</span>')+'<div class="box"><div class="wb">'+kv([['Managed by','StayCo Holidays'],['Licence','Valid',ST.live],['Management contract','Until 30 Jun 2027'],['Next check-in','18 Oct'],['October payout','AED 18,400']])+'</div></div></div>';
- if(u.status==='vacant') extra='<div class="sec">'+sh2('Move in')+'<div class="ucta" style="background:var(--tile);margin:0;padding:14px 12px 14px 14px"><span><small>Keys and access cards are ready</small><b>'+(S.movein[u.k]?'Move-in '+S.movein[u.k]:'Ready to move in')+'</b></span><button class="btn press" data-act="movein" data-k="'+u.k+'">'+I('inn',16)+'Move in</button></div></div>';
- var owners=u.tenantSelf?'':'<div class="sec">'+sh2('Owners',u.owners.length>1?'<span class="see">Shareholding</span>':'')+'<div class="box"><div class="wb" style="padding:12px 14px 4px">'+u.owners.map(function(o){var ini=o[0].split(' ').map(function(w){return w[0]}).join('');return '<div class="own"><span class="av">'+ini+'</span><span class="x"><b>'+o[0]+(o[0]==='Meena Raj'?' (you)':'')+'</b><span class="sb2"><i style="width:'+o[1]+'%"></i></span></span><em>'+o[1]+'%</em></div>'}).join('')+'</div></div></div>';
- return tbar('Unit details',S.mode==='live'?'home':'props')+
- '<div class="sec" style="margin-top:16px"><div class="ucard"><div class="uph" style="height:200px"><img src="'+IMG+u.img+'" alt=""><span class="utag" style="--d:'+col+'"><i></i>'+u.chip+'</span><span class="ucode">'+u.code+'</span></div><div class="ubd"><div class="t"><span class="cl">'+u.comm.toUpperCase()+'</span><b>'+u.s+'</b><small>'+I('pin',14)+u.addr+'</small></div><div class="chips"><span class="chip">'+I('bed')+u.bhk+'</span><span class="chip">'+I('area')+u.area+'</span><span class="chip">'+I('bld')+u.type+'</span></div>'+(u.status==='uc'?pstat(u):'')+'</div></div></div>'+
- extra+
- '<div class="sec">'+sh2('Overview')+'<div class="box"><div class="wb">'+kv([['Community',u.comm],['Building',u.bld],['Unit number',u.no],['Unit type',u.type+' · '+u.bhk],['Area',u.area]])+'</div></div></div>'+
- owners+
- '<div class="sec">'+sh2('Amenities'+(u.status==='uc'?' (planned)':''))+'<div class="box"><div class="wb" style="padding:12px"><div class="am">'+u.am.map(function(a){return '<span>'+I(AM[a][1])+AM[a][0]+'</span>'}).join('')+'</div></div></div></div>'+
- '<div class="sec">'+sh2('Documents')+'<div class="box"><div class="docs">'+u.docs.map(function(d){return '<button class="doc press" style="background:#fff" data-t="Downloading '+d+' (PDF)">'+I('dl')+d+'</button>'}).join('')+(u.status==='uc'?'<button class="doc off" style="background:#fff" data-t="Title deed is issued on completion">'+I('doc')+'Title deed</button>':'')+'</div></div></div>'+
- (u.tenantSelf?'':'<div class="sec">'+sh2('Payments','<button class="see" data-tab="pay">View all</button>')+'<div class="pay2">'+payRows(u.k)+'<button class="vm press" data-tab="pay">Payment history'+I('chev')+'</button></div></div>')}
-
-/* ---- owner: payments ---- */
+function listView(t,sub,rows){return '<div class="ttl"><h1>'+t+'</h1><p>'+sub+'</p></div><div class="sec" style="margin-top:16px"><div class="plist">'+rows.map(function(r){return '<button class="tx press" style="width:100%;text-align:left" data-t="'+(r[4]||'Opens '+r[0])+'"><span class="ic">'+I(r[3]||'doc')+'</span><span class="x"><b>'+r[0]+'</b><small>'+r[1]+'</small></span>'+(r[2]?'<span class="st '+(r[5]||'amb')+'">'+r[2]+'</span>':I('chev'))+'</button>'}).join('')+'</div></div>'}
+function reqView(){return listView('Requests','Service requests for '+UNITS[per().live].comm+'.',[['AC Filter Check','Ref #SR-9042 · Maintenance','In progress','fan'],['Parking sticker','Ref #SR-9011 · Access & Parking','Raised','car'],['Water leak','Ref #SR-8870 · Maintenance','Done','tool','Opens Water leak','ok']])+'<div class="sec" style="margin-top:12px"><button class="btn full press" data-act="help">'+I('help',16)+'Raise a new request</button></div>'}
+function docView(){var u=UNITS[per().live]; var rows=[['Emirates ID','Expires in 12 days. Upload a renewed copy','Expiring','card','Opens Emirates ID','red']];
+ if(u.tenantSelf) rows.push(['Tenancy contract','Valid until 12 Jan 2027','','contract'],['Ejari','Registered','','doc']); else rows.push(['Title deed','Valid','','dl'],['Sales agreement','Valid','','dl']);
+ rows.push(['Access card','Card #BH-20931 · expires 28 Nov 2026','','card'],['Move-in permit','Issued Mar 2025','','permit']);
+ return listView('Documents','Your documents for '+u.comm+' · '+u.no+'.',rows)}
+function profView(){return listView('Profile','Account and app settings.',[['Meena Raj','Personal details, language','','user'],['Switch view','Owner · Community','','grid','Use the Owner / Community switch on Home'],['Notifications','Payments, requests, community','','bell'],['Log out','','','out']])}
+function hubView(){return '<div class="ttl"><h1>My Community</h1><p>'+UNITS[per().live||per().units[0]].comm+' · services for your home.</p></div>'+HUB.map(function(g){return '<div class="sec" style="margin-top:20px"><div class="pl-h" style="padding:0 0 10px">'+g[0]+'</div><div class="g3">'+g[1].map(function(h){var act=h[2]&&h[2]!=='Soon'?h[2]:null; return '<button class="hbt press" '+(act?'data-act="'+act+'"':'data-t="Opens '+h[0]+'"')+'>'+(h[2]==='Soon'?'<em>Soon</em>':'')+'<span class="c">'+I(h[1])+'</span>'+h[0]+'</button>'}).join('')+'</div></div>'}).join('')}
 function payView(){var p=per(), tabs=[['all','All units']].concat(p.units.map(function(k){return [k,UNITS[k].comm]}));
  var rows=[]; p.units.forEach(function(k){ if(S.ptab==='all'||S.ptab===k)(PAYS[k]||[]).forEach(function(x){rows.push([x,k])})});
  var miss=0,due=0,paid=0; rows.forEach(function(r){var x=r[0]; if(S.done[x.id]||x.s==='paid'||x.s==='in'||x.s==='proc') paid+=x.a; else if(x.s==='miss') miss+=x.a; else due+=x.a;});
- var card=function(r){var x=r[0],u=UNITS[r[1]],m=x.s==='miss'; return '<div class="pcd"><div class="r1"><span><b>'+x.t+'</b><small>'+u.comm+' · '+u.no+'</small></span><span class="pa">'+DH+aed(x.a)+'</span></div><div class="r2"><span class="lvl '+(m?'red':'amb')+'">'+x.d+'</span><button class="btn sm press" data-act="pay" data-id="'+x.id+'">Pay now</button></div></div>'};
- var M=rows.filter(function(r){return r[0].s==='miss'&&!S.done[r[0].id]}), D=rows.filter(function(r){return r[0].s==='due'&&!S.done[r[0].id]}), U=rows.filter(function(r){return r[0].s==='proc'||r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]});
- return ttl('Payments','Unit wise payment details and all transactions.')+(tabs.length>2?'<div class="pad"><div class="ftabs">'+tabs.map(function(t){return '<button class="'+(S.ptab===t[0]?'on':'')+'" data-ptab="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div></div>':'')+
- '<div class="sec" style="margin-top:16px"><div class="pay2"><div class="ptot c3"><div><small>Missed</small><b class="rd">'+DH+aed(miss)+'</b></div><div><small>Upcoming</small><b>'+DH+aed(due)+'</b></div><div><small>Paid</small><b>'+DH+aed(paid)+'</b></div></div></div></div>'+
- (M.length?'<div class="sec">'+sh2('Missed payments','',M.length)+'<div class="box">'+M.map(card).join('')+'</div></div>':'')+
- (D.length?'<div class="sec">'+sh2('Upcoming payments')+'<div class="box">'+D.map(card).join('')+'</div></div>':'')+
- '<div class="sec">'+sh2('Payment updates')+'<div class="pay2">'+U.map(function(r){var x=r[0],u=UNITS[r[1]],proc=x.s==='proc'&&!S.done[x.id];
-   return '<div class="pu"><div class="r1"><span><b>'+u.short+'</b><small>'+x.t+'</small></span><span class="pa">'+DH+aed(x.a)+'</span></div><div class="ps '+(proc?'proc':'ok')+'">'+(proc?'<i class="spn"></i>In process':I('checkc',16)+(S.done[x.id]?'Paid just now':x.s==='in'?'Payment received':'Payment confirmed'))+'</div></div>'}).join('')+
- '<button class="vm press" data-act="soa">'+I('dl',16)+'Download statement of account</button></div></div>'}
-
-/* ---- owner: Bloom GPT ---- */
-var ANS={'When is my next payment due?':'Your next payment is Instalment 3 for Bloom Heights Unit 802: AED 195,100, due 15 Nov 2026.','How do I get my title deed?':'For completed units you can download the title deed from Unit details → Documents.','Book the pool for Saturday':'Done. I’ve held the pool for Saturday 4–6 PM. You’ll get a confirmation shortly.','Show my statement of account':'Your statement of account is ready. Tap Download statement of account in Payments to get the PDF.'};
-var AIC={'When is my next payment due?':'cal','How do I get my title deed?':'doc','Book the pool for Saturday':'pool','Show my statement of account':'dl'};
-function gptView(){var q=Object.keys(ANS).filter(function(x){return per().live||x.indexOf('pool')<0});
- return ttl('Bloom GPT','Ask about payments, documents or your community.')+
- '<div class="sec" style="margin-top:16px"><div class="gpt-in"><span class="orb"></span><span><b>Hi Meena, how can I help?</b><small>I can check payments, find documents'+(per().live?' and book amenities':' and track your units')+'.</small></span></div></div>'+
- (S.chat.length?'<div class="chat" style="padding-top:20px">'+S.chat.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join('')+'</div><div id="chat"></div>':
- '<div class="sec" id="chat">'+sh2('Try asking')+'<div class="box">'+q.map(function(x){return '<button class="sgl press" data-q="'+x+'"><span class="ic">'+I(AIC[x])+'</span><span class="x">'+x+'</span>'+I('arrow')+'</button>'}).join('')+'</div></div>')+
- '<div class="cin"><span>Ask Bloom GPT…</span><button aria-label="Send">'+I('send')+'</button></div>'}
-
-/* ---- community: requests ---- */
-function srCard(r,i,stat){return '<'+(stat?'div':'button')+' class="sr rq'+(stat?'':' press')+'"'+(stat?'':' data-tab="rq" data-k="'+i+'"')+'><div class="r"><span class="ic">'+I(r.ic,22)+'</span><span class="x"><b>'+r.t+'</b><small>Ref #'+r.ref+' · '+r.cat+'</small></span><span class="st '+STC[r.st]+'">'+STEPS[r.st]+'</span></div><div class="steps">'+STEPS.map(function(s,j){return '<div class="'+(j<=r.st?'on':'')+'"><i></i>'+s+'</div>'}).join('')+'</div></'+(stat?'div':'button')+'>'}
-function reqView(){var u=hu(), n=[0,0,0]; REQS.forEach(function(r){n[r.st]++});
- return ttl('Requests','Service requests for '+u.comm+' · '+u.no+'.')+
- '<div class="sec" style="margin-top:16px"><div class="pay2"><div class="ptot c3">'+STEPS.map(function(s,i){return '<div><small>'+s+'</small><b>'+n[i]+'</b></div>'}).join('')+'</div></div><button class="btn full press" style="margin-top:12px" data-act="help">'+I('plus',16)+'Raise a new request</button></div>'+
- '<div class="sec">'+sh2('Open requests','',n[0]+n[1])+REQS.map(function(r,i){return r.st<2?srCard(r,i):''}).join('')+'</div>'+
- '<div class="sec">'+sh2('Completed')+REQS.map(function(r,i){return r.st===2?srCard(r,i):''}).join('')+'</div>'}
-function rqView(){var r=REQS[+S.k||0];
- var ev=[['Raised',r.raised+' · from the app'],['In progress',r.st>=1?'Technician visit '+r.slot:'We’ll schedule a visit and let you know'],['Done',r.st===2?'Fixed and confirmed on 28 Oct':'You’ll be asked to confirm the fix']];
- return tbar('Request details','req')+'<div class="sec" style="margin-top:16px">'+srCard(r,0,1)+'</div>'+
- '<div class="sec">'+sh2('Timeline')+'<div class="box"><div class="wb" style="padding:6px 14px"><div class="tl">'+ev.map(function(e,j){var c=j<r.st||r.st===2?'on':(j===r.st?'cur':'off'); return '<div class="e '+c+'"><span class="dt">'+(c==='on'?I('check'):'')+'</span><span><b>'+e[0]+'</b><small>'+e[1]+'</small></span></div>'}).join('')+'</div></div></div></div>'+
- '<div class="sec">'+sh2('Details')+'<div class="box"><div class="wb">'+kv([['Category',r.cat],['Location',r.loc],['Preferred visit',r.slot]])+'</div><div class="wb" style="padding:12px 14px"><div class="fl" style="margin:0 0 6px">Description</div><p style="margin:0;font-size:13.5px;line-height:1.45">'+r.desc+'</p>'+(r.cat==='Maintenance'?'<div class="pho"><img src="'+IMG+'interior.jpg" alt=""><img src="'+IMG+'interior2.jpg" alt=""></div>':'')+'</div></div></div>'+
- (r.st===1?'<div class="sec">'+sh2('Technician')+'<div class="box"><div class="tech"><span class="av">RK</span><span class="x"><b>Rahul Kumar</b><small>BFM Maintenance · '+r.slot+'</small></span><button data-t="Calling Rahul">'+I('phone')+'</button></div></div></div>':'')+
- (r.st<2?'<div class="sec"><div class="row2b"><button class="btn lt press" data-t="Pick a new slot">'+I('cal',16)+'Reschedule</button><button class="btn press" data-act="help">'+I('chatb',16)+'Get help</button></div></div>':'<div class="sec"><button class="btn full lt press" data-t="Thanks for the rating">'+I('spark',16)+'Rate this service</button></div>')}
-function raiseView(){var u=hu();
- return tbar('',S.mode==='live'?'req':'home')+ttl('Raise a request',u.comm+' · '+u.no+'. We’ll update you at every step.')+
- fsec('Category','<div class="box"><div class="fld"><span class="ic">'+I('tool')+'</span><span class="x"><b>'+(S.cat||'Maintenance Issues')+'</b></span>'+I('cd')+'</div></div>',1)+
- fsec('What needs fixing?','<div class="box">'+opts(['AC & cooling','Plumbing','Electrical','Painting','Pest control','Other'],0)+'</div>')+
- fsec('Location','<div class="box"><div class="fld"><span class="ic">'+I('pin')+'</span><span class="x"><b>'+u.no+' · Living room</b></span>'+I('cd')+'</div></div>')+
- fsec('Description','<div class="box"><div class="fld tall"><p>The living room AC is blowing warm air and the filter light is on.</p></div></div>')+
- fsec('Photos','<div class="box"><div class="pho" style="margin:0"><img src="'+IMG+'interior.jpg" alt=""><img src="'+IMG+'interior2.jpg" alt=""><button>'+I('cam')+'Add photo</button></div></div>')+
- fsec('Preferred visit','<div class="box">'+dstrip()+opts(['9–11 AM','11–1 PM','3–5 PM'],0)+'</div>')+
- '<div class="sec" style="margin-top:24px"><button class="btn full press" data-act="raiseok">Submit request</button></div>'}
-
-/* ---- community: hub, documents, profile ---- */
-function hubView(){var u=hu();
- return ttl('My Community','Services for your home in '+u.comm+'.')+
- '<div class="sec" style="margin-top:16px"><div class="cmh"><img src="'+IMG+'aerial.jpg" alt=""><span><b>'+u.comm+'</b><small>'+u.addr+'</small></span></div></div>'+
- HUB.map(function(g){return '<div class="sec">'+sh2(g[0])+'<div class="hubg">'+g[1].map(function(h){var a=h[2], at=a==='visit'||a==='amen'||a==='mout'?'data-tab="'+a+'"':a==='maint'?'data-act="help"':'data-t="Opens '+h[0]+'"'; return '<button class="hbt press" '+at+'>'+(a==='Soon'?'<em>Soon</em>':'')+'<span class="c">'+I(h[1])+'</span>'+h[0]+'</button>'}).join('')+'</div></div>'}).join('')}
-function docView(){var u=hu(), prop=u.tenantSelf?[['contract','Tenancy contract','Valid until 12 Jan 2027'],['doc','Ejari','Registered']]:[['doc','Title deed','Issued Mar 2025'],['doc','Sales agreement (SPA)','Signed Jan 2023']];
- var dl=function(r){return lrow(r[0],r[1],r[2],'<span class="dlb">'+I('dl')+'</span>','data-t="Downloading '+r[1]+' (PDF)"')};
- return ttl('Documents',u.comm+' · '+u.no+'.')+
- (S.done.eid?'':'<div class="sec" style="margin-top:16px">'+sh2('Needs action','',1)+'<div class="at"><div class="ah"><span class="aic">'+I('card',22)+'</span><span class="x"><b>Emirates ID</b><small>Expires 25 Nov 2026</small></span><span class="lvl amb">12 days</span></div><div class="af"><span class="x"><b>Upload a renewed copy</b><small>Keeps your access cards active</small></span><button class="btn sm press" data-act="eid">Upload</button></div></div></div>')+
- '<div class="sec">'+sh2('Property')+'<div class="box">'+prop.map(dl).join('')+'</div></div>'+
- '<div class="sec">'+sh2('Access & permits')+'<div class="box">'+[['card','Access cards','2 active · #BH-20931, #BH-20932'],['permit','Move-in permit','Issued Mar 2025'],['car','Parking permit','Dubai K 48213 · valid']].map(dl).join('')+'</div></div>'+
- '<div class="sec">'+sh2('Personal')+'<div class="box">'+[['card','Emirates ID','Uploaded Nov 2021'],['user','Passport','Valid until 2031']].map(dl).join('')+'</div></div>'}
-function profView(){var u=hu();
- return ttl('Profile','Account, household and settings.')+
- '<div class="sec" style="margin-top:16px"><div class="box"><div class="prof"><span class="av">MR</span><span><b>Meena Raj</b><small>Resident · '+u.comm+' '+u.no+'</small></span></div><div class="wb">'+kv([['Email','meena.raj@mail.com'],['Mobile','+971 50 123 4567'],['Emirates ID','Expires 25 Nov 2026','#8f591c']])+'</div></div></div>'+
- '<div class="sec">'+sh2('Household')+'<div class="box">'+lrow('user','Family members','Arjun, Kavya, Dev','<span class="v">3</span>')+lrow('staff','Domestic staff','Lina · housekeeper','<span class="v">1</span>')+lrow('car','Vehicles','Dubai K 48213, Dubai M 10422','<span class="v">2</span>')+lrow('paw','Pets','Milo · dog','<span class="v">1</span>')+'</div></div>'+
- '<div class="sec">'+sh2('Settings')+'<div class="box">'+lrow('bell','Notifications','Payments, requests, community')+lrow('globe','Language','English')+lrow('grid','Switch to Owner view','See all your units and payments',I('chev'),'data-mode="all"')+'</div></div>'+
- '<div class="sec">'+sh2('Support')+'<div class="box">'+lrow('help','Help centre','FAQs and guides')+lrow('phone','Call Bloom','800 BLOOM (25666)')+lrow('doc','Terms & privacy','')+'</div><button class="btn full lt press" style="margin-top:12px" data-t="Logged out">'+I('out',16)+'Log out</button></div>'}
-
-/* ---- community: amenities, visitors, move out ---- */
-function amenView(){var a=S.am||0;
- return tbar('','home')+ttl('Amenities',hu().comm+' · book up to two weeks ahead.')+
- fsec('Choose amenity','<div class="box"><div class="amg">'+AMEN.map(function(x,i){return '<button class="amc press'+(i===a?' on':'')+'" data-amc="'+i+'"><img src="'+IMG+x[1]+'" alt="">'+(i===a?'<span class="ck2">'+I('check')+'</span>':'')+'<span><b>'+x[0]+'</b><small>'+x[2]+'</small></span></button>'}).join('')+'</div></div>',1)+
- fsec('Date','<div class="box">'+dstrip()+'</div>')+
- fsec('Time slot','<div class="box">'+opts(['6–7 AM','7–8 AM','4–5 PM','5–6 PM','6–7 PM','7–8 PM'],2,[4])+'</div>')+
- fsec('Guests','<div class="box"><div class="stp"><span class="x"><b>Guests</b><small>Up to 4 per booking</small></span><span class="c"><button data-gst="-1">−</button>'+(S.g==null?2:S.g)+'<button data-gst="1">+</button></span></div></div>')+
- '<div class="sec" style="margin-top:20px"><div class="info">'+I('alert')+'Children under 12 need an adult with them. Show your booking QR at the entrance.</div></div>'+
- '<div class="sec" style="margin-top:20px"><button class="btn full press" data-act="amenok">Confirm booking</button></div>'}
-function visitView(){
- return tbar('','home')+ttl('Visitors','Create a QR gate pass. Security is told when they arrive.')+
- '<div class="pad"><div class="ftabs"><button class="on">Guest</button><button>Delivery</button><button>Service</button></div></div>'+
- fsec('Visitor','<div class="box"><div class="fld"><span class="ic">'+I('user')+'</span><span class="x"><small>Full name</small><b>Priya Sharma</b></span></div><div class="fld"><span class="ic">'+I('phone')+'</span><span class="x"><small>Mobile</small><b>+971 55 214 7781</b></span></div></div>',1)+
- fsec('Visit','<div class="box">'+dstrip()+'<div class="fld"><span class="ic">'+I('clock')+'</span><span class="x"><small>Arrival</small><b>6:00 PM</b></span>'+I('cd')+'</div><div class="fld"><span class="ic">'+I('key')+'</span><span class="x"><small>Valid for</small><b>One entry</b></span>'+I('cd')+'</div></div>')+
- fsec('Vehicle (optional)','<div class="box"><div class="fld"><span class="ic">'+I('car')+'</span><span class="x"><small>Plate number</small><b>Dubai K 48213</b></span></div></div>')+
- '<div class="sec" style="margin-top:24px"><button class="btn full press" data-tab="pass">'+I('qr',16)+'Create gate pass</button></div>'+
- '<div class="sec">'+sh2('Recent visitors')+'<div class="box">'+lrow('user','Arjun Raj','Guest · yesterday, 7:10 PM','<span class="st ok" style="margin:0">Checked out</span>')+lrow('box','Noon delivery','Delivery · 11 Nov, 2:30 PM','<span class="st nt" style="margin:0">Delivered</span>')+'</div></div>'}
-function qrSvg(z){var n=25,d='',sd=7;function r(){sd=(sd*9301+49297)%233280;return sd/233280}
- function fin(x,y){return 'M'+x+' '+y+'h7v7h-7zM'+(x+1)+' '+(y+1)+'v5h5v-5zM'+(x+2)+' '+(y+2)+'h3v3h-3z'}
- for(var y=0;y<n;y++)for(var x=0;x<n;x++){var inF=(x<8&&y<8)||(x>16&&y<8)||(x<8&&y>16); if(!inF&&r()>.52) d+='M'+x+' '+y+'h1v1h-1z'}
- return '<svg width="'+z+'" height="'+z+'" viewBox="-1 -1 27 27"><path fill="#1c1c1a" fill-rule="evenodd" d="'+fin(0,0)+fin(18,0)+fin(0,18)+d+'"/></svg>'}
-function passView(){
- return tbar('Gate pass','visit')+'<div class="sec" style="margin-top:16px"><div class="qrc"><div class="q1"><div class="qr">'+qrSvg(160)+'</div><h3>Priya Sharma</h3><p>Guest · Sat, 14 Nov · 6:00 PM</p></div><div class="wb" style="margin-top:6px">'+kv([['Community',hu().comm],['Host','Meena Raj · '+hu().no],['Vehicle','Dubai K 48213'],['Valid for','One entry'],['Pass ID','GP-58213']])+'</div></div></div>'+
- '<div class="sec" style="margin-top:20px"><div class="row2b"><button class="btn lt press" data-tab="visit">'+I('x',16)+'Cancel pass</button><button class="btn press" data-t="Pass shared on WhatsApp">'+I('share',16)+'Share pass</button></div></div>'}
-function moutView(){var u=hu();
- return tbar('','home')+ttl('Move out',u.comm+' · '+u.no+'. We arrange the inspection, card return and utility clearance.')+
- fsec('Move-out date','<div class="box">'+dstrip()+opts(['9–11 AM','11–1 PM','3–5 PM'],0)+'</div>',1)+
- fsec('Before you move','<div class="box"><div class="wb ckl">'+'<div class="kv"><span>Service charge</span><b style="color:#922a22">AED 14,550 due</b></div><div class="kv"><span>Final inspection</span><b>2 days before</b></div><div class="kv"><span>Access cards</span><b>2 to return</b></div><div class="kv"><span>DEWA clearance</span><b style="color:#2e7d5c">'+I('checkc')+'We request it</b></div></div></div>')+
- '<div class="sec" style="margin-top:20px"><div class="info">'+I('alert')+'The move-out permit is issued once the service charge is settled.</div></div>'+
- '<div class="sec" style="margin-top:20px"><button class="btn full press" data-act="moveoutok">Submit move-out request</button></div>'}
-var NOAV=['raise','amen','visit','pass','mout'];
-function navOn(){return {unit:S.mode==='live'?'home':'props',rq:'req'}[S.tab]||S.tab}
-function nav(){ if(NOAV.indexOf(S.tab)>-1) return '';
- var on=navOn();
+ var grp=function(t,f){var g=rows.filter(f); return g.length?'<div class="pl-h">'+t+'</div>'+g.map(function(r){return txRow(r[0],r[1])}).join(''):''};
+ return '<div class="ttl"><h1>Payment</h1><p>Unit wise payment details and all transactions.</p><div class="ftabs">'+tabs.map(function(t){return '<button class="'+(S.ptab===t[0]?'on':'')+'" data-ptab="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div></div>'+
+ '<div class="sec" style="margin-top:16px"><div class="sum3"><div><small>Missed</small><b style="color:#922a22">'+aed(miss)+'</b></div><div><small>Upcoming</small><b>'+aed(due)+'</b></div><div><small>Paid</small><b>'+aed(paid)+'</b></div></div></div>'+
+ '<div class="sec" style="margin-top:12px"><div class="plist">'+grp('Missed payments',function(r){return r[0].s==='miss'&&!S.done[r[0].id]})+grp('Upcoming payments',function(r){return r[0].s==='due'&&!S.done[r[0].id]})+grp('Payment updates',function(r){return r[0].s==='proc'||r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]})+'</div>'+
+ '<button class="btn full lt press" style="margin-top:12px" data-act="soa">'+I('dl',16)+'Download my statement of account</button></div>'}
+function propsView(){var p=per(); var list=p.units.map(function(k){return UNITS[k]}); if(p.live&&p.units.indexOf(p.live)<0) list.push(UNITS[p.live]);
+ return '<div class="ttl"><h1>My properties</h1><p>'+list.length+' properties linked to your account.</p></div><div class="sec" style="margin-top:16px">'+list.map(function(u){var col=ST[u.status];
+  return '<button class="prow press" data-goto="'+u.k+'"><img src="'+IMG+u.img+'" alt=""><span class="x"><b>'+u.comm+' · '+u.s+'</b><small>'+u.addr+'</small><span class="st" style="background:'+col+'1f;color:'+col+'">'+u.chip+'</span></span>'+I('chev')+'</button>'}).join('')+'</div>'}
+var ANS={'When is my next payment due?':'Your next payment is due on 1 Dec 2026: AED 96,500 for Bloom Heights Unit 802.','How do I get my title deed?':'For completed units you can download the title deed from Unit details → Documents.','Book the pool for Saturday':'Done. I’ve held the pool for Saturday 4–6 PM. You’ll get a confirmation shortly.','Show my statement of account':'Your statement of account is ready. Tap SOA in Payment details to download it as a PDF.'};
+function gptView(){var q=Object.keys(ANS);
+ return '<div class="ttl"><h1>Bloom GPT</h1><p>Ask about payments, documents or your community.</p></div><div class="chat" id="chat"><div class="msg ai">Hi Meena, how can I help today?</div>'+S.chat.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join('')+
+ '<div class="sugg">'+q.map(function(x){return '<button class="press" data-q="'+x+'">'+x+'</button>'}).join('')+'</div></div>'}
+function nav(){
  if(S.mode==='live'){ var c=[['home','home','Home'],['req','list','Requests'],['hub','grid','My Community',1],['doc','doc','Documents'],['prof','user','Profile']];
-  return '<div class="nv cnv">'+c.map(function(x){return '<button class="'+(x[3]?'ct ':'')+(on===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[3]?'<span class="c">'+I(x[1])+'</span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'; }
+  return '<div class="nv cnv">'+c.map(function(x){return '<button class="'+(x[3]?'ct ':'')+(S.tab===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[3]?'<span class="c">'+I(x[1])+'</span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'; }
  var uc=per().uc, it=[['home','home','Dashboard'],['props','bld','My properties'],['pay','wal','Payments'],['gpt','orb','Bloom GPT']];
  if(uc) it=it.filter(function(x){return x[0]!=='props'});
- return '<div class="nv">'+it.map(function(x){return '<button class="'+(on===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[1]==='orb'?'<span class="orb"></span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'}
+ return '<div class="nv">'+it.map(function(x){return '<button class="'+(S.tab===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[1]==='orb'?'<span class="orb"></span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'}
 
 function render(keepScroll){var sc=$('#sc'), y=sc.scrollTop, h;
  if(S.tab==='home') h=S.mode==='live'?homeLive():homeAll();
- else h=({pay:payView,props:propsView,hub:hubView,req:reqView,doc:docView,prof:profView,unit:unitView,rq:rqView,raise:raiseView,amen:amenView,visit:visitView,pass:passView,mout:moutView}[S.tab]||gptView)();
- sc.classList.toggle('nonav',NOAV.indexOf(S.tab)>-1);
+ else if(S.tab==='pay') h=payView(); else if(S.tab==='props') h=propsView(); else if(S.tab==='hub') h=hubView(); else if(S.tab==='req') h=reqView(); else if(S.tab==='doc') h=docView(); else if(S.tab==='prof') h=profView(); else h=gptView();
  sc.innerHTML=sbar()+'<div class="'+(keepScroll?'':'fd')+'">'+h+'</div>';
  $('#nvw').innerHTML=nav();
  if(keepScroll) sc.scrollTop=y; else sc.scrollTop=0;
@@ -852,7 +597,7 @@ function helpSheet(){sheet('<h3>Need help? <span style="color:#922a22;font-style
  '<div class="lbl">Common requests</div>'+HELP.map(function(g){return '<div class="hgrp"><div class="gh"><span>'+I(g[1])+'</span>'+g[0]+'</div>'+g[2].map(function(o){return '<button class="hopt" data-act="raise" data-k="'+o+'">'+o+I('chev')+'</button>'}).join('')+'</div>'}).join('')+
  '<div class="hrow2"><button class="btn lt press" data-t="Calling Bloom">'+I('phone',16)+'Call or email Bloom</button><button class="btn press" data-tab="gpt"><span class="orb" style="width:16px;height:16px"></span>Ask Bloom GPT</button></div>')}
 var MV={day:1,slot:0,k:null};
-function moveSheet(k){var u=UNITS[k], d=new Date(), days=[]; for(var i=1;i<=5;i++) days.push(new Date(d.getTime()+i*864e5)); MV.k=k; MV.days=days; MV.slots=['9–11 AM','11–1 PM','3–5 PM'];
+function moveSheet(k){var u=UNITS[k], d=new Date(), days=[]; for(var i=1;i<=5;i++) days.push(new Date(d.getTime()+i*864e5)); MV.k=k; MV.days=days; MV.slots=['9–11 am','11–1 pm','3–5 pm'];
  sheet('<h3>Book your move-in</h3><p class="sub">'+u.comm+' · '+u.no+'. Access cards, utilities and the move-in permit are arranged for this date.</p><div class="lbl">Date</div><div class="days">'+days.map(function(x,i){return '<button class="day'+(i===MV.day?' on':'')+'" data-day="'+i+'"><small>'+x.toLocaleDateString('en-GB',{weekday:'short'})+'</small><b>'+x.getDate()+'</b><small>'+x.toLocaleDateString('en-GB',{month:'short'})+'</small></button>'}).join('')+'</div>'+
  '<div class="lbl">Time slot</div><div class="slots">'+MV.slots.map(function(s,i){return '<button class="slot'+(i===MV.slot?' on':'')+'" data-slot="'+i+'">'+s+'</button>'}).join('')+'</div><button class="btn full press" data-act="moveok">Confirm move-in</button>')}
 function findPay(id){var r=null; Object.keys(PAYS).forEach(function(k){PAYS[k].forEach(function(x){if(x.id===id) r=[x,k]})}); return r}
@@ -863,15 +608,12 @@ function story(i){SI=i; S.seen[i]=1; var s=STORIES[i], el=$('#sty');
 function stClose(){clearTimeout(sto); $('#sty').classList.remove('on'); render(true)}
 
 /* ---------------- events ---------------- */
-document.addEventListener('click',function(e){var b=e.target.closest('[data-amc],[data-opt],[data-gst],[data-amo],[data-p],[data-mode],[data-tab],[data-unit],[data-ptab],[data-act],[data-day],[data-slot],[data-q],[data-story],[data-goto],[data-t],#ov'); if(!b) return; var d=b.dataset;
+document.addEventListener('click',function(e){var b=e.target.closest('[data-amo],[data-p],[data-mode],[data-tab],[data-unit],[data-ptab],[data-act],[data-day],[data-slot],[data-q],[data-story],[data-goto],[data-t],#ov'); if(!b) return; var d=b.dataset;
  if(b.id==='ov') return close();
- if(d.amc!=null){ S.am=+d.amc; render(true); return; }
- if(d.opt!=null){ b.parentNode.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)}); return; }
- if(d.gst!=null){ S.g=Math.max(1,Math.min(4,(S.g==null?2:S.g)+(+d.gst))); render(true); return; }
  if(d.amo!=null){ document.querySelectorAll('.am-o').forEach(function(x,i){x.style.setProperty('--bg',i===+d.amo?'#f7e4e1':'#f3f1ea')}); return; }
  if(d.p!=null){ reset(+d.p); render(); return; }
- if(d.mode){ if(S.mode===d.mode) return; S.mode=d.mode; S.open=false; S.tab='home'; render(); return; }
- if(d.tab){ close(); S.tab=d.tab; if(d.k!=null) S.k=d.k; if(d.t) toast(d.t); render(); return; }
+ if(d.mode){ if(S.mode===d.mode) return; S.mode=d.mode; S.open=false; render(); return; }
+ if(d.tab){ close(); S.tab=d.tab; if(d.t) toast(d.t); render(); return; }
  if(d.unit!=null){ S.u=+d.unit; refreshCard(); return; }
  if(d.ptab){ S.ptab=d.ptab; render(true); return; }
  if(d.goto){ var k=d.goto, p=per(); S.tab='home'; if(p.live===k){S.mode='live'} else {S.mode='all'; S.u=p.units.indexOf(k)} S.open=true; render(); return; }
@@ -884,29 +626,25 @@ document.addEventListener('click',function(e){var b=e.target.closest('[data-amc]
  switch(a){
   case 'close': return close();
   case 'help': return helpSheet();
-  case 'raise': close(); S.cat=d.k; S.tab='raise'; return render();
-  case 'raiseok': return busy(b,function(){ S.tab=S.mode==='live'?'req':'home'; render(); okSheet('Request raised','Ref #SR-9214. We’ll update you here and by email.'); });
+  case 'raise': return busy(b,function(){ okSheet('Request raised','“'+d.k+'” · Ref #SR-'+(9200+Math.floor(Math.random()*90))+'. We’ll update you here and by email.'); S.sr=true; render(true); });
   case 'notif': return sheet('<h3>Notifications</h3><p class="sub">Latest updates across your units.</p>'+[['Service charge Q4 is overdue','Bloom Gardens · 2 days ago'],['Ahmed requested to move out','Marina Quays 1204 · today'],['Construction reached 72%','Bloom Heights 802 · this week'],['Phase 3 launch: early access','Bloom Gardens · this week']].map(function(n){return '<div class="nrow"><span class="d"></span><span><b>'+n[0]+'</b><small>'+n[1]+'</small></span></div>'}).join('')+'<button class="btn full lt press" style="margin-top:14px" data-act="close">Close</button>');
   case 'profile': return sheet('<h3>Profile</h3><p class="sub">'+per().n+'</p><div class="kv"><span>Meena Raj</span><b>Personal details, language</b></div><div class="kv"><span>Email</span><b>meena.raj@mail.com</b></div><div class="kv"><span>Phone</span><b>+971 50 123 4567</b></div><div class="kv"><span>Emirates ID</span><b>Valid · Mar 2029</b></div><div class="kv"><span>Language</span><b>English</b></div><button class="btn full lt press" style="margin-top:16px" data-act="close">Log out</button>');
   case 'more': S.open=!S.open; var det=b.nextElementSibling; det.classList.toggle('open',S.open); b.classList.toggle('open',S.open); b.firstChild.textContent=S.open?'Hide details':'Unit details, owners & documents'; return;
   case 'movein': return moveSheet(d.k);
   case 'moveok': var dd=MV.days[MV.day]; return busy(b,function(){ S.movein[MV.k]=dd.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+MV.slots[MV.slot]; refreshCard(); okSheet('Move-in booked','We’ll have access cards, utilities and the permit ready for '+S.movein[MV.k]+'.'); });
-  case 'moveout': if(!S.moveout){ S.tab='mout'; return render(); } if(S.moveout) return sheet('<h3>Move-out requested</h3><p class="sub">Requested for 15 Dec 2026. BCM will contact you to arrange the inspection.</p><button class="btn full lt press" data-act="cancelmo">Cancel request</button>');
+  case 'moveout': if(S.moveout) return sheet('<h3>Move-out requested</h3><p class="sub">Requested for 15 Dec 2026. BCM will contact you to arrange the inspection.</p><button class="btn full lt press" data-act="cancelmo">Cancel request</button>');
    return sheet('<h3>Move out</h3><p class="sub">'+(UNITS[per().live].tenantSelf?'We’ll notify your landlord and arrange the final inspection and DEWA clearance.':'We’ll arrange the final inspection, access card return and utility clearance.')+'</p><div class="kv"><span>Preferred date</span><b>15 Dec 2026</b></div><div class="kv"><span>Inspection</span><b>2 days before</b></div><button class="btn full press" style="margin-top:16px" data-act="moveoutok">Submit move-out request</button>');
-  case 'moveoutok': return busy(b,function(){ S.moveout=true; S.tab='home'; render(); okSheet('Move-out requested','We’ve received your request for 15 Dec 2026.'); });
+  case 'moveoutok': return busy(b,function(){ S.moveout=true; refreshCard(); okSheet('Move-out requested','We’ve received your request for 15 Dec 2026.'); });
   case 'cancelmo': S.moveout=false; close(); refreshCard(); return toast('Move-out request cancelled');
-  case 'pay': var r=findPay(d.id); if(!r) return; return sheet('<h3>'+r[0].t+'</h3><p class="sub">'+UNITS[r[1]].comm+' · '+UNITS[r[1]].no+'</p><div class="amt"><small>Amount due</small><b>'+DH+aed(r[0].a)+'</b></div><div class="box" style="margin-top:12px"><div class="wb">'+kv([['Reference',r[0].code],['Status',r[0].d,r[0].s==='miss'?'#922a22':''],['Unit',UNITS[r[1]].short]])+'</div></div><div class="lbl">Pay with</div><div class="box"><div class="fld"><span class="vis">VISA</span><span class="x"><b>Visa •••• 6411</b><small>Expires 08/28</small></span>'+I('cd')+'</div></div><button class="btn full press" style="margin-top:16px" data-act="payok" data-id="'+d.id+'">Pay now</button>');
-  case 'nocv': return sheet('<h3>Move-out request</h3><p class="sub">Marina Quays · Unit 1204</p><div class="box"><div class="tech"><span class="av">AM</span><span class="x"><b>Ahmed Al Mansoori</b><small>Tenant since 13 Oct 2024</small></span><button data-t="Calling tenant">'+I('phone')+'</button></div><div class="wb">'+kv([['Move-out date','30 Oct 2026'],['Contract ends','12 Oct 2026'],['Rent cheques','All cleared','#2e7d5c'],['Inspection','BCM, after your NOC']])+'</div></div><div class="info" style="margin-top:12px">'+I('alert')+'Giving the NOC lets BCM book the final inspection. The deposit is settled after it.</div><div class="row2b" style="margin-top:16px"><button class="btn lt press" data-act="noc" data-id="no">Decline</button><button class="btn press" data-act="noc" data-id="ok">Give NOC</button></div>');
+  case 'pay': var r=findPay(d.id); if(!r) return; return sheet('<h3>'+r[0].t+'</h3><p class="sub">'+UNITS[r[1]].comm+' · '+UNITS[r[1]].no+'</p><div class="kv"><span>Amount</span><b>AED '+aed(r[0].a)+'</b></div><div class="kv"><span>Due</span><b>'+r[0].d+'</b></div><div class="kv"><span>Pay with</span><b>Visa •••• 6411</b></div><button class="btn full press" style="margin-top:16px" data-act="payok" data-id="'+d.id+'">Pay AED '+aed(r[0].a)+'</button>');
   case 'payok': return busy(b,function(){ resolve(d.id); okSheet('Payment successful','Receipt sent to your email. It may take 1–2 days to show as confirmed.'); });
-  case 'noc': close(); S.noc=d.id; resolve('mo'); return toast(d.id==='ok'?'NOC given':'NOC declined');
+  case 'noc': S.noc=d.id; resolve('mo'); return toast(d.id==='ok'?'NOC given':'NOC declined');
   case 'eid': return busy(b,function(){ resolve('eid'); okSheet('Emirates ID uploaded','Thanks. Your access stays active while we verify the renewed ID.'); });
   case 'renew': return busy(b,function(){ resolve('renew'); okSheet('Renewal started','Your landlord has been asked to renew until 12 Jan 2028.'); });
   case 'renewcard': return busy(b,function(){ resolve('acc'); toast('Access card renewal requested'); });
-  case 'amen': close(); S.tab='amen'; return render();
-  case 'amenold': return sheet('<h3>Book an amenity</h3><p class="sub">'+UNITS[per().live||per().units[0]].comm+' · book up to two weeks ahead.</p><div class="hg">'+[['Swimming pool','pool'],['Gym','gym'],['BBQ area','bbq'],['Tennis court','park']].map(function(x,i){return '<button class="press am-o'+(i===0?' on':'')+'" data-amo="'+i+'" style="--ac:#922a22;--bg:'+(i===0?'#f7e4e1':'#f3f1ea')+'">'+I(x[1],18)+x[0]+'</button>'}).join('')+'</div><div class="lbl">Time slot</div><div class="slots">'+['7–8 AM','4–5 PM','6–7 PM'].map(function(x,i){return '<button class="slot'+(i===1?' on':'')+'" data-slot="'+i+'">'+x+'</button>'}).join('')+'</div><button class="btn full press" data-act="amenok">Book for tomorrow</button>');
-  case 'amenok': return busy(b,function(){ S.tab='home'; render(); okSheet('Amenity booked','Swimming pool · tomorrow 4–5 PM. Show the QR at the entrance.'); });
-  case 'visit': close(); S.tab='visit'; return render();
-  case 'visitold': return sheet('<h3>Invite a visitor</h3><p class="sub">Share a QR gate pass. Security is notified when they arrive.</p><div class="kv"><span>Visitor</span><b>Priya Sharma</b></div><div class="kv"><span>Date</span><b>Tomorrow · 6 PM</b></div><div class="kv"><span>Type</span><b>Guest · car</b></div><div class="kv"><span>Plate</span><b>Dubai K 48213</b></div><button class="btn full press" style="margin-top:16px" data-act="visitok">Create gate pass</button>');
+  case 'amen': return sheet('<h3>Book an amenity</h3><p class="sub">'+UNITS[per().live||per().units[0]].comm+' · book up to two weeks ahead.</p><div class="hg">'+[['Swimming pool','pool'],['Gym','gym'],['BBQ area','bbq'],['Tennis court','park']].map(function(x,i){return '<button class="press am-o'+(i===0?' on':'')+'" data-amo="'+i+'" style="--ac:#922a22;--bg:'+(i===0?'#f7e4e1':'#f3f1ea')+'">'+I(x[1],18)+x[0]+'</button>'}).join('')+'</div><div class="lbl">Time slot</div><div class="slots">'+['7–8 AM','4–5 PM','6–7 PM'].map(function(x,i){return '<button class="slot'+(i===1?' on':'')+'" data-slot="'+i+'">'+x+'</button>'}).join('')+'</div><button class="btn full press" data-act="amenok">Book for tomorrow</button>');
+  case 'amenok': return busy(b,function(){ okSheet('Amenity booked','Swimming pool · tomorrow 4–5 PM. Show the QR at the entrance.'); });
+  case 'visit': return sheet('<h3>Invite a visitor</h3><p class="sub">Share a QR gate pass. Security is notified when they arrive.</p><div class="kv"><span>Visitor</span><b>Priya Sharma</b></div><div class="kv"><span>Date</span><b>Tomorrow · 6 PM</b></div><div class="kv"><span>Type</span><b>Guest · car</b></div><div class="kv"><span>Plate</span><b>Dubai K 48213</b></div><button class="btn full press" style="margin-top:16px" data-act="visitok">Create gate pass</button>');
   case 'visitok': return busy(b,function(){ sheet('<div class="okc"><div class="qrb">'+I('qr',120)+'</div><h3>Gate pass ready</h3><p class="sub">Priya Sharma · tomorrow 6 PM. Valid for one entry.</p></div><button class="btn full press" data-act="close">Share pass</button>'); });
   case 'maint': close(); return helpSheet();
   case 'qa': return toast('Opens '+d.k);
