@@ -426,10 +426,10 @@ function toggle(){var p=per(); if(!p.live||VIEW==='owner') return '';
  return '<div class="seg'+(S.mode==='live'?' r':'')+'"><i></i><button data-mode="all" class="'+(S.mode==='all'?'on':'')+'">'+I('home',17)+'Owner<em>'+unitsOf().length+'</em></button><button data-mode="live" class="'+(S.mode==='live'?'on':'')+'">'+I('bld',17)+'Community</button></div>'}
 function header(){var live=S.mode==='live';
  var right='<button class="sq press" id="hb" data-act="help" aria-label="Need help">'+I('help')+'</button><button class="sq press" data-act="notif" aria-label="Notifications">'+I('bell')+'<em></em></button>';
- if(!live) return '<div class="hd"><div class="hrow"><button class="sq press" data-act="profile" aria-label="Profile">'+I('user')+'</button><div class="hi"><span class="wm">Bloom</span></div>'+right+'</div>'+
+ if(!live) return '<div class="hd"><div class="hrow"><span class="sq" aria-hidden="true">'+I('user')+'</span><div class="hi"><span class="wm">Bloom</span></div>'+right+'</div>'+
   '<div class="hello">Good afternoon Meena!</div>'+toggle()+
   '<div class="tot"><div><small>Total properties</small><b>'+unitsOf().length+'</b></div><div><small>Purchase price</small><b>'+per().price+'</b></div></div></div>';
- return '<div class="hd"><div class="hrow"><button class="sq press" data-act="profile" aria-label="Profile">MR</button><div class="hi"><small>Good afternoon</small><b>Meena</b></div>'+right.replace('<button class="sq press" id="hb"','<button class="hb press" id="hb"').replace('</svg></button>','</svg><span class="hl">Need help?</span></button>')+'</div>'+
+ return '<div class="hd"><div class="hrow"><span class="sq">MR</span><div class="hi"><small>Good afternoon</small><b>Meena</b></div>'+right.replace('<button class="sq press" id="hb"','<button class="hb press" id="hb"').replace('</svg></button>','</svg><span class="hl">Need help?</span></button>')+'</div>'+
   '<p class="wl">Welcome back to</p><div class="hello" style="margin-top:2px">Bloom <span>Holding</span></div>'+toggle()+'</div>'}
 function sh2(t,right,count){return '<div class="sh2"><h2>'+t+(count?'<span class="ct">'+count+'</span>':'')+'</h2>'+(right||'')+'</div>'}
 
