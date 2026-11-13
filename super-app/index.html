@@ -332,6 +332,29 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .cnv .ct:active .c{transform:scale(.94)}
 .cnv .ct.on .c{box-shadow:0 0 0 5px #fff,0 0 0 9px rgba(146,42,34,.15),0 10px 18px -8px rgba(122,42,34,.8)}
 .cnv .ct .c svg{width:22px;height:22px}
+
+.pay2{background:var(--tile);border-radius:16px;padding:6px}
+.ptot{display:grid;grid-template-columns:1fr 1fr;background:#fff;border-radius:12px;padding:14px 0;margin-bottom:6px}
+.ptot div{text-align:center}.ptot div+div{border-left:1px solid var(--line)}
+.ptot small{display:block;font-size:12.5px;color:var(--mut)}
+.ptot b{display:flex;align-items:center;justify-content:center;gap:5px;font-size:20px;font-weight:600;letter-spacing:-.4px;margin-top:6px}
+.ptot .dh,.pa .dh{width:16px;height:14px}
+.pq{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border-radius:12px;padding:12px;margin-bottom:6px;border:1px solid transparent}
+.pq .pi{width:36px;height:36px;border-radius:10px;background:var(--tile);display:grid;place-items:center;flex:none;color:var(--ink)}
+.pq .x{flex:1;min-width:0}.pq b{display:block;font-size:14px;font-weight:600}
+.pq small{display:block;font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa{display:flex;align-items:center;gap:4px;font-size:16px;font-weight:600;flex:none;letter-spacing:-.2px}
+.pq.red{background:#fbeeec;border-color:#f1d3ce}
+.pq.red .pi{background:#f6dad5;color:var(--pri)}.pq.red b,.pq.red small,.pq.red .pa{color:var(--pri)}
+.pu-h{font-size:15px;font-weight:500;padding:10px 8px 8px}
+.pu{background:#fff;border-radius:12px;padding:14px;margin-bottom:6px}
+.pu .r1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.pu .r1 b{display:block;font-size:16px;font-weight:600;letter-spacing:-.2px}.pu .r1 small{display:block;font-size:12.5px;color:var(--mut);margin-top:3px}
+.ps{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;margin-top:12px}
+.ps.ok{color:var(--ok)}.ps.proc{color:#8f591c}
+.spn{width:14px;height:14px;border-radius:50%;border:2px solid rgba(184,135,64,.25);border-top-color:#b88740;animation:spn .9s linear infinite;flex:none}
+@keyframes spn{to{transform:rotate(360deg)}}
+.pay2 .vm{margin-top:0}
 </style>
 </head>
 <body>
@@ -364,7 +387,7 @@ fan:'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 10c0-4 1-6 3-6s3 3 0 5M14 12c4 0 6 1
 check:'m5 12.5 4.5 4.5L19 7.5',checkc:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.3l2.7 2.7L16 9.6',arrow:'M7 17 17 7M9 7h8v8',x:'M6 6l12 12M18 6 6 18',
 edu:'M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5M22 9v6',hosp:'M3 21V10l9-6 9 6v11M9 21v-6h6v6M3 13h18',leaf:'M5 21c0-9 5-15 15-16-1 10-7 15-15 16ZM5 21l8-8',
 fm:'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',permit:'M4 4h16v16H4zM8 9h8M8 13h5M15 16l1.5 1.5L20 14',sc:'M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6',
-tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',list:'M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2v2M18 18h2v2h-2M7 7h.01M17 7h.01M7 17h.01',box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',sos:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v6M12 16.5v.01',poll:'M4 20V10M10 20V4M16 20v-7M22 20H2',paw:'M12 20c-3 0-5-2-5-4s2-4 5-4 5 2 5 4-2 4-5 4zM6 10a1.5 2 0 1 0 0-.01M10 6.5a1.5 2 0 1 0 0-.01M14 6.5a1.5 2 0 1 0 0-.01M18 10a1.5 2 0 1 0 0-.01',bolt:'M13 3 5 14h6l-1 7 8-11h-6Z',lost:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2ZM4 19V5M8 7h7',staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M17 11l2 2 4-4',paint:'M4 4h14v5H4zM18 6.5h2v5h-8v3M11 14.5h2V21h-2z',bell2:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',chatb:'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
+tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',list:'M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2v2M18 18h2v2h-2M7 7h.01M17 7h.01M7 17h.01',box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',sos:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v6M12 16.5v.01',poll:'M4 20V10M10 20V4M16 20v-7M22 20H2',paw:'M12 20c-3 0-5-2-5-4s2-4 5-4 5 2 5 4-2 4-5 4zM6 10a1.5 2 0 1 0 0-.01M10 6.5a1.5 2 0 1 0 0-.01M14 6.5a1.5 2 0 1 0 0-.01M18 10a1.5 2 0 1 0 0-.01',bolt:'M13 3 5 14h6l-1 7 8-11h-6Z',lost:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2ZM4 19V5M8 7h7',staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a7 7 0 0 1 14 0v1M17 11l2 2 4-4',paint:'M4 4h14v5H4zM18 6.5h2v5h-8v3M11 14.5h2V21h-2z',bell2:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',chatb:'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
 function I(n,s){return '<svg class="i" viewBox="0 0 24 24"'+(s?' style="width:'+s+'px;height:'+s+'px"':'')+'><path d="'+P[n]+'"/></svg>'}
 var DH='<svg class="dh" viewBox="0 0 14 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 1h3.2a5.25 5.25 0 0 1 0 10.5H3Z"/><path d="M1 5h12M1 7.5h12"/></svg>';
 function aed(n){return n.toLocaleString('en-US')}
@@ -394,11 +417,11 @@ var PERS=[
   note:['Tenant (resident) + landlord','Rents the home they live in and owns units elsewhere.',['Owner: only the units they own','Community: the rented home with the tenant agreement instead of owners and title deed','Action item: tenancy contract expiring','Move out button for their own tenancy']]}
 ];
 var PAYS={
- h802:[{t:'ADM Fee',code:'TOL-T-TH-127',d:'Payment confirmed',a:0,s:'paid'},{id:'p1',t:'Instalment 2',code:'BH-B-802',d:'Overdue since 1 Nov 2026',a:195100,s:'miss'},{id:'p2',t:'Instalment 3',code:'BH-B-802',d:'Due 15 Nov 2026',a:195100,s:'due'},{t:'Booking fee',code:'BH-B-802',d:'Payment confirmed',a:97550,s:'paid'}],
- q1204:[{t:'ADM Fee',code:'TOL-T-TH-127',d:'Payment confirmed',a:0,s:'paid'},{id:'p4',t:'Service charge Q4',code:'MQ-T2-1204',d:'Overdue since 30 Oct 2026',a:6840,s:'miss'},{t:'Rent received',code:'MQ-T2-1204',d:'Cheque 2 of 4 · 12 Oct',a:25500,s:'in'}],
- pr07:[{t:'Booking income',code:'PR-V-07',d:'StayCo payout · Oct',a:18400,s:'in'},{id:'p7',t:'Service charge Q4',code:'PR-V-07',d:'Due 30 Nov 2026',a:9200,s:'due'}],
+ h802:[{t:'September Instalment',code:'BH-B-802',d:'In process',a:135000,s:'proc'},{t:'ADM Fee',code:'TOL-T-TH-127',d:'Payment confirmed',a:0,s:'paid'},{id:'p1',t:'Instalment 2',code:'BH-B-802',d:'Overdue since 1 Nov 2026',a:195100,s:'miss'},{id:'p2',t:'Instalment 3',code:'BH-B-802',d:'Due 15 Nov 2026',a:195100,s:'due'},{t:'Booking fee',code:'BH-B-802',d:'Payment confirmed',a:97550,s:'paid'}],
+ q1204:[{t:'Rent cheque 3',code:'MQ-T2-1204',d:'In process',a:25500,s:'proc'},{t:'ADM Fee',code:'TOL-T-TH-127',d:'Payment confirmed',a:0,s:'paid'},{id:'p4',t:'Service charge Q4',code:'MQ-T2-1204',d:'Overdue since 30 Oct 2026',a:6840,s:'miss'},{t:'Rent received',code:'MQ-T2-1204',d:'Cheque 2 of 4 · 12 Oct',a:25500,s:'in'}],
+ pr07:[{t:'Maintenance fee',code:'PR-V-07',d:'In process',a:12400,s:'proc'},{t:'Booking income',code:'PR-V-07',d:'StayCo payout · Oct',a:18400,s:'in'},{id:'p7',t:'Service charge Q4',code:'PR-V-07',d:'Due 30 Nov 2026',a:9200,s:'due'}],
  t2204:[{id:'p5',t:'Service charge Q4',code:'BT-A-2204',d:'Due 30 Nov 2026',a:3960,s:'due'},{t:'Registration fee',code:'BT-A-2204',d:'Payment confirmed',a:5250,s:'paid'}],
- v138:[{t:'ADM Fee',code:'TOL-T-TH-127',d:'Payment confirmed',a:0,s:'paid'},{id:'p6',t:'Service charge Q4',code:'BG-P2-T-138',d:'Overdue since 30 Oct 2026',a:14550,s:'miss'},{t:'Chiller fee',code:'BG-P2-T-138',d:'Payment confirmed',a:1980,s:'paid'}]
+ v138:[{t:'Service charge Q3',code:'BG-P2-T-138',d:'In process',a:14550,s:'proc'},{t:'ADM Fee',code:'TOL-T-TH-127',d:'Payment confirmed',a:0,s:'paid'},{id:'p6',t:'Service charge Q4',code:'BG-P2-T-138',d:'Overdue since 30 Oct 2026',a:14550,s:'miss'},{t:'Chiller fee',code:'BG-P2-T-138',d:'Payment confirmed',a:1980,s:'paid'}]
 };
 var STORIES=[['Pool reopens','pool.jpg','Community pool','Pool maintenance on Sunday, closed 8 AM to 2 PM. Lifeguards back from 2 PM.'],['Movie night','aerial.jpg','This Friday · 7 PM','Family movie night on the Central Park lawn. Bring a blanket, popcorn is on us.'],['New gym','interior.jpg','Clubhouse','New strength area with free sessions for residents all week.'],['Market','townhouse.jpg','Sunday market','Local growers and bakers at the community square, 8 AM to 12 PM.'],['Phase 3','villa2.jpg','New launch','Bloom Gardens Phase 3 townhouses. Residents get early access.']];
 var TOPICS=[['Maintenance Issues','#9b2a22','#f8eeec'],['Cleaning & Waste','#34506f','#f1f3f5'],['Payment & Finance','#8f5a1e','#f8f1ea'],['Property & Documents','#2d6f6d','#eef4f2'],['Tenancy Related','#5c7a45','#f1f4ee'],['Technical Support','#5d4a7c','#f3f2f6'],['Access Related','#5f7b99','#f2f4f1'],['Other Requests','#6b3a7d','#f3f2f6']];
@@ -428,7 +451,7 @@ function header(){var live=S.mode==='live';
  var right='<button class="sq press" id="hb" data-act="help" aria-label="Need help">'+I('help')+'</button><button class="sq press" data-act="notif" aria-label="Notifications">'+I('bell')+'<em></em></button>';
  if(!live) return '<div class="hd"><div class="hrow"><span class="sq" aria-hidden="true">'+I('user')+'</span><div class="hi"><span class="wm">Bloom</span></div>'+right+'</div>'+
   '<div class="hello">Good afternoon Meena!</div>'+toggle()+
-  '<div class="tot"><div><small>Total properties</small><b>'+unitsOf().length+'</b></div><div><small>Purchase price</small><b>'+per().price+'</b></div></div></div>';
+  '</div>';
  return '<div class="hd"><div class="hrow"><span class="sq">MR</span><div class="hi"><small>Good afternoon</small><b>Meena</b></div>'+right.replace('<button class="sq press" id="hb"','<button class="hb press" id="hb"').replace('</svg></button>','</svg><span class="hl">Need help?</span></button>')+'</div>'+
   '<p class="wl">Welcome back to</p><div class="hello" style="margin-top:2px">Bloom <span>Holding</span></div>'+toggle()+'</div>'}
 function sh2(t,right,count){return '<div class="sh2"><h2>'+t+(count?'<span class="ct">'+count+'</span>':'')+'</h2>'+(right||'')+'</div>'}
@@ -484,14 +507,24 @@ function srBlock(){ if(!S.sr||!S.dyn) return ''; var live=S.mode==='live', p=per
  return '<div class="sec">'+sh2(live||p.units.indexOf('q1204')<0?'Service request':'Requests for this unit','<button class="see" data-t="Opens all service requests">All</button>')+'<div class="sr"><div class="r"><span class="ic">'+I(r[3],22)+'</span><span class="x"><b>'+r[0]+'</b><small>'+r[1]+'</small></span><span class="st amb">'+steps[r[2]]+'</span></div><div class="steps">'+steps.map(function(s,i){return '<div class="'+(i<=r[2]?'on':'')+'"><i></i>'+s+'</div>'}).join('')+'</div></div></div>'}
 
 /* payment updates: 3 latest transactions */
-function txRow(x,k){var paid=S.done[x.id]; var ic={miss:'alert',due:'cal',paid:'checkc',in:'inn'}[paid?'paid':x.s], st={miss:['Overdue','red'],due:['Upcoming','amb'],paid:['Payment confirmed','ok'],in:['Received','ok']}[paid?'paid':x.s];
+function txRow(x,k){var paid=S.done[x.id]; var ic={miss:'alert',due:'cal',paid:'checkc',in:'inn',proc:'clock'}[paid?'paid':x.s], st={miss:['Overdue','red'],due:['Upcoming','amb'],paid:['Payment confirmed','ok'],in:['Received','ok'],proc:['In process','amb']}[paid?'paid':x.s];
  return '<div class="tx"><span class="ic">'+I(ic)+'</span><span class="x"><small class="cd">'+x.code+'</small><b>'+x.t+'</b><small>'+(paid?'Paid just now':(x.s==='paid'?UNITS[k].comm:x.d))+'</small></span><span class="a"><b>AED '+aed(x.a)+'</b><span class="st '+st[1]+'">'+st[0]+'</span></span></div>'}
 function payments(){var p=per(), all=[];
  p.units.forEach(function(k){(PAYS[k]||[]).forEach(function(x){all.push([x,k])})});
- var recent=all.filter(function(r){return r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]}).slice(0,3);
- return '<div class="sec">'+sh2('Payment updates','<button class="see" data-tab="pay">View more</button>')+'<div class="pcard">'+
-  recent.map(function(r){return txRow(r[0],r[1])}).join('')+'<button class="vm press" data-tab="pay">View more'+I('chev')+'</button></div></div>'}
-
+ var open=function(st){return all.filter(function(r){return r[0].s===st&&!S.done[r[0].id]})};
+ var sum=function(rs){return rs.reduce(function(t,r){return t+r[0].a},0)};
+ var names=function(rs){var u=[];rs.forEach(function(r){var n=UNITS[r[1]].short;if(u.indexOf(n)<0)u.push(n)});return u.join(', ')};
+ var miss=open('miss'), due=open('due');
+ var ups=all.filter(function(r){return r[0].s==='proc'||r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]}).sort(function(a,b){return (a[0].s==='proc'?0:1)-(b[0].s==='proc'?0:1)}).slice(0,3);
+ var row=function(cls,ic,t,sub,amt,tab){return '<button class="pq '+cls+' press" data-tab="pay" data-pt="'+tab+'"><span class="pi">'+I(ic,18)+'</span><span class="x"><b>'+t+'</b><small>'+sub+'</small></span><span class="pa">'+DH+aed(amt)+'</span></button>'};
+ return '<div class="sec">'+sh2('Payments','<button class="see" data-tab="pay">View more</button>')+'<div class="pay2">'+
+  '<div class="ptot"><div><small>Total Units</small><b>'+p.units.length+'</b></div><div><small>Purchase Price</small><b>'+DH+p.price.replace('AED ','')+'</b></div></div>'+
+  (miss.length?row('red','alert','Missed Payments ('+miss.length+')',names(miss),sum(miss),'miss'):'')+
+  (due.length?row('','clock','Due in next 30 days',names(due),sum(due),'due'):'')+
+  (!miss.length&&!due.length?'<div class="empty">'+I('checkc',18)+'You’re all caught up. No payments due.</div>':'')+
+  '<div class="pu-h">Payment updates</div>'+ups.map(function(r){var x=r[0],u=UNITS[r[1]],proc=x.s==='proc'&&!S.done[x.id];
+   return '<div class="pu"><div class="r1"><span><b>'+u.short+'</b><small>'+x.t+'</small></span><span class="pa">'+DH+aed(x.a)+'</span></div><div class="ps '+(proc?'proc':'ok')+'">'+(proc?'<i class="spn"></i>In process':I('checkc',16)+(x.s==='in'?'Payment received':'Payment confirmed'))+'</div></div>'}).join('')+
+  '<button class="vm press" data-tab="pay">View all payments'+I('chev')+'</button></div></div>'}
 function sales(){return '<div class="sec">'+sh2('New Launches')+
  '<div class="sale press" data-act="eoi"><div class="im"><img src="'+IMG+'aerial.jpg" alt=""><span>New launch</span></div><div class="bd"><span class="x"><b>Bloom Gardens · Phase 3</b><small>Townhouses from AED 2.4M · owners get first access</small></span><button class="btn sm press">Register</button></div></div></div>'}
 
@@ -519,11 +552,11 @@ function profView(){return listView('Profile','Account and app settings.',[['Mee
 function hubView(){return '<div class="ttl"><h1>My Community</h1><p>'+UNITS[per().live||per().units[0]].comm+' · services for your home.</p></div>'+HUB.map(function(g){return '<div class="sec" style="margin-top:20px"><div class="pl-h" style="padding:0 0 10px">'+g[0]+'</div><div class="g3">'+g[1].map(function(h){var act=h[2]&&h[2]!=='Soon'?h[2]:null; return '<button class="hbt press" '+(act?'data-act="'+act+'"':'data-t="Opens '+h[0]+'"')+'>'+(h[2]==='Soon'?'<em>Soon</em>':'')+'<span class="c">'+I(h[1])+'</span>'+h[0]+'</button>'}).join('')+'</div></div>'}).join('')}
 function payView(){var p=per(), tabs=[['all','All units']].concat(p.units.map(function(k){return [k,UNITS[k].comm]}));
  var rows=[]; p.units.forEach(function(k){ if(S.ptab==='all'||S.ptab===k)(PAYS[k]||[]).forEach(function(x){rows.push([x,k])})});
- var miss=0,due=0,paid=0; rows.forEach(function(r){var x=r[0]; if(S.done[x.id]||x.s==='paid'||x.s==='in') paid+=x.a; else if(x.s==='miss') miss+=x.a; else due+=x.a;});
+ var miss=0,due=0,paid=0; rows.forEach(function(r){var x=r[0]; if(S.done[x.id]||x.s==='paid'||x.s==='in'||x.s==='proc') paid+=x.a; else if(x.s==='miss') miss+=x.a; else due+=x.a;});
  var grp=function(t,f){var g=rows.filter(f); return g.length?'<div class="pl-h">'+t+'</div>'+g.map(function(r){return txRow(r[0],r[1])}).join(''):''};
  return '<div class="ttl"><h1>Payment</h1><p>Unit wise payment details and all transactions.</p><div class="ftabs">'+tabs.map(function(t){return '<button class="'+(S.ptab===t[0]?'on':'')+'" data-ptab="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div></div>'+
  '<div class="sec" style="margin-top:16px"><div class="sum3"><div><small>Missed</small><b style="color:#922a22">'+aed(miss)+'</b></div><div><small>Upcoming</small><b>'+aed(due)+'</b></div><div><small>Paid</small><b>'+aed(paid)+'</b></div></div></div>'+
- '<div class="sec" style="margin-top:12px"><div class="plist">'+grp('Missed payments',function(r){return r[0].s==='miss'&&!S.done[r[0].id]})+grp('Upcoming payments',function(r){return r[0].s==='due'&&!S.done[r[0].id]})+grp('Payment updates',function(r){return r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]})+'</div>'+
+ '<div class="sec" style="margin-top:12px"><div class="plist">'+grp('Missed payments',function(r){return r[0].s==='miss'&&!S.done[r[0].id]})+grp('Upcoming payments',function(r){return r[0].s==='due'&&!S.done[r[0].id]})+grp('Payment updates',function(r){return r[0].s==='proc'||r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]})+'</div>'+
  '<button class="btn full lt press" style="margin-top:12px" data-act="soa">'+I('dl',16)+'Download my statement of account</button></div>'}
 function propsView(){var p=per(); var list=p.units.map(function(k){return UNITS[k]}); if(p.live&&p.units.indexOf(p.live)<0) list.push(UNITS[p.live]);
  return '<div class="ttl"><h1>My properties</h1><p>'+list.length+' properties linked to your account.</p></div><div class="sec" style="margin-top:16px">'+list.map(function(u){var col=ST[u.status];
