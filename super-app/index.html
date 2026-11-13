@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e9e3d8">
+<title>Bloom Super App · Owner Personas</title>
+<style>
+/* Brand fonts only: Matter (UI) + Orpheus Pro (display). Loaded from /fonts/ if present, else from the device. */
+@font-face{font-family:"Matter";font-weight:400;font-display:swap;src:local("Matter"),local("Matter-Regular"),url("../fonts/Matter-Regular.woff2") format("woff2")}
+@font-face{font-family:"Matter";font-weight:500;font-display:swap;src:local("Matter Medium"),local("Matter-Medium"),url("../fonts/Matter-Medium.woff2") format("woff2")}
+@font-face{font-family:"Matter";font-weight:600;font-display:swap;src:local("Matter SemiBold"),local("Matter-SemiBold"),url("../fonts/Matter-SemiBold.woff2") format("woff2")}
+@font-face{font-family:"Matter";font-weight:700;font-display:swap;src:local("Matter Bold"),local("Matter-Bold"),url("../fonts/Matter-Bold.woff2") format("woff2")}
+@font-face{font-family:"Orpheus Pro";font-weight:500;font-display:swap;src:local("Orpheus Pro Medium"),local("OrpheusPro-Medium"),url("../fonts/OrpheusPro-Medium.woff2") format("woff2")}
+@font-face{font-family:"Orpheus Pro";font-weight:400;font-style:italic;font-display:swap;src:local("Orpheus Pro Italic"),local("OrpheusPro-Italic"),url("../fonts/OrpheusPro-Italic.woff2") format("woff2")}
+:root{--page:#e9e3d8;--bg:#ffffff;--tile:#f3f1ea;--line:#e9e3d8;--ink:#1c1c1a;--mut:#6b665c;--pri:#922a22;--pri-d:#7a2a22;--ok:#2e7d5c;--okbg:#e7f2ec;--amb:#b88740;--ambbg:#f6eedf;
+  --sans:"Matter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--serif:"Orpheus Pro",Georgia,"Times New Roman",serif;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.3,1.4,.5,1)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);padding:24px 16px 48px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;color:inherit;border:0;background:none;padding:0}
+button:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.press{transition:transform .15s var(--ease)}.press:active{transform:scale(.97)}
+
+/* ---------- page chrome ---------- */
+.top{max-width:1000px;margin:0 auto 20px;text-align:center}
+.top h1{margin:0 0 4px;font:500 30px/1.1 var(--serif);letter-spacing:-.3px}
+.top p{margin:0 0 16px;font-size:14px;color:var(--mut)}
+.vt{display:inline-flex;gap:4px;flex-wrap:wrap;justify-content:center;background:#ddd5c7;padding:4px;border-radius:14px}
+.vt button{font-size:13px;font-weight:500;padding:9px 14px;border-radius:10px;color:var(--ink);transition:background .25s,color .25s}
+.vt button small{display:block;font-size:11px;color:var(--mut);font-weight:400;margin-top:1px}
+.vt button.on{background:#fff;box-shadow:0 2px 8px -3px rgba(0,0,0,.18)}
+.vsel{display:none}
+.stage{display:flex;gap:28px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.note{width:320px;max-width:100%;background:#fffdf8;border-radius:16px;padding:20px;font-size:13px;line-height:1.55}
+.note h2{margin:0 0 6px;font:500 22px/1.15 var(--serif)}
+.note p{margin:0 0 12px;color:var(--mut)}
+.note ul{margin:0 0 14px;padding-left:18px}.note li{margin-bottom:6px}
+.note .lb{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a847a;margin:16px 0 8px}
+.sim{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--tile);border-radius:12px;padding:12px 14px}
+.sim b{display:block;font-size:13px;font-weight:500}.sim small{color:var(--mut);font-size:11.5px}
+.sk{width:44px;height:26px;border-radius:13px;background:#d9d2c5;position:relative;flex-shrink:0;transition:background .3s}
+.sk::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .3s var(--spring)}
+.sk.on{background:var(--pri)}.sk.on::after{transform:translateX(18px)}
+
+/* ---------- phone ---------- */
+.ph{position:relative;width:390px;max-width:100%;height:820px;background:var(--bg);border-radius:44px;overflow:hidden;box-shadow:0 30px 70px -28px rgba(40,25,10,.45),0 0 0 9px #1c1c1a;display:flex;flex-direction:column}
+.sc{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:110px}.sc::-webkit-scrollbar{display:none}
+.fd{animation:fd .4s var(--ease)}@keyframes fd{from{opacity:0;transform:translateY(10px)}}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 4px;font-weight:600;font-size:14px}
+.sb span:last-child{display:flex;gap:6px;align-items:center;font-size:12px}
+.pad{padding:0 16px}
+
+/* header (replaces the red hero) */
+.hd{padding:8px 16px 0}
+.hrow{display:flex;align-items:center;gap:12px}
+.sq{width:46px;height:46px;border-radius:12px;background:var(--tile);display:grid;place-items:center;flex:none;position:relative;font-size:14px;font-weight:600}
+.sq em{position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--pri);box-shadow:0 0 0 2px var(--tile)}
+.hi{flex:1;min-width:0}.hi small{display:block;font-size:12.5px;color:var(--mut)}.hi b{display:block;font-size:15px;font-weight:500;margin-top:2px}
+.hb{height:46px;border-radius:12px;background:var(--tile);display:flex;align-items:center;padding:0 13px;overflow:hidden;transition:background .35s,color .35s}
+.hb .hl{display:inline-block;max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:500;transition:max-width .5s var(--ease),opacity .35s,margin .5s}
+.hb.open{background:var(--pri);color:#fff}.hb.open .hl{max-width:90px;opacity:1;margin-left:7px}
+.hello{margin:20px 0 0;font:500 30px/1.08 var(--serif);letter-spacing:-.4px}
+.hello span{color:#8a847a;font-style:italic;font-weight:400}
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--tile);border-radius:12px;padding:4px;margin-top:16px}
+.seg i{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:#fff;border-radius:9px;box-shadow:0 2px 8px -3px rgba(0,0,0,.18);transition:transform .4s var(--ease)}
+.seg.r i{transform:translateX(100%)}
+.seg button{position:relative;z-index:1;height:42px;font-size:13.5px;font-weight:500;color:var(--mut);display:flex;align-items:center;justify-content:center;gap:7px;transition:color .3s}
+.seg button.on{color:var(--ink)}
+.seg button em{font-style:normal;font-size:11px;font-weight:600;min-width:20px;height:20px;border-radius:10px;background:#fff;display:grid;place-items:center;padding:0 6px}
+.seg button.on em{background:var(--tile)}
+
+/* sections */
+.sec{margin-top:28px;padding:0 16px}
+.sh2{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
+.sh2 h2{margin:0;font-size:19px;font-weight:500;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.sh2 h2 .ct{font-size:11.5px;font-weight:600;height:22px;min-width:22px;padding:0 7px;border-radius:11px;background:var(--pri);color:#fff;display:grid;place-items:center}
+.see{font-size:13.5px;color:var(--mut)}
+.tagp{font-size:11px;font-weight:600;padding:4px 8px;border-radius:8px;background:var(--tile);color:var(--mut)}
+
+/* unit card */
+.ucard{background:var(--tile);border-radius:16px;padding:6px}
+.utabs{display:grid;gap:4px;padding:4px;background:var(--line);border-radius:12px;margin-bottom:6px}
+.utabs button{border-radius:9px;padding:7px 8px;text-align:left;min-width:0;transition:background .25s,box-shadow .25s}
+.utabs button b{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.utabs button small{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mut);margin-top:2px;white-space:nowrap}
+.utabs button small i{width:6px;height:6px;border-radius:50%;background:var(--d,#b88740);flex:none}
+.utabs button.on{background:#fff;box-shadow:0 2px 8px -3px rgba(0,0,0,.18)}
+.uph{position:relative;height:178px;border-radius:12px;overflow:hidden}
+.uph img{width:100%;height:100%;object-fit:cover;animation:imf .5s var(--ease)}
+@keyframes imf{from{opacity:.3;transform:scale(1.04)}}
+.utag{position:absolute;left:10px;top:10px;height:30px;padding:0 11px 0 9px;border-radius:10px;background:#fff;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500}
+.utag i{width:7px;height:7px;border-radius:50%;background:var(--d)}
+.ucode{position:absolute;right:10px;top:10px;height:30px;padding:0 10px;border-radius:10px;background:rgba(255,255,255,.9);display:flex;align-items:center;font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.ubd{background:#fff;border-radius:12px;margin-top:6px;padding:14px}
+.ubd .t b{display:block;font-size:16.5px;font-weight:500;letter-spacing:-.2px}
+.ubd .t small{display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--mut);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{height:30px;padding:0 10px;border-radius:9px;border:1px solid var(--line);display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500}
+.chip svg{width:15px;height:15px}
+.uprog{margin-top:14px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:4px;background:var(--pri);transition:width 1.2s var(--ease) .15s}
+.bar.go i{width:var(--w)}
+.bsm{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:7px}
+.more{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:12px;padding-top:12px;border-top:1px solid #efeae0;font-size:13px;font-weight:500}
+.more svg{width:16px;height:16px;transition:transform .35s var(--ease)}
+.more.open svg{transform:rotate(180deg)}
+.det{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.det.open{grid-template-rows:1fr}
+.det>div{overflow:hidden}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f1ece3;font-size:13px}
+.kv span{color:var(--mut)}.kv b{font-weight:500;text-align:right}
+.dl{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#8a847a;margin:14px 0 8px}
+.own{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.own .av{width:32px;height:32px;border-radius:50%;background:var(--tile);display:grid;place-items:center;font-size:11.5px;font-weight:600;flex:none}
+.own .x{flex:1;min-width:0}.own .x b{display:block;font-size:13px;font-weight:500}
+.own .sb2{height:4px;border-radius:2px;background:var(--line);margin-top:5px;overflow:hidden}.own .sb2 i{display:block;height:100%;background:var(--pri)}
+.own em{font-style:normal;font-size:13px;font-weight:600}
+.am{display:flex;flex-wrap:wrap;gap:6px}
+.am span{height:28px;padding:0 10px;border-radius:8px;background:var(--tile);display:flex;align-items:center;gap:6px;font-size:12px}
+.am svg{width:14px;height:14px}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.doc{display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;background:var(--tile);font-size:12.5px;font-weight:500;text-align:left}
+.doc svg{width:18px;height:18px;color:var(--pri)}
+.doc.off{opacity:.55}
+.ucta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px;background:#fff;border-radius:12px;padding:10px 10px 10px 14px}
+.ucta small{display:block;font-size:12px;color:var(--mut)}.ucta b{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.btn{height:44px;padding:0 18px;border-radius:12px;background:var(--pri);color:#fff;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:none}
+.btn.lt{background:var(--tile);color:var(--ink)}
+.btn.sm{height:38px;padding:0 14px;border-radius:10px;font-size:13px}
+.btn.full{width:100%}
+
+/* attention */
+.stack{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+.at{background:var(--tile);border-radius:16px;padding:12px;transition:opacity .35s,transform .35s var(--ease)}
+.at.out{opacity:0;transform:translateX(30px)}
+.ah{display:flex;gap:12px;align-items:center}
+.aic{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;flex:none;position:relative;color:var(--pri)}
+.aic b{position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-weight:600;color:var(--ink)}
+.ah .x{flex:1;min-width:0}.ah .x b{display:block;font-size:14.5px;font-weight:500}
+.ah .x small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.lvl{font-size:11px;font-weight:600;padding:4px 8px;border-radius:8px;flex:none}
+.lvl.red{background:#f7e4e1;color:var(--pri)}.lvl.amb{background:var(--ambbg);color:#8f591c}
+.af{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;margin-top:10px;padding:8px 8px 8px 12px}
+.af .x{flex:1;min-width:0}.af .x b{display:block;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.af .x small{font-size:12px;color:var(--mut)}
+.af .amt{font-size:15px;font-weight:600}
+
+/* service request */
+.sr{background:var(--tile);border-radius:16px;padding:6px}
+.sr .r{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px}
+.sr .r .ic{width:46px;height:46px;border-radius:12px;background:var(--tile);display:grid;place-items:center;flex:none}
+.sr .r .x{flex:1;min-width:0}.sr .r .x b{display:block;font-size:14.5px;font-weight:500}.sr .r .x small{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:12px 8px 6px}
+.steps div{font-size:11px;color:var(--mut)}
+.steps div i{display:block;height:4px;border-radius:2px;background:var(--line);margin-bottom:6px}
+.steps div.on{color:var(--ink);font-weight:500}.steps div.on i{background:var(--pri)}
+
+/* payments */
+.pcard{background:var(--tile);border-radius:16px;padding:6px}
+.ptop{display:flex;justify-content:space-between;align-items:center;padding:10px 10px 12px}
+.ptop small{display:block;font-size:12.5px;color:var(--mut)}
+.ptop b{display:flex;align-items:center;gap:6px;font-size:26px;font-weight:600;letter-spacing:-.8px;margin-top:3px}
+.dh{width:18px;height:16px;flex:none}
+.tx{display:flex;align-items:center;gap:12px;background:#fff;padding:12px;border-bottom:1px solid #f1ece3}
+.tx:first-of-type{border-radius:12px 12px 0 0}.tx:last-of-type{border-radius:0 0 12px 12px;border-bottom:0}
+.tx .ic{width:40px;height:40px;border-radius:10px;background:var(--tile);display:grid;place-items:center;flex:none}
+.tx .ic svg{width:18px;height:18px}
+.tx .x{flex:1;min-width:0}.tx .x b{display:block;font-size:13.5px;font-weight:500}.tx .x small{display:block;font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx .a{text-align:right;flex:none}.tx .a b{display:block;font-size:13.5px;font-weight:600}
+.st{display:inline-block;font-size:11px;font-weight:600;padding:3px 7px;border-radius:7px;margin-top:3px}
+.st.ok{background:var(--okbg);color:var(--ok)}.st.amb{background:var(--ambbg);color:#8f591c}.st.red{background:#f7e4e1;color:var(--pri)}
+.vm{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:44px;margin-top:6px;border-radius:12px;background:#fff;font-size:13px;font-weight:500}
+.vm svg{width:16px;height:16px}
+
+/* sales updates */
+.sale{position:relative;border-radius:16px;overflow:hidden;background:var(--tile);padding:6px}
+.sale .im{position:relative;height:170px;border-radius:12px;overflow:hidden}
+.sale .im img{width:100%;height:100%;object-fit:cover}
+.sale .im span{position:absolute;left:10px;top:10px;height:28px;padding:0 10px;border-radius:9px;background:#fff;display:flex;align-items:center;font-size:11.5px;font-weight:600}
+.sale .bd{display:flex;align-items:center;gap:12px;padding:12px 8px 6px}
+.sale .bd .x{flex:1;min-width:0}.sale .bd b{display:block;font-size:15.5px;font-weight:500}.sale .bd small{display:block;font-size:12.5px;color:var(--mut);margin-top:3px}
+.srow{display:flex;align-items:center;gap:12px;background:var(--tile);border-radius:12px;padding:10px 12px;margin-top:12px;text-align:left;width:100%}
+.srow .ic{width:40px;height:40px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:none;color:var(--pri)}
+.srow .x{flex:1;min-width:0}.srow b{display:block;font-size:13.5px;font-weight:500}.srow small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+
+/* explore bloom */
+.ex{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.exc{position:relative;height:104px;border-radius:12px;overflow:hidden;background:var(--tile);padding:12px;text-align:left;display:flex;flex-direction:column;justify-content:space-between}
+.exc .ic{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--pri)}
+.exc b{font-size:14px;font-weight:500}.exc small{display:block;font-size:11.5px;color:var(--mut);font-weight:400;margin-top:2px}
+.exc.big{grid-column:1/-1;height:132px;color:#fff;justify-content:flex-end}
+.exc.big img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.exc.big::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.55))}
+.exc.big span{position:relative;z-index:1}.exc.big small{color:rgba(255,255,255,.85)}
+
+/* stories (phase II) */
+.stories{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.story{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:500;text-align:center;line-height:1.2}
+.story .rg{width:60px;height:60px;border-radius:50%;padding:2.5px;background:conic-gradient(var(--pri),#d9a981,var(--pri))}
+.story.seen .rg{background:var(--line)}
+.story .rg img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2.5px solid #fff;display:block}
+
+/* quick actions */
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.q{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;font-weight:500;text-align:center}
+.q .c{width:100%;aspect-ratio:1;max-width:72px;border-radius:16px;background:var(--tile);display:grid;place-items:center;color:var(--pri);transition:transform .15s}
+.q:active .c{transform:scale(.92)}
+.q .c svg{width:24px;height:24px}
+
+/* nav */
+.nv{position:absolute;left:14px;right:14px;bottom:14px;background:#fff;border-radius:22px;box-shadow:0 14px 40px -10px rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.04);display:flex;align-items:center;gap:4px;padding:6px;z-index:3}
+.nv button{flex:1;height:54px;border-radius:16px;color:#6b665c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:500;transition:background .3s,color .3s,flex .45s var(--ease)}
+.nv button svg{width:21px;height:21px}
+.nv button.on{background:var(--pri);color:#fff}
+.orb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd9b3,#ec735c 50%,#8c3373);box-shadow:0 0 10px -2px rgba(224,97,79,.6)}
+
+/* sub pages */
+.ttl{padding:8px 16px 0}
+.ttl h1{margin:6px 0 4px;font:500 30px/1.1 var(--serif);letter-spacing:-.3px}
+.ttl p{margin:0;color:var(--mut);font-size:13px}
+.ftabs{display:flex;gap:4px;padding:4px;background:var(--tile);border-radius:12px;margin-top:16px}
+.ftabs button{flex:1;height:38px;border-radius:9px;font-size:12.5px;font-weight:500;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px;transition:background .25s,color .25s}
+.ftabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px -3px rgba(0,0,0,.18)}
+.sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sum3 div{background:var(--tile);border-radius:12px;padding:12px}
+.sum3 small{display:block;font-size:11.5px;color:var(--mut)}.sum3 b{display:block;font-size:17px;font-weight:600;margin-top:4px;letter-spacing:-.3px}
+.plist{background:var(--tile);border-radius:16px;padding:6px}
+.pl-h{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#8a847a;padding:10px 8px 8px}
+.prow{display:flex;align-items:center;gap:12px;background:var(--tile);border-radius:16px;padding:6px;width:100%;text-align:left;margin-bottom:12px}
+.prow img{width:84px;height:84px;border-radius:12px;object-fit:cover;flex:none}
+.prow .x{flex:1;min-width:0;padding-right:8px}.prow b{display:block;font-size:14.5px;font-weight:500}
+.prow small{display:block;font-size:12px;color:var(--mut);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat{padding:8px 16px}
+.msg{max-width:84%;padding:11px 14px;border-radius:16px;font-size:13.5px;line-height:1.45;margin-bottom:10px;animation:fd .35s var(--ease)}
+.msg.ai{background:var(--tile);border-bottom-left-radius:6px}
+.msg.me{background:var(--pri);color:#fff;margin-left:auto;border-bottom-right-radius:6px}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.sugg button{padding:9px 12px;border-radius:12px;background:var(--tile);font-size:12.5px;font-weight:500;text-align:left}
+.typing{display:inline-flex;gap:4px}.typing i{width:6px;height:6px;border-radius:50%;background:#8a847a;animation:tp 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+
+/* sheet + toast + story */
+.ov{position:absolute;inset:0;background:rgba(20,14,10,.45);opacity:0;pointer-events:none;transition:opacity .3s;z-index:8}.ov.on{opacity:1;pointer-events:auto}
+.shx{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:10px 16px 26px;transform:translateY(105%);transition:transform .4s var(--ease);max-height:86%;overflow-y:auto;z-index:9}
+.shx.on{transform:none}
+.grab{width:40px;height:4px;border-radius:3px;background:#d9d2c5;margin:0 auto 12px}
+.shx h3{margin:2px 0 4px;font:500 24px/1.15 var(--serif)}
+.shx .sub{margin:0 0 14px;font-size:13px;color:var(--mut)}
+.hgrp{background:var(--tile);border-radius:16px;padding:6px;margin-bottom:12px}
+.hgrp .gh{display:flex;align-items:center;gap:10px;padding:8px 8px 10px;font-size:14px;font-weight:500}
+.hgrp .gh span{width:32px;height:32px;border-radius:9px;background:#fff;display:grid;place-items:center;color:var(--pri)}
+.hgrp .gh svg{width:17px;height:17px}
+.hopt{display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;padding:12px;font-size:13.5px;text-align:left;border-bottom:1px solid #f1ece3}
+.hopt:first-of-type{border-radius:12px 12px 0 0}.hopt:last-child{border-radius:0 0 12px 12px;border-bottom:0}
+.hopt svg{width:16px;height:16px;color:#8a847a}
+.hrow2{display:flex;gap:8px}.hrow2 .btn{flex:1}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#8a847a;margin:14px 0 8px}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.day{border-radius:12px;background:var(--tile);padding:8px 0;text-align:center;transition:background .2s,color .2s}
+.day small{display:block;font-size:11px;color:inherit;opacity:.7}.day b{display:block;font-size:17px;font-weight:600}
+.day.on{background:var(--pri);color:#fff}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px}
+.slot{height:40px;border-radius:12px;background:var(--tile);font-size:13px;font-weight:500}.slot.on{background:var(--pri);color:#fff}
+.okc{text-align:center;padding:10px 0 4px}
+.okc .ck{width:64px;height:64px;border-radius:50%;background:var(--okbg);color:var(--ok);display:grid;place-items:center;margin:0 auto 12px;animation:pop .5s var(--spring)}
+.okc .ck svg{width:30px;height:30px;stroke-width:2.2}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.nrow{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f1ece3}
+.nrow .d{width:8px;height:8px;border-radius:50%;background:var(--pri);margin-top:6px;flex:none}
+.nrow b{display:block;font-size:13.5px;font-weight:500}.nrow small{font-size:12px;color:var(--mut)}
+.tt{position:absolute;left:16px;right:16px;bottom:96px;background:var(--ink);color:#fff;font-size:13px;padding:12px 14px;border-radius:12px;opacity:0;transform:translateY(10px);transition:.3s var(--ease);pointer-events:none;z-index:10}.tt.on{opacity:1;transform:none}
+.sty{position:absolute;inset:0;background:#000;z-index:11;opacity:0;pointer-events:none;transition:opacity .3s}
+.sty.on{opacity:1;pointer-events:auto}
+.sty img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
+.sty .pg{position:absolute;left:14px;right:14px;top:54px;display:flex;gap:4px;z-index:1}
+.sty .pg i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden}
+.sty .pg i b{display:block;height:100%;width:0;background:#fff}
+.sty .pg i.done b{width:100%}.sty .pg i.run b{animation:run 4s linear forwards}
+@keyframes run{to{width:100%}}
+.sty .cap{position:absolute;left:16px;right:16px;bottom:40px;color:#fff;z-index:1}
+.sty .cap small{font-size:12px;opacity:.85}.sty .cap h4{margin:6px 0 6px;font:500 30px/1.1 var(--serif)}.sty .cap p{margin:0 0 14px;font-size:13.5px;opacity:.9}
+.sty .x{position:absolute;right:14px;top:66px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:grid;place-items:center;z-index:2}
+.sty::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 50%,rgba(0,0,0,.75))}
+.empty{background:var(--okbg);color:var(--ok);border-radius:12px;padding:12px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+
+/* ---------- responsive ---------- */
+@media (max-width:820px){
+  body{padding:0;background:var(--bg)}
+  .top{margin:0;padding:10px 16px 8px;background:var(--page);position:sticky;top:0;z-index:20;text-align:left}
+  .top h1,.top p,.vt{display:none}
+  .vsel{display:block;width:100%;height:42px;border-radius:12px;border:0;background:#fff;font:500 14px var(--sans);color:var(--ink);padding:0 12px}
+  .stage{display:block}
+  .note{display:none}
+  .ph{width:100%;height:calc(100dvh - 60px);border-radius:0;box-shadow:none}
+  .sb{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>Bloom Super App</h1>
+  <p>One home screen that adapts to each owner persona and property status. Everything inside the phone works.</p>
+  <div class="vt" id="vt"></div>
+  <select class="vsel" id="vsel" aria-label="Persona"></select>
+</div>
+<div class="stage">
+  <div class="ph" id="ph"><div class="sc" id="sc"></div><div id="nvw"></div><div class="ov" id="ov"></div><div class="shx" id="sh"></div><div class="tt" id="tt"></div><div class="sty" id="sty"></div></div>
+  <aside class="note" id="nt"></aside>
+</div>
+<script>
+var IMG='../community/img/';
+var P={home:'M4.8 9.6 12 3l7.2 6.6V19a1.6 1.6 0 0 1-1.6 1.6H6.4A1.6 1.6 0 0 1 4.8 19ZM9.5 20.5V14a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6.5',
+grid:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',doc:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 13h6M9 17h4',
+dl:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M12 11v6M9.5 14.5 12 17l2.5-2.5',
+user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 20.5c.8-3.6 3.8-5.5 7.5-5.5s6.7 1.9 7.5 5.5',bell:'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15ZM10 20.5a2 2 0 0 0 4 0',
+help:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01',cal:'M3.5 5h17v15.5h-17zM3.5 9.5h17M8 3v4M16 3v4',
+card:'M3 5h18v14H3zM7 10h4M7 14h6',car:'M5 16V11l2-5h10l2 5v5M3.5 16h17v3h-3v-1.5h-11V19h-3ZM5 11h14',chev:'m9 6 6 6-6 6',cd:'m6 9 6 6 6-6',
+tool:'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',out:'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9',
+inn:'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3',bld:'M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16M9.5 7h1M13.5 7h1M9.5 11h1M13.5 11h1M10.5 21v-4h3v4',
+wal:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',phone:'M5 4h3.5l1.8 4.5-2.2 1.3a10 10 0 0 0 4.1 4.1l1.3-2.2L18 13.5V17a2 2 0 0 1-2 2A13 13 0 0 1 3 6a2 2 0 0 1 2-2Z',
+pin:'M12 21s-7-5.6-7-11.5a7 7 0 0 1 14 0C19 15.4 12 21 12 21ZM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5',bed:'M3 18V6M3 13h18v5M21 13v-2a3 3 0 0 0-3-3h-7v5M7 11.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2',
+area:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',pool:'M3 17c1.5 1 3 1 4.5 0s3-1 4.5 0 3 1 4.5 0 3-1 4.5 0M8 14V6a2 2 0 0 1 4 0M16 14V6a2 2 0 0 0-2-2M8 9h8',
+gym:'M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12',park:'M12 21v-6M8 15h8l-4-10ZM5 21h14',kid:'M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 21l2-8h4l2 8M9 11h6',bbq:'M5 10h14a7 7 0 0 1-14 0ZM8 17l-2 4M16 17l2 4M9 3c0 2 2 2 2 4M13 3c0 2 2 2 2 4',
+alert:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7.5v5.5M12 16.5v.01',key:'M8 19a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 12l9-9M17 6l3 3M15 8l2 2',
+fan:'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 10c0-4 1-6 3-6s3 3 0 5M14 12c4 0 6 1 6 3s-3 3-5 0M12 14c0 4-1 6-3 6s-3-3 0-5M10 12c-4 0-6-1-6-3s3-3 5 0',
+check:'m5 12.5 4.5 4.5L19 7.5',checkc:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.3l2.7 2.7L16 9.6',arrow:'M7 17 17 7M9 7h8v8',x:'M6 6l12 12M18 6 6 18',
+edu:'M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5M22 9v6',hosp:'M3 21V10l9-6 9 6v11M9 21v-6h6v6M3 13h18',leaf:'M5 21c0-9 5-15 15-16-1 10-7 15-15 16ZM5 21l8-8',
+fm:'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',permit:'M4 4h16v16H4zM8 9h8M8 13h5M15 16l1.5 1.5L20 14',sc:'M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6',
+tag:'M3 12V4h8l10 10-8 8ZM7.5 8.5h.01',spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z',send:'M4 12 20 4l-6 16-3-7Z',contract:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5M9 17c1-1 2-3 3-1s2 1 3 0'};
+function I(n,s){return '<svg class="i" viewBox="0 0 24 24"'+(s?' style="width:'+s+'px;height:'+s+'px"':'')+'><path d="'+P[n]+'"/></svg>'}
+var DH='<svg class="dh" viewBox="0 0 14 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 1h3.2a5.25 5.25 0 0 1 0 10.5H3Z"/><path d="M1 5h12M1 7.5h12"/></svg>';
+function aed(n){return n.toLocaleString('en-US')}
+
+/* ---------------- data ---------------- */
+var AM={pool:['Pool','pool'],gym:['Gym','gym'],park:['Park','park'],kid:['Kids play','kid'],bbq:['BBQ area','bbq']};
+var UNITS={
+ v138:{k:'v138',short:'Villa 138',comm:'Bloom Gardens',bld:'Garden Villas',no:'Villa 138',type:'Villa',bhk:'4 BHK',area:'4,850 sq ft',img:'villa2.jpg',status:'live',owners:[['Meena Raj',100]],am:['pool','gym','park','kid'],docs:['Title deed','SPA'],code:'BG-V-138',ho:'Handed over Mar 2025'},
+ q1204:{k:'q1204',short:'Unit 1204',comm:'Marina Quays',bld:'Tower 2',no:'Unit 1204',type:'Apartment',bhk:'2 BHK',area:'1,320 sq ft',img:'resort.jpg',status:'rent',owners:[['Meena Raj',60],['Arjun Raj',40]],am:['pool','gym','bbq'],docs:['Title deed','SPA'],code:'MQ-T2-1204',tenant:['Ahmed Al Mansoori','Contract ends 12 Oct 2026','AED 102,000 / year'],ho:'Handed over Jan 2024'},
+ t2204:{k:'t2204',short:'Unit 2204',comm:'Bloom Towers',bld:'Tower A',no:'Unit 2204',type:'Apartment',bhk:'1 BHK',area:'860 sq ft',img:'interior2.jpg',status:'vacant',owners:[['Meena Raj',100]],am:['pool','gym'],docs:['Title deed','SPA'],code:'BT-A-2204',ho:'Handed over 2 Nov 2026'},
+ h802:{k:'h802',short:'Unit 802',comm:'Bloom Heights',bld:'Tower B',no:'Unit 802',type:'Apartment',bhk:'1 BHK',area:'812 sq ft',img:'pool.jpg',status:'uc',pct:72,hand:'Mar 2027',owners:[['Meena Raj',100]],am:['pool','gym','kid'],docs:['SPA'],code:'BH-B-802'},
+ g31:{k:'g31',short:'Townhouse 31',comm:'Bloom Gardens',bld:'Phase 3',no:'Townhouse 31',type:'Townhouse',bhk:'3 BHK',area:'2,410 sq ft',img:'townhouse.jpg',status:'uc',pct:38,hand:'Dec 2027',owners:[['Meena Raj',50],['Vikram Rao',50]],am:['pool','park','bbq'],docs:['SPA'],code:'BG-P3-T31'},
+ s905:{k:'s905',short:'Unit 905',comm:'Soho Square',bld:'Tower C',no:'Unit 905',type:'Apartment',bhk:'2 BHK',area:'1,180 sq ft',img:'interior.jpg',status:'live',tenantSelf:true,landlord:'Al Noor Properties',am:['pool','gym','kid'],docs:['Tenancy contract','Ejari'],code:'SS-C-905',lease:'Lease ends 12 Jan 2027'}
+};
+var ST={live:['You live here','#2e7d5c'],rent:['Rented out','#4c5ebf'],vacant:['Vacant · ready to move in','#b88740'],uc:['Under construction','#922a22']};
+var PERS=[
+ {k:'inv_uc',n:'Investor',s:'Under construction',units:['h802','g31'],live:null,uc:true,
+  note:['Investor · under construction','Units are not handed over yet, so there is no community view and no My Properties tab. The home is a payments dashboard.',['Upper navigation: profile, notifications, help','Unit details with construction progress and handover date','Immediate attention: missed and upcoming payments only','Payment details with 3 recent transactions and View more','Sales updates and Explore Bloom','Bottom navigation: Dashboard, Payments, Bloom GPT']]},
+ {k:'inv_ho',n:'Investor',s:'Handed over',units:['q1204','t2204'],live:null,
+  note:['Investor · handed over','Owns handed-over units but does not live in any, so the You live here toggle is hidden.',['Unit details for single or multiple units, with BHK, area, amenities, owners and shareholding, title deed and SPA','Vacant unit shows the Move in button','Immediate attention: missed and upcoming payments, move-out request to approve or reject','Service request status appears only when one is raised','Payments, sales updates, Explore Bloom']]},
+ {k:'own_res',n:'Owner + Resident',s:'Also ADHA owners',units:['v138','t2204'],live:'v138',
+  note:['Owner + resident','Lives in one unit and owns another. The All units / You live here toggle appears because the owner has moved in.',['All units: every unit with payments and sales updates','You live here: stories (Phase II), details of the moved-in unit, move-out button','Action items there: service charge due or overdue, contract expiring','Quick actions: amenities, parking, access permit, service charge','ADHA owners follow the same layout']]},
+ {k:'res_ll',n:'Resident + Landlord',s:'Lives in one, rents one',units:['v138','q1204'],live:'v138',
+  note:['Resident + landlord','Lives in their own villa and rents out an apartment.',['All units: the rented unit shows the tenant, and the tenant’s move-out request needs approval','You live here: only the villa they live in, with community quick actions','Dynamic cards disappear once handled']]},
+ {k:'ten_ll',n:'Tenant + Landlord',s:'Rents home, owns units',units:['q1204','t2204'],live:'s905',
+  note:['Tenant (resident) + landlord','Rents the home they live in and owns units elsewhere.',['All units: only the units they own','You live here: the rented home, with the tenant agreement instead of owner details and documents','Action item: tenancy contract expiring (renew)','Move-out button for their own tenancy']]}
+];
+var PAYS={
+ h802:[{id:'p1',t:'Instalment 4',d:'Overdue since 1 Nov',a:96500,s:'miss'},{id:'p2',t:'Instalment 5',d:'Due 1 Dec 2026',a:96500,s:'due'},{t:'Instalment 3',d:'Paid 1 Aug 2026',a:96500,s:'paid'},{t:'Booking fee',d:'Paid 12 Feb 2026',a:48250,s:'paid'}],
+ g31:[{id:'p3',t:'Instalment 2',d:'Due 15 Dec 2026',a:120500,s:'due'},{t:'Instalment 1',d:'Paid 15 Jun 2026',a:120500,s:'paid'},{t:'DLD fee',d:'Paid 20 Mar 2026',a:96400,s:'paid'}],
+ q1204:[{id:'p4',t:'Service charge Q4',d:'Overdue since 30 Oct',a:6840,s:'miss'},{t:'Rent received',d:'Cheque 2 of 4 · 12 Oct',a:25500,s:'in'},{t:'Service charge Q3',d:'Paid 28 Jul 2026',a:6840,s:'paid'}],
+ t2204:[{id:'p5',t:'Service charge Q4',d:'Due 30 Nov 2026',a:3960,s:'due'},{t:'Handover fee',d:'Paid 2 Nov 2026',a:5250,s:'paid'},{t:'Final instalment',d:'Paid 20 Oct 2026',a:184000,s:'paid'}],
+ v138:[{id:'p6',t:'Service charge Q4',d:'Overdue since 30 Oct',a:14550,s:'miss'},{t:'Chiller fee',d:'Paid 4 Oct 2026',a:1980,s:'paid'},{t:'Service charge Q3',d:'Paid 29 Jul 2026',a:14550,s:'paid'}]
+};
+var STORIES=[['Pool reopens','pool.jpg','Community pool','The main pool reopens Saturday after maintenance. Lifeguards 7 AM to 9 PM.'],['Movie night','aerial.jpg','This Friday · 7 PM','Family movie night on the Central Park lawn. Bring a blanket, popcorn is on us.'],['New gym','interior.jpg','Clubhouse','New strength area with free sessions for residents all week.'],['Market','townhouse.jpg','Sunday market','Local growers and bakers at the community square, 8 AM to 12 PM.'],['Phase 3','villa2.jpg','New launch','Bloom Gardens Phase 3 townhouses. Residents get early access.']];
+var HELP=[['Property & unit related','bld',['KYC update request','Want to sell my property']],
+ ['Payment related','wal',['Download my statement of account','Know my payment plan','Defer my payment','Need my payment receipt','Unable to pay online','Replace my cheque']],
+ ['Documentation','doc',['Enquire about the title deed','Update ownership details','Document correction']]];
+
+/* ---------------- state ---------------- */
+var S;
+function reset(keep){ var p=keep!=null?keep:(function(){try{var q=new URLSearchParams(location.search).get('p');for(var i=0;i<PERS.length;i++)if(PERS[i].k===q)return i}catch(e){}return 2})();
+ S={p:p,mode:'all',tab:'home',u:0,open:false,done:{},sr:true,dyn:true,movein:{},moveout:false,ptab:'all',chat:[],seen:{}}; }
+reset();
+var $=function(s){return document.querySelector(s)};
+function per(){return PERS[S.p]}
+function unitsOf(){return per().units.map(function(k){return UNITS[k]})}
+
+/* ---------------- shared bits ---------------- */
+function sbar(){return '<div class="sb"><span>9:41</span><span><svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="#1c1c1a"/><rect x="5" y="5" width="3" height="6" rx="1" fill="#1c1c1a"/><rect x="10" y="2.5" width="3" height="8.5" rx="1" fill="#1c1c1a"/><rect x="15" y="0" width="3" height="11" rx="1" fill="#1c1c1a"/></svg>5G <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="#1c1c1a" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#1c1c1a"/><rect x="22.5" y="4" width="2" height="4" rx="1" fill="#1c1c1a" opacity=".4"/></svg></span></div>'}
+function header(){var p=per(), live=!!p.live, n=unitsOf().length;
+ return '<div class="hd">'+
+  '<div class="hrow"><button class="sq press" data-act="profile" aria-label="Profile">MR</button><div class="hi"><small>Good afternoon</small><b>Meena Raj</b></div>'+
+  '<button class="hb press" id="hb" data-act="help" aria-label="Need help">'+I('help')+'<span class="hl">Need help?</span></button>'+
+  '<button class="sq press" data-act="notif" aria-label="Notifications">'+I('bell')+'<em></em></button></div>'+
+  (S.mode==='live'?'<div class="hello">Welcome home, <span>'+UNITS[p.live].comm+'</span></div>':'<div class="hello">Your Bloom <span>portfolio</span></div>')+
+  (live?'<div class="seg'+(S.mode==='live'?' r':'')+'"><i></i><button data-mode="all" class="'+(S.mode==='all'?'on':'')+'">'+I('grid',17)+'All units<em>'+n+'</em></button><button data-mode="live" class="'+(S.mode==='live'?'on':'')+'">'+I('home',17)+'You live here</button></div>':'')+
+ '</div>'}
+function sh2(t,right,count){return '<div class="sh2"><h2>'+t+(count?'<span class="ct">'+count+'</span>':'')+'</h2>'+(right||'')+'</div>'}
+
+/* unit details card */
+function unitCard(units,idx,liveMode){
+ var u=units[idx], st=u.tenantSelf?['You rent this home','#2e7d5c']:ST[u.status], mv=S.movein[u.k];
+ var tabs=units.length>1?'<div class="utabs" style="grid-template-columns:repeat('+units.length+',1fr)">'+units.map(function(x,i){var s=ST[x.status];return '<button class="press'+(i===idx?' on':'')+'" data-unit="'+i+'" style="--d:'+s[1]+'"><b>'+x.short+'</b><small><i></i>'+(S.movein[x.k]?'Move-in booked':s[0].split(' · ')[0])+'</small></button>'}).join('')+'</div>':'';
+ var chips='<div class="chips"><span class="chip">'+I('bed')+u.bhk+'</span><span class="chip">'+I('area')+u.area+'</span><span class="chip">'+I('bld')+u.type+'</span></div>';
+ var prog=u.status==='uc'?'<div class="uprog"><div class="bar"><i style="--w:'+u.pct+'%"></i></div><div class="bsm"><span>Construction '+u.pct+'% complete</span><span>Handover '+u.hand+'</span></div></div>':'';
+ var det='<div class="kv"><span>Community</span><b>'+u.comm+'</b></div><div class="kv"><span>Building</span><b>'+u.bld+'</b></div><div class="kv"><span>Unit number</span><b>'+u.no+'</b></div><div class="kv"><span>Unit type</span><b>'+u.type+' · '+u.bhk+'</b></div>'+
+  (u.tenantSelf?'<div class="dl">Tenant agreement</div><div class="kv"><span>Landlord</span><b>'+u.landlord+'</b></div><div class="kv"><span>Lease</span><b>13 Jan 2026 – 12 Jan 2027</b></div><div class="kv"><span>Annual rent</span><b>AED 118,000</b></div>':
+   '<div class="dl">Owners'+(u.owners.length>1?' · shareholding':'')+'</div>'+u.owners.map(function(o){var ini=o[0].split(' ').map(function(w){return w[0]}).join('');return '<div class="own"><span class="av">'+ini+'</span><span class="x"><b>'+o[0]+(o[0]==='Meena Raj'?' (you)':'')+'</b><span class="sb2"><i style="width:'+o[1]+'%"></i></span></span><em>'+o[1]+'%</em></div>'}).join(''))+
+  (u.tenant?'<div class="dl">Tenant</div><div class="kv"><span>Name</span><b>'+u.tenant[0]+'</b></div><div class="kv"><span>Contract</span><b>'+u.tenant[1].replace('Contract ','')+'</b></div><div class="kv"><span>Rent</span><b>'+u.tenant[2]+'</b></div>':'')+
+  '<div class="dl">Amenities'+(u.status==='uc'?' (planned)':'')+'</div><div class="am">'+u.am.map(function(a){return '<span>'+I(AM[a][1])+AM[a][0]+'</span>'}).join('')+'</div>'+
+  '<div class="dl">Documents</div><div class="docs">'+u.docs.map(function(d){return '<button class="doc press" data-t="Downloading '+d+' (PDF)">'+I('dl')+d+'</button>'}).join('')+(u.status==='uc'?'<button class="doc off" data-t="Title deed is issued after handover">'+I('doc')+'Title deed</button>':'')+'</div>';
+ var cta='';
+ if(u.status==='vacant') cta='<div class="ucta"><span><small>'+u.ho+'</small><b'+(mv?' style="color:#2e7d5c"':'')+'>'+(mv?'Move-in '+mv:'Ready to move in')+'</b></span><button class="btn press'+(mv?' lt':'')+'" data-act="movein" data-k="'+u.k+'">'+(mv?I('cal',16)+'Change':I('inn',16)+'Move in')+'</button></div>';
+ else if(liveMode) cta='<div class="ucta"><span><small>'+(u.tenantSelf?u.lease:u.ho)+'</small><b'+(S.moveout?' style="color:#2e7d5c"':'')+'>'+(S.moveout?'Move-out requested':'Living here')+'</b></span><button class="btn press lt" data-act="moveout">'+I('out',16)+(S.moveout?'View':'Move out')+'</button></div>';
+ else if(u.status==='rent') cta='<div class="ucta"><span><small>Tenant · '+u.tenant[0]+'</small><b>'+u.tenant[1]+'</b></span><button class="btn press lt" data-t="Opens tenancy contract">'+I('contract',16)+'Tenancy</button></div>';
+ return '<div class="ucard" id="ucard">'+tabs+
+  '<div class="uph"><img src="'+IMG+u.img+'" alt="" key="'+u.k+'"><span class="utag" style="--d:'+st[1]+'"><i></i>'+st[0]+'</span><span class="ucode">'+u.code+'</span></div>'+
+  '<div class="ubd"><div class="t"><b>'+u.bhk.replace(' BHK','-Bedroom')+' '+u.type+'</b><small>'+I('pin',14)+u.comm+' · '+u.bld+' · '+u.no+'</small></div>'+chips+prog+
+  '<button class="more" data-act="more" aria-expanded="'+S.open+'">'+(S.open?'Hide details':'Unit details, owners & documents')+I('cd')+'</button><div class="det'+(S.open?' open':'')+'"><div>'+det+'</div></div></div>'+cta+'</div>';
+}
+
+/* immediate attention (dynamic) */
+function attItems(){var p=per(), it=[];
+ if(!S.dyn) return it;
+ if(S.mode==='live'){ var lu=UNITS[p.live];
+  if(lu.tenantSelf) it.push({id:'renew',ic:'contract',t:'Tenancy contract expiring',s:'Soho Square · Unit 905',lv:['60 days','amb'],who:'Renew before 12 Jan 2027',amt:'',btn:[['Renew','renew']]});
+  else { it.push({id:'scl',ic:'sc',t:'Service charge overdue',s:lu.comm+' · '+lu.no,lv:['Overdue','red'],who:'Q4 2026 · due 30 Oct',amt:14550,btn:[['Pay now','pay','p6']]});
+   it.push({id:'acc',ic:'card',t:'Access card expiring',s:'Card #BH-20931',lv:['15 days','amb'],who:'Expires 28 Nov 2026',amt:'',btn:[['Renew card','renewcard']]}); }
+ } else {
+  p.units.forEach(function(k){(PAYS[k]||[]).forEach(function(x){ if(x.id&&!S.done[x.id]&&(x.s==='miss'||x.s==='due')) it.push({id:x.id,ic:x.s==='miss'?'alert':'cal',t:(x.s==='miss'?'Missed payment':'Upcoming payment'),s:UNITS[k].comm+' · '+UNITS[k].no,lv:x.s==='miss'?['Overdue','red']:['Upcoming','amb'],who:x.t+' · '+x.d,amt:x.a,btn:[[x.s==='miss'?'Pay now':'Pay','pay',x.id]]}); })});
+  if(p.units.indexOf('q1204')>-1) it.splice(1,0,{id:'mo',ic:'out',t:'Move-out request',s:'Marina Quays · Unit 1204',lv:['Action','red'],who:'Ahmed Al Mansoori · moving out 30 Nov',amt:'',btn:[['Approve','approve'],['Reject','reject']]});
+ }
+ return it.filter(function(x){return !S.done[x.id]}); }
+function attention(){var it=attItems(); if(!it.length) return '';
+ return '<div class="sec" id="attn">'+sh2(S.mode==='live'?'Action items':'Immediate attention','<span class="see">Needs you</span>',it.length)+'<div class="stack">'+it.map(function(a){
+  return '<div class="at" data-id="'+a.id+'"><div class="ah"><span class="aic">'+I(a.ic,22)+'</span><span class="x"><b>'+a.t+'</b><small>'+a.s+'</small></span><span class="lvl '+a.lv[1]+'">'+a.lv[0]+'</span></div>'+
+  '<div class="af"><span class="x"><b>'+a.who+'</b>'+(a.amt?'<small>AED '+aed(a.amt)+'</small>':'')+'</span>'+a.btn.map(function(b,i){return '<button class="btn sm press'+(i?' lt':'')+'" data-act="'+b[1]+'" data-id="'+(b[2]||a.id)+'">'+b[0]+'</button>'}).join('')+'</div></div>'}).join('')+'</div></div>'}
+
+/* service request (only if raised) */
+function srBlock(){ if(!S.sr||!S.dyn) return ''; var live=S.mode==='live', p=per();
+ var r=live?['AC Filter Check','Ref #SR-9042 · '+UNITS[p.live].no,2,'fan']:(p.uc?null:['Water leak in kitchen','Ref #SR-9107 · '+UNITS[p.units[0]].comm+' '+UNITS[p.units[0]].no,1,'tool']);
+ if(!r) return '';
+ var steps=['Raised','Assigned','In progress','Done'];
+ return '<div class="sec">'+sh2('Service request','<button class="see" data-t="Opens all service requests">All</button>')+'<div class="sr"><div class="r"><span class="ic">'+I(r[3],22)+'</span><span class="x"><b>'+r[0]+'</b><small>'+r[1]+'</small></span><span class="st amb">'+steps[r[2]]+'</span></div><div class="steps">'+steps.map(function(s,i){return '<div class="'+(i<=r[2]?'on':'')+'"><i></i>'+s+'</div>'}).join('')+'</div></div></div>'}
+
+/* payments with 3 recent transactions */
+function txRow(x,k){var ic={miss:'alert',due:'cal',paid:'checkc',in:'inn'}[x.s], st={miss:['Overdue','red'],due:['Upcoming','amb'],paid:['Paid','ok'],in:['Received','ok']}[S.done[x.id]?'paid':x.s];
+ return '<div class="tx"><span class="ic">'+I(ic)+'</span><span class="x"><b>'+x.t+'</b><small>'+UNITS[k].short+' · '+(S.done[x.id]?'Paid just now':x.d)+'</small></span><span class="a"><b>AED '+aed(x.a)+'</b><span class="st '+st[1]+'">'+st[0]+'</span></span></div>'}
+function payments(){var p=per(), all=[];
+ p.units.forEach(function(k){(PAYS[k]||[]).forEach(function(x){all.push([x,k])})});
+ var paid=0; all.forEach(function(r){ if(r[0].s==='paid'||S.done[r[0].id]) paid+=r[0].a});
+ var recent=all.filter(function(r){return r[0].s!=='due'}).slice(0,3);
+ recent=all.slice().sort(function(a,b){var o={miss:0,in:1,paid:2,due:3};return o[a[0].s]-o[b[0].s]}).slice(0,3);
+ return '<div class="sec">'+sh2('Payment details','<button class="see" data-tab="pay">View more</button>')+'<div class="pcard"><div class="ptop"><div><small>Paid across '+p.units.length+' units</small><b>'+DH+aed(paid)+'</b></div><button class="btn sm lt press" data-act="soa">'+I('dl',16)+'SOA</button></div>'+
+  recent.map(function(r){return txRow(r[0],r[1])}).join('')+'<button class="vm press" data-tab="pay">View all payments'+I('chev')+'</button></div></div>'}
+
+function sales(){return '<div class="sec">'+sh2('Sales updates','<span class="tagp">New</span>')+
+ '<div class="sale press" data-act="eoi"><div class="im"><img src="'+IMG+'aerial.jpg" alt=""><span>New launch</span></div><div class="bd"><span class="x"><b>Bloom Gardens · Phase 3</b><small>Townhouses from AED 2.4M · owners get first access</small></span><button class="btn sm press">Register</button></div></div>'+
+ '<button class="srow press" data-t="Opens price update"><span class="ic">'+I('tag')+'</span><span class="x"><b>Bloom Towers resale prices up 6%</b><small>See what your unit could sell for</small></span>'+I('chev')+'</button></div>'}
+
+function explore(){var E=[['Properties','bld','Homes for sale and lease'],['Education','edu','Bloom schools'],['Hospitality','hosp','Hotels and stays'],['Landscape','leaf','Gardens and outdoors'],['BFM','fm','Bloom Facilities Management']];
+ return '<div class="sec">'+sh2('Explore Bloom')+'<div class="ex">'+E.map(function(e,i){return i===0?'<button class="exc big press" data-t="Opens Bloom Properties"><img src="'+IMG+'villa.jpg" alt=""><span><b>'+e[0]+'</b><small>'+e[2]+'</small></span></button>':'<button class="exc press" data-t="Opens Bloom '+e[0]+'"><span class="ic">'+I(e[1])+'</span><span><b>'+e[0]+'</b><small>'+e[2]+'</small></span></button>'}).join('')+'</div></div>'}
+
+function stories(){return '<div class="sec" style="margin-top:22px">'+sh2('Events & stories','<span class="tagp">Phase II</span>')+'<div class="stories">'+STORIES.map(function(s,i){return '<button class="story press'+(S.seen[i]?' seen':'')+'" data-story="'+i+'"><span class="rg"><img src="'+IMG+s[1]+'" alt=""></span>'+s[0]+'</button>'}).join('')+'</div></div>'}
+function quick(){var Q=[['Amenities','pool'],['Parking','car'],['Access permit','permit'],['Service charge','sc']];
+ return '<div class="sec">'+sh2('Quick actions')+'<div class="qa">'+Q.map(function(q){return '<button class="q" data-act="qa" data-k="'+q[0]+'"><span class="c">'+I(q[1])+'</span>'+q[0]+'</button>'}).join('')+'</div></div>'}
+
+/* ---------------- views ---------------- */
+function homeAll(){var us=unitsOf(); if(S.u>=us.length) S.u=0;
+ return header()+'<div class="sec" style="margin-top:22px">'+sh2(us.length>1?'Your units':'Your unit','<span class="see">'+us.length+' '+(us.length>1?'units':'unit')+'</span>')+unitCard(us,S.u,false)+'</div>'+
+  attention()+srBlock()+payments()+sales()+explore()}
+function homeLive(){var u=UNITS[per().live];
+ return header()+stories()+'<div class="sec">'+sh2('Your home')+unitCard([u],0,true)+'</div>'+attention()+srBlock()+quick()}
+function payView(){var p=per(), tabs=[['all','All units']].concat(p.units.map(function(k){return [k,UNITS[k].short]}));
+ var rows=[]; p.units.forEach(function(k){ if(S.ptab==='all'||S.ptab===k)(PAYS[k]||[]).forEach(function(x){rows.push([x,k])})});
+ var miss=0,due=0,paid=0; rows.forEach(function(r){var x=r[0]; if(S.done[x.id]||x.s==='paid'||x.s==='in') paid+=x.a; else if(x.s==='miss') miss+=x.a; else due+=x.a;});
+ var grp=function(t,f){var g=rows.filter(f); return g.length?'<div class="pl-h">'+t+'</div>'+g.map(function(r){return txRow(r[0],r[1])}).join(''):''};
+ return '<div class="ttl"><h1>Payments</h1><p>Unit-wise payment details and every transaction.</p><div class="ftabs">'+tabs.map(function(t){return '<button class="'+(S.ptab===t[0]?'on':'')+'" data-ptab="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div></div>'+
+ '<div class="sec" style="margin-top:16px"><div class="sum3"><div><small>Missed</small><b style="color:#922a22">'+aed(miss)+'</b></div><div><small>Upcoming</small><b>'+aed(due)+'</b></div><div><small>Paid</small><b>'+aed(paid)+'</b></div></div></div>'+
+ '<div class="sec" style="margin-top:12px"><div class="plist">'+grp('Missed',function(r){return r[0].s==='miss'&&!S.done[r[0].id]})+grp('Upcoming',function(r){return r[0].s==='due'&&!S.done[r[0].id]})+grp('History',function(r){return r[0].s==='paid'||r[0].s==='in'||S.done[r[0].id]})+'</div>'+
+ '<button class="btn full lt press" style="margin-top:12px" data-act="soa">'+I('dl',16)+'Download statement of account</button></div>'}
+function propsView(){var p=per(); var list=p.units.map(function(k){return UNITS[k]}); if(p.live&&p.units.indexOf(p.live)<0) list.push(UNITS[p.live]);
+ return '<div class="ttl"><h1>My properties</h1><p>'+list.length+' properties linked to your account.</p></div><div class="sec" style="margin-top:16px">'+list.map(function(u){var st=u.tenantSelf?['You rent this home','#2e7d5c']:ST[u.status];
+  return '<button class="prow press" data-goto="'+u.k+'"><img src="'+IMG+u.img+'" alt=""><span class="x"><b>'+u.comm+' · '+u.no+'</b><small>'+u.bhk+' '+u.type+' · '+u.area+'</small><span class="st" style="background:'+st[1]+'1f;color:'+st[1]+'">'+st[0]+'</span></span>'+I('chev')+'</button>'}).join('')+'</div>'}
+var ANS={'When is my next payment due?':'Your next payment is due on 1 Dec 2026: AED 96,500 for Bloom Heights Unit 802.','How do I get my title deed?':'Title deeds are issued after handover. For handed-over units you can download it from Unit details → Documents.','Book the pool for Saturday':'Done. I’ve held the pool for Saturday 4–6 PM. You’ll get a confirmation shortly.','Show my statement of account':'Your statement of account is ready. Tap SOA in Payment details to download it as a PDF.'};
+function gptView(){var q=Object.keys(ANS);
+ return '<div class="ttl"><h1>Bloom GPT</h1><p>Ask about payments, documents or your community.</p></div><div class="chat" id="chat"><div class="msg ai">Hi Meena, how can I help today?</div>'+S.chat.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join('')+
+ '<div class="sugg">'+q.map(function(x){return '<button class="press" data-q="'+x+'">'+x+'</button>'}).join('')+'</div></div>'}
+function nav(){var uc=per().uc, it=[['home','home','Dashboard'],['props','bld','My properties'],['pay','wal','Payments'],['gpt','orb','Bloom GPT']];
+ if(uc) it=it.filter(function(x){return x[0]!=='props'});
+ return '<div class="nv">'+it.map(function(x){return '<button class="'+(S.tab===x[0]?'on':'')+'" data-tab="'+x[0]+'">'+(x[1]==='orb'?'<span class="orb"></span>':I(x[1]))+x[2]+'</button>'}).join('')+'</div>'}
+
+function render(keepScroll){var sc=$('#sc'), y=sc.scrollTop, h;
+ if(S.tab==='home') h=S.mode==='live'?homeLive():homeAll();
+ else if(S.tab==='pay') h=payView(); else if(S.tab==='props') h=propsView(); else h=gptView();
+ sc.innerHTML=sbar()+'<div class="'+(keepScroll?'':'fd')+'">'+h+'</div>';
+ $('#nvw').innerHTML=nav();
+ if(keepScroll) sc.scrollTop=y; else sc.scrollTop=0;
+ var p=per(); $('#nt').innerHTML='<h2>'+p.note[0]+'</h2><p>'+p.note[1]+'</p><ul>'+p.note[2].map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'+
+  '<div class="lb">Dynamic fields</div><div class="sim"><div><b>Show action items & service request</b><small>They only appear when an action is needed or an SR is raised</small></div><button class="sk'+(S.dyn?' on':'')+'" data-act="dyn" aria-label="Toggle dynamic fields"></button></div>'+
+  '<div class="lb">Prototype</div><button class="btn full lt press" data-act="restart">Restart</button>';
+ document.querySelectorAll('#vt button').forEach(function(b){b.classList.toggle('on',+b.dataset.p===S.p)}); $('#vsel').value=S.p;
+ setTimeout(function(){document.querySelectorAll('.bar').forEach(function(b){b.classList.add('go')})},60);
+ var hb=$('#hb'); if(hb&&!keepScroll){setTimeout(function(){hb.classList.add('open')},700);setTimeout(function(){hb.classList.remove('open')},3200)}
+}
+function refreshCard(){var c=$('#ucard'); if(!c) return render(true); var tmp=document.createElement('div'); tmp.innerHTML=S.mode==='live'?unitCard([UNITS[per().live]],0,true):unitCard(unitsOf(),S.u,false); c.replaceWith(tmp.firstChild); setTimeout(function(){document.querySelectorAll('#ucard .bar').forEach(function(b){b.classList.add('go')})},40)}
+
+/* ---------------- sheet / toast / story ---------------- */
+var tto; function toast(m){var e=$('#tt');e.textContent=m;e.classList.add('on');clearTimeout(tto);tto=setTimeout(function(){e.classList.remove('on')},2200)}
+function sheet(h){$('#sh').innerHTML='<div class="grab"></div>'+h;$('#sh').scrollTop=0;$('#ov').classList.add('on');$('#sh').classList.add('on')}
+function close(){$('#ov').classList.remove('on');$('#sh').classList.remove('on')}
+function okSheet(t,m){sheet('<div class="okc"><div class="ck">'+I('check')+'</div><h3>'+t+'</h3><p class="sub">'+m+'</p></div><button class="btn full press" data-act="close">Done</button>')}
+function busy(b,fn){b.disabled=true;b.innerHTML='<span class="typing"><i style="background:#fff"></i><i style="background:#fff"></i><i style="background:#fff"></i></span>';setTimeout(fn,800)}
+function helpSheet(){sheet('<h3>Need help?</h3><p class="sub">Pick a topic and we’ll raise a service request for you.</p>'+HELP.map(function(g){return '<div class="hgrp"><div class="gh"><span>'+I(g[1])+'</span>'+g[0]+'</div>'+g[2].map(function(o){return '<button class="hopt" data-act="raise" data-k="'+o+'">'+o+I('chev')+'</button>'}).join('')+'</div>'}).join('')+
+ '<div class="hrow2"><button class="btn lt press" data-t="Calling Bloom customer care">'+I('phone',16)+'Call Bloom</button><button class="btn press" data-tab="gpt">'+'<span class="orb" style="width:16px;height:16px"></span>Ask Bloom GPT</button></div>')}
+var MV={day:1,slot:0,k:null};
+function moveSheet(k){var u=UNITS[k], d=new Date(), days=[]; for(var i=1;i<=5;i++) days.push(new Date(d.getTime()+i*864e5)); MV.k=k; MV.days=days; MV.slots=['9–11 am','11–1 pm','3–5 pm'];
+ sheet('<h3>Book your move-in</h3><p class="sub">'+u.comm+' · '+u.no+'. Access cards, utilities and the move-in permit are arranged for this date.</p><div class="lbl">Date</div><div class="days">'+days.map(function(x,i){return '<button class="day'+(i===MV.day?' on':'')+'" data-day="'+i+'"><small>'+x.toLocaleDateString('en-GB',{weekday:'short'})+'</small><b>'+x.getDate()+'</b><small>'+x.toLocaleDateString('en-GB',{month:'short'})+'</small></button>'}).join('')+'</div>'+
+ '<div class="lbl">Time slot</div><div class="slots">'+MV.slots.map(function(s,i){return '<button class="slot'+(i===MV.slot?' on':'')+'" data-slot="'+i+'">'+s+'</button>'}).join('')+'</div><button class="btn full press" data-act="moveok">Confirm move-in</button>')}
+function findPay(id){var r=null; Object.keys(PAYS).forEach(function(k){PAYS[k].forEach(function(x){if(x.id===id) r=[x,k]})}); return r}
+var SI=0, sto;
+function story(i){SI=i; S.seen[i]=1; var s=STORIES[i], el=$('#sty');
+ el.innerHTML='<img src="'+IMG+s[1]+'" alt=""><div class="pg">'+STORIES.map(function(_,j){return '<i class="'+(j<i?'done':j===i?'run':'')+'"><b></b></i>'}).join('')+'</div><button class="x" data-act="stclose" aria-label="Close">'+I('x')+'</button><div class="cap"><small>'+s[2]+'</small><h4>'+s[0]+'</h4><p>'+s[3]+'</p><button class="btn press" data-act="stnext">'+(i<STORIES.length-1?'Next story':'Done')+'</button></div>';
+ el.classList.add('on'); clearTimeout(sto); sto=setTimeout(function(){ if(SI<STORIES.length-1) story(SI+1); else stClose(); },4000)}
+function stClose(){clearTimeout(sto); $('#sty').classList.remove('on'); render(true)}
+
+/* ---------------- events ---------------- */
+document.addEventListener('click',function(e){var b=e.target.closest('[data-p],[data-mode],[data-tab],[data-unit],[data-ptab],[data-act],[data-day],[data-slot],[data-q],[data-story],[data-goto],[data-t],#ov'); if(!b) return; var d=b.dataset;
+ if(b.id==='ov') return close();
+ if(d.p!=null){ reset(+d.p); render(); return; }
+ if(d.mode){ if(S.mode===d.mode) return; S.mode=d.mode; S.open=false; render(); return; }
+ if(d.tab){ close(); S.tab=d.tab; if(d.t) toast(d.t); render(); return; }
+ if(d.unit!=null){ S.u=+d.unit; refreshCard(); return; }
+ if(d.ptab){ S.ptab=d.ptab; render(true); return; }
+ if(d.goto){ var k=d.goto, p=per(); S.tab='home'; if(p.live===k){S.mode='live'} else {S.mode='all'; S.u=p.units.indexOf(k)} S.open=true; render(); return; }
+ if(d.story!=null) return story(+d.story);
+ if(d.day!=null){ MV.day=+d.day; document.querySelectorAll('.day').forEach(function(x,i){x.classList.toggle('on',i===MV.day)}); return; }
+ if(d.slot!=null){ MV.slot=+d.slot; document.querySelectorAll('.slot').forEach(function(x,i){x.classList.toggle('on',i===MV.slot)}); return; }
+ if(d.q){ S.chat.push(['me',d.q]); render(true); var c=$('#chat'); c.insertAdjacentHTML('beforeend','<div class="msg ai" id="typ"><span class="typing"><i></i><i></i><i></i></span></div>'); $('#sc').scrollTop=9e3;
+  setTimeout(function(){ S.chat.push(['ai',ANS[d.q]]); render(true); $('#sc').scrollTop=9e3; },900); return; }
+ var a=d.act;
+ switch(a){
+  case 'close': return close();
+  case 'help': return helpSheet();
+  case 'raise': return busy(b,function(){ okSheet('Request raised','“'+d.k+'” · Ref #SR-'+(9200+Math.floor(Math.random()*90))+'. We’ll update you here and by email.'); S.sr=true; render(true); });
+  case 'notif': return sheet('<h3>Notifications</h3><p class="sub">Latest updates across your units.</p>'+[['Service charge Q4 is overdue','Bloom Gardens · 2 days ago'],['Ahmed requested to move out','Marina Quays 1204 · today'],['Construction reached 72%','Bloom Heights 802 · this week'],['Phase 3 launch: early access','Bloom Gardens · this week']].map(function(n){return '<div class="nrow"><span class="d"></span><span><b>'+n[0]+'</b><small>'+n[1]+'</small></span></div>'}).join('')+'<button class="btn full lt press" style="margin-top:14px" data-act="close">Close</button>');
+  case 'profile': return sheet('<h3>Meena Raj</h3><p class="sub">'+per().n+' · '+per().s+'</p><div class="kv"><span>Email</span><b>meena.raj@mail.com</b></div><div class="kv"><span>Phone</span><b>+971 50 123 4567</b></div><div class="kv"><span>Emirates ID</span><b>Valid · Mar 2029</b></div><div class="kv"><span>Language</span><b>English</b></div><button class="btn full lt press" style="margin-top:16px" data-act="close">Log out</button>');
+  case 'more': S.open=!S.open; var det=b.nextElementSibling; det.classList.toggle('open',S.open); b.classList.toggle('open',S.open); b.firstChild.textContent=S.open?'Hide details':'Unit details, owners & documents'; return;
+  case 'movein': return moveSheet(d.k);
+  case 'moveok': var dd=MV.days[MV.day]; return busy(b,function(){ S.movein[MV.k]=dd.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+MV.slots[MV.slot]; refreshCard(); okSheet('Move-in booked','We’ll have access cards, utilities and the permit ready for '+S.movein[MV.k]+'.'); });
+  case 'moveout': if(S.moveout) return sheet('<h3>Move-out requested</h3><p class="sub">Requested for 15 Dec 2026. BCM will contact you to arrange the inspection.</p><button class="btn full lt press" data-act="cancelmo">Cancel request</button>');
+   return sheet('<h3>Move out</h3><p class="sub">'+(UNITS[per().live].tenantSelf?'We’ll notify your landlord and arrange the final inspection and DEWA clearance.':'We’ll arrange the final inspection, access card return and utility clearance.')+'</p><div class="kv"><span>Preferred date</span><b>15 Dec 2026</b></div><div class="kv"><span>Inspection</span><b>2 days before</b></div><button class="btn full press" style="margin-top:16px" data-act="moveoutok">Submit move-out request</button>');
+  case 'moveoutok': return busy(b,function(){ S.moveout=true; refreshCard(); okSheet('Move-out requested','We’ve received your request for 15 Dec 2026.'); });
+  case 'cancelmo': S.moveout=false; close(); refreshCard(); return toast('Move-out request cancelled');
+  case 'pay': var r=findPay(d.id); if(!r) return; return sheet('<h3>'+r[0].t+'</h3><p class="sub">'+UNITS[r[1]].comm+' · '+UNITS[r[1]].no+'</p><div class="kv"><span>Amount</span><b>AED '+aed(r[0].a)+'</b></div><div class="kv"><span>Due</span><b>'+r[0].d+'</b></div><div class="kv"><span>Pay with</span><b>Visa •••• 6411</b></div><button class="btn full press" style="margin-top:16px" data-act="payok" data-id="'+d.id+'">Pay AED '+aed(r[0].a)+'</button>');
+  case 'payok': return busy(b,function(){ resolve(d.id); okSheet('Payment successful','Receipt sent to your email. It may take 1–2 days to show as confirmed.'); });
+  case 'approve': case 'reject': resolve('mo'); return toast(a==='approve'?'Move-out approved. BCM will arrange the inspection':'Move-out rejected. The tenant has been informed');
+  case 'renew': return busy(b,function(){ resolve('renew'); okSheet('Renewal started','Your landlord has been asked to renew until 12 Jan 2028.'); });
+  case 'renewcard': return busy(b,function(){ resolve('acc'); toast('Access card renewal requested'); });
+  case 'qa': return toast('Opens '+d.k);
+  case 'soa': return toast('Statement of account downloaded (PDF)');
+  case 'eoi': return okSheet('Interest registered','Our sales team will share the Phase 3 brochure and owner pricing.');
+  case 'dyn': S.dyn=!S.dyn; render(true); return toast(S.dyn?'Dynamic fields shown':'No actions pending: dynamic fields hidden');
+  case 'restart': reset(S.p); render(); return toast('Prototype restarted');
+  case 'stnext': clearTimeout(sto); return SI<STORIES.length-1?story(SI+1):stClose();
+  case 'stclose': return stClose();
+ }
+ if(d.t) toast(d.t);
+});
+function resolve(id){ S.done[id]=1; var el=document.querySelector('.at[data-id="'+id+'"]'); if(el){ el.classList.add('out'); setTimeout(function(){render(true)},350); } else render(true); }
+/* swipe down to close the sheet */
+(function(){var sy=null,sh=$('#sh');sh.addEventListener('touchstart',function(e){if(sh.scrollTop<=0)sy=e.touches[0].clientY},{passive:true});sh.addEventListener('touchmove',function(e){if(sy==null)return;var dy=e.touches[0].clientY-sy;if(dy>0)sh.style.transform='translateY('+dy+'px)'},{passive:true});sh.addEventListener('touchend',function(e){if(sy==null)return;var dy=e.changedTouches[0].clientY-sy;sh.style.transform='';sy=null;if(dy>90)close()})})();
+/* persona controls */
+$('#vt').innerHTML=PERS.map(function(p,i){return '<button data-p="'+i+'">'+p.n+'<small>'+p.s+'</small></button>'}).join('');
+$('#vsel').innerHTML=PERS.map(function(p,i){return '<option value="'+i+'">'+p.n+' · '+p.s+'</option>'}).join('');
+$('#vsel').addEventListener('change',function(){reset(+this.value);render()});
+render();
+</script>
+</body>
+</html>
