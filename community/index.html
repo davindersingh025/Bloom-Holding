@@ -694,8 +694,8 @@ var PAY={
 };
 var REQS=[
   {t:'AC Filter Check',s:'Apt 1810, Tower B, Bloom Marina',st:'In Progress',stc:'ip',w:60,ic:'fan'},
-  {t:'Kitchen sink leak',s:'Villa 138 · Technician on the way',st:'Assigned',stc:'rt',w:35,ic:'wrench'},
-  {t:'Access card replacement',s:'Villa 138 · Ready for pickup',st:'Completed',stc:'lv',w:100,ic:'idc'}
+  {t:'Kitchen sink leak',s:'Villa 138 · Technician on the way',st:'In progress',stc:'rt',w:35,ic:'wrench'},
+  {t:'Access card replacement',s:'Villa 138 · Ready for pickup',st:'Done',stc:'lv',w:100,ic:'idc'}
 ];
 var S; function reset(){ S={v:(function(){try{return new URLSearchParams(location.search).get('v')||localStorage.getItem('bca-v')||'a'}catch(e){return 'a'}})(),tab:'home',chip:'all',att:{},paid:{},movein:null,ptab:'miss',chat:[],mvn:(function(){try{return new URLSearchParams(location.search).get('mv')==='3'?3:1}catch(e){return 1}})(),mvd:{}}; }
 reset();

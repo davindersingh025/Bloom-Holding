@@ -151,7 +151,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .sr .r{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px}
 .sr .r .ic{width:46px;height:46px;border-radius:12px;background:var(--tile);display:grid;place-items:center;flex:none}
 .sr .r .x{flex:1;min-width:0}.sr .r .x b{display:block;font-size:14.5px;font-weight:500}.sr .r .x small{display:block;font-size:12px;color:var(--mut);margin-top:3px}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:12px 8px 6px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:12px 8px 6px}
 .steps div{font-size:11px;color:var(--mut)}
 .steps div i{display:block;height:4px;border-radius:2px;background:var(--line);margin-bottom:6px}
 .steps div.on{color:var(--ink);font-weight:500}.steps div.on i{background:var(--pri)}
@@ -405,7 +405,7 @@ var TOPICS=[['Maintenance Issues','#9b2a22','#f8eeec'],['Cleaning & Waste','#345
 var HELP=[['Property & unit related','bld',['KYC update request','Want to sell my property']],
  ['Payment related','wal',['Download my statement of account','Know my payment plan','Defer my payment','Need my payment receipt','Unable to pay online','Replace my cheque']],
  ['Documentation','doc',['Enquire about the title deed','Update ownership details','Document correction']]];
-var HUB=[['Access & security',[['Visitor access','qr','visit'],['Deliveries','box'],['Access cards','card'],['Parking','car'],['Domestic staff pass','staff'],['Emergency SOS','sos']]],
+var HUB=[['Access & security',[['Visitor access','qr','visit'],['Access cards','card'],['Parking','car'],['Domestic staff pass','staff'],['Emergency SOS','sos']]],
  ['Home & services',[['Maintenance','tool','maint'],['Home services','home'],['Move in / Move out','out'],['Modification NOC','paint'],['Storage cage','grid'],['Pet registration','paw']]],
  ['Payments',[['Service charge','sc'],['Utilities (DEWA)','bolt'],['Receipts','doc']]],
  ['Community',[['Amenities','pool','amen'],['Notices','bell2'],['Events','spark','Soon'],['Polls & surveys','poll'],['Community wall','chatb','Soon'],['Lost & found','lost'],['Directory','phone'],['Community rules','book']]]];
@@ -478,9 +478,9 @@ function ring(p){var r=18,c=2*Math.PI*r;return '<svg width="42" height="42" view
 
 /* service request (only if raised) */
 function srBlock(){ if(!S.sr||!S.dyn) return ''; var live=S.mode==='live', p=per();
- var r=live?['AC Filter Check','Ref #SR-9042 · Maintenance',2,'fan']:(p.units.indexOf('q1204')>-1?['Bathroom leak','Raised by tenant, 2 days ago · Marina Quays 1204',2,'tool']:(p.uc?null:['AC Filter Check','Ref #SR-9042 · Maintenance',2,'fan']));
+ var r=live?['AC Filter Check','Ref #SR-9042 · Maintenance',1,'fan']:(p.units.indexOf('q1204')>-1?['Bathroom leak','Raised by tenant, 2 days ago · Marina Quays 1204',1,'tool']:(p.uc?null:['AC Filter Check','Ref #SR-9042 · Maintenance',1,'fan']));
  if(!r) return '';
- var steps=['Raised','Assigned','In progress','Done'];
+ var steps=['Raised','In progress','Done'];
  return '<div class="sec">'+sh2(live||p.units.indexOf('q1204')<0?'Service request':'Requests for this unit','<button class="see" data-t="Opens all service requests">All</button>')+'<div class="sr"><div class="r"><span class="ic">'+I(r[3],22)+'</span><span class="x"><b>'+r[0]+'</b><small>'+r[1]+'</small></span><span class="st amb">'+steps[r[2]]+'</span></div><div class="steps">'+steps.map(function(s,i){return '<div class="'+(i<=r[2]?'on':'')+'"><i></i>'+s+'</div>'}).join('')+'</div></div></div>'}
 
 /* payment updates: 3 latest transactions */
@@ -501,7 +501,6 @@ function explore(){var E=[['Bloom Properties','bld','villa.jpg'],['Bloom Educati
 function stories(){return '<div class="sec" style="margin-top:22px">'+sh2('Events & stories','<span class="tagp">Phase II</span>')+'<div class="stories">'+STORIES.map(function(s,i){return '<button class="story press'+(S.seen[i]?' seen':'')+'" data-story="'+i+'"><span class="rg"><img src="'+IMG+s[1]+'" alt=""></span>'+s[0]+'</button>'}).join('')+'</div></div>'}
 function quick(){var Q=[['Amenities','pool','amen'],['Visitors','qr','visit'],['Access card','card'],['Parking','car'],['Access permit','permit'],['Service charge','sc'],['Maintenance','tool','maint'],['More','grid']];
  return '<div class="sec">'+sh2('Quick links','<button class="see" data-tab="hub">See all</button>')+'<div class="qa">'+Q.map(function(q){return '<button class="q" '+(q[0]==='More'?'data-tab="hub"':'data-act="'+(q[2]||'qa')+'" data-k="'+q[0]+'"')+'><span class="c">'+I(q[1])+'</span>'+q[0]+'</button>'}).join('')+'</div></div>'}
-function gate(){ if(!S.dyn||S.done.parcel) return ''; return '<div class="sec"><div class="at" data-id="parcel" style="background:var(--tile)"><div class="ah"><span class="aic">'+I('box',22)+'</span><span class="x"><b>Delivery at reception</b><small>Amazon parcel · collect by 9 PM</small></span><button class="btn sm press" data-act="parcel">Collected</button></div></div></div>'}
 function notice(){return '<div class="sec"><button class="srow press" data-t="Opens community notice" style="margin-top:0"><span class="ic">'+I('bld')+'</span><span class="x"><b>Pool maintenance on Sunday</b><small>Closed 8 AM to 2 PM</small></span>'+I('chev')+'</button></div>'}
 
 /* ---------------- views ---------------- */
@@ -509,9 +508,9 @@ function homeAll(){var us=unitsOf(); if(S.u>=us.length) S.u=0;
  return header()+'<div class="sec" style="margin-top:22px">'+sh2(us.length>1?'Unit details':'Unit details','<span class="see">'+us.length+' '+(us.length>1?'units':'unit')+'</span>')+unitCard(us,S.u,false)+'</div>'+
   attention()+srBlock()+payments()+sales()+explore()}
 function homeLive(){var u=UNITS[per().live];
- return header()+stories()+'<div class="sec">'+sh2('Your home')+unitCard([u],0,true)+'</div>'+attention()+quick()+gate()+srBlock()+notice()}
+ return header()+stories()+'<div class="sec">'+sh2('Your home')+unitCard([u],0,true)+'</div>'+attention()+quick()+srBlock()+notice()}
 function listView(t,sub,rows){return '<div class="ttl"><h1>'+t+'</h1><p>'+sub+'</p></div><div class="sec" style="margin-top:16px"><div class="plist">'+rows.map(function(r){return '<button class="tx press" style="width:100%;text-align:left" data-t="'+(r[4]||'Opens '+r[0])+'"><span class="ic">'+I(r[3]||'doc')+'</span><span class="x"><b>'+r[0]+'</b><small>'+r[1]+'</small></span>'+(r[2]?'<span class="st '+(r[5]||'amb')+'">'+r[2]+'</span>':I('chev'))+'</button>'}).join('')+'</div></div>'}
-function reqView(){return listView('Requests','Service requests for '+UNITS[per().live].comm+'.',[['AC Filter Check','Ref #SR-9042 · Maintenance','In progress','fan'],['Parking sticker','Ref #SR-9011 · Access & Parking','Raised','car'],['Water leak','Ref #SR-8870 · Maintenance · Completed','Completed','tool','Opens Water leak','ok']])+'<div class="sec" style="margin-top:12px"><button class="btn full press" data-act="help">'+I('help',16)+'Raise a new request</button></div>'}
+function reqView(){return listView('Requests','Service requests for '+UNITS[per().live].comm+'.',[['AC Filter Check','Ref #SR-9042 · Maintenance','In progress','fan'],['Parking sticker','Ref #SR-9011 · Access & Parking','Raised','car'],['Water leak','Ref #SR-8870 · Maintenance','Done','tool','Opens Water leak','ok']])+'<div class="sec" style="margin-top:12px"><button class="btn full press" data-act="help">'+I('help',16)+'Raise a new request</button></div>'}
 function docView(){var u=UNITS[per().live]; var rows=[['Emirates ID','Expires in 12 days. Upload a renewed copy','Expiring','card','Opens Emirates ID','red']];
  if(u.tenantSelf) rows.push(['Tenancy contract','Valid until 12 Jan 2027','','contract'],['Ejari','Registered','','doc']); else rows.push(['Title deed','Valid','','dl'],['Sales agreement','Valid','','dl']);
  rows.push(['Access card','Card #BH-20931 · expires 28 Nov 2026','','card'],['Move-in permit','Issued Mar 2025','','permit']);
@@ -615,7 +614,6 @@ document.addEventListener('click',function(e){var b=e.target.closest('[data-amo]
   case 'visit': return sheet('<h3>Invite a visitor</h3><p class="sub">Share a QR gate pass. Security is notified when they arrive.</p><div class="kv"><span>Visitor</span><b>Priya Sharma</b></div><div class="kv"><span>Date</span><b>Tomorrow · 6 PM</b></div><div class="kv"><span>Type</span><b>Guest · car</b></div><div class="kv"><span>Plate</span><b>Dubai K 48213</b></div><button class="btn full press" style="margin-top:16px" data-act="visitok">Create gate pass</button>');
   case 'visitok': return busy(b,function(){ sheet('<div class="okc"><div class="qrb">'+I('qr',120)+'</div><h3>Gate pass ready</h3><p class="sub">Priya Sharma · tomorrow 6 PM. Valid for one entry.</p></div><button class="btn full press" data-act="close">Share pass</button>'); });
   case 'maint': close(); return helpSheet();
-  case 'parcel': resolve('parcel'); return toast('Marked as collected');
   case 'qa': return toast('Opens '+d.k);
   case 'soa': return toast('Statement of account downloaded (PDF)');
   case 'eoi': return okSheet('Interest registered','Our sales team will share the Phase 3 brochure and owner pricing.');
